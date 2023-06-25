@@ -49,6 +49,13 @@ type User struct {
 
 	// Balance is the balance in the user's bank.
 	Balance float64
+	// Invitations is a map of the teams that invited the user, with the invitation's expiry.
+	Invitations map[string]time.Time
+}
+
+func (u User) WithInvitations(invites map[string]time.Time) User {
+	u.Invitations = invites
+	return u
 }
 
 // Stats contains all the stats of a user.
@@ -72,6 +79,7 @@ func DefaultUser(xuid, name string) User {
 		DisplayName: name,
 		Name:        strings.ToLower(name),
 		Roles:       role.NewRoles([]moose.Role{role.Default{}}, map[moose.Role]time.Time{}),
+		Invitations: map[string]time.Time{},
 	}
 }
 
@@ -85,10 +93,18 @@ func LoadUser(p *player.Player) (User, error) {
 		return User{}, err
 	}
 	var data User
+	data.Invitations = map[string]time.Time{}
 	err := result.Decode(&data)
 	if err != nil {
 		return User{}, err
 	}
+
+	for key, value := range data.Invitations {
+		if time.Now().After(value) {
+			delete(data.Invitations, key)
+		}
+	}
+
 	return data, nil
 }
 

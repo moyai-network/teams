@@ -6,6 +6,14 @@
     "team.create.name.long": "<red>The name of your team must contain less than 16 characters</red>",
     "team.create.name.short": "<red>The name of your team must contain more than 2 characters</red>",
     "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
-    "team.create.already": "<red>You're already in a team.</red>"
+    "team.create.already": "<red>You're already in a team.</red>",
+
+    "team.invite.success.broadcast": "<green>%s has been invited to your team.</green>",
+    "team.invite.already": "<red>You have already invited %s to your team.</red>",
+    "team.invite.self": "<red>You can't invite yourself to your own team.</red>",
+    "team.invite.member": "<red>%s is already in your team.</red>",
+    "team.invite.target": "<green>You have been invited to %s</green>",
+
+    "user.team-less": "<red>You're not in a team.</red>"
   }
 }

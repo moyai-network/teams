@@ -91,13 +91,15 @@ type Area struct {
 type Member struct {
 	Name        string
 	DisplayName string
+	XUID        string
 	Rank        int
 }
 
-func DefaultMember(name string) Member {
+func DefaultMember(xuid, name string) Member {
 	return Member{
 		Name:        strings.ToLower(name),
 		DisplayName: name,
+		XUID:        xuid,
 		Rank:        1,
 	}
 }
