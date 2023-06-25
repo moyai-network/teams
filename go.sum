@@ -46,6 +46,8 @@ github.com/moyai-network/moose v0.0.0-20230625004826-d4138bcdc1c8 h1:xwpjdKyPQ0F
 github.com/moyai-network/moose v0.0.0-20230625004826-d4138bcdc1c8/go.mod h1:XKd6GinwzWzTtYqOWJamA9ON/V9F3tl/NmyblB47ouk=
 github.com/moyai-network/moose v0.0.0-20230625011436-811ef9dc7ee8 h1:HnIMnELPmXN7g7zofMMop7T997eGTt4J6CKCMsoAgS8=
 github.com/moyai-network/moose v0.0.0-20230625011436-811ef9dc7ee8/go.mod h1:P5FBb/bxK3pv939nn4I7g+mLx9Hf6WpRJVWFwwpcEQI=
+github.com/moyai-network/moose v0.0.0-20230625103108-7ea19d2e8a8a h1:5YIxjnxeCGwXLpb4VOKcl/5X2ZHZRZhaKsW/C00tJjc=
+github.com/moyai-network/moose v0.0.0-20230625103108-7ea19d2e8a8a/go.mod h1:P5FBb/bxK3pv939nn4I7g+mLx9Hf6WpRJVWFwwpcEQI=
 github.com/moyai-network/vails v0.0.0-20230617001057-0ee9c8eac824 h1:XoBCC0dhETYqJQHZdHlb5GfKgP2XswAVFIS8Y/QVTuY=
 github.com/moyai-network/vails v0.0.0-20230617001057-0ee9c8eac824/go.mod h1:0ei5M0uGsyz2d5y7TTxTnCcjaLyyNjyFoBH3dx1K9Cs=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=

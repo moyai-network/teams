@@ -2,10 +2,13 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/event"
+	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
+	"github.com/moyai-network/moose"
 	"github.com/moyai-network/teams/moyai/data"
 	"strings"
+	"time"
 )
 
 var (
@@ -28,12 +31,18 @@ type Handler struct {
 	s *session.Session
 	p *player.Player
 	u data.User
+
+	cd struct {
+		enderPearl *moose.CoolDown
+	}
 }
 
 func NewHandler(p *player.Player) *Handler {
 	ha := &Handler{
 		p: p,
 	}
+	ha.cd.enderPearl = moose.NewCoolDown()
+
 	s := player_session(p)
 	u, _ := data.LoadUser(p)
 
@@ -48,6 +57,18 @@ func NewHandler(p *player.Player) *Handler {
 	playersMu.Unlock()
 
 	return ha
+}
+
+func (h *Handler) HandleItemUse(ctx *event.Context) {
+	held, _ := h.p.HeldItems()
+	switch held.Item().(type) {
+	case item.EnderPearl:
+		if h.cd.enderPearl.Active() {
+			ctx.Cancel()
+			break
+		}
+		h.cd.enderPearl.Set(15 * time.Second)
+	}
 }
 
 func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
