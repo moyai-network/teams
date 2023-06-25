@@ -12,6 +12,8 @@ import (
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+	"strings"
 	"sync"
 	_ "unsafe"
 )
@@ -91,6 +93,18 @@ func (a *ArmourHandler) setClass(c moose.Class) {
 		}
 		h.class.Store(c)
 	}
+}
+
+// canAttack returns true if the given players can attack each other.
+func canAttack(pl, target *player.Player) bool {
+	tm, ok := data.LoadUserTeam(pl.Name())
+	if !ok {
+		return true
+	}
+	return !slices.ContainsFunc(tm.Members, func(member data.Member) bool {
+		return strings.EqualFold(member.Name, target.Name())
+	})
+
 }
 
 // noinspection ALL

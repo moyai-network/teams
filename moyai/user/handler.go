@@ -2,10 +2,12 @@ package user
 
 import (
 	"github.com/df-mc/atomic"
+	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
+	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
@@ -70,6 +72,35 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		} else {
 			cd.Set(15 * time.Second)
 		}
+	}
+}
+
+func (h *Handler) HandleHurt(ctx *event.Context, damage *float64, attackImmunity *time.Duration, src world.DamageSource) {
+	var target *player.Player
+	switch s := src.(type) {
+	case entity.AttackDamageSource:
+		if t, ok := s.Attacker.(*player.Player); ok {
+			target = t
+		}
+	case entity.ProjectileDamageSource:
+		if t, ok := s.Owner.(*player.Player); ok {
+			target = t
+		}
+	}
+	if !canAttack(h.p, target) {
+		ctx.Cancel()
+		return
+	}
+}
+
+func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, critical *bool) {
+	t, ok := e.(*player.Player)
+	if !ok {
+		return
+	}
+	if !canAttack(h.p, t) {
+		ctx.Cancel()
+		return
 	}
 }
 
