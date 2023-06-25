@@ -21,6 +21,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7 // indirect
+	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/sandertv/go-raknet v1.12.0 // indirect
 	github.com/sandertv/gophertunnel v1.30.1-0.20230613200308-a4bc2f93fb3d // indirect

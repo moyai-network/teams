@@ -64,6 +64,8 @@ github.com/pelletier/go-toml/v2 v2.0.7/go.mod h1:eumQOmlWiOPt5WriQQqoM5y18pDHwha
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7 h1:Oa3kviyiNm2nGpK9rAa9gDhUAYoHfaGxMXfWU/VnbrQ=
 github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7/go.mod h1:D7jVxkjgnMfJS7w/ctnxZT1uQIx5xNMGRk6wRFXXttY=
+github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6 h1:71rZQsXnTEORPG2wKiLbHXuAYl10R9jg0+6F5qv8brg=
+github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6/go.mod h1:GPBWwxxErUF7Q/GAtahbBW+loc1xtClkrmNadwn+STs=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
 github.com/sandertv/go-raknet v1.12.0 h1:olUzZlIJyX/pgj/mrsLCZYjKLNDsYiWdvQ4NIm3z0DA=

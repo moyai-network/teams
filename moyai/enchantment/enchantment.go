@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/vails"
+	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -28,7 +28,7 @@ func AddEnchantmentLore(i item.Stack) item.Stack {
 
 		var lvl string
 		if e.Level() > 1 {
-			lvl, _ = vails.Itor(e.Level())
+			lvl, _ = roman.Itor(e.Level())
 		}
 		switch typ.(type) {
 		case EffectEnchantment, Recovery:
