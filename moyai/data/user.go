@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+var (
+	userCollection *mongo.Collection
+)
+
 // User is a structure containing the data of an offline user. It also contains useful functions that can be used
 // externally to modify offline user data, such as roles.
 type User struct {
@@ -40,21 +44,24 @@ type User struct {
 	Stats Stats
 	// Whitelisted is true if the user is whitelisted.
 	Whitelisted bool
-	// Frozen ...
+	// Frozen is the frozen state of the user.
 	Frozen bool
+
+	// Balance is the balance in the user's bank.
+	Balance float64
 }
 
 // Stats contains all the stats of a user.
 type Stats struct {
 	// Kills is the amount of players the user has killed.
-	Kills uint32 `bson:"kills"`
+	Kills uint32
 	// Deaths is the amount of times the user has died.
-	Deaths uint32 `bson:"deaths"`
+	Deaths uint32
 
 	// KillStreak is the current streak of kills the user has without dying.
-	KillStreak uint32 `bson:"kill_streak"`
+	KillStreak uint32
 	// BestKillStreak is the highest kill-streak the user has ever gotten.
-	BestKillStreak uint32 `bson:"best_kill_streak"`
+	BestKillStreak uint32
 }
 
 // DefaultUser creates a default user.
@@ -70,8 +77,7 @@ func DefaultUser(xuid, name string) User {
 
 // LoadUser loads a user using the given player.
 func LoadUser(p *player.Player) (User, error) {
-	users := db.Collection("users")
-	result := users.FindOne(ctx(), bson.M{"$or": []bson.M{{"name": strings.ToLower(p.Name())}, {"xuid": p.XUID()}}})
+	result := userCollection.FindOne(ctx(), bson.M{"$or": []bson.M{{"name": strings.ToLower(p.Name())}, {"xuid": p.XUID()}}})
 	if err := result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return DefaultUser(p.XUID(), p.Name()), nil
@@ -88,17 +94,16 @@ func LoadUser(p *player.Player) (User, error) {
 
 // SaveUser saves the provided user into the database.
 func SaveUser(u User) error {
-	users := db.Collection("users")
 	filter := bson.M{"name": bson.M{"$eq": u.Name}}
 	update := bson.M{"$set": u}
 
-	res, err := users.UpdateOne(ctx(), filter, update)
+	res, err := userCollection.UpdateOne(ctx(), filter, update)
 	if err != nil {
 		return err
 	}
 
 	if res.MatchedCount == 0 {
-		_, err = users.InsertOne(ctx(), u)
+		_, err = userCollection.InsertOne(ctx(), u)
 		return err
 	}
 	return nil

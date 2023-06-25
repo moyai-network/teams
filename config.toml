@@ -1,5 +1,5 @@
 [Network]
-Address = ':19132'
+Address = '192.168.2.157:19132'
 
 [Server]
 Name = 'Dragonfly Server'

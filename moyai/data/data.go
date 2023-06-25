@@ -20,4 +20,7 @@ func init() {
 		panic(err)
 	}
 	db = client.Database("moyai")
+
+	userCollection = db.Collection("users")
+	teamCollection = db.Collection("teams")
 }

@@ -1,0 +1,11 @@
+{
+  "translations": {
+    "team.create.exists": "<red>There is already a team with that name.</red>",
+    "team.create.success": "<green>You have created the team %s</green>",
+    "team.create.success.broadcast": "<yellow>%s has created the team <blue>%s</blue></yellow>",
+    "team.create.name.long": "<red>The name of your team must contain less than 16 characters</red>",
+    "team.create.name.short": "<red>The name of your team must contain more than 2 characters</red>",
+    "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
+    "team.create.already": "<red>You're already in a team.</red>"
+  }
+}

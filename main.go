@@ -1,17 +1,25 @@
 package main
 
 import (
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/command"
+	"github.com/moyai-network/teams/moyai/user"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/text/language"
 	"math"
 	"os"
 )
 
 func main() {
+	lang.Register(language.English)
+
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
 	log.Level = logrus.InfoLevel
@@ -50,9 +58,24 @@ func main() {
 	for _, e := range w.Entities() {
 		_ = e.Close()
 	}
+	registerCommands()
 
-	for srv.Accept(nil) {
+	srv.Listen()
+	for srv.Accept(accept) {
 		// Do nothing.
+	}
+}
+
+func accept(p *player.Player) {
+	p.Handle(user.NewHandler(p))
+	p.SetGameMode(world.GameModeCreative)
+}
+
+func registerCommands() {
+	for _, c := range []cmd.Command{
+		cmd.New("team", text.Colourf("<aqua>Team management commands.</aqua>"), []string{"t", "f"}, command.TeamCreate{}),
+	} {
+		cmd.Register(c)
 	}
 }
 
