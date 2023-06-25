@@ -1,10 +1,12 @@
 package data
 
 import (
+	"github.com/go-gl/mathgl/mgl64"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/exp/slices"
 	"strings"
+	"time"
 )
 
 var (
@@ -16,10 +18,20 @@ type Team struct {
 	Name string
 	// DisplayName is the display name for the team.
 	DisplayName string
-	// Balance is the amount of money the team has.
-	Balance float64
 	// Members is a slice of all the members in the team.
 	Members []Member
+	// DTR is the amount of deaths required before the teams goes raidable.
+	DTR float64
+	// Home is the home point for the team.
+	Home mgl64.Vec3
+	// RegenerationTime is the time until the team can start regenerating their DTR.
+	RegenerationTime time.Time
+	// Points is the amount of points the team has.
+	Points int
+	// Balance is the amount of money the team has.
+	Balance float64
+	// Claim is the claim area of the team.
+	Claim Area
 }
 
 func DefaultTeam(name string) Team {
@@ -39,6 +51,41 @@ func (t Team) WithoutMember(m Member) Team {
 		slices.Delete(t.Members, i, i+1)
 	}
 	return t
+}
+
+func (t Team) WithClaim(claim Area) Team {
+	t.Claim = claim
+	return t
+}
+
+func (t Team) WithPoints(points int) Team {
+	t.Points = points
+	return t
+}
+
+func (t Team) WithBalance(bal float64) Team {
+	t.Balance = bal
+	return t
+}
+
+func (t Team) WithHome(home mgl64.Vec3) Team {
+	t.Home = home
+	return t
+}
+
+func (t Team) WithRegenerationTime(regen time.Time) Team {
+	t.RegenerationTime = regen
+	return t
+}
+
+func (t Team) WithDTR(dtr float64) Team {
+	t.DTR = dtr
+	return t
+}
+
+type Area struct {
+	Min mgl64.Vec2
+	Max mgl64.Vec2
 }
 
 type Member struct {
