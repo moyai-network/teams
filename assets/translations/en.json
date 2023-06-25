@@ -14,6 +14,7 @@
     "team.invite.member": "<red>%s is already in your team.</red>",
     "team.invite.target": "<green>You have been invited to %s</green>",
 
-    "user.team-less": "<red>You're not in a team.</red>"
+    "user.team-less": "<red>You're not in a team.</red>",
+    "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>"
   }
 }

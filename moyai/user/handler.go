@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"strings"
 	"time"
@@ -63,11 +64,12 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, _ := h.p.HeldItems()
 	switch held.Item().(type) {
 	case item.EnderPearl:
-		if h.cd.enderPearl.Active() {
+		if cd := h.cd.enderPearl; cd.Active() {
+			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Ender Pearl", cd.Remaining().Seconds()))
 			ctx.Cancel()
-			break
+		} else {
+			cd.Set(15 * time.Second)
 		}
-		h.cd.enderPearl.Set(15 * time.Second)
 	}
 }
 
