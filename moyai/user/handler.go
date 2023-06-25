@@ -1,12 +1,12 @@
 package user
 
 import (
+	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"strings"
@@ -32,18 +32,18 @@ type Handler struct {
 	player.NopHandler
 	s *session.Session
 	p *player.Player
-	u data.User
 
-	cd struct {
-		enderPearl *moose.CoolDown
-	}
+	pearlCooldown *moose.CoolDown
+
+	class      atomic.Value[moose.Class]
+	bardEnergy atomic.Value[float64]
 }
 
 func NewHandler(p *player.Player) *Handler {
 	ha := &Handler{
 		p: p,
 	}
-	ha.cd.enderPearl = moose.NewCoolDown()
+	ha.pearlCooldown = moose.NewCoolDown()
 
 	s := player_session(p)
 	u, _ := data.LoadUser(p)
@@ -51,7 +51,6 @@ func NewHandler(p *player.Player) *Handler {
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
 
-	ha.u = u
 	ha.s = s
 
 	playersMu.Lock()
@@ -65,7 +64,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, _ := h.p.HeldItems()
 	switch held.Item().(type) {
 	case item.EnderPearl:
-		if cd := h.cd.enderPearl; cd.Active() {
+		if cd := h.pearlCooldown; cd.Active() {
 			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Ender Pearl", cd.Remaining().Seconds()))
 			ctx.Cancel()
 		} else {
@@ -79,23 +78,7 @@ func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
 }
 
 func (h *Handler) HandleQuit() {
-	_ = data.SaveUser(h.u)
-
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
-}
-
-// setClass sets the class of the user.
-func (h *ClassHandler) setClass(c moose.Class) {
-	lastClass := h.class.Load()
-	if lastClass != c {
-		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
-			addEffects(h.p, c.Effects()...)
-		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
-			h.bardEnergy.Store(0)
-			removeEffects(h.p, lastClass.Effects()...)
-		}
-		h.class.Store(c)
-	}
 }

@@ -6,8 +6,11 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
+	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
 	"sync"
 	_ "unsafe"
@@ -47,7 +50,7 @@ func Alert(s cmd.Source, key string, args ...any) {
 		return
 	}
 	for _, pl := range All() {
-		if h, ok := pl.Handler().(*Handler); ok && role.Staff(h.u.Roles.Highest()) {
+		if u, _ := data.LoadUser(pl); role.Staff(u.Roles.Highest()) {
 			pl.Message(lang.Translatef(pl.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(pl.Locale(), key), args...)))
 		}
 	}
@@ -71,6 +74,22 @@ func addEffects(p *player.Player, effects ...effect.Effect) {
 func removeEffects(p *player.Player, effects ...effect.Effect) {
 	for _, e := range effects {
 		p.RemoveEffect(e.Type())
+	}
+}
+
+// setClass sets the class of the user.
+func (a *ArmourHandler) setClass(c moose.Class) {
+	h := a.p.Handler().(*Handler)
+
+	lastClass := h.class.Load()
+	if lastClass != c {
+		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+			addEffects(h.p, c.Effects()...)
+		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+			h.bardEnergy.Store(0)
+			removeEffects(h.p, lastClass.Effects()...)
+		}
+		h.class.Store(c)
 	}
 }
 
