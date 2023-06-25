@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"strings"
@@ -83,4 +84,18 @@ func (h *Handler) HandleQuit() {
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
+}
+
+// setClass sets the class of the user.
+func (h *ClassHandler) setClass(c moose.Class) {
+	lastClass := h.class.Load()
+	if lastClass != c {
+		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+			addEffects(h.p, c.Effects()...)
+		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+			h.bardEnergy.Store(0)
+			removeEffects(h.p, lastClass.Effects()...)
+		}
+		h.class.Store(c)
+	}
 }

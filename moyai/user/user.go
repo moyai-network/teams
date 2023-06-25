@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose/lang"
@@ -56,6 +57,20 @@ func Alert(s cmd.Source, key string, args ...any) {
 func Broadcast(key string, args ...any) {
 	for _, p := range All() {
 		p.Message(lang.Translatef(p.Locale(), key, args...))
+	}
+}
+
+// addEffects adds a list of effects to the user.
+func addEffects(p *player.Player, effects ...effect.Effect) {
+	for _, e := range effects {
+		p.AddEffect(e)
+	}
+}
+
+// removeEffects removes a list of effects from the user.
+func removeEffects(p *player.Player, effects ...effect.Effect) {
+	for _, e := range effects {
+		p.RemoveEffect(e.Type())
 	}
 }
 

@@ -67,6 +67,7 @@ func main() {
 }
 
 func accept(p *player.Player) {
+	p.Inventory().Handle(user.NewClassHandler(p))
 	p.Handle(user.NewHandler(p))
 	p.SetGameMode(world.GameModeCreative)
 }
