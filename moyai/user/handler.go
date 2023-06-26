@@ -94,6 +94,14 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 	var target *player.Player
 
 	switch s := src.(type) {
+	case NoArmourAttackEntitySource:
+		if t, ok := s.Attacker.(*player.Player); ok {
+			target = t
+		}
+		if !canAttack(h.p, target) {
+			ctx.Cancel()
+			return
+		}
 	case entity.AttackDamageSource:
 		if t, ok := s.Attacker.(*player.Player); ok {
 			target = t
