@@ -79,8 +79,8 @@ func removeEffects(p *player.Player, effects ...effect.Effect) {
 	}
 }
 
-// setClass sets the class of the user.
-func setClass(p *player.Player, c moose.Class) {
+// SetClass sets the class of the user.
+func SetClass(p *player.Player, c moose.Class) {
 	h := p.Handler().(*Handler)
 
 	lastClass := h.class.Load()

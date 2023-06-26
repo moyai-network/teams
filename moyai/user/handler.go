@@ -105,7 +105,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 			ctx.Cancel()
 			return
 		}
-		if ha := target.Handler().(*Handler); class.Compare(ha.class, class.Archer{}) {
+		if ha := target.Handler().(*Handler); class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
 			ha.archerTag.Set(time.Second * 10)
 
 			dist := h.p.Position().Sub(target.Position()).Len()
@@ -115,7 +115,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 			}
 			*dmg = (d / 10) * 2
 
-			h.p.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
+			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
 		}
 	}
 
@@ -128,7 +128,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
 	dur := i.Durability()
 	if _, ok := i.Item().(item.Armour); ok && dur != -1 && dur-n <= 0 {
-		setClass(h.p, class.Resolve(h.p))
+		SetClass(h.p, class.Resolve(h.p))
 	}
 }
 
