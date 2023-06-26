@@ -97,6 +97,9 @@ func setClass(p *player.Player, c moose.Class) {
 
 // canAttack returns true if the given players can attack each other.
 func canAttack(pl, target *player.Player) bool {
+	if target == nil || pl == nil {
+		return false
+	}
 	tm, ok := data.LoadUserTeam(pl.Name())
 	if !ok {
 		return true

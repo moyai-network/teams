@@ -118,8 +118,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 			h.p.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
 		}
 	}
-	target.Handler().(*Handler).combatTag.Set(time.Second * 20)
-	h.combatTag.Set(time.Second * 20)
+
+	if canAttack(h.p, target) {
+		target.Handler().(*Handler).combatTag.Set(time.Second * 20)
+		h.combatTag.Set(time.Second * 20)
+	}
 }
 
 func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
