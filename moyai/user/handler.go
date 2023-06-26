@@ -142,6 +142,9 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		ctx.Cancel()
 		return
 	}
+	if t.AttackImmune() {
+		return
+	}
 }
 
 func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
