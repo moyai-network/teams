@@ -26,7 +26,7 @@ func NewArmourHandler(p *player.Player) *ArmourHandler {
 }
 
 func (a *ArmourHandler) HandleTake(_ *event.Context, _ int, it item.Stack) {
-	a.setClass(nil)
+	setClass(a.p, nil)
 
 	var effects []effect.Effect
 
@@ -77,7 +77,7 @@ func (a *ArmourHandler) HandlePlace(_ *event.Context, _ int, it item.Stack) {
 		bootsTier = it.Tier
 	}
 	newArmour := [4]item.ArmourTier{helmetTier, chestplateTier, leggingsTier, bootsTier}
-	a.setClass(class.ResolveFromArmour(newArmour))
+	setClass(a.p, class.ResolveFromArmour(newArmour))
 
 	var effects []effect.Effect
 
@@ -92,7 +92,7 @@ func (a *ArmourHandler) HandlePlace(_ *event.Context, _ int, it item.Stack) {
 	}
 }
 func (a *ArmourHandler) HandleDrop(_ *event.Context, _ int, it item.Stack) {
-	a.setClass(nil)
+	setClass(a.p, nil)
 
 	var effects []effect.Effect
 

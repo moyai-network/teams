@@ -122,6 +122,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 	h.combatTag.Set(time.Second * 20)
 }
 
+func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
+	dur := i.Durability()
+	if _, ok := i.Item().(item.Armour); ok && dur != -1 && dur-n <= 0 {
+		setClass(h.p, class.Resolve(h.p))
+	}
+}
+
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, critical *bool) {
 	t, ok := e.(*player.Player)
 	if !ok {

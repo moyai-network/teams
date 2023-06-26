@@ -2,25 +2,25 @@
 Address = '192.168.2.157:19132'
 
 [Server]
-Name = 'Dragonfly Server'
+Name = ''
 ShutdownMessage = 'Server closed.'
 AuthEnabled = true
-JoinMessage = '%v has joined the game'
-QuitMessage = '%v has left the game'
+JoinMessage = ''
+QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = 'world'
+Folder = 'assets/world'
 
 [Players]
 MaxCount = 0
 MaximumChunkRadius = 32
 SaveData = true
-Folder = 'players'
+Folder = 'assets/players'
 
 [Resources]
 AutoBuildPack = true
-Folder = 'resources'
+Folder = 'assets/resources'
 Required = false
 
 [Moyai]

@@ -80,8 +80,8 @@ func removeEffects(p *player.Player, effects ...effect.Effect) {
 }
 
 // setClass sets the class of the user.
-func (a *ArmourHandler) setClass(c moose.Class) {
-	h := a.p.Handler().(*Handler)
+func setClass(p *player.Player, c moose.Class) {
+	h := p.Handler().(*Handler)
 
 	lastClass := h.class.Load()
 	if lastClass != c {
