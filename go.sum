@@ -49,6 +49,8 @@ github.com/moyai-network/moose v0.0.0-20230626184846-f7dd8698dd3b h1:tQjgbj6rXDQ
 github.com/moyai-network/moose v0.0.0-20230626184846-f7dd8698dd3b/go.mod h1:yeRS9eHJIeqcDZ0/XJ4vbpE2DT13hSC9CsodIdT4Qcc=
 github.com/moyai-network/moose v0.0.0-20230626184959-f642ca822312 h1:HzPEt8pJMzogieJ7Fsis2stDPJkZZqbvyc9x59CNtrQ=
 github.com/moyai-network/moose v0.0.0-20230626184959-f642ca822312/go.mod h1:yeRS9eHJIeqcDZ0/XJ4vbpE2DT13hSC9CsodIdT4Qcc=
+github.com/moyai-network/moose v0.0.0-20230626185413-cc7ef06306d6 h1:+vPuUjLnyDEYsrx5FG6YW7/VApM+Dw5ukg27WPVmVyA=
+github.com/moyai-network/moose v0.0.0-20230626185413-cc7ef06306d6/go.mod h1:yeRS9eHJIeqcDZ0/XJ4vbpE2DT13hSC9CsodIdT4Qcc=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0/go.mod h1:saF2fIVw4banK0H4+/EuqfFLpRnoy5S+ECwTOCcRcSU=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
