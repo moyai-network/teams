@@ -9,8 +9,10 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
+	"math"
 	"strings"
 	"time"
 )
@@ -39,21 +41,28 @@ type Handler struct {
 
 	class      atomic.Value[moose.Class]
 	bardEnergy atomic.Value[float64]
+
+	combatTag *moose.Tag
+	archerTag *moose.Tag
 }
 
 func NewHandler(p *player.Player) *Handler {
 	ha := &Handler{
 		p: p,
+
+		pearlCooldown: moose.NewCoolDown(),
+
+		combatTag: moose.NewTag(nil, nil),
+		archerTag: moose.NewTag(nil, nil),
 	}
-	ha.pearlCooldown = moose.NewCoolDown()
 
 	s := player_session(p)
 	u, _ := data.LoadUser(p)
-	_ = data.SaveUser(u)
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
 
+	_ = data.SaveUser(u)
 	ha.s = s
 
 	playersMu.Lock()
@@ -76,22 +85,41 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	}
 }
 
-func (h *Handler) HandleHurt(ctx *event.Context, damage *float64, attackImmunity *time.Duration, src world.DamageSource) {
+func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration, src world.DamageSource) {
 	var target *player.Player
+
 	switch s := src.(type) {
 	case entity.AttackDamageSource:
 		if t, ok := s.Attacker.(*player.Player); ok {
 			target = t
 		}
+		if !canAttack(h.p, target) {
+			ctx.Cancel()
+			return
+		}
 	case entity.ProjectileDamageSource:
 		if t, ok := s.Owner.(*player.Player); ok {
 			target = t
 		}
+		if !canAttack(h.p, target) {
+			ctx.Cancel()
+			return
+		}
+		if ha := target.Handler().(*Handler); class.Compare(ha.class, class.Archer{}) {
+			ha.archerTag.Set(time.Second * 10)
+
+			dist := h.p.Position().Sub(target.Position()).Len()
+			d := math.Round(dist)
+			if d > 20 {
+				d = 20
+			}
+			*dmg = (d / 10) * 2
+
+			h.p.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
+		}
 	}
-	if !canAttack(h.p, target) {
-		ctx.Cancel()
-		return
-	}
+	target.Handler().(*Handler).combatTag.Set(time.Second * 20)
+	h.combatTag.Set(time.Second * 20)
 }
 
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, critical *bool) {

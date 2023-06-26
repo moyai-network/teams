@@ -80,6 +80,7 @@ func DefaultUser(xuid, name string) User {
 		Name:        strings.ToLower(name),
 		Roles:       role.NewRoles([]moose.Role{role.Default{}}, map[moose.Role]time.Time{}),
 		Invitations: map[string]time.Time{},
+		Balance:     250,
 	}
 }
 
