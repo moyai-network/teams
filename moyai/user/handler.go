@@ -49,6 +49,7 @@ func NewHandler(p *player.Player) *Handler {
 
 	s := player_session(p)
 	u, _ := data.LoadUser(p)
+	_ = data.SaveUser(u)
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
