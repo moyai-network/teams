@@ -51,6 +51,8 @@ type User struct {
 	Balance float64
 	// Invitations is a map of the teams that invited the user, with the invitation's expiry.
 	Invitations map[string]time.Time
+	// Kits represents the kits cool-downs
+	Kits moose.MappedCoolDown[string]
 }
 
 func (u User) WithInvitations(invites map[string]time.Time) User {
@@ -79,6 +81,7 @@ func DefaultUser(xuid, name string) User {
 		DisplayName: name,
 		Name:        strings.ToLower(name),
 		Roles:       role.NewRoles([]moose.Role{role.Default{}}, map[moose.Role]time.Time{}),
+		Kits:        moose.NewMappedCoolDown[string](),
 		Invitations: map[string]time.Time{},
 		Balance:     250,
 	}
@@ -95,11 +98,11 @@ func LoadUser(p *player.Player) (User, error) {
 	}
 	var data User
 	data.Invitations = map[string]time.Time{}
+	data.Kits = moose.NewMappedCoolDown[string]()
 	err := result.Decode(&data)
 	if err != nil {
 		return User{}, err
 	}
-
 	for key, value := range data.Invitations {
 		if time.Now().After(value) {
 			delete(data.Invitations, key)

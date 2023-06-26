@@ -66,8 +66,9 @@ func NewHandler(p *player.Player) *Handler {
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
-
-	_ = data.SaveUser(u)
+	if err := data.SaveUser(u); err != nil {
+		panic(err)
+	}
 	ha.s = s
 
 	playersMu.Lock()
