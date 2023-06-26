@@ -132,7 +132,8 @@ func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
 	}
 }
 
-func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, critical *bool) {
+func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
+	*force, *height = 0.394, 0.394
 	t, ok := e.(*player.Player)
 	if !ok {
 		return
