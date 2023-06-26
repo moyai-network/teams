@@ -145,6 +145,9 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if t.AttackImmune() {
 		return
 	}
+
+	t.Handler().(*Handler).combatTag.Set(time.Second * 20)
+	h.combatTag.Set(time.Second * 20)
 }
 
 func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
