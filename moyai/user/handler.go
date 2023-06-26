@@ -105,7 +105,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 			ctx.Cancel()
 			return
 		}
-		if ha := target.Handler().(*Handler); class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
+		if ha := target.Handler().(*Handler); !class.Compare(h.class.Load(), class.Archer{}) && class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
 			ha.archerTag.Set(time.Second * 10)
 
 			dist := h.p.Position().Sub(target.Position()).Len()
