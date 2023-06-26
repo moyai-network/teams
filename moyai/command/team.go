@@ -87,14 +87,13 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 
 	u, _ := data.LoadUser(target)
 
-	invitations := u.Invitations
-	if exp, ok := invitations[tm.Name]; ok && time.Now().Before(exp) {
+	if u.Invitations.Active(tm.Name) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.already", target.Name()))
 		return
 	}
-	invitations[tm.Name] = time.Now().Add(time.Minute * 5)
+	u.Invitations.Set(tm.Name, time.Minute*5)
 
-	_ = data.SaveUser(u.WithInvitations(invitations))
+	_ = data.SaveUser(u)
 
 	for _, m := range tm.Members {
 		pl, ok := user.Lookup(m.XUID)
