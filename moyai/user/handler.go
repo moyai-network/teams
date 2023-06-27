@@ -37,8 +37,9 @@ var (
 
 type Handler struct {
 	player.NopHandler
-	s *session.Session
-	p *player.Player
+	s       *session.Session
+	p       *player.Player
+	logTime time.Time
 
 	pearlCooldown *moose.CoolDown
 	rogueCooldown *moose.CoolDown
@@ -69,7 +70,9 @@ func NewHandler(p *player.Player) *Handler {
 	if err := data.SaveUser(u); err != nil {
 		panic(err)
 	}
+
 	ha.s = s
+	ha.logTime = time.Now()
 
 	playersMu.Lock()
 	players[p.XUID()] = p
@@ -198,6 +201,10 @@ func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
 }
 
 func (h *Handler) HandleQuit() {
+	u, _ := data.LoadUser(h.p)
+	u.PlayTime += time.Since(h.logTime)
+	_ = data.SaveUser(u)
+
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
