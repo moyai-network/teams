@@ -5,11 +5,14 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/command"
 	"github.com/moyai-network/teams/moyai/user"
+	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
+	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
@@ -41,6 +44,18 @@ func main() {
 	//c.Resources = append(c.Resources, resource.MustCompile(config.Pack.Path).WithContentKey(config.Pack.Key))
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
 
+	o := oomph.New(log, ":19132")
+	o.Listen(&c, c.Name, []minecraft.Protocol{}, true)
+	go func() {
+		for {
+			p, err := o.Accept()
+			if err != nil {
+				return
+			}
+			p.Handle(user.NewOomphHandler(p))
+		}
+	}()
+
 	srv := c.New()
 	srv.CloseOnProgramEnd()
 
@@ -56,7 +71,7 @@ func main() {
 	l.Load(math.MaxInt)
 
 	for _, e := range w.Entities() {
-		_ = e.Close()
+		w.RemoveEntity(e)
 	}
 	registerCommands()
 
@@ -69,7 +84,8 @@ func main() {
 func accept(p *player.Player) {
 	p.Inventory().Handle(user.NewArmourHandler(p))
 	p.Handle(user.NewHandler(p))
-	p.SetGameMode(world.GameModeCreative)
+	p.SetGameMode(world.GameModeSurvival)
+	p.Teleport(mgl64.Vec3{0, 74, 0})
 }
 
 func registerCommands() {

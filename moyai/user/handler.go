@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -15,6 +16,7 @@ import (
 	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"math"
 	"strings"
 	"time"
@@ -78,6 +80,23 @@ func NewHandler(p *player.Player) *Handler {
 	players[p.XUID()] = p
 	playersMu.Unlock()
 
+	var effects []effect.Effect
+
+	for _, it := range p.Armour().Slots() {
+		for _, e := range it.Enchantments() {
+			if enc, ok := e.Type().(ench.EffectEnchantment); ok {
+				effects = append(effects, enc.Effect())
+			}
+		}
+	}
+
+	for _, e := range effects {
+		typ := e.Type()
+		if hasEffectLevel(p, e) {
+			p.RemoveEffect(typ)
+		}
+	}
+
 	return ha
 }
 
@@ -96,7 +115,6 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration, src world.DamageSource) {
 	var target *player.Player
-
 	switch s := src.(type) {
 	case NoArmourAttackEntitySource:
 		if t, ok := s.Attacker.(*player.Player); ok {

@@ -37,6 +37,17 @@ func Count() int {
 	return len(players)
 }
 
+// LookupRuntimeID ...
+func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
+	h := p.Handler().(*Handler)
+	for _, t := range All() {
+		if session_entityRuntimeID(h.s, t) == rid {
+			return t, true
+		}
+	}
+	return nil, false
+}
+
 // Lookup looks up the Handler of a XUID passed.
 func Lookup(xuid string) (*player.Player, bool) {
 	playersMu.Lock()
