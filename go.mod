@@ -54,3 +54,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
+
+replace github.com/oomph-ac/oomph => ./oomph
