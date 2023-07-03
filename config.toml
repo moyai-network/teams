@@ -1,5 +1,5 @@
 [Network]
-Address = '192.168.2.157:19132'
+Address = ':19132'
 
 [Server]
 Name = ''
@@ -21,7 +21,7 @@ Folder = 'assets/players'
 [Resources]
 AutoBuildPack = true
 Folder = 'assets/resources'
-Required = false
+Required = true
 
 [Moyai]
 Tebex = ''

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"math"
+	"os"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
@@ -15,8 +18,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
-	"math"
-	"os"
 )
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 		panic(err)
 	}
 
-	c.Name = text.Colourf("<bold><gold>MOYAI</gold></bold>") + "§8"
+	c.Name = text.Colourf("<bold><redstone>SYN</redstone></bold>") + "§8"
 	//c.Resources = append(c.Resources, resource.MustCompile(config.Pack.Path).WithContentKey(config.Pack.Key))
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)

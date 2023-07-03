@@ -1,6 +1,10 @@
 package user
 
 import (
+	"math"
+	"strings"
+	"time"
+
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -17,9 +21,6 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
-	"math"
-	"strings"
-	"time"
 )
 
 var (
@@ -99,6 +100,8 @@ func NewHandler(p *player.Player) *Handler {
 			p.RemoveEffect(typ)
 		}
 	}
+
+	go sendBoard(p)
 
 	return ha
 }
