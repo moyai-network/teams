@@ -65,7 +65,10 @@ func NewHandler(p *player.Player) *Handler {
 	}
 
 	s := player_session(p)
-	u, _ := data.LoadUser(p)
+	u, _ := data.LoadUser(p.Name(), p.XUID())
+
+	u.DisplayName = p.Name()
+	u.Name = strings.ToLower(p.Name())
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
@@ -219,7 +222,9 @@ func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
 }
 
 func (h *Handler) HandleQuit() {
-	u, _ := data.LoadUser(h.p)
+	p := h.p
+
+	u, _ := data.LoadUser(p.Name(), p.XUID())
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 

@@ -6,13 +6,12 @@ import (
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
+	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/command"
 	"github.com/moyai-network/teams/moyai/user"
-	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
-	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
@@ -39,12 +38,12 @@ func main() {
 		panic(err)
 	}
 
-	c.Name = text.Colourf("<bold><gold>Vasar</gold></bold>") + "§8"
-	//c.Allower = &allower{config.Vasar.Whitelisted}
+	c.Name = text.Colourf("<bold><gold>MOYAI</gold></bold>") + "§8"
 	//c.Resources = append(c.Resources, resource.MustCompile(config.Pack.Path).WithContentKey(config.Pack.Key))
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
+	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
-	o := oomph.New(log, ":19132")
+	/*o := oomph.New(log, ":19132")
 	o.Listen(&c, c.Name, []minecraft.Protocol{}, true)
 	go func() {
 		for {
@@ -54,7 +53,7 @@ func main() {
 			}
 			p.Handle(user.NewOomphHandler(p))
 		}
-	}()
+	}()*/
 
 	srv := c.New()
 	srv.CloseOnProgramEnd()
@@ -91,6 +90,7 @@ func accept(p *player.Player) {
 func registerCommands() {
 	for _, c := range []cmd.Command{
 		cmd.New("team", text.Colourf("<aqua>Team management commands.</aqua>"), []string{"t", "f"}, command.TeamCreate{}, command.TeamInvite{}),
+		cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 	} {
 		cmd.Register(c)
 	}

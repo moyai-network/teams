@@ -63,7 +63,7 @@ func Alert(s cmd.Source, key string, args ...any) {
 		return
 	}
 	for _, pl := range All() {
-		if u, _ := data.LoadUser(pl); role.Staff(u.Roles.Highest()) {
+		if u, _ := data.LoadUser(pl.Name(), p.XUID()); role.Staff(u.Roles.Highest()) {
 			pl.Message(lang.Translatef(pl.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(pl.Locale(), key), args...)))
 		}
 	}

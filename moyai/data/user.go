@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/df-mc/dragonfly/server/player"
+	"errors"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/role"
 	"go.mongodb.org/mongo-driver/bson"
@@ -87,12 +87,21 @@ func DefaultUser(xuid, name string) User {
 	}
 }
 
-// LoadUser loads a user using the given player.
-func LoadUser(p *player.Player) (User, error) {
-	result := userCollection.FindOne(ctx(), bson.M{"$or": []bson.M{{"name": strings.ToLower(p.Name())}, {"xuid": p.XUID()}}})
+// LoadUser loads a user using the given name or xuid.
+func LoadUser(name string, xuid string) (User, error) {
+	filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(name)}, {"xuid": xuid}}}
+	if len(xuid) == 0 {
+		filter = bson.M{"name": strings.ToLower(name)}
+	} else if len(name) == 0 {
+		filter = bson.M{"xuid": strings.ToLower(xuid)}
+	} else if len(name) == 0 && len(xuid) == 0 {
+		return User{}, errors.New("no name or xuid was provided")
+	}
+
+	result := userCollection.FindOne(ctx(), filter)
 	if err := result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
-			return DefaultUser(p.XUID(), p.Name()), nil
+			return DefaultUser(xuid, name), nil
 		}
 		return User{}, err
 	}

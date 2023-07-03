@@ -1,5 +1,7 @@
 {
   "translations": {
+    "moyai.whitelisted": "<red>The server is whitelisted.</red>",
+
     "team.create.exists": "<red>There is already a team with that name.</red>",
     "team.create.success": "<green>You have created the team %s</green>",
     "team.create.success.broadcast": "<yellow>%s has created the team <blue>%s</blue></yellow>",
@@ -14,8 +16,18 @@
     "team.invite.member": "<red>%s is already in your team.</red>",
     "team.invite.target": "<green>You have been invited to %s</green>",
 
+    "whitelist.add": "<green>%s has been added to the whitelist</green>",
+    "whitelist.remove": "<green>%s has been removed from the whitelist</green>",
+    "whitelist.already": "<red>%s is already whitelisted</red>",
+    "whitelist.already.not": "<red>%s is not whitelisted</red>",
+
     "user.team-less": "<red>You're not in a team.</red>",
     "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>",
+    "user.data.load.error": "<red>There was an error loading your data. Please notify staff.</red>",
+
+    "invalid.username": "<red>The provided user is invalid</red>",
+
+    "target.data.load.error": "<red>There was an error loading the data for %s. Please notify staff.</red>",
 
     "archer.tag": "<blue>[Archer Range (<red>%.0f</red>)]</blue> <gold>Marked player for 10 seconds.</gold> <blue>(%.1f hearts)</blue>"
   }

@@ -85,7 +85,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, _ := data.LoadUser(target)
+	u, _ := data.LoadUser(target.Name(), target.XUID())
 
 	if u.Invitations.Active(tm.Name) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.already", target.Name()))

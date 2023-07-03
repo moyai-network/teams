@@ -6,7 +6,7 @@ require (
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4
 	github.com/go-gl/mathgl v1.0.0
-	github.com/moyai-network/moose v0.0.0-20230626235514-1aafb893c273
+	github.com/moyai-network/moose v0.0.0-20230703212418-a6e442e30635
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.30.1-0.20230613200308-a4bc2f93fb3d
@@ -36,6 +36,7 @@ require (
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sandertv/go-raknet v1.12.0 // indirect
+	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
