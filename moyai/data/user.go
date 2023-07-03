@@ -51,11 +51,11 @@ type User struct {
 	Balance float64
 	// Invitations is a map of the teams that invited the user, with the invitation's expiry.
 	Invitations moose.MappedCoolDown[string]
-	// Kits represents the kits cool-downs
+	// Kits represents the kits cool-downs.
 	Kits moose.MappedCoolDown[string]
 	// Lives is the amount of lives the user has left.
 	Lives int
-	// DeathBan is the death-ban cool-down
+	// DeathBan is the death-ban cool-down.
 	DeathBan *moose.CoolDown
 }
 
