@@ -11,17 +11,6 @@ import (
 	_ "unsafe"
 )
 
-// removeFlag removes a flag from the entity data.
-func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
-	v := m[key]
-	switch key {
-	case protocol.EntityDataKeyPlayerFlags:
-		m[key] = v.(byte) &^ (1 << index)
-	default:
-		m[key] = v.(int64) &^ (1 << int64(index))
-	}
-}
-
 type OomphHandler struct {
 	player.NopHandler
 	p *player.Player
@@ -57,6 +46,17 @@ func (o *OomphHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<yellow>%s</yellow>", t.Name())
 		}
 		pkt.EntityMetadata = meta
+	}
+}
+
+// removeFlag removes a flag from the entity data.
+func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
+	v := m[key]
+	switch key {
+	case protocol.EntityDataKeyPlayerFlags:
+		m[key] = v.(byte) &^ (1 << index)
+	default:
+		m[key] = v.(int64) &^ (1 << int64(index))
 	}
 }
 
