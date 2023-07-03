@@ -53,6 +53,10 @@ type User struct {
 	Invitations moose.MappedCoolDown[string]
 	// Kits represents the kits cool-downs
 	Kits moose.MappedCoolDown[string]
+	// Lives is the amount of lives the user has left.
+	Lives int
+	// DeathBan is the death-ban cool-down
+	DeathBan *moose.CoolDown
 }
 
 // Stats contains all the stats of a user.
@@ -78,6 +82,7 @@ func DefaultUser(xuid, name string) User {
 		Roles:       role.NewRoles([]moose.Role{role.Default{}}, map[moose.Role]time.Time{}),
 		Kits:        moose.NewMappedCoolDown[string](),
 		Invitations: moose.NewMappedCoolDown[string](),
+		DeathBan:    moose.NewCoolDown(),
 		Balance:     250,
 	}
 }
@@ -92,8 +97,10 @@ func LoadUser(p *player.Player) (User, error) {
 		return User{}, err
 	}
 	var data User
+	data.DeathBan = moose.NewCoolDown()
 	data.Invitations = moose.NewMappedCoolDown[string]()
 	data.Kits = moose.NewMappedCoolDown[string]()
+
 	err := result.Decode(&data)
 	if err != nil {
 		return User{}, err
