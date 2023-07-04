@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/moose"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/exp/slices"
@@ -31,7 +32,7 @@ type Team struct {
 	// Balance is the amount of money the team has.
 	Balance float64
 	// Claim is the claim area of the team.
-	Claim Area
+	Claim moose.Area
 }
 
 func DefaultTeam(name string) Team {
@@ -53,7 +54,7 @@ func (t Team) WithoutMember(m Member) Team {
 	return t
 }
 
-func (t Team) WithClaim(claim Area) Team {
+func (t Team) WithClaim(claim moose.Area) Team {
 	t.Claim = claim
 	return t
 }
@@ -81,11 +82,6 @@ func (t Team) WithRegenerationTime(regen time.Time) Team {
 func (t Team) WithDTR(dtr float64) Team {
 	t.DTR = dtr
 	return t
-}
-
-type Area struct {
-	Min mgl64.Vec2
-	Max mgl64.Vec2
 }
 
 type Member struct {
