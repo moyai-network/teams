@@ -27,6 +27,7 @@
     "user.team-less": "<red>You're not in a team.</red>",
     "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>",
     "user.data.load.error": "<red>There was an error loading your data. Please notify staff.</red>",
+    "user.message.mute": "<red>You may not send message while muted</red>",
 
     "invalid.username": "<red>The provided user is invalid</red>",
 

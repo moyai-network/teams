@@ -1,9 +1,12 @@
 package user
 
 import (
+	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"golang.org/x/exp/slices"
 	"math"
+	"regexp"
 	"strings"
 	"time"
 
@@ -133,6 +136,48 @@ func NewHandler(p *player.Player) *Handler {
 	return ha
 }
 
+// formatRegex is a regex used to clean color formatting on a string.
+var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
+
+// HandleChat ...
+func (h *Handler) HandleChat(ctx *event.Context, message *string) {
+	ctx.Cancel()
+	u, err := data.LoadUser(h.p.Name(), h.p.XUID())
+	if err != nil {
+		return
+	}
+
+	*message = emojis.Replace(*message)
+	l := h.p.Locale()
+	r := u.Roles.Highest()
+
+	if !u.Mute.Expired() {
+		h.p.Message(lang.Translatef(l, "user.message.mute"))
+		return
+	}
+
+	if msg := strings.TrimSpace(*message); len(msg) > 0 {
+		msg = formatRegex.ReplaceAllString(msg, "")
+		if tm, ok := data.LoadUserTeam(h.p.Name()); ok {
+			formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
+			formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
+			for _, t := range All() {
+				if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
+					return member.XUID == t.p.XUID()
+				}) {
+					t.p.Message(formatTeam)
+				} else {
+					t.p.Message(formatEnemy)
+				}
+			}
+			chat.StdoutSubscriber{}.Message(formatEnemy)
+		} else {
+			_, _ = chat.Global.WriteString(r.Chat(h.p.Name(), msg))
+		}
+	}
+}
+
+// HandleItemUse ...
 func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, _ := h.p.HeldItems()
 	switch held.Item().(type) {
@@ -254,10 +299,6 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 
 	t.Handler().(*Handler).combat.Set(time.Second * 20)
 	h.combat.Set(time.Second * 20)
-}
-
-func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
-	*msg = emojis.Replace(*msg)
 }
 
 func (h *Handler) HandleQuit() {
