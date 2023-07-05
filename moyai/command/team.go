@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/team"
 	"github.com/moyai-network/teams/moyai/user"
 	"golang.org/x/exp/slices"
 	"regexp"
@@ -14,16 +15,25 @@ import (
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
 
+// TeamCreate is the command used to create teams.
 type TeamCreate struct {
 	Sub  cmd.SubCommand `cmd:"create"`
 	Name string         `cmd:"name"`
 }
 
+// TeamInvite is the command used to invite players to teams.
 type TeamInvite struct {
 	Sub    cmd.SubCommand `cmd:"invite"`
 	Target []cmd.Target   `cmd:"target"`
 }
 
+// TeamJoin is the command used to join teams.
+type TeamJoin struct {
+	Sub  cmd.SubCommand `cmd:"join"`
+	Team teamInvitation `cmd:"team"`
+}
+
+// Run ...
 func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
@@ -59,6 +69,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	user.Broadcast("team.create.success.broadcast", p.Name(), tm.DisplayName)
 }
 
+// Run ...
 func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
@@ -95,11 +106,63 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 
 	_ = data.SaveUser(u)
 
-	for _, m := range tm.Members {
-		pl, ok := user.Lookup(m.XUID)
-		if ok {
-			pl.Message(lang.Translatef(pl.Locale(), "team.invite.success.broadcast", target.Name()))
+	team.Broadcast(tm, "team.invite.success.broadcast", target.Name())
+	target.Message(lang.Translatef(target.Locale(), "team.invite.target", tm.DisplayName))
+}
+
+// Run ...
+func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
+	p := src.(*player.Player)
+	l := locale(src)
+
+	tm, err := data.LoadTeam(string(t.Team))
+	if err != nil {
+		return
+	}
+	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
+
+	_ = data.SaveTeam(tm)
+
+	p.Message(lang.Translatef(l, "team.join.target", tm.DisplayName))
+	team.Broadcast(tm, "team.join.broadcast", p.Name())
+}
+
+// Allow ...
+func (TeamCreate) Allow(src cmd.Source) bool {
+	return allow(src, false)
+}
+
+// Allow ...
+func (TeamInvite) Allow(src cmd.Source) bool {
+	return allow(src, false)
+}
+
+// Allow ...
+func (TeamJoin) Allow(src cmd.Source) bool {
+	return allow(src, false)
+}
+
+type (
+	// teamInvitation represents the type used as command arguments, listing all the team invitations the user has.
+	teamInvitation string
+)
+
+// Type ...
+func (teamInvitation) Type() string {
+	return "team_invitation"
+}
+
+// Options ...
+func (teamInvitation) Options(src cmd.Source) (options []string) {
+	p := src.(*player.Player)
+	u, err := data.LoadUser(p.Name(), p.XUID())
+	if err != nil {
+		return
+	}
+	for t, i := range u.Invitations {
+		if i.Active() {
+			options = append(options, t)
 		}
 	}
-	target.Message(lang.Translatef(target.Locale(), "team.invite.target", tm.DisplayName))
+	return
 }

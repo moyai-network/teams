@@ -57,6 +57,10 @@ type User struct {
 	Lives int
 	// DeathBan is the death-ban cool-down.
 	DeathBan *moose.CoolDown
+	// SOTW is whether the user their SOTW timer enabled, or not.
+	SOTW bool
+	// PVP is the PVP timer of the user.
+	PVP *moose.CoolDown
 }
 
 // Stats contains all the stats of a user.
@@ -83,7 +87,9 @@ func DefaultUser(xuid, name string) User {
 		Kits:        moose.NewMappedCoolDown[string](),
 		Invitations: moose.NewMappedCoolDown[string](),
 		DeathBan:    moose.NewCoolDown(),
+		PVP:         moose.NewCoolDown(),
 		Balance:     250,
+		SOTW:        true,
 	}
 }
 
@@ -105,28 +111,29 @@ func LoadUser(name string, xuid string) (User, error) {
 		}
 		return User{}, err
 	}
-	var data User
-	data.DeathBan = moose.NewCoolDown()
-	data.Invitations = moose.NewMappedCoolDown[string]()
-	data.Kits = moose.NewMappedCoolDown[string]()
+	var u User
+	u.DeathBan = moose.NewCoolDown()
+	u.PVP = moose.NewCoolDown()
+	u.Invitations = moose.NewMappedCoolDown[string]()
+	u.Kits = moose.NewMappedCoolDown[string]()
 
-	err := result.Decode(&data)
+	err := result.Decode(&u)
 	if err != nil {
 		return User{}, err
 	}
 
-	for key, value := range data.Invitations {
+	for key, value := range u.Invitations {
 		if !value.Active() {
-			delete(data.Invitations, key)
+			delete(u.Invitations, key)
 		}
 	}
-	for key, value := range data.Kits {
+	for key, value := range u.Kits {
 		if !value.Active() {
-			delete(data.Kits, key)
+			delete(u.Kits, key)
 		}
 	}
 
-	return data, nil
+	return u, nil
 }
 
 // SaveUser saves the provided user into the database.
