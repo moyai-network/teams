@@ -35,7 +35,7 @@ func startTicker(h *Handler) {
 				if e, ok := BardHoldEffectFromItem(i.Item()); ok {
 					mates := NearbyAllies(h.p, 25)
 					for _, m := range mates {
-						m.AddEffect(e)
+						m.p.AddEffect(e)
 					}
 				}
 			case class.Stray:
@@ -48,7 +48,7 @@ func startTicker(h *Handler) {
 				if e, ok := StrayHoldEffectFromItem(i.Item()); ok {
 					mates := NearbyAllies(h.p, 25)
 					for _, m := range mates {
-						m.AddEffect(e)
+						m.p.AddEffect(e)
 					}
 				}
 			}

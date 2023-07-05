@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
+	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
 	"math"
@@ -59,7 +60,9 @@ type Handler struct {
 	rogue       *moose.CoolDown
 	goldenApple *moose.CoolDown
 
-	itemUse moose.MappedCoolDown[world.Item]
+	itemUse   moose.MappedCoolDown[world.Item]
+	bardItem  moose.MappedCoolDown[world.Item]
+	strayItem moose.MappedCoolDown[world.Item]
 
 	// TODO: implement custom items
 	//abilities moose.MappedCoolDown[any]
@@ -82,7 +85,8 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
-	close chan struct{}
+	addEffect map[effect.Type]chan effect.Effect
+	close     chan struct{}
 }
 
 func NewHandler(p *player.Player) *Handler {
@@ -202,6 +206,62 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			ctx.Cancel()
 		} else {
 			cd.Set(15 * time.Second)
+		}
+	}
+
+	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	switch h.class.Load().(type) {
+	case class.Bard:
+		if e, ok := BardEffectFromItem(held.Item()); ok {
+			if u.PVP.Active() /*|| u.SOTW*/ {
+				return
+			}
+			if cd := h.bardItem.Key(held.Item()); cd.Active() {
+				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				return
+			}
+			if en := h.energy.Load(); en < 30 {
+				h.Message("class.energy.insufficient")
+				return
+			} else {
+				h.energy.Store(en - 30)
+			}
+
+			teammates := NearbyAllies(h.p, 25)
+			for _, m := range teammates {
+				m.AddEffect(e)
+			}
+
+			lvl, _ := roman.Itor(e.Level())
+			h.Message("class.ability.use", moose.EffectName(e), lvl, len(teammates))
+			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
+			h.bardItem.Key(held.Item()).Set(15 * time.Second)
+		}
+	case class.Stray:
+		if e, ok := StrayEffectFromItem(held.Item()); ok {
+			if u.PVP.Active() /*|| u.SOTW*/ {
+				return
+			}
+			if cd := h.strayItem.Key(held.Item()); cd.Active() {
+				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				return
+			}
+			if en := h.energy.Load(); en < 30 {
+				h.Message("class.energy.insufficient")
+				return
+			} else {
+				h.energy.Store(en - 30)
+			}
+
+			teammates := NearbyAllies(h.p, 25)
+			for _, m := range teammates {
+				m.AddEffect(e)
+			}
+
+			lvl, _ := roman.Itor(e.Level())
+			h.Message("class.ability.use", moose.EffectName(e), lvl, len(teammates))
+			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
+			h.strayItem.Key(held.Item()).Set(15 * time.Second)
 		}
 	}
 }
@@ -577,6 +637,47 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		h.area.Store(area.Wilderness(w))
 		h.Message("area.enter", area.Wilderness(w).Name())
 	}
+}
+
+func (h *Handler) AddEffect(e effect.Effect) {
+	h.p.AddEffect(e)
+	h.addEffect[e.Type()] <- e
+
+	lastClass := h.class.Load()
+	go func() {
+		select {
+		case <-time.After(e.Duration()):
+			for _, it := range h.p.Armour().Slots() {
+				var effects []effect.Effect
+
+				for _, e := range it.Enchantments() {
+					if enc, ok := e.Type().(ench.EffectEnchantment); ok {
+						effects = append(effects, enc.Effect())
+					}
+				}
+
+				for _, e := range effects {
+					h.p.AddEffect(e)
+				}
+
+				c := h.class.Load()
+				if lastClass != c {
+					if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
+						addEffects(h.p, c.Effects()...)
+					} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
+						h.energy.Store(0)
+						removeEffects(h.p, lastClass.Effects()...)
+					}
+					h.class.Store(c)
+				}
+			}
+		case ef := <-h.addEffect[e.Type()]:
+			currEff, _ := h.p.Effect(ef.Type())
+			if ef.Level() > currEff.Level() || ef.Duration() > currEff.Duration() {
+				return
+			}
+		}
+	}()
 }
 
 func (h *Handler) Player() *player.Player {

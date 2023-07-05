@@ -129,14 +129,14 @@ func canAttack(pl, target *player.Player) bool {
 }
 
 // Nearby returns the nearby users of a certain distance from the user
-func Nearby(p *player.Player, dist float64) []*player.Player {
-	var pl []*player.Player
+func Nearby(p *player.Player, dist float64) []*Handler {
+	var pl []*Handler
 	for _, e := range p.World().Entities() {
 		if e.Position().ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
 			return math.Max(f, f2)-math.Min(f, f2) < dist
 		}) {
 			if target, ok := e.(*player.Player); ok {
-				pl = append(pl, target)
+				pl = append(pl, target.Handler().(*Handler))
 			}
 		}
 	}
@@ -144,17 +144,17 @@ func Nearby(p *player.Player, dist float64) []*player.Player {
 }
 
 // NearbyAllies returns the nearby allies of a certain distance from the user
-func NearbyAllies(p *player.Player, dist float64) []*player.Player {
-	var pl []*player.Player
+func NearbyAllies(p *player.Player, dist float64) []*Handler {
+	var pl []*Handler
 	u, _ := data.LoadUser(p.Name(), p.XUID())
 	tm, ok := u.Team()
 	if !ok {
-		return []*player.Player{p}
+		return []*Handler{p.Handler().(*Handler)}
 	}
 
 	for _, target := range Nearby(p, dist) {
 		slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-			return member.XUID == target.XUID()
+			return member.XUID == target.p.XUID()
 		})
 	}
 
@@ -163,11 +163,11 @@ func NearbyAllies(p *player.Player, dist float64) []*player.Player {
 
 // NearbyCombat returns the nearby faction members, enemies, no faction players (basically anyone not on timer) of a certain distance from the user
 // Nearby returns the nearby users of a certain distance from the user
-func NearbyCombat(p *player.Player, dist float64) []*player.Player {
-	var pl []*player.Player
+func NearbyCombat(p *player.Player, dist float64) []*Handler {
+	var pl []*Handler
 
 	for _, target := range Nearby(p, dist) {
-		t, _ := data.LoadUser(target.Name(), target.XUID())
+		t, _ := data.LoadUser(target.p.Name(), target.p.XUID())
 		if !t.PVP.Active() {
 			pl = append(pl, target)
 		}

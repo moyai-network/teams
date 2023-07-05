@@ -3,6 +3,12 @@
     "area.enter": "<yellow>Now entering: %s</yellow>",
     "area.leave": "<yellow>Now leaving: %s</yellow>",
 
+    "class.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> teammates</yellow>",
+    "class.ability.receive": "<yellow>You have received <green>%s %v</green> from <blue>%v</blue> teammates</yellow>",
+    "class.ability.receive.self": "<yellow>You have received <green>%s %v</green> from yourself</yellow>",
+    "class.energy.insufficient": "<red>You don't have enough energy to use this ability.</red>",
+    "class.ability.cooldown": "<red>You must wait %.1f seconds before using this ability again.</red>",
+
     "moyai.whitelisted": "<red>The server is whitelisted.</red>",
 
     "team.create.exists": "<red>There is already a team with that name.</red>",
