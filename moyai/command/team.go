@@ -117,6 +117,12 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 	l := locale(src)
 
+	u, _ := data.LoadUser(p.Name(), p.XUID())
+	if _, ok := u.Team(); ok {
+		out.Error(lang.Translatef(l, "team.join.error"))
+		return
+	}
+
 	tm, ok := data.LoadTeam(string(t.Team))
 	if !ok {
 		// TODO: error message
@@ -126,7 +132,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 
 	data.SaveTeam(tm)
 
-	p.Message(lang.Translatef(l, "team.join.target", tm.DisplayName))
+	out.Print(lang.Translatef(l, "team.join.target", tm.DisplayName))
 	user.BroadcastTeam(tm, "team.join.broadcast", p.Name())
 }
 

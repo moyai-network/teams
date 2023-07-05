@@ -16,7 +16,8 @@
     "team.invite.member": "<red>%s is already in your team.</red>",
     "team.invite.target": "<green>You have been invited to %s</green>",
 
-    "team.join.target": "<green>You have joined the team %s</green>",
+    "team.join.target": "<green>You have joined the team %s.</green>",
+    "team.join.error": "<red>You are already in a team.</red>",
     "team.join.broadcast": "<green%s has joined the team.</green>",
 
     "whitelist.add": "<green>%s has been added to the whitelist</green>",
