@@ -7,7 +7,6 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/team"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -16,7 +15,7 @@ import (
 )
 
 type PacketHandler struct {
-	player.NopHandler
+	packethandler.NopHandler
 	c *packethandler.Conn
 }
 
@@ -68,7 +67,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
 			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
-		} else if slices.ContainsFunc(team.FocusingPlayers(tm), func(p *player.Player) bool {
+		} else if slices.ContainsFunc(FocusingPlayers(tm), func(p *player.Player) bool {
 			return p.XUID() == target.p.XUID()
 		}) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())

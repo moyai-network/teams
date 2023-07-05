@@ -5,7 +5,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/team"
 	"github.com/moyai-network/teams/moyai/user"
 	"golang.org/x/exp/slices"
 	"regexp"
@@ -106,7 +105,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 
 	_ = data.SaveUser(u)
 
-	team.Broadcast(tm, "team.invite.success.broadcast", target.Name())
+	user.BroadcastTeam(tm, "team.invite.success.broadcast", target.Name())
 	target.Message(lang.Translatef(target.Locale(), "team.invite.target", tm.DisplayName))
 }
 
@@ -124,7 +123,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	_ = data.SaveTeam(tm)
 
 	p.Message(lang.Translatef(l, "team.join.target", tm.DisplayName))
-	team.Broadcast(tm, "team.join.broadcast", p.Name())
+	user.BroadcastTeam(tm, "team.join.broadcast", p.Name())
 }
 
 // Allow ...
