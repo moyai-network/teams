@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
@@ -11,19 +12,19 @@ import (
 	_ "unsafe"
 )
 
-type OomphHandler struct {
+type PacketHandler struct {
 	player.NopHandler
-	p *player.Player
+	c *packethandler.Conn
 }
 
-func NewOomphHandler(p *player.Player) *OomphHandler {
-	return &OomphHandler{
-		p: p,
+func NewPacketHandler(c *packethandler.Conn) *PacketHandler {
+	return &PacketHandler{
+		c: c,
 	}
 }
 
-func (o *OomphHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
-	p, ok := Lookup(o.p.IdentityData().XUID)
+func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
+	p, ok := Lookup(h.c.IdentityData().XUID)
 	if !ok {
 		return
 	}

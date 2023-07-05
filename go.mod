@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect

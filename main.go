@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/bedrock-gophers/packethandler"
+	"github.com/sandertv/gophertunnel/minecraft"
 	"math"
 	"os"
 
@@ -40,21 +42,20 @@ func main() {
 	}
 
 	c.Name = text.Colourf("<bold><redstone>SYN</redstone></bold>") + "§8"
-	//c.Resources = append(c.Resources, resource.MustCompile(config.Pack.Path).WithContentKey(config.Pack.Key))
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
-	/*o := oomph.New(log, ":19132")
-	o.Listen(&c, c.Name, []minecraft.Protocol{}, true)
+	pk := packethandler.NewPacketListener()
+	pk.Listen(&c, ":19132", []minecraft.Protocol{})
 	go func() {
 		for {
-			p, err := o.Accept()
+			p, err := pk.Accept()
 			if err != nil {
 				return
 			}
-			p.Handle(user.NewOomphHandler(p))
+			p.Handle(user.NewPacketHandler(p))
 		}
-	}()*/
+	}()
 
 	srv := c.New()
 	srv.CloseOnProgramEnd()
@@ -90,7 +91,7 @@ func accept(p *player.Player) {
 
 func registerCommands() {
 	for _, c := range []cmd.Command{
-		cmd.New("team", text.Colourf("<aqua>Team management commands.</aqua>"), []string{"t", "f"}, command.TeamCreate{}, command.TeamInvite{}),
+		cmd.New("team", text.Colourf("<aqua>Team management commands.</aqua>"), []string{"t", "f"}, command.TeamCreate{}, command.TeamInvite{}, command.TeamJoin{}),
 		cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 	} {
 		cmd.Register(c)
