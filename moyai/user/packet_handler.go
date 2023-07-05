@@ -24,17 +24,13 @@ func NewPacketHandler(c *packethandler.Conn) *PacketHandler {
 }
 
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
-	p, ok := Lookup(h.c.IdentityData().XUID)
-	if !ok {
-		return
-	}
-	_, ok = p.Handler().(*Handler)
+	ph, ok := Lookup(h.c.IdentityData().XUID)
 	if !ok {
 		return
 	}
 	switch pkt := pk.(type) {
 	case *packet.SetActorData:
-		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
+		t, ok := LookupRuntimeID(ph.p, pkt.EntityRuntimeID)
 		if !ok {
 			break
 		}

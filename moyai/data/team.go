@@ -33,6 +33,14 @@ type Team struct {
 	Balance float64
 	// Claim is the claim area of the team.
 	Claim moose.Area
+	// Focus is the focus information for a team
+	Focus Focus
+}
+
+// Focus is the focus information for a team
+type Focus struct {
+	Kind  int    // 0:Player ; 1: Team
+	Value string // XUID: Player ; Name: Team
 }
 
 func DefaultTeam(name string) Team {

@@ -21,11 +21,11 @@ import (
 
 var (
 	playersMu sync.Mutex
-	players   = map[string]*player.Player{}
+	players   = map[string]*Handler{}
 )
 
 // All returns a slice of all the users.
-func All() []*player.Player {
+func All() []*Handler {
 	playersMu.Lock()
 	defer playersMu.Unlock()
 	return maps.Values(players)
@@ -42,15 +42,15 @@ func Count() int {
 func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	h := p.Handler().(*Handler)
 	for _, t := range All() {
-		if session_entityRuntimeID(h.s, t) == rid {
-			return t, true
+		if session_entityRuntimeID(h.s, t.p) == rid {
+			return t.p, true
 		}
 	}
 	return nil, false
 }
 
 // Lookup looks up the Handler of a XUID passed.
-func Lookup(xuid string) (*player.Player, bool) {
+func Lookup(xuid string) (*Handler, bool) {
 	playersMu.Lock()
 	defer playersMu.Unlock()
 	ha, ok := players[xuid]
@@ -63,17 +63,17 @@ func Alert(s cmd.Source, key string, args ...any) {
 	if !ok {
 		return
 	}
-	for _, pl := range All() {
-		if u, _ := data.LoadUser(pl.Name(), p.XUID()); role.Staff(u.Roles.Highest()) {
-			pl.Message(lang.Translatef(pl.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(pl.Locale(), key), args...)))
+	for _, h := range All() {
+		if u, _ := data.LoadUser(h.p.Name(), p.XUID()); role.Staff(u.Roles.Highest()) {
+			h.p.Message(lang.Translatef(h.p.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.p.Locale(), key), args...)))
 		}
 	}
 }
 
 // Broadcast broadcasts a message to every user using that user's locale.
 func Broadcast(key string, args ...any) {
-	for _, p := range All() {
-		p.Message(lang.Translatef(p.Locale(), key, args...))
+	for _, h := range All() {
+		h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
 	}
 }
 

@@ -108,7 +108,7 @@ func NewHandler(p *player.Player) *Handler {
 	ha.logTime = time.Now()
 
 	playersMu.Lock()
-	players[p.XUID()] = p
+	players[p.XUID()] = ha
 	playersMu.Unlock()
 
 	var effects []effect.Effect
@@ -271,6 +271,10 @@ func (h *Handler) HandleQuit() {
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
+}
+
+func (h *Handler) Player() *player.Player {
+	return h.p
 }
 
 type NoArmourAttackEntitySource struct {
