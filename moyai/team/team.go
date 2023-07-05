@@ -23,7 +23,13 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 			return
 		}
 	case 1:
-		for _, m := range t.Members {
+		tm, err := data.LoadTeam(t.Focus.Value)
+		if err != nil {
+			t.Focus = data.Focus{}
+			_ = data.SaveTeam(t)
+			return
+		}
+		for _, m := range tm.Members {
 			if h, ok := user.Lookup(m.XUID); ok {
 				pl = append(pl, h.Player())
 			}
