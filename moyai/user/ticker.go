@@ -120,13 +120,14 @@ func startTicker(h *Handler) {
 			}
 
 			if len(sb.Lines()) > 3 {
-				if !compareLines(sb.Lines(), h.lastScoreBoard.Load().Lines()) {
+				if h.lastScoreBoard.Load() == nil || !compareLines(sb.Lines(), h.lastScoreBoard.Load().Lines()) {
 					h.lastScoreBoard.Store(sb)
 					h.p.RemoveScoreboard()
 					h.p.SendScoreboard(sb)
 				}
 			} else {
 				h.p.RemoveScoreboard()
+				h.lastScoreBoard.Store(nil)
 			}
 		case <-h.close:
 			t.Stop()
