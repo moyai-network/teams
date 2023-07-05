@@ -6,7 +6,7 @@ require (
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4
 	github.com/go-gl/mathgl v1.0.0
-	github.com/moyai-network/moose v0.0.0-20230705003628-91b6838a186a
+	github.com/moyai-network/moose v0.0.0-20230705153837-baa728cfcaa6
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.30.1-0.20230613200308-a4bc2f93fb3d

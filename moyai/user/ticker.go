@@ -37,6 +37,19 @@ func startTicker(h *Handler) {
 						m.AddEffect(e)
 					}
 				}
+			case class.Stray:
+				if e := h.energy.Load(); e < 120-0.05 {
+					l := float64(len(NearbyCombat(h.p, 10)))
+					h.energy.Store(e + (l * 0.05))
+				}
+
+				i, _ := h.p.HeldItems()
+				if e, ok := StrayHoldEffectFromItem(i.Item()); ok {
+					mates := NearbyAllies(h.p, 25)
+					for _, m := range mates {
+						m.AddEffect(e)
+					}
+				}
 			}
 
 			sb := scoreboard.New(lang.Translatef(l, "scoreboard.title"))
@@ -93,8 +106,11 @@ func startTicker(h *Handler) {
 			if cd := h.goldenApple; cd.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.golden.apple", cd.Remaining().Seconds()))
 			}
+
 			if class.Compare(h.class.Load(), class.Bard{}) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.bard.energy", h.energy.Load()))
+			} else if class.Compare(h.class.Load(), class.Stray{}) {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.stray.energy", h.energy.Load()))
 			}
 
 			// TODO: implement KOTHs
@@ -160,26 +176,38 @@ func parseDuration(d time.Duration) string {
 	return fmt.Sprintf("%02d:%02d", minutes, seconds)
 }
 
-var bardEffectDuration = time.Second * 6
+var (
+	bardEffectDuration  = time.Second * 6
+	strayEffectDuration = time.Second * 3
 
-var bardItemsUse = map[world.Item]effect.Effect{
-	item.BlazePowder{}: effect.New(effect.Strength{}, 2, bardEffectDuration),
-	item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
-	item.Sugar{}:       effect.New(effect.Speed{}, 3, bardEffectDuration),
-	item.GhastTear{}:   effect.New(effect.Regeneration{}, 3, bardEffectDuration),
-	item.IronIngot{}:   effect.New(effect.Resistance{}, 3, bardEffectDuration),
-	item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
-}
+	bardItemsUse = map[world.Item]effect.Effect{
+		item.BlazePowder{}: effect.New(effect.Strength{}, 2, bardEffectDuration),
+		item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
+		item.Sugar{}:       effect.New(effect.Speed{}, 3, bardEffectDuration),
+		item.GhastTear{}:   effect.New(effect.Regeneration{}, 3, bardEffectDuration),
+		item.IronIngot{}:   effect.New(effect.Resistance{}, 3, bardEffectDuration),
+		item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
+	}
 
-var bardItemsHold = map[world.Item]effect.Effect{
-	item.MagmaCream{}:  effect.New(effect.FireResistance{}, 1, bardEffectDuration),
-	item.BlazePowder{}: effect.New(effect.Strength{}, 1, bardEffectDuration),
-	item.Feather{}:     effect.New(effect.JumpBoost{}, 3, bardEffectDuration),
-	item.Sugar{}:       effect.New(effect.Speed{}, 2, bardEffectDuration),
-	item.GhastTear{}:   effect.New(effect.Regeneration{}, 1, bardEffectDuration),
-	item.IronIngot{}:   effect.New(effect.Resistance{}, 1, bardEffectDuration),
-	item.Feather{}:     effect.New(effect.JumpBoost{}, 2, bardEffectDuration),
-}
+	bardItemsHold = map[world.Item]effect.Effect{
+		item.MagmaCream{}:  effect.New(effect.FireResistance{}, 1, bardEffectDuration),
+		item.BlazePowder{}: effect.New(effect.Strength{}, 1, bardEffectDuration),
+		item.Feather{}:     effect.New(effect.JumpBoost{}, 3, bardEffectDuration),
+		item.Sugar{}:       effect.New(effect.Speed{}, 2, bardEffectDuration),
+		item.GhastTear{}:   effect.New(effect.Regeneration{}, 1, bardEffectDuration),
+		item.IronIngot{}:   effect.New(effect.Resistance{}, 1, bardEffectDuration),
+		item.Feather{}:     effect.New(effect.JumpBoost{}, 2, bardEffectDuration),
+	}
+
+	strayItemsHold = map[world.Item]effect.Effect{
+		item.FermentedSpiderEye{}: effect.New(effect.Invisibility{}, 1, time.Minute*1),
+	}
+
+	strayItemsUse = map[world.Item]effect.Effect{
+		item.BlazePowder{}: effect.New(effect.Strength{}, 2, strayEffectDuration),
+		item.Sugar{}:       effect.New(effect.Speed{}, 4, strayEffectDuration),
+	}
+)
 
 func BardEffectFromItem(i world.Item) (effect.Effect, bool) {
 	e, ok := bardItemsUse[i]
@@ -188,5 +216,15 @@ func BardEffectFromItem(i world.Item) (effect.Effect, bool) {
 
 func BardHoldEffectFromItem(i world.Item) (effect.Effect, bool) {
 	e, ok := bardItemsHold[i]
+	return e, ok
+}
+
+func StrayEffectFromItem(i world.Item) (effect.Effect, bool) {
+	e, ok := strayItemsUse[i]
+	return e, ok
+}
+
+func StrayHoldEffectFromItem(i world.Item) (effect.Effect, bool) {
+	e, ok := strayItemsHold[i]
 	return e, ok
 }

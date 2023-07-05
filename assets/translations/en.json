@@ -51,6 +51,7 @@
     "scoreboard.cooldown.abilities": "<amethyst>Partner Items<grey>:</grey> %.1fs</amethyst>",
     "scoreboard.cooldown.golden.apple": "<gold>Golden Apple<grey>:</grey> %.1fs</gold>",
     "scoreboard.bard.energy": "<green>Bard Energy<grey>:</grey> %.1f</green>",
+    "scoreboard.stray.energy": "<amethyst>Stray Energy<grey>:</grey> %.1f</amethyst>",
     "scoreboard.footer": "<grey><i>discord.gg/synhcf</i></grey>"
   }
 }

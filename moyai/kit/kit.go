@@ -30,6 +30,7 @@ func All() []Kit {
 		Builder{},
 		Archer{},
 		Bard{},
+		Stray{},
 		Rogue{},
 		Diamond{},
 		Master{},

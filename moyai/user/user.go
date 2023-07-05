@@ -97,9 +97,9 @@ func SetClass(p *player.Player, c moose.Class) {
 
 	lastClass := h.class.Load()
 	if lastClass != c {
-		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
 			addEffects(h.p, c.Effects()...)
-		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
+		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
 			h.energy.Store(0)
 			removeEffects(h.p, lastClass.Effects()...)
 		}
@@ -150,6 +150,21 @@ func NearbyAllies(p *player.Player, dist float64) []*player.Player {
 		slices.ContainsFunc(tm.Members, func(member data.Member) bool {
 			return member.XUID == target.XUID()
 		})
+	}
+
+	return pl
+}
+
+// NearbyCombat returns the nearby faction members, enemies, no faction players (basically anyone not on timer) of a certain distance from the user
+// Nearby returns the nearby users of a certain distance from the user
+func NearbyCombat(p *player.Player, dist float64) []*player.Player {
+	var pl []*player.Player
+
+	for _, target := range Nearby(p, dist) {
+		t, _ := data.LoadUser(target.Name(), target.XUID())
+		if !t.PVP.Active() {
+			pl = append(pl, target)
+		}
 	}
 
 	return pl
