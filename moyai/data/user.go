@@ -68,7 +68,7 @@ type User struct {
 }
 
 func (u User) Team() (Team, bool) {
-	for _, t := range AllTeams() {
+	for _, t := range Teams() {
 		if slices.ContainsFunc(t.Members, func(member Member) bool {
 			return u.XUID == member.XUID
 		}) {

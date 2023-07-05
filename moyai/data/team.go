@@ -38,7 +38,7 @@ func init() {
 	teamsMu.Unlock()
 }
 
-func AllTeams() []Team {
+func Teams() []Team {
 	teamsMu.Lock()
 	defer teamsMu.Unlock()
 
