@@ -10,6 +10,7 @@ import (
 	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -112,6 +113,11 @@ func canAttack(pl, target *player.Player) bool {
 	if target == nil || pl == nil {
 		return false
 	}
+	w := pl.World()
+	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(pl.Position()) || area.Spawn(w).Vec3WithinOrEqualFloorXZ(target.Position()) {
+		return false
+	}
+
 	u, _ := data.LoadUser(pl.Name(), pl.XUID())
 	tm, ok := u.Team()
 	if !ok {

@@ -126,6 +126,26 @@ func (t Team) WithDTR(dtr float64) Team {
 	return t
 }
 
+// Leader returns whether the given username is the one of the leader.
+func (t Team) Leader(name string) bool {
+	for _, m := range t.Members {
+		if strings.EqualFold(m.Name, name) && m.Rank == 3 {
+			return true
+		}
+	}
+	return false
+}
+
+// Member returns whether the given username is in the team.
+func (t Team) Member(name string) bool {
+	for _, m := range t.Members {
+		if strings.EqualFold(m.Name, name) {
+			return true
+		}
+	}
+	return false
+}
+
 // Member represents a team member.
 type Member struct {
 	Name        string

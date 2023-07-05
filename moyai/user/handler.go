@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
+	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
@@ -58,6 +59,8 @@ type Handler struct {
 	rogue       *moose.CoolDown
 	goldenApple *moose.CoolDown
 
+	itemUse moose.MappedCoolDown[world.Item]
+
 	// TODO: implement custom items
 	//abilities moose.MappedCoolDown[any]
 
@@ -76,6 +79,8 @@ type Handler struct {
 
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
+
+	claimPos [2]mgl64.Vec2
 
 	close chan struct{}
 }
@@ -250,6 +255,163 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 	if canAttack(h.p, target) {
 		target.Handler().(*Handler).combat.Set(time.Second * 20)
 		h.combat.Set(time.Second * 20)
+	}
+}
+
+func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
+	w := h.p.World()
+
+	for _, t := range data.Teams() {
+		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
+			return member.XUID == h.p.XUID()
+		}) {
+			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				ctx.Cancel()
+				return
+			}
+		}
+		u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
+					ctx.Cancel()
+					return
+				}
+			}
+		}
+	}
+}
+
+func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]item.Stack, xp *int) {
+	w := h.p.World()
+
+	for _, t := range data.Teams() {
+		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
+			return member.XUID == h.p.XUID()
+		}) {
+			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				ctx.Cancel()
+				return
+			}
+		}
+		u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
+					ctx.Cancel()
+					return
+				}
+			}
+		}
+	}
+}
+
+func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cube.Face, clickPos mgl64.Vec3) {
+	w := h.p.World()
+
+	i, _ := h.p.HeldItems()
+	if _, ok := i.Item().(item.Bucket); ok {
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				ctx.Cancel()
+				return
+			}
+		}
+	}
+
+	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	switch it := i.Item().(type) {
+	case item.Hoe:
+		ctx.Cancel()
+		cd := h.itemUse.Key(it)
+		if cd.Active() {
+			return
+		} else {
+			cd.Set(1 * time.Second)
+		}
+		if it.Tier == item.ToolTierDiamond {
+			_, ok := i.Value("CLAIM_WAND")
+			if !ok {
+				return
+			}
+
+			t, ok := u.Team()
+			if !ok {
+				return
+			}
+
+			if !t.Leader(h.p.Name()) {
+				h.Message("team.not-leader")
+				return
+			}
+
+			if t.Claim != (moose.Area{}) {
+				h.Message("team.has-claim")
+				break
+			}
+
+			for _, a := range area.Protected(w) {
+				if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+					h.Message("team.area.already-claimed")
+					return
+				}
+				if a.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+					h.Message("team.area.too-close")
+					return
+				}
+			}
+			for _, tm := range data.Teams() {
+				c := tm.Claim
+				if c != (moose.Area{}) {
+					continue
+				}
+				if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
+					h.Message("team.area.already-claimed")
+					return
+				}
+				if c.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+					h.Message("team.area.too-close")
+					return
+				}
+			}
+
+			pn := 1
+			if h.p.Sneaking() {
+				pn = 2
+				ar := moose.NewArea(h.claimPos[0], mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+				x := ar.Max().X() - ar.Min().X()
+				y := ar.Max().Y() - ar.Min().Y()
+				a := x * y
+				if a > 75*75 {
+					h.Message("team.claim.too-big")
+					return
+				}
+				cost := int(a * 5)
+				h.Message("team.claim.cost", cost)
+			}
+			h.claimPos[pn-1] = mgl64.Vec2{float64(pos.X()), float64(pos.Z())}
+			h.Message("team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+		}
+	}
+	b := w.Block(pos)
+
+	switch b.(type) {
+	case block.WoodFenceGate, block.Chest:
+		for _, t := range data.Teams() {
+			c := t.Claim
+			if !t.Member(h.p.Name()) {
+				if t.DTR > 0 && c.Vec3WithinOrEqualXZ(pos.Vec3()) {
+					ctx.Cancel()
+					return
+				}
+			}
+		}
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				ctx.Cancel()
+				return
+			}
+		}
 	}
 }
 
