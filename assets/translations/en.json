@@ -1,5 +1,8 @@
 {
   "translations": {
+    "area.enter": "<yellow>Now entering: %s</yellow>",
+    "area.leave": "<yellow>Now leaving: %s</yellow>",
+
     "moyai.whitelisted": "<red>The server is whitelisted.</red>",
 
     "team.create.exists": "<red>There is already a team with that name.</red>",

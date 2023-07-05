@@ -1,13 +1,18 @@
 package user
 
 import (
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
+	"github.com/moyai-network/teams/moyai/area"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
 	"math"
+	"math/rand"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/df-mc/atomic"
@@ -67,6 +72,10 @@ type Handler struct {
 	home   *moose.Teleportation
 
 	lastScoreBoard atomic.Value[*scoreboard.Scoreboard]
+	area           atomic.Value[moose.NamedArea]
+
+	wallBlocks   map[cube.Pos]float64
+	wallBlocksMu sync.Mutex
 
 	close chan struct{}
 }
@@ -315,8 +324,181 @@ func (h *Handler) HandleQuit() {
 	playersMu.Unlock()
 }
 
+func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
+	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	p := h.p
+	w := p.World()
+
+	if !newPos.ApproxEqual(p.Position()) {
+		h.home.Cancel()
+		h.logout.Cancel()
+	}
+
+	h.clearWall()
+	cubePos := cube.PosFromVec3(newPos)
+
+	if h.combat.Active() {
+		a := area.Spawn(w)
+		mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+		if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) {
+			h.sendWall(cubePos, area.Overworld.Spawn().Area, item.ColourRed())
+		}
+	}
+
+	if u.PVP.Active() {
+		for _, a := range data.Teams() {
+			a := a.Claim
+			if a.Vec3WithinOrEqualXZ(newPos) {
+				ctx.Cancel()
+				return
+			}
+
+			mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) {
+				h.sendWall(cubePos, a, item.ColourBlue())
+			}
+		}
+	}
+
+	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(newPos) && h.combat.Active() {
+		ctx.Cancel()
+		return
+	}
+
+	/*k, ok := koth.Running()
+	if ok {
+		r := u.Roles().Highest()
+		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+			if k.StartCapturing(u, r.Colour(u.Name())) {
+				user.Broadcast("koth.capturing", k.Name(), r.Colour(u.Name()))
+			}
+		} else {
+			if k.StopCapturing(u) {
+				user.Broadcast("koth.not.capturing", k.Name())
+			}
+		}
+	}*/
+
+	var areas []moose.NamedArea
+
+	for _, tm := range data.Teams() {
+		a := tm.Claim
+
+		name := text.Colourf("<red>%s</red>", tm.DisplayName)
+		if t, ok := u.Team(); ok && strings.EqualFold(t.Name, tm.Name) {
+			name = text.Colourf("<green>%s</green>", tm.DisplayName)
+		}
+		areas = append(areas, moose.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Max().X()}, mgl64.Vec2{a.Min().Y(), a.Max().Y()}, name))
+	}
+
+	ar := h.area.Load()
+	for _, a := range append(area.Protected(w), areas...) {
+		if a.Vec3WithinOrEqualFloorXZ(newPos) {
+			if ar != a {
+				if ar != (moose.NamedArea{}) {
+					h.Message("area.leave", ar.Name())
+				}
+				h.area.Store(a)
+				h.Message("area.enter", a.Name())
+				return
+			} else {
+				return
+			}
+		}
+	}
+
+	if ar != area.Wilderness(w) {
+		if ar != (moose.NamedArea{}) {
+			h.Message("area.leave", ar.Name())
+
+		}
+		h.area.Store(area.Wilderness(w))
+		h.Message("area.enter", area.Wilderness(w).Name())
+	}
+}
+
 func (h *Handler) Player() *player.Player {
 	return h.p
+}
+
+func (h *Handler) Message(key string, args ...interface{}) {
+	h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
+}
+
+func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
+	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
+	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
+	wallBlock := block.StainedGlass{Colour: color}
+	const wallLength, wallHeight = 15, 10
+
+	if newPos.X() >= areaMin.X() && newPos.X() <= areaMax.X() { // edges of the top and bottom walls (relative to South)
+		zCoord := areaMin.Z()
+		if newPos.Z() >= areaMax.Z() {
+			zCoord = areaMax.Z()
+		}
+		for horizontal := newPos.X() - wallLength; horizontal < newPos.X()+wallLength; horizontal++ {
+			if horizontal >= areaMin.X() && horizontal <= areaMax.X() {
+				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
+					blockPos := cube.Pos{horizontal, vertical, zCoord}
+					if blockReplaceable(h.p.World().Block(blockPos)) {
+						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
+						h.wallBlocksMu.Lock()
+						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
+						h.wallBlocksMu.Unlock()
+					}
+				}
+			}
+		}
+	}
+	if newPos.Z() >= areaMin.Z() && newPos.Z() <= areaMax.Z() { // edges of the left and right walls (relative to South)
+		xCoord := areaMin.X()
+		if newPos.X() >= areaMax.X() {
+			xCoord = areaMax.X()
+		}
+		for horizontal := newPos.Z() - wallLength; horizontal < newPos.Z()+wallLength; horizontal++ {
+			if horizontal >= areaMin.Z() && horizontal <= areaMax.Z() {
+				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
+					blockPos := cube.Pos{xCoord, vertical, horizontal}
+					if blockReplaceable(h.p.World().Block(blockPos)) {
+						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
+						h.wallBlocksMu.Lock()
+						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
+						h.wallBlocksMu.Unlock()
+					}
+				}
+			}
+		}
+	}
+}
+
+// clearWall clears the users walls or lowers the remaining duration.
+func (h *Handler) clearWall() {
+	h.wallBlocksMu.Lock()
+	for p, duration := range h.wallBlocks {
+		if duration <= 0 {
+			delete(h.wallBlocks, p)
+			h.s.ViewBlockUpdate(p, block.Air{}, 0)
+			h.p.ShowParticle(p.Vec3(), particle.BlockForceField{})
+			continue
+		}
+		h.wallBlocks[p] = duration - 0.1
+	}
+	h.wallBlocksMu.Unlock()
+}
+
+// blockReplaceable checks if the combat wall should replace a block.
+func blockReplaceable(b world.Block) bool {
+	_, air := b.(block.Air)
+	_, doubleFlower := b.(block.DoubleFlower)
+	_, flower := b.(block.Flower)
+	_, tallGrass := b.(block.TallGrass)
+	_, doubleTallGrass := b.(block.DoubleTallGrass)
+	_, deadBush := b.(block.DeadBush)
+	//_, cobweb := b.(block.Cobweb)
+	//_, sapling := b.(block.Sapling)
+	_, torch := b.(block.Torch)
+	_, fire := b.(block.Fire)
+	return air || tallGrass || deadBush || torch || fire || flower || doubleFlower || doubleTallGrass
 }
 
 type NoArmourAttackEntitySource struct {

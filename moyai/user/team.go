@@ -9,7 +9,7 @@ import (
 func BroadcastTeam(t data.Team, key string, args ...interface{}) {
 	for _, m := range t.Members {
 		if h, ok := Lookup(m.XUID); ok {
-			h.Player().Message(lang.Translatef(h.Player().Locale(), key, args))
+			h.Player().Message(lang.Translatef(h.Player().Locale(), key, args...))
 		}
 	}
 }
