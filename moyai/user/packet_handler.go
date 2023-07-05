@@ -30,9 +30,11 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	if !ok {
 		return
 	}
+	p := ph.p
+
 	switch pkt := pk.(type) {
 	case *packet.SetActorData:
-		t, ok := LookupRuntimeID(ph.p, pkt.EntityRuntimeID)
+		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
 			break
 		}
@@ -55,7 +57,8 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		tm, ok := data.LoadUserTeam(ph.p.Name())
+		u, _ := data.LoadUser(p.Name(), p.XUID())
+		tm, ok := u.Team()
 		if !ok {
 			return
 		}

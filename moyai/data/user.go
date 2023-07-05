@@ -5,6 +5,7 @@ import (
 	"github.com/moyai-network/moose/role"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/exp/slices"
 	"strings"
 	"sync"
 	"time"
@@ -64,6 +65,17 @@ type User struct {
 	SOTW bool
 	// PVP is the PVP timer of the user.
 	PVP *moose.CoolDown
+}
+
+func (u User) Team() (Team, bool) {
+	for _, t := range AllTeams() {
+		if slices.ContainsFunc(t.Members, func(member Member) bool {
+			return u.XUID == member.XUID
+		}) {
+			return t, true
+		}
+	}
+	return Team{}, false
 }
 
 // Stats contains all the stats of a user.
@@ -145,28 +157,5 @@ func SaveUser(u User) error {
 	usersMu.Lock()
 	users[u.Name] = u
 	usersMu.Unlock()
-	return nil
-}
-
-// Close closes and saves the data.
-func Close() error {
-	usersMu.Lock()
-	defer usersMu.Unlock()
-
-	for _, u := range users {
-		filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(u.Name)}, {"xuid": u.XUID}}}
-		update := bson.M{"$set": u}
-
-		res, err := userCollection.UpdateOne(ctx(), filter, update)
-		if err != nil {
-			return err
-		}
-
-		if res.MatchedCount == 0 {
-			_, err = userCollection.InsertOne(ctx(), u)
-			return err
-		}
-
-	}
 	return nil
 }

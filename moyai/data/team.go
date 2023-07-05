@@ -1,18 +1,49 @@
 package data
 
 import (
+	"context"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
 	teamCollection *mongo.Collection
+	teamsMu        sync.Mutex
+	teams          = map[string]Team{}
 )
+
+func init() {
+	var tms []Team
+	cursor, err := db.Collection("teams").Find(ctx(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = cursor.All(context.Background(), &tms)
+	if err != nil {
+		panic(err)
+	}
+
+	teamsMu.Lock()
+	for _, t := range tms {
+		teams[t.Name] = t
+	}
+	teamsMu.Unlock()
+}
+
+func AllTeams() []Team {
+	teamsMu.Lock()
+	defer teamsMu.Unlock()
+
+	return maps.Values(teams)
+}
 
 type Team struct {
 	// Name is the identifier for the team data.
@@ -47,6 +78,7 @@ func DefaultTeam(name string) Team {
 	return Team{
 		Name:        strings.ToLower(name),
 		DisplayName: name,
+		Focus:       Focus{Kind: -1},
 	}
 }
 
@@ -113,63 +145,21 @@ func (m Member) WithRank(n int) Member {
 	return m
 }
 
-func LoadUserTeam(name string) (Team, bool) {
-	filter := bson.M{"members.name": strings.ToLower(name)}
-	result := teamCollection.FindOne(ctx(), filter)
-	if err := result.Err(); err != nil {
-		return Team{}, false
-	}
-	var data Team
-	err := result.Decode(&data)
-	if err != nil {
-		return Team{}, false
-	}
-	return data, true
+func LoadTeam(name string) (Team, bool) {
+	teamsMu.Lock()
+	t, ok := teams[name]
+	teamsMu.Unlock()
+	return t, ok
 }
 
-func TeamExists(name string) bool {
-	filter := bson.M{"name": bson.M{"$eq": strings.ToLower(name)}}
-	result := teamCollection.FindOne(ctx(), filter)
-	if err := result.Err(); err != nil {
-		return false
-	}
-	var data Team
-	err := result.Decode(&data)
-	if err != nil {
-		return false
-	}
-	return true
+func DisbandTeam(t Team) {
+	teamsMu.Lock()
+	delete(teams, t.Name)
+	teamsMu.Unlock()
 }
 
-func LoadTeam(name string) (Team, error) {
-	filter := bson.M{"name": bson.M{"$eq": strings.ToLower(name)}}
-	result := teamCollection.FindOne(ctx(), filter)
-	if err := result.Err(); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return DefaultTeam(name), nil
-		}
-		return Team{}, err
-	}
-	var data Team
-	err := result.Decode(&data)
-	if err != nil {
-		return Team{}, err
-	}
-	return data, nil
-}
-
-func SaveTeam(t Team) error {
-	filter := bson.M{"name": bson.M{"$eq": t.Name}}
-	update := bson.M{"$set": t}
-
-	res, err := teamCollection.UpdateOne(ctx(), filter, update)
-	if err != nil {
-		return err
-	}
-
-	if res.MatchedCount == 0 {
-		_, err = teamCollection.InsertOne(ctx(), t)
-		return err
-	}
-	return nil
+func SaveTeam(t Team) {
+	teamsMu.Lock()
+	teams[t.Name] = t
+	teamsMu.Unlock()
 }

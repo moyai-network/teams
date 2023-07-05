@@ -100,6 +100,7 @@ func NewHandler(p *player.Player) *Handler {
 
 	u.DisplayName = p.Name()
 	u.Name = strings.ToLower(p.Name())
+	u.XUID = p.XUID()
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
@@ -158,7 +159,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 	if msg := strings.TrimSpace(*message); len(msg) > 0 {
 		msg = formatRegex.ReplaceAllString(msg, "")
-		if tm, ok := data.LoadUserTeam(h.p.Name()); ok {
+		if tm, ok := u.Team(); ok {
 			formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 			formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 			for _, t := range All() {

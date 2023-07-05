@@ -112,7 +112,8 @@ func canAttack(pl, target *player.Player) bool {
 	if target == nil || pl == nil {
 		return false
 	}
-	tm, ok := data.LoadUserTeam(pl.Name())
+	u, _ := data.LoadUser(pl.Name(), pl.XUID())
+	tm, ok := u.Team()
 	if !ok {
 		return true
 	}
@@ -139,7 +140,8 @@ func Nearby(p *player.Player, dist float64) []*player.Player {
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*player.Player {
 	var pl []*player.Player
-	tm, ok := data.LoadUserTeam(p.Name())
+	u, _ := data.LoadUser(p.Name(), p.XUID())
+	tm, ok := u.Team()
 	if !ok {
 		return []*player.Player{p}
 	}

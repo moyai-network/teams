@@ -22,10 +22,10 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 			return
 		}
 	case 1:
-		tm, err := data.LoadTeam(t.Focus.Value)
-		if err != nil {
-			t.Focus = data.Focus{}
-			_ = data.SaveTeam(t)
+		tm, ok := data.LoadTeam(t.Focus.Value)
+		if !ok {
+			t.Focus = data.Focus{Kind: -1}
+			data.SaveTeam(t)
 			return
 		}
 		for _, m := range tm.Members {
@@ -33,6 +33,8 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 				pl = append(pl, h.p)
 			}
 		}
+	case -1:
+		return
 	default:
 		panic("should never happen")
 	}

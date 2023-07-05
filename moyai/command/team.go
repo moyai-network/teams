@@ -38,7 +38,9 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	if _, ok = data.LoadUserTeam(p.Name()); ok {
+
+	u, _ := data.LoadUser(p.Name(), p.XUID())
+	if _, ok = u.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.already"))
 		return
 	}
@@ -57,12 +59,12 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if data.TeamExists(t.Name) {
+	if _, ok := data.LoadTeam(t.Name); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.exists"))
 		return
 	}
 	tm := data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.XUID(), p.Name()).WithRank(3))
-	_ = data.SaveTeam(tm)
+	data.SaveTeam(tm)
 
 	out.Print(lang.Translatef(p.Locale(), "team.create.success", tm.DisplayName))
 	user.Broadcast("team.create.success.broadcast", p.Name(), tm.DisplayName)
@@ -82,7 +84,8 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.self"))
 		return
 	}
-	tm, ok := data.LoadUserTeam(p.Name())
+	u, _ := data.LoadUser(p.Name(), p.XUID())
+	tm, ok := u.Team()
 	if !ok {
 		out.Error(lang.Translatef(p.Locale(), "user.team-less"))
 		return
@@ -95,15 +98,15 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, _ := data.LoadUser(target.Name(), target.XUID())
+	tg, _ := data.LoadUser(target.Name(), target.XUID())
 
-	if u.Invitations.Active(tm.Name) {
+	if tg.Invitations.Active(tm.Name) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.already", target.Name()))
 		return
 	}
-	u.Invitations.Set(tm.Name, time.Minute*5)
+	tg.Invitations.Set(tm.Name, time.Minute*5)
 
-	_ = data.SaveUser(u)
+	_ = data.SaveUser(tg)
 
 	user.BroadcastTeam(tm, "team.invite.success.broadcast", target.Name())
 	target.Message(lang.Translatef(target.Locale(), "team.invite.target", tm.DisplayName))
@@ -114,13 +117,14 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 	l := locale(src)
 
-	tm, err := data.LoadTeam(string(t.Team))
-	if err != nil {
+	tm, ok := data.LoadTeam(string(t.Team))
+	if !ok {
+		// TODO: error message
 		return
 	}
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
 
-	_ = data.SaveTeam(tm)
+	data.SaveTeam(tm)
 
 	p.Message(lang.Translatef(l, "team.join.target", tm.DisplayName))
 	user.BroadcastTeam(tm, "team.join.broadcast", p.Name())
