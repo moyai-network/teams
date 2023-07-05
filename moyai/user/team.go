@@ -15,16 +15,16 @@ func BroadcastTeam(t data.Team, key string, args ...interface{}) {
 }
 
 func FocusingPlayers(t data.Team) (pl []*player.Player) {
-	switch t.Focus.Kind {
-	case 0:
-		if h, ok := Lookup(t.Focus.Value); ok {
+	switch t.Focus.Type() {
+	case data.FocusTypePlayer():
+		if h, ok := Lookup(t.Focus.Value()); ok {
 			pl = append(pl, h.p)
 			return
 		}
-	case 1:
-		tm, ok := data.LoadTeam(t.Focus.Value)
+	case data.FocusTypeTeam():
+		tm, ok := data.LoadTeam(t.Focus.Value())
 		if !ok {
-			t.Focus = data.Focus{Kind: -1}
+			t.Focus = data.Focus{}
 			data.SaveTeam(t)
 			return
 		}
@@ -33,7 +33,7 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 				pl = append(pl, h.p)
 			}
 		}
-	case -1:
+	case data.FocusTypeNone():
 		return
 	default:
 		panic("should never happen")

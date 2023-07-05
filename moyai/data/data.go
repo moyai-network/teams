@@ -8,6 +8,68 @@ import (
 	"strings"
 )
 
+// Focus is the focus information for a team
+type Focus struct {
+	focusType FocusType // 0:Player ; 1: Team
+	value     string    // XUID: Player ; Name: Team
+}
+
+type FocusType struct {
+	n int
+}
+
+func FocusTypeNone() FocusType {
+	return FocusType{0}
+}
+
+func FocusTypePlayer() FocusType {
+	return FocusType{1}
+}
+
+func FocusTypeTeam() FocusType {
+	return FocusType{2}
+}
+
+// Value returns the string value associated with the focus.
+func (f Focus) Value() string {
+	return f.value
+}
+
+// Type returns the type of focus.
+func (f Focus) Type() FocusType {
+	return f.focusType
+}
+
+type focusData struct {
+	Kind  int
+	Value string
+}
+
+// UnmarshalBSON ...
+func (f *Focus) UnmarshalBSON(b []byte) error {
+	var d focusData
+	err := bson.Unmarshal(b, &d)
+	switch d.Kind {
+	case 0:
+		f.focusType = FocusTypeNone()
+	case 1:
+		f.focusType = FocusTypePlayer()
+	case 2:
+		f.focusType = FocusTypeTeam()
+	}
+	f.value = d.Value
+	return err
+}
+
+// MarshalBSON ...
+func (f Focus) MarshalBSON() ([]byte, error) {
+	d := focusData{
+		Kind:  f.focusType.n,
+		Value: f.value,
+	}
+	return bson.Marshal(d)
+}
+
 func ctx() context.Context {
 	return context.Background()
 }

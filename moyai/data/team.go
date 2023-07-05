@@ -68,17 +68,11 @@ type Team struct {
 	Focus Focus
 }
 
-// Focus is the focus information for a team
-type Focus struct {
-	Kind  int    // 0:Player ; 1: Team
-	Value string // XUID: Player ; Name: Team
-}
-
 func DefaultTeam(name string) Team {
 	return Team{
 		Name:        strings.ToLower(name),
 		DisplayName: name,
-		Focus:       Focus{Kind: -1},
+		Focus:       Focus{focusType: FocusTypeNone()},
 	}
 }
 

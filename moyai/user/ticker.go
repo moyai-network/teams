@@ -58,9 +58,9 @@ func startTicker(h *Handler) {
 			sb.RemovePadding()
 
 			u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
-			if tm, ok := u.Team(); ok && tm.Focus.Kind == 1 {
+			if tm, ok := u.Team(); ok && tm.Focus.Type() == data.FocusTypeTeam() {
 				if foc := FocusingPlayers(tm); len(foc) > 0 {
-					if ft, ok := data.LoadTeam(tm.Focus.Value); ok {
+					if ft, ok := data.LoadTeam(tm.Focus.Value()); ok {
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTR))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
