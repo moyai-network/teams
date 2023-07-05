@@ -28,14 +28,20 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	if !ok {
 		return
 	}
-	_ = p.Handler().(*Handler)
+	_, ok = p.Handler().(*Handler)
+	if !ok {
+		return
+	}
 	switch pkt := pk.(type) {
 	case *packet.SetActorData:
 		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
 			break
 		}
-		target := t.Handler().(*Handler)
+		target, ok := t.Handler().(*Handler)
+		if !ok {
+			return
+		}
 
 		meta := protocol.EntityMetadata(pkt.EntityMetadata)
 		meta[protocol.EntityDataKeyName] = text.Colourf("<red>%s</red>", t.Name())

@@ -88,6 +88,8 @@ func NewHandler(p *player.Player) *Handler {
 		stuck: moose.NewTeleportation(func(t *moose.Teleportation) {
 			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
 		}),
+
+		close: make(chan struct{}, 0),
 	}
 
 	s := player_session(p)
@@ -259,6 +261,7 @@ func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
 }
 
 func (h *Handler) HandleQuit() {
+	h.close <- struct{}{}
 	p := h.p
 
 	u, _ := data.LoadUser(p.Name(), p.XUID())
@@ -268,8 +271,6 @@ func (h *Handler) HandleQuit() {
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
-
-	h.close <- struct{}{}
 }
 
 type NoArmourAttackEntitySource struct {
