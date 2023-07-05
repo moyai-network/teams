@@ -2,9 +2,12 @@ package main
 
 import (
 	"github.com/bedrock-gophers/packethandler"
+	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"math"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -58,7 +61,16 @@ func main() {
 	}()
 
 	srv := c.New()
-	srv.CloseOnProgramEnd()
+
+	ch := make(chan os.Signal, 2)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-ch
+		if err := srv.Close(); err != nil {
+			log.Errorf("close server: %v", err)
+		}
+		_ = data.Close()
+	}()
 
 	w := srv.World()
 	w.StopWeatherCycle()

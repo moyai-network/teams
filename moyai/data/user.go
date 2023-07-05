@@ -1,17 +1,20 @@
 package data
 
 import (
-	"errors"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/role"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
 	userCollection *mongo.Collection
+
+	usersMu sync.Mutex
+	users   map[string]User
 )
 
 // User is a structure containing the data of an offline user. It also contains useful functions that can be used
@@ -95,14 +98,13 @@ func DefaultUser(xuid, name string) User {
 
 // LoadUser loads a user using the given name or xuid.
 func LoadUser(name string, xuid string) (User, error) {
-	filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(name)}, {"xuid": xuid}}}
-	if len(xuid) == 0 {
-		filter = bson.M{"name": strings.ToLower(name)}
-	} else if len(name) == 0 {
-		filter = bson.M{"xuid": strings.ToLower(xuid)}
-	} else if len(name) == 0 && len(xuid) == 0 {
-		return User{}, errors.New("no name or xuid was provided")
+	usersMu.Lock()
+	defer usersMu.Unlock()
+
+	if u, ok := users[name]; ok {
+		return u, nil
 	}
+	filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(name)}, {"xuid": xuid}}}
 
 	result := userCollection.FindOne(ctx(), filter)
 	if err := result.Err(); err != nil {
@@ -112,6 +114,7 @@ func LoadUser(name string, xuid string) (User, error) {
 		return User{}, err
 	}
 	var u User
+
 	u.DeathBan = moose.NewCoolDown()
 	u.PVP = moose.NewCoolDown()
 	u.Invitations = moose.NewMappedCoolDown[string]()
@@ -132,23 +135,37 @@ func LoadUser(name string, xuid string) (User, error) {
 			delete(u.Kits, key)
 		}
 	}
+	users[u.Name] = u
 
 	return u, nil
 }
 
 // SaveUser saves the provided user into the database.
 func SaveUser(u User) error {
-	filter := bson.M{"name": bson.M{"$eq": u.Name}}
-	update := bson.M{"$set": u}
+	usersMu.Lock()
+	users[u.Name] = u
+	usersMu.Unlock()
+	return nil
+}
 
-	res, err := userCollection.UpdateOne(ctx(), filter, update)
-	if err != nil {
-		return err
-	}
+// Close closes and saves the data.
+func Close() error {
+	usersMu.Lock()
+	defer usersMu.Unlock()
 
-	if res.MatchedCount == 0 {
-		_, err = userCollection.InsertOne(ctx(), u)
-		return err
+	for _, u := range users {
+		filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(u.Name)}, {"xuid": u.XUID}}}
+		update := bson.M{"$set": u}
+
+		res, err := userCollection.UpdateOne(ctx(), filter, update)
+		if err != nil {
+			return err
+		}
+
+		if res.MatchedCount == 0 {
+			_, err = userCollection.InsertOne(ctx(), u)
+			return err
+		}
 	}
 	return nil
 }

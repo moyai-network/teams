@@ -40,7 +40,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		meta := protocol.EntityMetadata(pkt.EntityMetadata)
 		meta[protocol.EntityDataKeyName] = text.Colourf("<red>%s</red>", t.Name())
 
-		if target.archerTag.Active() {
+		if target.archer.Active() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}

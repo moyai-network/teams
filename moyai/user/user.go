@@ -13,6 +13,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
+	"math"
 	"strings"
 	"sync"
 	_ "unsafe"
@@ -99,7 +100,7 @@ func SetClass(p *player.Player, c moose.Class) {
 		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
 			addEffects(h.p, c.Effects()...)
 		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}) {
-			h.bardEnergy.Store(0)
+			h.energy.Store(0)
 			removeEffects(h.p, lastClass.Effects()...)
 		}
 		h.class.Store(c)
@@ -118,7 +119,38 @@ func canAttack(pl, target *player.Player) bool {
 	return !slices.ContainsFunc(tm.Members, func(member data.Member) bool {
 		return strings.EqualFold(member.Name, target.Name())
 	})
+}
 
+// Nearby returns the nearby users of a certain distance from the user
+func Nearby(p *player.Player, dist float64) []*player.Player {
+	var pl []*player.Player
+	for _, e := range p.World().Entities() {
+		if e.Position().ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
+			return math.Max(f, f2)-math.Min(f, f2) < dist
+		}) {
+			if target, ok := e.(*player.Player); ok {
+				pl = append(pl, target)
+			}
+		}
+	}
+	return pl
+}
+
+// NearbyAllies returns the nearby allies of a certain distance from the user
+func NearbyAllies(p *player.Player, dist float64) []*player.Player {
+	var pl []*player.Player
+	tm, ok := data.LoadUserTeam(p.Name())
+	if !ok {
+		return []*player.Player{p}
+	}
+
+	for _, target := range Nearby(p, dist) {
+		slices.ContainsFunc(tm.Members, func(member data.Member) bool {
+			return member.XUID == target.XUID()
+		})
+	}
+
+	return pl
 }
 
 // noinspection ALL

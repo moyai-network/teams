@@ -1,6 +1,8 @@
 package user
 
 import (
+	"github.com/df-mc/dragonfly/server/player/scoreboard"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math"
 	"strings"
 	"time"
@@ -44,25 +46,48 @@ type Handler struct {
 	p       *player.Player
 	logTime time.Time
 
-	pearlCooldown *moose.CoolDown
-	rogueCooldown *moose.CoolDown
+	pearl       *moose.CoolDown
+	rogue       *moose.CoolDown
+	goldenApple *moose.CoolDown
 
-	class      atomic.Value[moose.Class]
-	bardEnergy atomic.Value[float64]
+	// TODO: implement custom items
+	//abilities moose.MappedCoolDown[any]
 
-	combatTag *moose.Tag
-	archerTag *moose.Tag
+	class  atomic.Value[moose.Class]
+	energy atomic.Value[float64]
+
+	combat *moose.Tag
+	archer *moose.Tag
+
+	logout *moose.Teleportation
+	stuck  *moose.Teleportation
+	home   *moose.Teleportation
+
+	lastScoreBoard atomic.Value[*scoreboard.Scoreboard]
+
+	close chan struct{}
 }
 
 func NewHandler(p *player.Player) *Handler {
 	ha := &Handler{
 		p: p,
 
-		pearlCooldown: moose.NewCoolDown(),
-		rogueCooldown: moose.NewCoolDown(),
+		pearl:       moose.NewCoolDown(),
+		rogue:       moose.NewCoolDown(),
+		goldenApple: moose.NewCoolDown(),
 
-		combatTag: moose.NewTag(nil, nil),
-		archerTag: moose.NewTag(nil, nil),
+		combat: moose.NewTag(nil, nil),
+		archer: moose.NewTag(nil, nil),
+
+		home: moose.NewTeleportation(func(t *moose.Teleportation) {
+			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
+		}),
+		logout: moose.NewTeleportation(func(t *moose.Teleportation) {
+			p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
+		}),
+		stuck: moose.NewTeleportation(func(t *moose.Teleportation) {
+			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
+		}),
 	}
 
 	s := player_session(p)
@@ -101,7 +126,7 @@ func NewHandler(p *player.Player) *Handler {
 		}
 	}
 
-	go sendBoard(p)
+	go startTicker(ha)
 
 	return ha
 }
@@ -110,7 +135,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, _ := h.p.HeldItems()
 	switch held.Item().(type) {
 	case item.EnderPearl:
-		if cd := h.pearlCooldown; cd.Active() {
+		if cd := h.pearl; cd.Active() {
 			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Ender Pearl", cd.Remaining().Seconds()))
 			ctx.Cancel()
 		} else {
@@ -148,7 +173,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 		}
 		if ha := target.Handler().(*Handler); !class.Compare(h.class.Load(), class.Archer{}) && class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
 			ctx.Cancel()
-			ha.archerTag.Set(time.Second * 10)
+			ha.archer.Set(time.Second * 10)
 
 			dist := h.p.Position().Sub(target.Position()).Len()
 			d := math.Round(dist)
@@ -166,8 +191,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 	}
 
 	if canAttack(h.p, target) {
-		target.Handler().(*Handler).combatTag.Set(time.Second * 20)
-		h.combatTag.Set(time.Second * 20)
+		target.Handler().(*Handler).combat.Set(time.Second * 20)
+		h.combat.Set(time.Second * 20)
 	}
 }
 
@@ -203,7 +228,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 
 	held, left := h.p.HeldItems()
 	if s, ok := held.Item().(item.Sword); ok && s.Tier == item.ToolTierGold && class.Compare(h.class.Load(), class.Rogue{}) && t.Rotation().Direction() == h.p.Rotation().Direction() {
-		cd := h.rogueCooldown
+		cd := h.rogue
 		w := h.p.World()
 		if cd.Active() {
 			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Rogue", cd.Remaining().Seconds()))
@@ -225,8 +250,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		}
 	}
 
-	t.Handler().(*Handler).combatTag.Set(time.Second * 20)
-	h.combatTag.Set(time.Second * 20)
+	t.Handler().(*Handler).combat.Set(time.Second * 20)
+	h.combat.Set(time.Second * 20)
 }
 
 func (h *Handler) HandleChat(ctx *event.Context, msg *string) {
@@ -243,6 +268,8 @@ func (h *Handler) HandleQuit() {
 	playersMu.Lock()
 	delete(players, h.p.XUID())
 	playersMu.Unlock()
+
+	h.close <- struct{}{}
 }
 
 type NoArmourAttackEntitySource struct {
