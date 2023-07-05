@@ -40,3 +40,13 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 	}
 	return
 }
+
+func TeamOnlineCount(t data.Team) int {
+	var count int
+	for _, m := range t.Members {
+		if _, ok := Lookup(m.XUID); ok {
+			count++
+		}
+	}
+	return count
+}

@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/teams/moyai/data"
 	"strings"
@@ -55,17 +56,21 @@ func startTicker(h *Handler) {
 			sb := scoreboard.New(lang.Translatef(l, "scoreboard.title"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
-			/*if tm, ok := data.LoadUserTeam(h.p.Name()); ok {
-				if ft, ok := tm.FocusedTeam(); ok {
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName()))
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", len((Team{ft}).Users()), ft.PlayerCount()))
-					if h, ok := ft.Home(); ok {
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", h.X(), h.Z()))
+
+			u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+			if tm, ok := u.Team(); ok && tm.Focus.Kind == 1 {
+				if foc := FocusingPlayers(tm); len(foc) > 0 {
+					if ft, ok := data.LoadTeam(tm.Focus.Value); ok {
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTR))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
+						if hm := ft.Home; hm != (mgl64.Vec3{}) {
+							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
+						}
+						_, _ = sb.WriteString("§3")
 					}
-					_, _ = sb.WriteString("§3")
 				}
-			}*/
+			}
 
 			//if d, ok := sotw.Running(); ok && u.SOTW() {
 			//	_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
