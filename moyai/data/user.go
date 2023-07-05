@@ -101,7 +101,7 @@ func LoadUser(name string, xuid string) (User, error) {
 	usersMu.Lock()
 	defer usersMu.Unlock()
 
-	if u, ok := users[name]; ok {
+	if u, ok := users[strings.ToLower(name)]; ok {
 		return u, nil
 	}
 	filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(name)}, {"xuid": xuid}}}
@@ -166,6 +166,7 @@ func Close() error {
 			_, err = userCollection.InsertOne(ctx(), u)
 			return err
 		}
+
 	}
 	return nil
 }

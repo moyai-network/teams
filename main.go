@@ -66,10 +66,10 @@ func main() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
+		_ = data.Close()
 		if err := srv.Close(); err != nil {
 			log.Errorf("close server: %v", err)
 		}
-		_ = data.Close()
 	}()
 
 	w := srv.World()
