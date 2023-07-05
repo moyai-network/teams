@@ -3,12 +3,15 @@ package user
 import (
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/oomph-ac/oomph/player"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/team"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"golang.org/x/exp/slices"
 	_ "unsafe"
 )
 
@@ -48,7 +51,28 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			}
 			meta[protocol.EntityDataKeyName] = text.Colourf("<yellow>%s</yellow>", t.Name())
 		}
-		pkt.EntityMetadata = meta
+
+		defer func() {
+			pkt.EntityMetadata = meta
+		}()
+
+		tm, ok := data.LoadUserTeam(ph.p.Name())
+		if !ok {
+			return
+		}
+
+		if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
+			return member.XUID == target.p.XUID()
+		}) {
+			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
+				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
+			}
+			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
+		} else if slices.ContainsFunc(team.FocusingPlayers(tm), func(p *player.Player) bool {
+			return p.XUID() == target.p.XUID()
+		}) {
+			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
+		}
 	}
 }
 
