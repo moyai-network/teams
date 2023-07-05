@@ -192,6 +192,15 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		return
 	}
 
+	arm := h.p.Armour()
+	for _, a := range arm.Slots() {
+		for _, e := range a.Enchantments() {
+			if att, ok := e.Type().(ench.AttackEnchantment); ok {
+				att.AttackEntity(h.p, t)
+			}
+		}
+	}
+
 	held, left := h.p.HeldItems()
 	if s, ok := held.Item().(item.Sword); ok && s.Tier == item.ToolTierGold && class.Compare(h.class.Load(), class.Rogue{}) && t.Rotation().Direction() == h.p.Rotation().Direction() {
 		cd := h.rogueCooldown
