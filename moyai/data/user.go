@@ -14,7 +14,7 @@ var (
 	userCollection *mongo.Collection
 
 	usersMu sync.Mutex
-	users   map[string]User
+	users   = map[string]User{}
 )
 
 // User is a structure containing the data of an offline user. It also contains useful functions that can be used
