@@ -14,18 +14,22 @@ type Focus struct {
 	value     string    // XUID: Player ; Name: Team
 }
 
+// FocusType is the type of focus.
 type FocusType struct {
 	n int
 }
 
+// FocusTypeNone is a type for when not focusing on anyone.
 func FocusTypeNone() FocusType {
 	return FocusType{0}
 }
 
+// FocusTypePlayer is a type for when focusing one specific player.
 func FocusTypePlayer() FocusType {
 	return FocusType{1}
 }
 
+// FocusTypeTeam is a type for when focusing another team.
 func FocusTypeTeam() FocusType {
 	return FocusType{2}
 }
@@ -40,6 +44,7 @@ func (f Focus) Type() FocusType {
 	return f.focusType
 }
 
+// focusData is a struct used for encoding/decoding focus data.
 type focusData struct {
 	Kind  int
 	Value string
@@ -70,6 +75,7 @@ func (f Focus) MarshalBSON() ([]byte, error) {
 	return bson.Marshal(d)
 }
 
+// ctx returns a context.Context.
 func ctx() context.Context {
 	return context.Background()
 }
