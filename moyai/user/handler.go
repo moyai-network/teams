@@ -145,11 +145,9 @@ func NewHandler(p *player.Player) *Handler {
 	}
 
 	for _, e := range effects {
-		typ := e.Type()
-		if hasEffectLevel(p, e) {
-			p.RemoveEffect(typ)
-		}
+		p.AddEffect(e)
 	}
+
 	go startTicker(ha)
 
 	return ha
