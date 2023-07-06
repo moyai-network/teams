@@ -6,6 +6,7 @@ import (
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )
@@ -27,7 +28,7 @@ func allow(src cmd.Source, console bool, roles ...moose.Role) bool {
 	if roles == nil {
 		return true
 	}
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		return false
 	}

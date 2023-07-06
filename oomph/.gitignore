@@ -1,0 +1,10 @@
+.idea/
+config.toml
+token.tok
+tests/*
+tests2/*
+survival_proxy/*
+players/*
+world/*
+.DS_Store
+.fleet/

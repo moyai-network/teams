@@ -1,5 +1,5 @@
 [Network]
-Address = ':19132'
+Address = ':50001'
 
 [Server]
 Name = ''

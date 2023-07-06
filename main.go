@@ -1,21 +1,19 @@
 package main
 
 import (
-	"github.com/bedrock-gophers/packethandler"
-	"github.com/moyai-network/moose/class"
-	"github.com/moyai-network/teams/moyai/data"
-	ent "github.com/moyai-network/teams/moyai/entity"
-	"github.com/sandertv/gophertunnel/minecraft"
 	"math"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/bedrock-gophers/packethandler"
+	"github.com/moyai-network/teams/moyai/data"
+	ent "github.com/moyai-network/teams/moyai/entity"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
 	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -25,6 +23,8 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
+
+	proxypacket "github.com/paroxity/portal/socket/packet"
 )
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	pk := packethandler.NewPacketListener()
-	pk.Listen(&c, ":19132", []minecraft.Protocol{})
+	pk.Listen(":19134", &c, true)
 	go func() {
 		for {
 			p, err := pk.Accept()
@@ -100,11 +100,29 @@ func main() {
 }
 
 func accept(p *player.Player) {
-	p.Armour().Handle(user.NewArmourHandler(p))
-	p.Handle(user.NewHandler(p))
-	user.SetClass(p, class.Resolve(p))
+	config, _ := readConfig()
+
+	if config.Proxy.Enabled {
+		p.Handle(user.NewHandler(p, p.XUID()))
+	} else {
+		var xuid string
+		moyai.Socket().WritePacket(&proxypacket.PlayerInfoRequest{
+			PlayerUUID: p.UUID(),
+		})
+		logrus.Println("ALLAH1")
+		for {
+			logrus.Println("ALLAH2")
+			pk, _ := moyai.Socket().ReadPacket()
+			if pk, ok := pk.(*proxypacket.PlayerInfoResponse); ok {
+				xuid = pk.XUID
+				break
+			}
+			continue
+		}
+
+		p.Handle(user.NewHandler(p, xuid))
+	}
 	p.SetGameMode(world.GameModeSurvival)
-	p.Teleport(mgl64.Vec3{0, 74, 0})
 }
 
 func registerCommands() {

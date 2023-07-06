@@ -1,14 +1,15 @@
 package form
 
 import (
-	"github.com/hako/durafmt"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 	"math/rand"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/hako/durafmt"
+	"github.com/moyai-network/moose"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/form"
@@ -49,13 +50,13 @@ func NewBlacklist() form.Form {
 // Submit ...
 func (b blacklist) Submit(s form.Submitter) {
 	p := s.(*player.Player)
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		// User somehow left midway through the form.
 		return
 	}
 
-	h, ok := user.Lookup(p.XUID())
+	h, ok := user.Lookup(p.Name())
 	if !ok {
 		// User somehow left midway through the form.
 		return
@@ -108,7 +109,7 @@ func (b blacklist) Submit(s form.Submitter) {
 			return
 		}
 
-		tH, ok := user.Lookup(t.XUID)
+		tH, ok := user.Lookup(t.Name)
 		t.Ban = punishment
 
 		if ok {

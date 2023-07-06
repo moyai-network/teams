@@ -2,27 +2,27 @@ package user
 
 import (
 	"fmt"
+	"math"
+	"strings"
+	"sync"
+	_ "unsafe"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"math"
-	"strings"
-	"sync"
-	_ "unsafe"
 )
 
 var (
-	playersMu sync.Mutex
-	players   = map[string]*Handler{}
+	playersMu   sync.Mutex
+	players     = map[string]*Handler{}
+	playersXUID = map[string]string{}
 )
 
 // All returns a slice of all the users.
@@ -54,10 +54,10 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 }
 
 // Lookup looks up the Handler of a XUID passed.
-func Lookup(xuid string) (*Handler, bool) {
+func Lookup(name string) (*Handler, bool) {
 	playersMu.Lock()
 	defer playersMu.Unlock()
-	ha, ok := players[xuid]
+	ha, ok := players[name]
 	return ha, ok
 }
 
@@ -68,7 +68,8 @@ func Alert(s cmd.Source, key string, args ...any) {
 		return
 	}
 	for _, h := range All() {
-		if u, _ := data.LoadUser(h.p.Name(), p.XUID()); role.Staff(u.Roles.Highest()) {
+
+		if u, _ := data.LoadUser(h.p.Name(), p.Handler().(*Handler).XUID()); role.Staff(u.Roles.Highest()) {
 			h.p.Message(lang.Translatef(h.p.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.p.Locale(), key), args...)))
 		}
 	}
@@ -95,20 +96,14 @@ func removeEffects(p *player.Player, effects ...effect.Effect) {
 	}
 }
 
-// SetClass sets the class of the user.
-func SetClass(p *player.Player, c moose.Class) {
-	h := p.Handler().(*Handler)
-
-	lastClass := h.class.Load()
-	if lastClass != c {
-		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-			addEffects(h.p, c.Effects()...)
-		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-			h.energy.Store(0)
-			removeEffects(h.p, lastClass.Effects()...)
+// hasEffectLevel returns whether the user has the effect or not.
+func hasEffectLevel(p *player.Player, e effect.Effect) bool {
+	for _, ef := range p.Effects() {
+		if e.Type() == ef.Type() && e.Level() == ef.Level() {
+			return true
 		}
-		h.class.Store(c)
 	}
+	return false
 }
 
 // canAttack returns true if the given players can attack each other.
@@ -121,7 +116,7 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	u, _ := data.LoadUser(pl.Name(), pl.XUID())
+	u, _ := data.LoadUser(pl.Name(), pl.Handler().(*Handler).XUID())
 	tm, ok := u.Team()
 	if !ok {
 		return true
@@ -149,7 +144,7 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
 	tm, ok := u.Team()
 	if !ok {
 		return []*Handler{p.Handler().(*Handler)}
@@ -170,7 +165,7 @@ func NearbyCombat(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 
 	for _, target := range Nearby(p, dist) {
-		t, _ := data.LoadUser(target.p.Name(), target.p.XUID())
+		t, _ := data.LoadUser(target.p.Name(), target.p.Handler().(*Handler).XUID())
 		if !t.PVP.Active() {
 			pl = append(pl, target)
 		}

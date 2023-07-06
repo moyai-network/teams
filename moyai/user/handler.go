@@ -1,6 +1,13 @@
 package user
 
 import (
+	"math"
+	"math/rand"
+	"regexp"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player/chat"
@@ -11,16 +18,9 @@ import (
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
-	"math"
-	"math/rand"
-	"regexp"
-	"strings"
-	"sync"
-	"time"
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -55,6 +55,7 @@ type Handler struct {
 	player.NopHandler
 	s       *session.Session
 	p       *player.Player
+	xuid    string
 	logTime time.Time
 
 	pearl       *moose.CoolDown
@@ -67,6 +68,7 @@ type Handler struct {
 
 	abilities moose.MappedCoolDown[any]
 
+	armour atomic.Value[[4]item.Stack]
 	class  atomic.Value[moose.Class]
 	energy atomic.Value[float64]
 
@@ -85,13 +87,13 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
-	addEffect map[effect.Type]chan effect.Effect
-	close     chan struct{}
+	close chan struct{}
 }
 
-func NewHandler(p *player.Player) *Handler {
+func NewHandler(p *player.Player, xuid string) *Handler {
 	ha := &Handler{
-		p: p,
+		p:    p,
+		xuid: xuid,
 
 		pearl:       moose.NewCoolDown(),
 		rogue:       moose.NewCoolDown(),
@@ -118,7 +120,7 @@ func NewHandler(p *player.Player) *Handler {
 	}
 
 	s := player_session(p)
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), xuid)
 
 	u.DisplayName = p.Name()
 	u.Name = strings.ToLower(p.Name())
@@ -135,21 +137,8 @@ func NewHandler(p *player.Player) *Handler {
 
 	playersMu.Lock()
 	players[p.XUID()] = ha
+	playersXUID[p.Name()] = xuid
 	playersMu.Unlock()
-
-	var effects []effect.Effect
-
-	for _, it := range p.Armour().Slots() {
-		for _, e := range it.Enchantments() {
-			if enc, ok := e.Type().(ench.EffectEnchantment); ok {
-				effects = append(effects, enc.Effect())
-			}
-		}
-	}
-
-	for _, e := range effects {
-		p.AddEffect(e)
-	}
 
 	go startTicker(ha)
 
@@ -162,7 +151,7 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
-	u, err := data.LoadUser(h.p.Name(), h.p.XUID())
+	u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	if err != nil {
 		return
 	}
@@ -183,7 +172,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 			formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 			for _, t := range All() {
 				if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-					return member.XUID == t.p.XUID()
+					return member.XUID == t.p.Handler().(*Handler).XUID()
 				}) {
 					t.p.Message(formatTeam)
 				} else {
@@ -210,7 +199,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 	}
 
-	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	switch h.class.Load().(type) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
@@ -230,7 +219,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
-				m.AddEffect(e)
+				m.p.AddEffect(e)
 			}
 
 			lvl, _ := roman.Itor(e.Level())
@@ -256,7 +245,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
-				m.AddEffect(e)
+				m.p.AddEffect(e)
 			}
 
 			lvl, _ := roman.Itor(e.Level())
@@ -354,14 +343,14 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 
 	for _, t := range data.Teams() {
 		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
-			return member.XUID == h.p.XUID()
+			return member.XUID == h.p.Handler().(*Handler).XUID()
 		}) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
 		}
-		u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+		u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
@@ -378,14 +367,14 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 
 	for _, t := range data.Teams() {
 		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
-			return member.XUID == h.p.XUID()
+			return member.XUID == h.p.Handler().(*Handler).XUID()
 		}) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
 		}
-		u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+		u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
@@ -410,7 +399,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 	}
 
-	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	switch it := i.Item().(type) {
 	case item.Hoe:
 		ctx.Cancel()
@@ -506,13 +495,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	}
 }
 
-func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
-	dur := i.Durability()
-	if _, ok := i.Item().(item.Armour); ok && dur != -1 && dur-n <= 0 {
-		SetClass(h.p, class.Resolve(h.p))
-	}
-}
-
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
 	*force, *height = 0.394, 0.394
 	t, ok := e.(*player.Player)
@@ -568,17 +550,17 @@ func (h *Handler) HandleQuit() {
 	h.close <- struct{}{}
 	p := h.p
 
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 
 	playersMu.Lock()
-	delete(players, h.p.XUID())
+	delete(players, h.p.Handler().(*Handler).XUID())
 	playersMu.Unlock()
 }
 
 func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
-	u, _ := data.LoadUser(h.p.Name(), h.p.XUID())
+	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	p := h.p
 	w := p.World()
 
@@ -670,49 +652,12 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 }
 
-func (h *Handler) AddEffect(e effect.Effect) {
-	h.p.AddEffect(e)
-	h.addEffect[e.Type()] <- e
-
-	lastClass := h.class.Load()
-	go func() {
-		select {
-		case <-time.After(e.Duration()):
-			for _, it := range h.p.Armour().Slots() {
-				var effects []effect.Effect
-
-				for _, e := range it.Enchantments() {
-					if enc, ok := e.Type().(ench.EffectEnchantment); ok {
-						effects = append(effects, enc.Effect())
-					}
-				}
-
-				for _, e := range effects {
-					h.p.AddEffect(e)
-				}
-
-				c := h.class.Load()
-				if lastClass != c {
-					if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-						addEffects(h.p, c.Effects()...)
-					} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-						h.energy.Store(0)
-						removeEffects(h.p, lastClass.Effects()...)
-					}
-					h.class.Store(c)
-				}
-			}
-		case ef := <-h.addEffect[e.Type()]:
-			currEff, _ := h.p.Effect(ef.Type())
-			if ef.Level() > currEff.Level() || ef.Duration() > currEff.Duration() {
-				return
-			}
-		}
-	}()
-}
-
 func (h *Handler) Player() *player.Player {
 	return h.p
+}
+
+func (h *Handler) XUID() string {
+	return h.xuid
 }
 
 func (h *Handler) Message(key string, args ...interface{}) {

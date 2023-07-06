@@ -17,6 +17,12 @@ type Config struct {
 		// End is the date the season ends.
 		End string
 	}
+
+	Proxy struct {
+		Enabled bool
+		Name    string
+		Secret  string
+	}
 }
 
 // DefaultConfig returns a default config for the server.

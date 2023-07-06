@@ -1,6 +1,9 @@
 package command
 
 import (
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
@@ -10,8 +13,6 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"go.mongodb.org/mongo-driver/bson"
-	"strings"
-	"time"
 )
 
 // RoleAdd is a command to add a role to a player.
@@ -72,7 +73,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		t, err = data.LoadUser(tP.Name(), tP.XUID())
+		t, err = data.LoadUser(tP.Name(), tP.Handler().(*user.Handler).XUID())
 		if err != nil {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
@@ -82,7 +83,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			return
 		}
 	} else {
-		t, err = data.LoadUser(p.Name(), p.XUID())
+		t, err = data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -91,13 +92,13 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(a.Role))
 	if isPlayer {
-		u, err := data.LoadUser(p.Name(), p.XUID())
+		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
 		if !u.Roles.Contains(role.Operator{}) {
-			if strings.EqualFold(p.XUID(), t.XUID) {
+			if strings.EqualFold(p.Handler().(*user.Handler).XUID(), t.XUID) {
 				o.Error(lang.Translatef(l, "command.role.modify.self"))
 				return
 			}
@@ -167,7 +168,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		t, err = data.LoadUser(tP.Name(), tP.XUID())
+		t, err = data.LoadUser(tP.Name(), tP.Handler().(*user.Handler).XUID())
 		if err != nil {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
@@ -177,7 +178,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			return
 		}
 	} else {
-		t, err = data.LoadUser(p.Name(), p.XUID())
+		t, err = data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -186,13 +187,13 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(d.Role))
 	if isPlayer {
-		u, err := data.LoadUser(p.Name(), p.XUID())
+		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
 		if !u.Roles.Contains(role.Operator{}) {
-			if strings.EqualFold(p.XUID(), t.XUID) {
+			if strings.EqualFold(p.Handler().(*user.Handler).XUID(), t.XUID) {
 				o.Error(lang.Translatef(l, "command.role.modify.self"))
 				return
 			}
@@ -224,7 +225,7 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(a.Role))
 	if p, ok := s.(*player.Player); ok {
-		u, err := data.LoadUser(p.Name(), p.XUID())
+		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -272,7 +273,7 @@ func (d RoleRemoveOffline) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(d.Role))
 	if p, ok := s.(*player.Player); ok {
-		u, err := data.LoadUser(p.Name(), p.XUID())
+		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -355,7 +356,7 @@ func (roles) Type() string {
 func (roles) Options(s cmd.Source) (roles []string) {
 	p, disallow := s.(*player.Player)
 	if disallow {
-		u, err := data.LoadUser(p.Name(), p.XUID())
+		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 		if err == nil {
 			disallow = !u.Roles.Contains(role.Operator{})
 		}

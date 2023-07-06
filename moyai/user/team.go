@@ -8,7 +8,7 @@ import (
 
 func BroadcastTeam(t data.Team, key string, args ...interface{}) {
 	for _, m := range t.Members {
-		if h, ok := Lookup(m.XUID); ok {
+		if h, ok := Lookup(m.Name); ok {
 			h.Player().Message(lang.Translatef(h.Player().Locale(), key, args...))
 		}
 	}
@@ -29,7 +29,7 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 			return
 		}
 		for _, m := range tm.Members {
-			if h, ok := Lookup(m.XUID); ok {
+			if h, ok := Lookup(m.Name); ok {
 				pl = append(pl, h.p)
 			}
 		}
@@ -44,7 +44,7 @@ func FocusingPlayers(t data.Team) (pl []*player.Player) {
 func TeamOnlineCount(t data.Team) int {
 	var count int
 	for _, m := range t.Members {
-		if _, ok := Lookup(m.XUID); ok {
+		if _, ok := Lookup(m.Name); ok {
 			count++
 		}
 	}

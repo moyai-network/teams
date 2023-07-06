@@ -2,12 +2,14 @@ package command
 
 import (
 	"fmt"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/user"
 )
 
 // TeleportToPos is a command that teleports the user to a position.
@@ -63,7 +65,7 @@ func (tp TeleportTargetsToTarget) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return
@@ -94,7 +96,7 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return

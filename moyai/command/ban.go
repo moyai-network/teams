@@ -1,9 +1,10 @@
 package command
 
 import (
-	"github.com/moyai-network/moose"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/moose"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -132,7 +133,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.ban.self"))
 		return
 	}
-	u, err := data.LoadUser(t.Name(), t.XUID())
+	u, err := data.LoadUser(t.Name(), t.Handler().(*user.Handler).XUID())
 	if err != nil {
 		return
 	}

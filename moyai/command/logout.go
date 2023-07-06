@@ -1,10 +1,11 @@
 package command
 
 import (
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/user"
-	"time"
 )
 
 type Logout struct{}
@@ -15,7 +16,7 @@ func (l Logout) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	h, ok := user.Lookup(p.XUID())
+	h, ok := user.Lookup(p.Name())
 	if !ok {
 		return
 	}

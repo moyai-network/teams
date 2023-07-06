@@ -1,6 +1,8 @@
 package user
 
 import (
+	_ "unsafe"
+
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player"
@@ -11,7 +13,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
-	_ "unsafe"
 )
 
 type PacketHandler struct {
@@ -26,7 +27,7 @@ func NewPacketHandler(c *packethandler.Conn) *PacketHandler {
 }
 
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
-	ph, ok := Lookup(h.c.IdentityData().XUID)
+	ph, ok := Lookup(h.c.IdentityData().DisplayName)
 	if !ok {
 		return
 	}

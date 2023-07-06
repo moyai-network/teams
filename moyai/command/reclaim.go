@@ -1,6 +1,9 @@
 package command
 
 import (
+	"strings"
+	"unicode"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -9,8 +12,6 @@ import (
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"strings"
-	"unicode"
 )
 
 // Reclaim is a command that allows players to reclaim their partner package.
@@ -27,12 +28,12 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	h, ok := user.Lookup(p.XUID())
+	h, ok := user.Lookup(p.Name())
 	if !ok {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		return
 	}
@@ -109,7 +110,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 // Run ...
 func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
 	for _, p := range user.All() {
-		u, err := data.LoadUser(p.Player().Name(), p.Player().XUID())
+		u, err := data.LoadUser(p.Player().Name(), p.XUID())
 		if err != nil {
 			continue
 		}

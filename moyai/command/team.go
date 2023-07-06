@@ -1,15 +1,16 @@
 package command
 
 import (
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"golang.org/x/exp/slices"
-	"regexp"
-	"strings"
-	"time"
 )
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
@@ -39,7 +40,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if _, ok = u.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.already"))
 		return
@@ -63,7 +64,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(p.Locale(), "team.create.exists"))
 		return
 	}
-	tm := data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.XUID(), p.Name()).WithRank(3))
+	tm := data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()).WithRank(3))
 	data.SaveTeam(tm)
 
 	out.Print(lang.Translatef(p.Locale(), "team.create.success", tm.DisplayName))
@@ -84,7 +85,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.self"))
 		return
 	}
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	tm, ok := u.Team()
 	if !ok {
 		out.Error(lang.Translatef(p.Locale(), "user.team-less"))
@@ -117,7 +118,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 	l := locale(src)
 
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if _, ok := u.Team(); ok {
 		out.Error(lang.Translatef(l, "team.join.error"))
 		return
@@ -128,7 +129,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 		// TODO: error message
 		return
 	}
-	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
+	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()))...)
 
 	data.SaveTeam(tm)
 
@@ -164,7 +165,7 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		return
 	}

@@ -1,10 +1,11 @@
 package entity
 
 import (
+	_ "unsafe"
+
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
-	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -49,13 +50,13 @@ func teleport(e *entity.Ent, target trace.Result) {
 
 	if u, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
 		if p, ok := u.(*player.Player); ok {
-			if usr, ok := user.Lookup(p.XUID()); ok {
+			if usr, ok := user.Lookup(p.Name()); ok {
 				if usr.Combat().Active() && area.Spawn(u.World()).Vec3WithinOrEqualXZ(target.Position()) {
 					usr.Pearl().Reset()
 					return
 				}
 
-				u, _ := data.LoadUser(p.Name(), p.XUID())
+				u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 				if u.PVP.Active() {
 					for _, t := range data.Teams() {
 						a := t.Claim

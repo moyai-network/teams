@@ -1,6 +1,9 @@
 package command
 
 import (
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
@@ -11,8 +14,6 @@ import (
 	"github.com/moyai-network/teams/moyai/form"
 	"github.com/moyai-network/teams/moyai/user"
 	"go.mongodb.org/mongo-driver/bson"
-	"strings"
-	"time"
 )
 
 // MuteForm is a command that is used to mute an online player through a punishment form.
@@ -91,7 +92,7 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -139,7 +140,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.XUID())
+	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -198,7 +199,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.self"))
 		return
 	}
-	u, err := data.LoadUser(t.Name(), t.XUID())
+	u, err := data.LoadUser(t.Name(), t.Handler().(*user.Handler).XUID())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return

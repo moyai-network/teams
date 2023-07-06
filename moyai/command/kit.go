@@ -13,7 +13,7 @@ type Kit struct{}
 // Run ...
 func (Kit) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
-	u, ok := user.Lookup(p.XUID())
+	u, ok := user.Lookup(p.Name())
 	if !ok {
 		return
 	}

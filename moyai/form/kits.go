@@ -1,12 +1,13 @@
 package form
 
 import (
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/user"
-	"strings"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/player/form"
 	"github.com/moyai-network/moose"
@@ -35,12 +36,12 @@ func NewKitForm(p *player.Player) form.Menu {
 
 func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	p := s.(*player.Player)
-	h, ok := user.Lookup(p.XUID())
+	h, ok := user.Lookup(p.Name())
 	if !ok {
 		return
 	}
 
-	u, _ := data.LoadUser(p.Name(), p.XUID())
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
 
 	if h.Combat().Active() {
 		h.Message("command.kit.tagged")

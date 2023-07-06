@@ -2,20 +2,46 @@ package user
 
 import (
 	"fmt"
+	"strings"
+	"time"
+	_ "unsafe"
+
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/teams/moyai/data"
-	"strings"
-	"time"
-	_ "unsafe"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
 
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 
 	"github.com/moyai-network/moose/lang"
 )
+
+func armourStacks(arm *inventory.Armour) [4]item.Stack {
+	var stacks [4]item.Stack
+	for i, a := range arm.Slots() {
+		stacks[i] = a
+	}
+	return stacks
+}
+
+func compareArmours(a1, a2 [4]item.Stack) bool {
+	for i, a := range a1 {
+		if a.Empty() && !a2[i].Empty() {
+			return false
+		}
+		if a.Empty() && !a2[i].Empty() || !a.Empty() && a2[i].Empty() {
+			return false
+		}
+		if !a.Comparable(a2[i]) {
+			return false
+		}
+	}
+	return true
+}
 
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
@@ -25,6 +51,61 @@ func startTicker(h *Handler) {
 	for {
 		select {
 		case <-t.C:
+			lastArmour := h.armour.Load()
+			arm := armourStacks(h.p.Armour())
+
+			if !compareArmours(arm, lastArmour) {
+				var lastEffects []effect.Effect
+
+				for _, i := range lastArmour {
+					if i.Empty() {
+						continue
+					}
+					for _, e := range i.Enchantments() {
+						if enc, ok := e.Type().(ench.EffectEnchantment); ok {
+							lastEffects = append(lastEffects, enc.Effect())
+						}
+					}
+				}
+
+				for _, e := range lastEffects {
+					typ := e.Type()
+					if hasEffectLevel(h.p, e) {
+						h.p.RemoveEffect(typ)
+					}
+				}
+
+				for _, i := range arm {
+					if i.Empty() {
+						continue
+					}
+					var effects []effect.Effect
+
+					for _, e := range i.Enchantments() {
+						if enc, ok := e.Type().(ench.EffectEnchantment); ok {
+							effects = append(effects, enc.Effect())
+						}
+					}
+
+					for _, e := range effects {
+						h.p.AddEffect(e)
+					}
+				}
+				h.armour.Store(arm)
+			}
+
+			lastClass := h.class.Load()
+			cl := class.Resolve(h.p)
+
+			if lastClass != cl {
+				if class.CompareAny(cl, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
+					addEffects(h.p, cl.Effects()...)
+				} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
+					h.energy.Store(0)
+					removeEffects(h.p, lastClass.Effects()...)
+				}
+				h.class.Store(cl)
+			}
 			switch h.class.Load().(type) {
 			case class.Bard:
 				if e := h.energy.Load(); e < 100-0.05 {

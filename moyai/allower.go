@@ -2,11 +2,12 @@ package moyai
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 	"golang.org/x/text/language"
-	"net"
 )
 
 type Allower struct {
