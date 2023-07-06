@@ -41,7 +41,10 @@ func Count() int {
 
 // LookupRuntimeID ...
 func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
-	h := p.Handler().(*Handler)
+	h, ok := p.Handler().(*Handler)
+	if !ok {
+		return nil, false
+	}
 	for _, t := range All() {
 		if session_entityRuntimeID(h.s, t.p) == rid {
 			return t.p, true
