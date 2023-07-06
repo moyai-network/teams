@@ -19,6 +19,13 @@
     "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
     "team.create.already": "<red>You're already in a team.</red>",
 
+
+    "shop.balance.insufficient": "<red>You cannot afford to buy this item</red>",
+    "shop.item.insufficient": "<red>You do not have enough of that item to sell</red>",
+    "shop.sell.fail": "<red>You do not have enough of that item to sell</red>",
+    "shop.sell.success": "<green>You have successfully sold %dx %s</green>",
+    "shop.buy.success": "<green>You have successfully bought %dx %s</green>",
+
     "team.invite.success.broadcast": "<green>%s has been invited to your team.</green>",
     "team.invite.already": "<red>You have already invited %s to your team.</red>",
     "team.invite.self": "<red>You can't invite yourself to your own team.</red>",
