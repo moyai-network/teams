@@ -151,6 +151,7 @@ func NewHandler(p *player.Player) *Handler {
 		}
 	}
 
+	SetClass(p, class.Resolve(p))
 	go startTicker(ha)
 
 	return ha

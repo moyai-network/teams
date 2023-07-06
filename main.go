@@ -98,7 +98,7 @@ func main() {
 }
 
 func accept(p *player.Player) {
-	p.Inventory().Handle(user.NewArmourHandler(p))
+	p.Armour().Handle(user.NewArmourHandler(p))
 	p.Handle(user.NewHandler(p))
 	p.SetGameMode(world.GameModeSurvival)
 	p.Teleport(mgl64.Vec3{0, 74, 0})
