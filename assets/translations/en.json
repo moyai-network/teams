@@ -54,6 +54,10 @@
     "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>",
     "user.data.load.error": "<red>There was an error loading your data. Please notify staff.</red>",
     "user.message.mute": "<red>You may not send message while muted</red>",
+    "user.kill": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>was slain by <red>%s</red><dark-red>[%d]</dark-red> using %s.",
+    "user.suicide": "<yellow>%s</yellow> <grey>[<red>%d</red>]</grey> <red>has killed himself</red>",
+    "user.reclaim": "%s <green>claimed their</green> %s <green>reclaim and received</green> %s and %dx lives",
+    "user.reclaimed": "<red>You have already claimed your reclaim this map.</red>",
 
     "invalid.username": "<red>The provided user is invalid</red>",
 

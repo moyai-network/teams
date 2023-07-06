@@ -63,6 +63,8 @@ type User struct {
 	DeathBan *moose.CoolDown
 	// SOTW is whether the user their SOTW timer enabled, or not.
 	SOTW bool
+	// Reclaimed is whether the user has already used their reclaim perk.
+	Reclaimed bool
 	// PVP is the PVP timer of the user.
 	PVP *moose.CoolDown
 }

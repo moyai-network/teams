@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
+	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
@@ -320,6 +321,36 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration,
 
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
 	w := h.p.World()
+
+	switch b.(type) {
+	case block.EnderChest:
+		held, left := h.p.HeldItems()
+		if _, ok := held.Value("PARTNER_PACKAGE"); !ok {
+			break
+		}
+
+		keys := it.SpecialItems()
+		i := it.NewSpecialItem(keys[rand.Intn(len(keys))], rand.Intn(3)+1)
+
+		ctx.Cancel()
+
+		h.p.SetHeldItems(held.Grow(-1), left)
+
+		h.AddItemOrDrop(i)
+
+		w.AddEntity(entity.NewFirework(pos.Vec3(), cube.Rotation{90, 90}, item.Firework{
+			Duration: 0,
+			Explosions: []item.FireworkExplosion{
+				{
+					Shape:   item.FireworkShapeStar(),
+					Trail:   true,
+					Colour:  moose.RandomColour(),
+					Twinkle: true,
+				},
+			},
+		}))
+		return
+	}
 
 	for _, t := range data.Teams() {
 		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
@@ -690,6 +721,21 @@ func (h *Handler) Message(key string, args ...interface{}) {
 
 func (h *Handler) Logout() *moose.Teleportation {
 	return h.logout
+}
+
+// AddItemOrDrop adds an item to the user's inventory or drops it if the inventory is full.
+func (h *Handler) AddItemOrDrop(it item.Stack) {
+	if _, err := h.p.Inventory().AddItem(it); err != nil {
+		h.DropItem(it)
+	}
+}
+
+func (h *Handler) DropItem(it item.Stack) {
+	p := h.p
+	w, pos := p.World(), p.Position()
+	ent := entity.NewItem(it, pos)
+	ent.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
+	w.AddEntity(ent)
 }
 
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
