@@ -82,6 +82,7 @@ func main() {
 	w.SetTime(6000)
 	w.StopTime()
 	w.SetTickRange(0)
+	w.StopThundering()
 
 	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
