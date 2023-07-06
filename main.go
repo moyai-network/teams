@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/bedrock-gophers/packethandler"
-	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -15,7 +14,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
 	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -100,11 +98,8 @@ func main() {
 }
 
 func accept(p *player.Player) {
-	p.Armour().Handle(user.NewArmourHandler(p))
 	p.Handle(user.NewHandler(p))
-	user.SetClass(p, class.Resolve(p))
 	p.SetGameMode(world.GameModeSurvival)
-	p.Teleport(mgl64.Vec3{0, 74, 0})
 }
 
 func registerCommands() {

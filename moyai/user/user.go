@@ -6,8 +6,6 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
@@ -95,20 +93,14 @@ func removeEffects(p *player.Player, effects ...effect.Effect) {
 	}
 }
 
-// SetClass sets the class of the user.
-func SetClass(p *player.Player, c moose.Class) {
-	h := p.Handler().(*Handler)
-
-	lastClass := h.class.Load()
-	if lastClass != c {
-		if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-			addEffects(h.p, c.Effects()...)
-		} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-			h.energy.Store(0)
-			removeEffects(h.p, lastClass.Effects()...)
+// hasEffectLevel returns whether the user has the effect or not.
+func hasEffectLevel(p *player.Player, e effect.Effect) bool {
+	for _, ef := range p.Effects() {
+		if e.Type() == ef.Type() && e.Level() == ef.Level() {
+			return true
 		}
-		h.class.Store(c)
 	}
+	return false
 }
 
 // canAttack returns true if the given players can attack each other.

@@ -20,7 +20,6 @@ import (
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -67,6 +66,7 @@ type Handler struct {
 
 	abilities moose.MappedCoolDown[any]
 
+	armour atomic.Value[[4]item.Stack]
 	class  atomic.Value[moose.Class]
 	energy atomic.Value[float64]
 
@@ -85,8 +85,7 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
-	addEffect map[effect.Type]chan effect.Effect
-	close     chan struct{}
+	close chan struct{}
 }
 
 func NewHandler(p *player.Player) *Handler {
@@ -136,20 +135,6 @@ func NewHandler(p *player.Player) *Handler {
 	playersMu.Lock()
 	players[p.XUID()] = ha
 	playersMu.Unlock()
-
-	var effects []effect.Effect
-
-	for _, it := range p.Armour().Slots() {
-		for _, e := range it.Enchantments() {
-			if enc, ok := e.Type().(ench.EffectEnchantment); ok {
-				effects = append(effects, enc.Effect())
-			}
-		}
-	}
-
-	for _, e := range effects {
-		p.AddEffect(e)
-	}
 
 	go startTicker(ha)
 
@@ -230,7 +215,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
-				m.AddEffect(e)
+				m.p.AddEffect(e)
 			}
 
 			lvl, _ := roman.Itor(e.Level())
@@ -256,7 +241,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
-				m.AddEffect(e)
+				m.p.AddEffect(e)
 			}
 
 			lvl, _ := roman.Itor(e.Level())
@@ -506,13 +491,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	}
 }
 
-func (h *Handler) HandleItemDamage(_ *event.Context, i item.Stack, n int) {
-	dur := i.Durability()
-	if _, ok := i.Item().(item.Armour); ok && dur != -1 && dur-n <= 0 {
-		SetClass(h.p, class.Resolve(h.p))
-	}
-}
-
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
 	*force, *height = 0.394, 0.394
 	t, ok := e.(*player.Player)
@@ -668,47 +646,6 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		h.area.Store(area.Wilderness(w))
 		h.Message("area.enter", area.Wilderness(w).Name())
 	}
-}
-
-func (h *Handler) AddEffect(e effect.Effect) {
-	h.p.AddEffect(e)
-	h.addEffect[e.Type()] <- e
-
-	lastClass := h.class.Load()
-	go func() {
-		select {
-		case <-time.After(e.Duration()):
-			for _, it := range h.p.Armour().Slots() {
-				var effects []effect.Effect
-
-				for _, e := range it.Enchantments() {
-					if enc, ok := e.Type().(ench.EffectEnchantment); ok {
-						effects = append(effects, enc.Effect())
-					}
-				}
-
-				for _, e := range effects {
-					h.p.AddEffect(e)
-				}
-
-				c := h.class.Load()
-				if lastClass != c {
-					if class.CompareAny(c, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-						addEffects(h.p, c.Effects()...)
-					} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-						h.energy.Store(0)
-						removeEffects(h.p, lastClass.Effects()...)
-					}
-					h.class.Store(c)
-				}
-			}
-		case ef := <-h.addEffect[e.Type()]:
-			currEff, _ := h.p.Effect(ef.Type())
-			if ef.Level() > currEff.Level() || ef.Duration() > currEff.Duration() {
-				return
-			}
-		}
-	}()
 }
 
 func (h *Handler) Player() *player.Player {
