@@ -19,6 +19,15 @@
     "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
     "team.create.already": "<red>You're already in a team.</red>",
 
+    "command.role.add": "<green>You added the role %s to %s for %s.</green>",
+    "command.role.has": "<red>This player has already been assigned %s.</red>",
+    "command.role.higher": "<red>You cannot modify the role of a player that is higher than yours.</red>",
+    "command.role.list": "<yellow>Players with %s role (%v)\n%s</yellow>",
+    "command.role.list.empty": "<red>There are no players with this role.</red>",
+    "command.role.missing": "<red>This player doesn't have the role %s.</red>",
+    "command.role.modify.other": "<red>You cannot modify the role of this player.</red>",
+    "command.role.modify.self": "<red>You cannot modify your own role.</red>",
+    "command.role.remove": "<green>You removed the role %s from %s.</green>",
 
     "shop.balance.insufficient": "<red>You cannot afford to buy this item</red>",
     "shop.item.insufficient": "<red>You do not have enough of that item to sell</red>",
