@@ -65,8 +65,7 @@ type Handler struct {
 	bardItem  moose.MappedCoolDown[world.Item]
 	strayItem moose.MappedCoolDown[world.Item]
 
-	// TODO: implement custom items
-	//abilities moose.MappedCoolDown[any]
+	abilities moose.MappedCoolDown[any]
 
 	class  atomic.Value[moose.Class]
 	energy atomic.Value[float64]
@@ -97,6 +96,10 @@ func NewHandler(p *player.Player) *Handler {
 		pearl:       moose.NewCoolDown(),
 		rogue:       moose.NewCoolDown(),
 		goldenApple: moose.NewCoolDown(),
+
+		itemUse:   moose.NewMappedCoolDown[world.Item](),
+		bardItem:  moose.NewMappedCoolDown[world.Item](),
+		strayItem: moose.NewMappedCoolDown[world.Item](),
 
 		combat: moose.NewTag(nil, nil),
 		archer: moose.NewTag(nil, nil),
