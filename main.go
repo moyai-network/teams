@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/moyai-network/teams/moyai/data"
+	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"math"
 	"os"
@@ -43,6 +44,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	c.Entities = ent.Registry
 
 	c.Name = text.Colourf("<bold><redstone>SYN</redstone></bold>") + "§8"
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }

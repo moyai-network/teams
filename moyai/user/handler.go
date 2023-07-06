@@ -730,6 +730,14 @@ func (h *Handler) AddItemOrDrop(it item.Stack) {
 	}
 }
 
+func (h *Handler) Combat() *moose.Tag {
+	return h.combat
+}
+
+func (h *Handler) Pearl() *moose.CoolDown {
+	return h.pearl
+}
+
 func (h *Handler) DropItem(it item.Stack) {
 	p := h.p
 	w, pos := p.World(), p.Position()
