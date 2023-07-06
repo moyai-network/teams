@@ -156,9 +156,9 @@ func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	}
 
 	for _, target := range Nearby(p, dist) {
-		slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-			return member.XUID == target.p.XUID()
-		})
+		if tm.Member(target.p.Name()) {
+			pl = append(pl, target)
+		}
 	}
 
 	return pl
