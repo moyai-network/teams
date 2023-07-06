@@ -152,6 +152,22 @@ func LoadUser(name string, xuid string) (User, error) {
 	return u, nil
 }
 
+// LoadUsersCond loads users using the given filter.
+func LoadUsersCond(cond any) ([]User, error) {
+	var data []User
+	collection := db.Collection("users")
+	cursor, err := collection.Find(ctx(), cond)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = cursor.All(ctx(), &data); err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 // SaveUser saves the provided user into the database.
 func SaveUser(u User) error {
 	usersMu.Lock()
