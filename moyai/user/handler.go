@@ -688,6 +688,10 @@ func (h *Handler) Message(key string, args ...interface{}) {
 	h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
 }
 
+func (h *Handler) Logout() *moose.Teleportation {
+	return h.logout
+}
+
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
 	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
 	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
