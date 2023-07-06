@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/bedrock-gophers/packethandler"
+	"github.com/moyai-network/moose/class"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -100,6 +101,7 @@ func main() {
 func accept(p *player.Player) {
 	p.Armour().Handle(user.NewArmourHandler(p))
 	p.Handle(user.NewHandler(p))
+	user.SetClass(p, class.Resolve(p))
 	p.SetGameMode(world.GameModeSurvival)
 	p.Teleport(mgl64.Vec3{0, 74, 0})
 }

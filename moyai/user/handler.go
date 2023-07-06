@@ -150,8 +150,6 @@ func NewHandler(p *player.Player) *Handler {
 			p.RemoveEffect(typ)
 		}
 	}
-
-	SetClass(p, class.Resolve(p))
 	go startTicker(ha)
 
 	return ha
