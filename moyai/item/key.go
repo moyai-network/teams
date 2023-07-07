@@ -14,12 +14,12 @@ func KeyTypeKOTH() KeyType {
 	return KeyType{key: 0}
 }
 
-func KeyTypePharaoh() KeyType {
+func KeyTypeRevanant() KeyType {
 	return KeyType{key: 1}
 }
 
 func AllKeyTypes() []KeyType {
-	return []KeyType{KeyTypeKOTH(), KeyTypePharaoh()}
+	return []KeyType{KeyTypeKOTH(), KeyTypeRevanant()}
 }
 
 func NewKey(keyType KeyType, n int) item.Stack {
@@ -35,7 +35,7 @@ func NewKey(keyType KeyType, n int) item.Stack {
 	case 1:
 		colour = item.ColourCyan()
 		value = "crate-key_Pharaoh"
-		customName = text.Colourf("<black>Pharaoh Crate Key</black>")
+		customName = text.Colourf("<redstone>Pharaoh Crate Key</redstone>")
 	default:
 		panic("should never happen")
 	}
