@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bedrock-gophers/packethandler"
+	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/worlds"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
@@ -15,7 +16,12 @@ import (
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/world"
@@ -24,8 +30,14 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/command"
 	"github.com/moyai-network/teams/moyai/user"
+
+	"github.com/moyai-network/moose/crate"
+	cr "github.com/moyai-network/teams/moyai/crate"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
+
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
@@ -101,9 +113,47 @@ func main() {
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
 
+	// Doing this twice so that w.Entities isn't empty, even when it shouldn't be
+	for _, c := range crate.All() {
+		b := block.NewChest()
+		b.CustomName = text.Colourf("%s <grey>Crate</grey>", c.Name())
+
+		*b.Inventory() = *inventory.New(27, nil)
+
+		var items [27]item.Stack
+		for i, r := range c.Rewards() {
+			if r == nil {
+				continue // Ignore this, ill fix it later
+			}
+			st := ench.AddEnchantmentLore(r.Stack())
+			st = st.WithLore(append(st.Lore(), text.Colourf("<yellow>Chance: %d%%</yellow>", r.Chance()))...)
+			items[i] = st
+		}
+		for i, s := range items {
+			if s.Empty() {
+				items[i] = item.NewStack(block.StainedGlass{Colour: item.ColourRed()}, 1)
+			}
+		}
+
+		for s, i := range items {
+			_ = b.Inventory().SetItem(s, i)
+		}
+
+		b.Inventory().Handle(cr.Handler{})
+
+		w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
+
+	}
+
 	for _, e := range w.Entities() {
 		w.RemoveEntity(e)
 	}
+
+	for _, c := range crate.All() {
+		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
+		w.AddEntity(t)
+	}
+
 	registerCommands(srv)
 
 	srv.Listen()
@@ -168,7 +218,11 @@ func registerCommands(srv *server.Server) {
 		cmd.New("whisper", text.Colourf("<aqua>Send a private message to a player.</aqua>"), []string{"w", "tell", "msg"}, command.Whisper{}),
 		cmd.New("reply", text.Colourf("<aqua>Reply to the last whispered player.</aqua>"), []string{"r"}, command.Reply{}),
 		cmd.New("fly", text.Colourf("<aqua>Toggle flight.</aqua>"), nil, command.Fly{}),
-		cmd.New("sotw", text.Colourf("<qua>SOTW management commands.</aqua>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
+		cmd.New("sotw", text.Colourf("<aqua>SOTW management commands.</aqua>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
+		cmd.New("freeze", text.Colourf("<aqua>Freeze possible cheaters.</aqua>"), nil, command.Freeze{}),
+		cmd.New("gamemode", text.Colourf("<aqua>Manage gamemodes.</aqua>"), []string{"gm"}, command.GameMode{}),
+		cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.Hub{}),
+		cmd.New("key", text.Colourf("<aqua>Manage keys</aqua>"), nil, command.Key{}, command.KeyAll{}),
 	} {
 		cmd.Register(c)
 	}

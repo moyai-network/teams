@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/crate"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -26,5 +27,7 @@ var partnerEnchantments = []item.Enchantment{
 }
 
 func (partner) Rewards() []moose.Reward {
-	return []moose.Reward{}
+	return []moose.Reward{
+		crate.NewReward(item.NewStack(item.BakedPotato{}, 1), 1),
+	}
 }

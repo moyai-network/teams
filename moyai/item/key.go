@@ -14,12 +14,12 @@ func KeyTypeKOTH() KeyType {
 	return KeyType{key: 0}
 }
 
-func KeyTypeRevanant() KeyType {
+func KeyTypeRevenant() KeyType {
 	return KeyType{key: 1}
 }
 
 func AllKeyTypes() []KeyType {
-	return []KeyType{KeyTypeKOTH(), KeyTypeRevanant()}
+	return []KeyType{KeyTypeKOTH(), KeyTypeRevenant()}
 }
 
 func NewKey(keyType KeyType, n int) item.Stack {

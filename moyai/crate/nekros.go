@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/crate"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -13,7 +14,7 @@ import (
 type nekros struct{}
 
 func (nekros) Name() string {
-	return text.Colourf("<amethyst>KOTH</amethyst>")
+	return text.Colourf("<amethyst>Nekros</amethyst>")
 }
 
 func (nekros) Position() mgl64.Vec3 {
@@ -26,5 +27,7 @@ var nekrosEnchantments = []item.Enchantment{
 }
 
 func (nekros) Rewards() []moose.Reward {
-	return []moose.Reward{}
+	return []moose.Reward{
+		crate.NewReward(item.NewStack(item.BakedPotato{}, 1), 1),
+	}
 }

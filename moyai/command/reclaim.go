@@ -51,45 +51,45 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	switch r {
 	case role.Default{}:
 		items = append(items, it.NewPartnerPackage(1))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 1))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 1))
 	case role.Trial{}:
 		items = append(items, it.NewPartnerPackage(2))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 2))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 2))
 		lives = 3
 	case role.Mod{}, role.Knight{}:
 		items = append(items, it.NewPartnerPackage(3))
 		// 3x Partner, 15x Nova
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 3))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 3))
 		lives = 5
 	case role.Media{}, role.Ares{}:
 		// 6x Partner, 20x Nova, 8x Nekros
 		items = append(items, it.NewPartnerPackage(4))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 2))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 2))
 		lives = 10
 	case role.Famous{}, role.Ivara{}:
 		// just look at website smh
 		items = append(items, it.NewPartnerPackage(5))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 3))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 3))
 		lives = 20
 	case role.Nekros{}:
 		items = append(items, it.NewPartnerPackage(6))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 4))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 4))
 		lives = 30
 	case role.Artemis{}:
 		items = append(items, it.NewPartnerPackage(7))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 5))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 5))
 		lives = 45
 	case role.Revenant{}:
 		items = append(items, it.NewPartnerPackage(8))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 6))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 6))
 		lives = 60
 	case role.Wraith{}:
 		items = append(items, it.NewPartnerPackage(9))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 8))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 8))
 		lives = 75
 	case role.Partner{}, role.Manager{}, role.Admin{}, role.Owner{}:
 		items = append(items, it.NewPartnerPackage(10))
-		items = append(items, it.NewKey(it.KeyTypePharaoh(), 10))
+		items = append(items, it.NewKey(it.KeyTypeRevenant(), 10))
 		lives = 85
 	}
 	for _, i := range items {
