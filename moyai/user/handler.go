@@ -275,6 +275,10 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 }
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration, src world.DamageSource) {
+	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
+		ctx.Cancel()
+		return
+	}
 	var target *player.Player
 	switch s := src.(type) {
 	case NoArmourAttackEntitySource:
