@@ -70,6 +70,7 @@
     "user.blacklist.description":"<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/tWCfwQrRWn</grey></i>",
 
     "command.alias.accounts": "\n<yellow>Listed accounts under %v's IP</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's DID</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's SSID</yellow>\n<grey>%v</grey>\n\n",
+
     "command.ban.already": "<red>That player is already banned.</red>",
     "command.ban.broadcast": "\n<yellow>%v</yellow> has removed <gold>%v</gold> from Moyai for <dark-red>%v</dark-red>\n\n",
     "command.ban.lift": "<green>You unbanned %s.</green>",
@@ -79,6 +80,7 @@
     "command.ban.operator": "<red>This player cannot be banned.</red>",
     "command.ban.self": "<red>You cannot ban yourself.</red>",
     "command.ban.success": "<green>You banned %s for %s.</green>",
+
     "command.blacklist.already": "<red>That player is already blacklisted.</red>",
     "command.blacklist.broadcast": "\n<yellow>%v</yellow> has blacklisted <gold>%v</gold> from Syn\n\n",
     "command.blacklist.lift": "<green>You unblacklisted %s.</green>",
@@ -88,10 +90,15 @@
     "command.blacklist.operator": "<red>This player cannot be blacklisted.</red>",
     "command.blacklist.self": "<red>You cannot blacklist yourself.</red>",
     "command.blacklist.success": "<green>You blacklisted %s for %s.</green>",
+
     "command.partner_package.give.success": "<yellow>%s has been given <green>%dx Partner Packages.</green></yellow>",
     "command.partner_package.give.received": "<yellow>You have received <green>%dx Partner Packages.</green></yellow>",
+
     "command.key.give.success": "<yellow>%s has been given <green>%dx Keys.</green></yellow>",
     "command.key.give.received": "<yellow>You have received <green>%dx Keys.</green></yellow>",
+
+    "command.whisper.from": "<grey>[From</grey> %s<grey>]</grey> %s",
+    "command.whisper.to": "<grey>[To</grey> %s<grey>]</grey> %s",
 
     "invalid.username": "<red>The provided user is invalid</red>",
 

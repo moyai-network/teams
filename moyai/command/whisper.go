@@ -88,9 +88,9 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	t.LastMessageFrom = u.Name
 	_ = data.SaveUser(t)
 
-	tH.Player().PlaySound(sound.Experience{})
-	uH.Player().Message("command.whisper.to", tTag, tMsg)
-	tH.Player().Message("command.whisper.from", uTag, uMsg)
+	tP.PlaySound(sound.Experience{})
+	uH.Message("command.whisper.to", tTag, tMsg)
+	tH.Message("command.whisper.from", uTag, uMsg)
 }
 
 // Allow ...

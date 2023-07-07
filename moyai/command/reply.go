@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
@@ -70,7 +71,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 	t.LastMessageFrom = u.Name
 	_ = data.SaveUser(t)
 
-	//target.SendCustomSound("random.orb", 1, 1, false)
+	target.Player().PlaySound(sound.Experience{})
 	h.Message("command.whisper.to", tColour, tMsg)
 	target.Message("command.whisper.from", uColour, uMsg)
 }
