@@ -16,6 +16,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
+	"github.com/moyai-network/moose/crate"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
@@ -124,6 +125,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 		scramblerHits: map[string]int{},
 
+		wallBlocks: map[cube.Pos]float64{},
+
 		itemUse:   moose.NewMappedCoolDown[world.Item](),
 		bardItem:  moose.NewMappedCoolDown[world.Item](),
 		strayItem: moose.NewMappedCoolDown[world.Item](),
@@ -214,15 +217,69 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	}
 }
 
+func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
+	p := h.Player()
+
+	w := p.World()
+	b := w.Block(pos)
+
+	held, _ := p.HeldItems()
+	typ, ok := it.SpecialItem(held)
+	if ok {
+		if cd := h.ability; cd.Active() {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			ctx.Cancel()
+			return
+		}
+		if spi := h.abilities; spi.Active(typ) {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			ctx.Cancel()
+		} else {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.ready.partner_item.item", typ.Name()))
+			ctx.Cancel()
+		}
+	}
+
+	for _, c := range crate.All() {
+		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
+			p.OpenBlockContainer(pos)
+			ctx.Cancel()
+		}
+	}
+}
+
+func (h *Handler) HandlePunchAir(ctx *event.Context) {
+	p := h.Player()
+
+	held, _ := p.HeldItems()
+	typ, ok := it.SpecialItem(held)
+	if ok {
+		if cd := h.ability; cd.Active() {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			ctx.Cancel()
+			return
+		}
+		if spi := h.abilities; spi.Active(typ) {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			ctx.Cancel()
+		} else {
+			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.ready.partner_item.item", typ.Name()))
+			ctx.Cancel()
+		}
+	}
+}
+
 // HandleItemUse ...
 func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, left := h.p.HeldItems()
-	/*if v, ok := held.Value("MONEY_NOTE"); ok {
-		u.IncreaseBalance(v.(float64))
-		p.SetHeldItems(u.SubtractItem(held, 1), left)
-		p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
+	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	if v, ok := held.Value("MONEY_NOTE"); ok {
+		u.Balance = u.Balance + v.(float64)
+		h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+		h.p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
+		data.SaveUser(u)
 		return
-	}*/
+	}
 	switch held.Item().(type) {
 	case item.EnderPearl:
 		if cd := h.pearl; cd.Active() {
@@ -236,7 +293,6 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 	}
 
-	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	switch h.class.Load().(type) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
@@ -434,7 +490,8 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 	}
 }
 
-func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration, src world.DamageSource) {
+func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
+	*imm = time.Millisecond * 400
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
 		return
