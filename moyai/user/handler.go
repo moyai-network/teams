@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"regexp"
@@ -14,7 +13,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/restartfu/roman"
@@ -36,8 +34,6 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
-
-	proxypacket "github.com/paroxity/portal/socket/packet"
 )
 
 var (
@@ -151,7 +147,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	playersMu.Unlock()
 
 	go startTicker(ha)
-
 	return ha
 }
 
@@ -161,14 +156,6 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
-	if *message == "allah" {
-		moyai.Socket().WritePacket(&proxypacket.TransferRequest{
-			PlayerUUID: h.Player().UUID(),
-			Server:     "syn.lobby",
-		})
-		fmt.Println("aaa")
-		return
-	}
 	u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	if err != nil {
 		return
@@ -569,7 +556,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 }
 
 func (h *Handler) HandleQuit() {
-	h.close <- struct{}{}
+	close(h.close)
 	p := h.p
 
 	u, _ := data.LoadUser(p.Name(), h.xuid)

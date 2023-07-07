@@ -1,14 +1,16 @@
 package main
 
 import (
+	"github.com/bedrock-gophers/packethandler"
+	"github.com/moyai-network/moose/worlds"
+	"github.com/moyai-network/teams/moyai/data"
+	ent "github.com/moyai-network/teams/moyai/entity"
+	proxypacket "github.com/paroxity/portal/socket/packet"
 	"math"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/bedrock-gophers/packethandler"
-	"github.com/moyai-network/teams/moyai/data"
-	ent "github.com/moyai-network/teams/moyai/entity"
+	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -68,6 +70,14 @@ func main() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
+		for _, p := range srv.Players() {
+			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
+			_ = moyai.Socket().WritePacket(&proxypacket.TransferRequest{
+				PlayerUUID: p.UUID(),
+				Server:     "syn.lobby",
+			})
+		}
+		time.Sleep(time.Second)
 		_ = data.Close()
 		if err := srv.Close(); err != nil {
 			log.Errorf("close server: %v", err)
@@ -75,8 +85,9 @@ func main() {
 	}()
 
 	w := srv.World()
+	w.Handle(&worlds.Handler{})
 	w.StopWeatherCycle()
-	w.SetDefaultGameMode(world.GameModeAdventure)
+	w.SetDefaultGameMode(world.GameModeSurvival)
 	w.SetTime(6000)
 	w.StopTime()
 	w.SetTickRange(0)

@@ -32,7 +32,7 @@ func (h Hub) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	o.Print(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
-	h.s.WritePacket(&proxypacket.TransferRequest{
+	_ = h.s.WritePacket(&proxypacket.TransferRequest{
 		PlayerUUID: p.UUID(),
 		Server:     "syn.lobby",
 	})
