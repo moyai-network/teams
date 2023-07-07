@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"os"
 	"os/signal"
@@ -24,8 +23,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
-
-	proxypacket "github.com/paroxity/portal/socket/packet"
 )
 
 func main() {
@@ -103,26 +100,10 @@ func main() {
 func acceptFunc(proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
 		if proxy {
-			p.Handle(user.NewHandler(p, p.XUID()))
+			info := moyai.SearchInfo(p.UUID())
+			p.Handle(user.NewHandler(p, info.XUID))
 		} else {
-			var xuid string
-			fmt.Println("hey")
-			moyai.Socket().WritePacket(&proxypacket.PlayerInfoRequest{
-				PlayerUUID: p.UUID(),
-			})
-			logrus.Println("ALLAH1")
-			for {
-				fmt.Println("hey2")
-				logrus.Println("ALLAH2")
-				pk, _ := moyai.Socket().ReadPacket()
-				if pk, ok := pk.(*proxypacket.PlayerInfoResponse); ok {
-					xuid = pk.XUID
-					break
-				}
-				continue
-			}
-
-			p.Handle(user.NewHandler(p, xuid))
+			p.Handle(user.NewHandler(p, p.XUID()))
 		}
 		p.SetGameMode(world.GameModeSurvival)
 	}

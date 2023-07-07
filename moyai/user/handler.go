@@ -129,7 +129,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	u.DisplayName = p.Name()
 	u.Name = strings.ToLower(p.Name())
-	u.XUID = p.XUID()
+	u.XUID = xuid
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
@@ -161,7 +161,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 			PlayerUUID: h.Player().UUID(),
 			Server:     "syn.lobby",
 		})
-		moyai.SocketUnlock()
 		fmt.Println("aaa")
 		return
 	}
