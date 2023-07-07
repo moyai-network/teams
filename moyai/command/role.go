@@ -356,7 +356,7 @@ func (roles) Type() string {
 func (roles) Options(s cmd.Source) (roles []string) {
 	p, disallow := s.(*player.Player)
 	if disallow {
-		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		u, err := data.LoadUser(p.Name(), "")
 		if err == nil {
 			disallow = !u.Roles.Contains(role.Operator{})
 		}

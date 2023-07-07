@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"regexp"
@@ -156,12 +157,12 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
 	if *message == "allah" {
-		h.close <- struct{}{}
 		moyai.Socket().WritePacket(&proxypacket.TransferRequest{
 			PlayerUUID: h.Player().UUID(),
 			Server:     "syn.lobby",
 		})
 		moyai.SocketUnlock()
+		fmt.Println("aaa")
 		return
 	}
 	u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
