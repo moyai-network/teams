@@ -2,9 +2,11 @@ package user
 
 import (
 	"fmt"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"strings"
 	"time"
+
+	ench "github.com/moyai-network/teams/moyai/enchantment"
+	"github.com/moyai-network/teams/moyai/sotw"
 
 	_ "unsafe"
 
@@ -186,9 +188,9 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			//if d, ok := sotw.Running(); ok && u.SOTW() {
-			//	_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
-			//}
+			if d, ok := sotw.Running(); ok && u.SOTW {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
+			}
 
 			u, err := data.LoadUser(h.p.Name(), h.p.XUID())
 			if err != nil {

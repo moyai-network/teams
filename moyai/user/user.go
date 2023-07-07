@@ -140,6 +140,24 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 	return pl
 }
 
+// NearbyEnemies returns the nearby enemies of a certain distance from the user
+func NearbyEnemies(p *player.Player, dist float64) []*Handler {
+	var pl []*Handler
+	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
+	tm, ok := u.Team()
+	if !ok {
+		return Nearby(p, dist)
+	}
+
+	for _, target := range Nearby(p, dist) {
+		if !tm.Member(target.p.Name()) {
+			pl = append(pl, target)
+		}
+	}
+
+	return pl
+}
+
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler

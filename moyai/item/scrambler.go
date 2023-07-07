@@ -17,7 +17,7 @@ func (ScramblerType) Item() world.Item {
 }
 
 func (ScramblerType) Lore() []string {
-	return []string{text.Colourf("<grey>Hit an enemy to scramble their hotbar</grey>")}
+	return []string{text.Colourf("<grey>Hit a player 3 times to scramble their hotbar</grey>")}
 }
 
 func (ScramblerType) Key() string {

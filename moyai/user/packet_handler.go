@@ -9,6 +9,7 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -62,6 +63,12 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		tm, ok := u.Team()
 		if !ok {
 			return
+		}
+
+		if _, ok := sotw.Running(); ok && u.SOTW {
+			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
+		} else if ok := u.PVP.Active(); ok {
+			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
 		}
 
 		if slices.ContainsFunc(tm.Members, func(member data.Member) bool {

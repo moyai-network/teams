@@ -10,11 +10,13 @@ import (
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
@@ -67,7 +69,8 @@ type Handler struct {
 	bardItem  moose.MappedCoolDown[world.Item]
 	strayItem moose.MappedCoolDown[world.Item]
 
-	abilities moose.MappedCoolDown[any]
+	ability   *moose.CoolDown
+	abilities moose.MappedCoolDown[it.SpecialItemType]
 
 	armour atomic.Value[[4]item.Stack]
 	class  atomic.Value[moose.Class]
@@ -75,6 +78,14 @@ type Handler struct {
 
 	combat *moose.Tag
 	archer *moose.Tag
+
+	boneHits map[string]int
+	bone     *moose.CoolDown
+
+	scramblerHits map[string]int
+	pearlDisabled bool
+
+	sotw bool
 
 	logout *moose.Teleportation
 	stuck  *moose.Teleportation
@@ -101,10 +112,17 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		pearl:       moose.NewCoolDown(),
 		rogue:       moose.NewCoolDown(),
 		goldenApple: moose.NewCoolDown(),
+		ability:     moose.NewCoolDown(),
+
+		bone:     moose.NewCoolDown(),
+		boneHits: map[string]int{},
+
+		scramblerHits: map[string]int{},
 
 		itemUse:   moose.NewMappedCoolDown[world.Item](),
 		bardItem:  moose.NewMappedCoolDown[world.Item](),
 		strayItem: moose.NewMappedCoolDown[world.Item](),
+		abilities: moose.NewMappedCoolDown[it.SpecialItemType](),
 
 		combat: moose.NewTag(nil, nil),
 		archer: moose.NewTag(nil, nil),
@@ -193,12 +211,21 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 // HandleItemUse ...
 func (h *Handler) HandleItemUse(ctx *event.Context) {
-	held, _ := h.p.HeldItems()
+	held, left := h.p.HeldItems()
+	/*if v, ok := held.Value("MONEY_NOTE"); ok {
+		u.IncreaseBalance(v.(float64))
+		p.SetHeldItems(u.SubtractItem(held, 1), left)
+		p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
+		return
+	}*/
 	switch held.Item().(type) {
 	case item.EnderPearl:
 		if cd := h.pearl; cd.Active() {
 			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Ender Pearl", cd.Remaining().Seconds()))
 			ctx.Cancel()
+		} else if h.pearlDisabled {
+			h.p.Message(text.Colourf("<red>Pearl Disabled! Pearl was refunded!</red>"))
+			h.TogglePearlDisable()
 		} else {
 			cd.Set(15 * time.Second)
 		}
@@ -208,7 +235,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	switch h.class.Load().(type) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
-			if u.PVP.Active() /*|| u.SOTW*/ {
+			if u.PVP.Active() || u.SOTW {
 				return
 			}
 			if cd := h.bardItem.Key(held.Item()); cd.Active() {
@@ -243,7 +270,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 	case class.Stray:
 		if e, ok := StrayEffectFromItem(held.Item()); ok {
-			if u.PVP.Active() /*|| u.SOTW*/ {
+			if u.PVP.Active() || u.SOTW {
 				return
 			}
 			if cd := h.strayItem.Key(held.Item()); cd.Active() {
@@ -275,6 +302,39 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.Message("class.ability.use", moose.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.strayItem.Key(held.Item()).Set(15 * time.Second)
+		}
+	}
+
+	if v, ok := it.SpecialItem(held); ok {
+		if cd := h.ability; cd.Active() {
+			h.p.Message(text.Colourf("<red>You are on Partner Items cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+			ctx.Cancel()
+			return
+		}
+
+		switch kind := v.(type) {
+		case it.SigilType:
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on sigil cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			nb := NearbyCombat(h.p, 10)
+			for _, e := range nb {
+				e.p.World().AddEntity(entity.NewLightningWithDamage(e.p.Position(), 3, false, 0))
+				e.p.AddEffect(effect.New(effect.Poison{}, 1, time.Second*3))
+				e.p.AddEffect(effect.New(effect.Blindness{}, 2, time.Second*7))
+				e.p.AddEffect(effect.New(effect.Nausea{}, 2, time.Second*7))
+				e.p.Message(text.Colourf("<red>Those are the ones whom Allah has cursed; so He has made them deaf, and made their eyes blind! (Qu'ran 47:23)</red>"))
+				h.ability.Set(time.Second * 10)
+				h.abilities.Set(kind, time.Minute*2)
+				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+			}
+		case it.SwitcherBallType:
+			h.abilities.Key(kind).Set(time.Second * 10)
+		case it.FullInvisibilityType:
+			// Restart TODO
+		case it.NinjaStarType:
+			// TODO
 		}
 	}
 }
@@ -569,6 +629,70 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		}
 	}
 
+	//u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	target, ok := Lookup(t.Name())
+	typ, ok2 := it.SpecialItem(held)
+	if ok && ok2 {
+		if cd := h.ability; cd.Active() {
+			h.p.Message(text.Colourf("<red>You are on Partner Items cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+			ctx.Cancel()
+			return
+		}
+		switch kind := typ.(type) {
+		case it.ExoticBoneType:
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on bone cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			target.AddBoneHit(t)
+			if target.Boned() {
+				target.Player().Message(text.Colourf("<red>You have been boned by %s</red>", h.p.Name()))
+				h.p.Message(text.Colourf("<green>You have boned %s</green>", t.Name()))
+				h.ability.Set(time.Second * 10)
+				h.abilities.Set(kind, time.Minute)
+				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+				target.ResetBoneHits(h.p)
+			} else {
+				h.p.Message(text.Colourf("<green>You have hit %s with a bone %d times</green>", t.Name(), target.BoneHits(h.p)))
+			}
+		case it.ScramblerType:
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on scrambler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			target.AddScramblerHit(h.p)
+			if target.ScramblerHits(h.p) >= 3 {
+				inv := target.Player().Inventory()
+				for i := 36; i <= 44; i++ {
+					j := rand.Intn(i+1-36) + 36
+					it1, _ := inv.Item(i)
+					it2, _ := inv.Item(j)
+					inv.SetItem(i, it1)
+					inv.SetItem(j, it2)
+				}
+				target.Player().Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
+				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))
+				h.ability.Set(time.Second * 10)
+				h.abilities.Set(kind, time.Minute*2)
+				target.ResetScramblerHits(h.p)
+				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+			}
+		case it.PearlDisablerType:
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on pearl disabler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			if !target.PearlDisabled() {
+				target.Player().Message(text.Colourf("<red>You have been pearl disabled by %s</red>", h.p.Name()))
+				h.p.Message(text.Colourf("<green>You have pearl disabled %s</green>", t.Name()))
+				target.TogglePearlDisable()
+				h.ability.Set(time.Second * 10)
+				h.abilities.Set(kind, time.Minute)
+				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+			}
+		}
+	}
+
 	t.Handler().(*Handler).combat.Set(time.Second * 20)
 	h.combat.Set(time.Second * 20)
 }
@@ -627,19 +751,29 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		return
 	}
 
-	/*k, ok := koth.Running()
+	us, ok := Lookup(u.Name)
+	if !ok {
+		return
+	}
+	k, ok := koth.Running()
 	if ok {
-		r := u.Roles().Highest()
+		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
-			if k.StartCapturing(u, r.Colour(u.Name())) {
-				user.Broadcast("koth.capturing", k.Name(), r.Colour(u.Name()))
+			var tm *data.Team
+			if t, ok := u.Team(); ok {
+				tm = &t
+			} else {
+				tm = nil
+			}
+			if k.StartCapturing(us, tm, r.Colour(u.Name)) {
+				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))
 			}
 		} else {
-			if k.StopCapturing(u) {
-				user.Broadcast("koth.not.capturing", k.Name())
+			if k.StopCapturing(us) {
+				Broadcast("koth.not.capturing", k.Name())
 			}
 		}
-	}*/
+	}
 
 	var areas []moose.NamedArea
 
@@ -702,6 +836,15 @@ func (h *Handler) AddItemOrDrop(it item.Stack) {
 	}
 }
 
+// SubtractItem subtracts d from the count of the item stack passed and returns it, if the player is in
+// survival or adventure mode.
+func (u *Handler) SubtractItem(s item.Stack, d int) item.Stack {
+	if !u.p.GameMode().CreativeInventory() && d != 0 {
+		return s.Grow(-d)
+	}
+	return s
+}
+
 func (h *Handler) Combat() *moose.Tag {
 	return h.combat
 }
@@ -718,9 +861,76 @@ func (h *Handler) DropItem(it item.Stack) {
 	w.AddEntity(ent)
 }
 
+// Boned returns whether the user has been boned.
+func (u *Handler) Boned() bool {
+	return u.bone.Active()
+}
+
+// BoneHits returns the number of bone hits of the user.
+func (u *Handler) BoneHits(p *player.Player) int {
+	hits, ok := u.boneHits[p.Name()]
+	if !ok {
+		return 0
+	}
+	return hits
+}
+
+// AddBoneHit adds a bone hit to the user.
+func (u *Handler) AddBoneHit(p *player.Player) {
+	u.boneHits[p.Name()]++
+	if u.boneHits[p.Name()] >= 3 {
+		u.ResetBoneHits(p)
+		u.bone.Set(15 * time.Second)
+	}
+}
+
+// ResetBoneHits resets the bone hits of the user.
+func (u *Handler) ResetBoneHits(p *player.Player) {
+	u.boneHits[p.Name()] = 0
+}
+
+// ScramblerHits returns the number of scrambler hits of the user.
+func (u *Handler) ScramblerHits(p *player.Player) int {
+	hits, ok := u.scramblerHits[p.Name()]
+	if !ok {
+		return 0
+	}
+	return hits
+}
+
+// AddScramblerHits adds a scrambler hit to the user.
+func (u *Handler) AddScramblerHit(p *player.Player) {
+	u.scramblerHits[p.Name()] = u.scramblerHits[p.Name()] + 1
+}
+
+// ResetScramblerHits resets the scrambler hits of the user.
+func (u *Handler) ResetScramblerHits(p *player.Player) {
+	u.scramblerHits[p.Name()] = 0
+}
+
+// PearlDisabled returns whether the user is pearl disabled.
+func (u *Handler) PearlDisabled() bool {
+	return u.pearlDisabled
+}
+
+// TogglePearlDisable toggles the pearl disabler
+func (u *Handler) TogglePearlDisable() {
+	u.pearlDisabled = !u.pearlDisabled
+}
+
 // CanSendMessage returns true if the user can send a message.
 func (h *Handler) CanSendMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
+}
+
+// ToggleSOTW toggles the SOTW of the user.
+func (u *Handler) ToggleSOTW() {
+	u.sotw = !u.sotw
+}
+
+// SOTW returns if the user has SOTW enabled.
+func (u *Handler) SOTW() bool {
+	return u.sotw
 }
 
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {

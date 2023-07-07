@@ -1,16 +1,18 @@
 package main
 
 import (
-	"github.com/bedrock-gophers/packethandler"
-	"github.com/moyai-network/moose/worlds"
-	"github.com/moyai-network/teams/moyai/data"
-	ent "github.com/moyai-network/teams/moyai/entity"
-	proxypacket "github.com/paroxity/portal/socket/packet"
 	"math"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/bedrock-gophers/packethandler"
+	"github.com/moyai-network/moose/worlds"
+	"github.com/moyai-network/teams/moyai/data"
+	ent "github.com/moyai-network/teams/moyai/entity"
+	"github.com/moyai-network/teams/moyai/sotw"
+	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -70,6 +72,7 @@ func main() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
+		sotw.Save()
 		for _, p := range srv.Players() {
 			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
 			_ = moyai.Socket().WritePacket(&proxypacket.TransferRequest{
@@ -139,6 +142,7 @@ func registerCommands() {
 		cmd.New("whisper", text.Colourf("<aqua>Send a private message to a player.</aqua>"), []string{"w", "tell", "msg"}, command.Whisper{}),
 		cmd.New("reply", text.Colourf("<aqua>Reply to the last whispered player.</aqua>"), []string{"r"}, command.Reply{}),
 		cmd.New("fly", text.Colourf("<aqua>Toggle flight.</aqua>"), nil, command.Fly{}),
+		cmd.New("sotw", text.Colourf("SOTW management commands.</aqua>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
 	} {
 		cmd.Register(c)
 	}
