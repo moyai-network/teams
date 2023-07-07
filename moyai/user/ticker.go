@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/koth"
 	"strings"
 	"time"
 
@@ -219,10 +220,9 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.pearl", cd.Remaining().Seconds()))
 			}
 
-			// TODO: implement special abilities
-			//if cd := u.CoolDowns().SpecialAbilities(); cd.Active() {
-			//_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.abilities", cd.Remaining().Seconds()))
-			//}
+			if cd := h.ability; cd.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.abilities", cd.Remaining().Seconds()))
+			}
 
 			if cd := h.goldenApple; cd.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.golden.apple", cd.Remaining().Seconds()))
@@ -234,14 +234,13 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.stray.energy", h.energy.Load()))
 			}
 
-			// TODO: implement KOTHs
-			/*if k, ok := koth.Running(); ok {
+			if k, ok := koth.Running(); ok {
 				t := time.Until(k.Time())
 				if _, ok := k.Capturing(); !ok {
 					t = time.Minute * 5
 				}
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
-			}*/
+			}
 
 			if len(sb.Lines()) == 5 {
 				sb.Remove(4)
