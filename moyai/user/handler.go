@@ -1,12 +1,15 @@
 package user
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -60,6 +63,8 @@ type Handler struct {
 
 	xuid    string
 	logTime time.Time
+
+	sign cube.Pos
 
 	pearl       *moose.CoolDown
 	rogue       *moose.CoolDown
@@ -339,6 +344,96 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	}
 }
 
+func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, newText string) {
+	ctx.Cancel()
+	if !frontSide {
+		return
+	}
+
+	u, err := data.LoadUser(h.p.Name(), h.XUID())
+	if err != nil {
+		ctx.Cancel()
+		return
+	}
+	for _, a := range area.Protected(h.p.World()) {
+		if a.Vec3WithinOrEqualXZ(h.p.Position()) {
+			if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
+				ctx.Cancel()
+				return
+			}
+		}
+	}
+
+	lines := strings.Split(newText, "\n")
+	if len(lines) <= 0 {
+		return
+	}
+
+	switch strings.ToLower(lines[0]) {
+	case "[elevator]":
+		if len(lines) < 2 {
+			return
+		}
+		var newLines []string
+
+		newLines = append(newLines, text.Colourf("<dark-red>[Elevator]</dark-red>"))
+		switch strings.ToLower(lines[1]) {
+		case "up":
+			newLines = append(newLines, text.Colourf("Up"))
+		case "down":
+			newLines = append(newLines, text.Colourf("Down"))
+		default:
+			return
+		}
+		time.AfterFunc(time.Millisecond, func() {
+			b := h.p.World().Block(h.sign)
+			if s, ok := b.(block.Sign); ok {
+				h.p.World().SetBlock(h.sign, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+					Text:       strings.Join(newLines, "\n"),
+					BaseColour: s.Front.BaseColour,
+					Glowing:    false,
+				}, Back: s.Back}, nil)
+			}
+		})
+	case "[shop]":
+		if len(lines) < 4 {
+			return
+		}
+
+		if !u.Roles.Contains(role.Admin{}) {
+			h.p.World().SetBlock(h.sign, block.Air{}, nil)
+			return
+		}
+
+		var newLines []string
+		spl := strings.Split(lines[1], " ")
+		choice := strings.ToLower(spl[0])
+		q, _ := strconv.Atoi(spl[1])
+		price, _ := strconv.Atoi(lines[3])
+		switch choice {
+		case "buy":
+			newLines = append(newLines, text.Colourf("<green>[Buy]</green>"))
+		case "sell":
+			newLines = append(newLines, text.Colourf("<red>[Sell]</red>"))
+		}
+
+		newLines = append(newLines, formatItemName(lines[2]))
+		newLines = append(newLines, fmt.Sprint(q))
+		newLines = append(newLines, fmt.Sprintf("$%d", price))
+
+		time.AfterFunc(time.Millisecond, func() {
+			b := h.p.World().Block(h.sign)
+			if s, ok := b.(block.Sign); ok {
+				h.p.World().SetBlock(h.sign, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+					Text:       strings.Join(newLines, "\n"),
+					BaseColour: s.Front.BaseColour,
+					Glowing:    false,
+				}, Back: s.Back}, nil)
+			}
+		})
+	}
+}
+
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, _ *time.Duration, src world.DamageSource) {
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
@@ -577,6 +672,140 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
+			}
+		}
+	}
+	if s, ok := h.p.World().Block(pos).(block.Sign); ok {
+		ctx.Cancel()
+		if cd := h.itemUse; cd.Active(block.Sign{}) {
+			return
+		} else {
+			cd.Set(block.Sign{}, time.Second/4)
+		}
+
+		lines := strings.Split(s.Front.Text, "\n")
+		if len(lines) < 2 {
+			return
+		}
+		if strings.Contains(strings.ToLower(lines[0]), "[elevator]") {
+			blockFound := false
+			if strings.Contains(strings.ToLower(lines[1]), "up") {
+				for y := pos.Y() + 1; y < 256; y++ {
+					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
+						if !blockFound {
+							h.p.Message(text.Colourf("<red>There is no block above the sign</red>"))
+							return
+						}
+						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y + 1, pos.Z()}).(block.Air); !ok {
+							h.p.Message(text.Colourf("<red>There is not enough space to teleport up</red>"))
+							return
+						}
+						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y()), 0}))
+						break
+					} else {
+						blockFound = true
+					}
+				}
+			} else if strings.Contains(strings.ToLower(lines[1]), "down") {
+				for y := pos.Y() - 1; y > 0; y-- {
+					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
+						if !blockFound {
+							h.p.Message(text.Colourf("<red>There is not enough space to teleport down</red>"))
+							return
+						}
+						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y - 1, pos.Z()}).(block.Air); !ok {
+							h.p.Message(text.Colourf("<red>There is not enough space to teleport down</red>"))
+							return
+						}
+						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y() - 1), 0}))
+						break
+					} else {
+						blockFound = true
+					}
+				}
+			}
+		}
+
+		title := strings.ToLower(moose.StripMinecraftColour(lines[0]))
+		if strings.Contains(title, "[buy]") ||
+			strings.Contains(title, "[sell]") &&
+				(area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position())) {
+			it, ok := world.ItemByName("minecraft:"+strings.ReplaceAll(strings.ToLower(lines[1]), " ", "_"), 0)
+			if !ok {
+				return
+			}
+
+			q, err := strconv.Atoi(lines[2])
+			if err != nil {
+				return
+			}
+
+			price, err := strconv.ParseFloat(strings.Trim(lines[3], "$"), 64)
+			if err != nil {
+				return
+			}
+
+			choice := strings.ReplaceAll(title, " ", "")
+			choice = strings.ReplaceAll(choice, "[", "")
+			choice = strings.ReplaceAll(choice, "]", "")
+
+			u, err := data.LoadUser(h.p.Name(), h.XUID())
+			if err != nil {
+				return
+			}
+			switch choice {
+			case "buy":
+				if u.Balance < price {
+					h.p.Message("shop.balance.insufficient")
+					return
+				}
+				if !ok {
+					return
+				}
+				// restart: should we do this?
+				u.Balance = u.Balance - price
+				_ = data.SaveUser(u)
+				h.AddItemOrDrop(item.NewStack(it, q))
+				h.Message("shop.buy.success", q, lines[1])
+			case "sell":
+				inv := h.Player().Inventory()
+				count := 0
+				var items []item.Stack
+				for _, slotItem := range inv.Slots() {
+					n1, _ := it.EncodeItem()
+					if slotItem.Empty() {
+						continue
+					}
+					n2, _ := slotItem.Item().EncodeItem()
+					if n1 == n2 {
+						count += slotItem.Count()
+						items = append(items, slotItem)
+					}
+				}
+				if count >= q {
+					u.Balance = u.Balance + float64(count/q)*price
+					_ = data.SaveUser(u)
+					h.Message("shop.sell.success", count, lines[1])
+				} else {
+					h.Message("shop.sell.fail")
+					return
+				}
+				for i, v := range items {
+					if i >= count {
+						break
+					}
+					amt := count - (count % q)
+					if amt > 64 {
+						amt = 64
+					}
+					err := inv.RemoveItemFunc(amt, func(stack item.Stack) bool {
+						return stack.Equal(v)
+					})
+					if err != nil {
+						// WHO CARES UR PROBLEM
+						//log.Fatal(err)
+					}
+				}
 			}
 		}
 	}
@@ -977,6 +1206,15 @@ func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
 			}
 		}
 	}
+}
+
+func formatItemName(s string) string {
+	split := strings.Split(s, "_")
+	for i, str := range split {
+		upperCasesPrefix := unicode.ToUpper(rune(str[0]))
+		split[i] = string(upperCasesPrefix) + str[1:]
+	}
+	return strings.Join(split, " ")
 }
 
 // clearWall clears the users walls or lowers the remaining duration.
