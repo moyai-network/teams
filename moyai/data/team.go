@@ -165,7 +165,7 @@ func (t Team) WithRegenerationTime(regen time.Time) Team {
 }
 
 // Frozen returns whether the team is frozen.
-func (t *Team) Frozen() bool {
+func (t Team) Frozen() bool {
 	return time.Now().Before(t.RegenerationTime)
 }
 
@@ -176,13 +176,13 @@ func (t Team) WithDTR(dtr float64) Team {
 }
 
 // MaxDTR returns the max DTR of the faction.
-func (t *Team) MaxDTR() float64 {
+func (t Team) MaxDTR() float64 {
 	dtr := 1.1 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
 }
 
 // DTRString returns the DTR string of the faction
-func (t *Team) DTRString() string {
+func (t Team) DTRString() string {
 	if t.DTR == t.MaxDTR() {
 		return text.Colourf("<green>%.1f%s</green>", t.DTR, t.DTRDot())
 	}
@@ -193,7 +193,7 @@ func (t *Team) DTRString() string {
 }
 
 // DTRDot returns the DTR dot of the faction.
-func (t *Team) DTRDot() string {
+func (t Team) DTRDot() string {
 	if t.DTR == t.MaxDTR() {
 		return "<green>■</green>"
 	}
@@ -234,7 +234,7 @@ func (t Team) Member(name string) bool {
 }
 
 // Information returns a formatted string containing the information of the faction.
-func (t *Team) Information(srv *server.Server) string {
+func (t Team) Information(srv *server.Server) string {
 	var formattedRegenerationTime string
 	var formattedDtr string
 	var formattedLeader string
