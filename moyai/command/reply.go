@@ -68,6 +68,8 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	t.LastMessageFrom = u.Name
+	_ = data.SaveUser(t)
+
 	//target.SendCustomSound("random.orb", 1, 1, false)
 	h.Message("command.whisper.to", tColour, tMsg)
 	target.Message("command.whisper.from", uColour, uMsg)
