@@ -96,17 +96,6 @@ func init() {
 	teamCollection = db.Collection("teams")
 }
 
-func ResetTeams() {
-	for _, t := range Teams() {
-		DisbandTeam(t)
-	}
-}
-
-func ResetUsers() {
-	users := db.Collection("users")
-	_, _ = users.DeleteMany(context.Background(), bson.M{})
-}
-
 // Close closes and saves the data.
 func Close() error {
 	usersMu.Lock()

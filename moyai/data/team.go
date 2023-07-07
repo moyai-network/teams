@@ -2,13 +2,11 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/df-mc/dragonfly/server"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -231,62 +229,6 @@ func (t Team) Member(name string) bool {
 		}
 	}
 	return false
-}
-
-// Information returns a formatted string containing the information of the faction.
-func (t Team) Information(srv *server.Server) string {
-	var formattedRegenerationTime string
-	var formattedDtr string
-	var formattedLeader string
-	var formattedCaptains []string
-	var formattedMembers []string
-	if time.Now().Before(t.RegenerationTime) {
-		formattedRegenerationTime = text.Colourf("\n <yellow>Time Until Regen</yellow> <blue>%s</blue>", time.Until(t.RegenerationTime).Round(time.Second))
-	}
-	formattedDtr = t.DTRString()
-	var onlineCount int
-	for _, p := range t.Members {
-		_, ok := srv.PlayerByName(p.DisplayName)
-		if ok {
-			if t.Leader(p.Name) {
-				formattedLeader = text.Colourf("<green>%s</green>", p.DisplayName)
-			} else if t.Captain(p.Name) {
-				formattedCaptains = append(formattedCaptains, text.Colourf("<green>%s</green>", p.DisplayName))
-			} else {
-				formattedMembers = append(formattedMembers, text.Colourf("<green>%s</green>", p.DisplayName))
-			}
-			onlineCount++
-		} else {
-			if t.Leader(p.Name) {
-				formattedLeader = text.Colourf("<grey>%s</grey>", p.DisplayName)
-			} else if t.Captain(p.Name) {
-				formattedCaptains = append(formattedCaptains, text.Colourf("<grey>%s</grey>", p.DisplayName))
-			} else {
-				formattedMembers = append(formattedMembers, text.Colourf("<grey>%s</grey>", p.DisplayName))
-			}
-		}
-	}
-	if len(formattedCaptains) == 0 {
-		formattedCaptains = []string{"None"}
-	}
-	if len(formattedMembers) == 0 {
-		formattedMembers = []string{"None"}
-	}
-	var home string
-	h := t.Home
-	if h.X() == 0 && h.Y() == 0 && h.Z() == 0 {
-		home = "not set"
-	} else {
-		home = fmt.Sprintf("%.0f, %.0f, %.0f", h.X(), h.Y(), h.Z())
-	}
-	return text.Colourf(
-		"\uE000\n <blue>%s</blue> <grey>[%d/%d]</grey> <dark-aqua>-</dark-aqua> <yellow>HQ:</yellow> %s\n "+
-			"<yellow>Leader: </yellow>%s\n "+
-			"<yellow>Captains: </yellow>%s\n "+
-			"<yellow>Members: </yellow>%s\n "+
-			"<yellow>Balance: </yellow><blue>$%2.f</blue>\n "+
-			"<yellow>Points: </yellow><blue>%d</blue>\n "+
-			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, formattedDtr, formattedRegenerationTime)
 }
 
 // Member represents a team member.

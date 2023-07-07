@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -299,19 +300,19 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "user.team-less"))
 			return
 		}
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		return
 	}
 	var anyFound bool
 
 	tm, ok := data.LoadTeam(name)
 	if ok {
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
 	tm, ok = u.Team()
 	if ok {
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
 	if !anyFound {
@@ -372,19 +373,19 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "user.team-less"))
 			return
 		}
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		return
 	}
 	var anyFound bool
 
 	tm, ok := data.LoadTeam(name)
 	if ok {
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
 	tm, ok = u.Team()
 	if ok {
-		o.Print(tm.Information(t.srv))
+		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
 	if !anyFound {
@@ -753,17 +754,6 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	us.Home().Teleport(p, dur, h)
 }
 
-func onlineCount(tm data.Team) int {
-	var count int
-	for _, m := range tm.Members {
-		_, ok := user.Lookup(m.Name)
-		if ok {
-			count++
-		}
-	}
-	return count
-}
-
 // Run ...
 func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 	p, ok := s.(*player.Player)
@@ -780,7 +770,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	sort.Slice(teams, func(i, j int) bool {
-		return onlineCount(teams[i]) > onlineCount(teams[j])
+		return user.TeamOnlineCount(teams[i]) > user.TeamOnlineCount(teams[j])
 	})
 	sort.Slice(teams, func(i, j int) bool {
 		return teams[i].DTR < teams[j].DTR
@@ -810,9 +800,9 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 			dtr = text.Colourf("<red>%.1f■</red>", tm.DTR)
 		}
 		if ok && userTeam.Name == tm.Name {
-			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s <yellow>DTR</yellow>\n", i+1, tm.DisplayName, onlineCount(tm), len(tm.Members), dtr)
+			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s <yellow>DTR</yellow>\n", i+1, tm.DisplayName, user.TeamOnlineCount(tm), len(tm.Members), dtr)
 		} else {
-			list += text.Colourf(" <grey>%d. <red>%s</red> (<green>%d/%d</green>)</grey> %s <yellow>DTR</yellow>\n", i+1, tm.DisplayName, onlineCount(tm), len(tm.Members), dtr)
+			list += text.Colourf(" <grey>%d. <red>%s</red> (<green>%d/%d</green>)</grey> %s <yellow>DTR</yellow>\n", i+1, tm.DisplayName, user.TeamOnlineCount(tm), len(tm.Members), dtr)
 		}
 	}
 	list += "\uE000"
@@ -1411,4 +1401,60 @@ func (teamMember) Options(src cmd.Source) []string {
 	}
 
 	return members
+}
+
+// teamInformationFormat returns a formatted string containing the information of the faction.
+func teamInformationFormat(t data.Team, srv *server.Server) string {
+	var formattedRegenerationTime string
+	var formattedDtr string
+	var formattedLeader string
+	var formattedCaptains []string
+	var formattedMembers []string
+	if time.Now().Before(t.RegenerationTime) {
+		formattedRegenerationTime = text.Colourf("\n <yellow>Time Until Regen</yellow> <blue>%s</blue>", time.Until(t.RegenerationTime).Round(time.Second))
+	}
+	formattedDtr = t.DTRString()
+	var onlineCount int
+	for _, p := range t.Members {
+		_, ok := srv.PlayerByName(p.DisplayName)
+		if ok {
+			if t.Leader(p.Name) {
+				formattedLeader = text.Colourf("<green>%s</green>", p.DisplayName)
+			} else if t.Captain(p.Name) {
+				formattedCaptains = append(formattedCaptains, text.Colourf("<green>%s</green>", p.DisplayName))
+			} else {
+				formattedMembers = append(formattedMembers, text.Colourf("<green>%s</green>", p.DisplayName))
+			}
+			onlineCount++
+		} else {
+			if t.Leader(p.Name) {
+				formattedLeader = text.Colourf("<grey>%s</grey>", p.DisplayName)
+			} else if t.Captain(p.Name) {
+				formattedCaptains = append(formattedCaptains, text.Colourf("<grey>%s</grey>", p.DisplayName))
+			} else {
+				formattedMembers = append(formattedMembers, text.Colourf("<grey>%s</grey>", p.DisplayName))
+			}
+		}
+	}
+	if len(formattedCaptains) == 0 {
+		formattedCaptains = []string{"None"}
+	}
+	if len(formattedMembers) == 0 {
+		formattedMembers = []string{"None"}
+	}
+	var home string
+	h := t.Home
+	if h.X() == 0 && h.Y() == 0 && h.Z() == 0 {
+		home = "not set"
+	} else {
+		home = fmt.Sprintf("%.0f, %.0f, %.0f", h.X(), h.Y(), h.Z())
+	}
+	return text.Colourf(
+		"\uE000\n <blue>%s</blue> <grey>[%d/%d]</grey> <dark-aqua>-</dark-aqua> <yellow>HQ:</yellow> %s\n "+
+			"<yellow>Leader: </yellow>%s\n "+
+			"<yellow>Captains: </yellow>%s\n "+
+			"<yellow>Members: </yellow>%s\n "+
+			"<yellow>Balance: </yellow><blue>$%2.f</blue>\n "+
+			"<yellow>Points: </yellow><blue>%d</blue>\n "+
+			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, formattedDtr, formattedRegenerationTime)
 }
