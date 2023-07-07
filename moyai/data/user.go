@@ -109,6 +109,7 @@ func DefaultUser(xuid, name string) User {
 		Invitations: moose.NewMappedCoolDown[string](),
 		DeathBan:    moose.NewCoolDown(),
 		PVP:         moose.NewCoolDown(),
+		Report:      moose.NewCoolDown(),
 		Balance:     250,
 		SOTW:        true,
 	}
@@ -137,6 +138,7 @@ func LoadUser(name string, xuid string) (User, error) {
 	u.PVP = moose.NewCoolDown()
 	u.Invitations = moose.NewMappedCoolDown[string]()
 	u.Kits = moose.NewMappedCoolDown[string]()
+	u.Report = moose.NewCoolDown()
 
 	err := result.Decode(&u)
 	if err != nil {
