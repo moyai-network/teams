@@ -91,8 +91,6 @@ type Handler struct {
 	scramblerHits map[string]int
 	pearlDisabled bool
 
-	sotw bool
-
 	logout *moose.Teleportation
 	stuck  *moose.Teleportation
 	home   *moose.Teleportation
@@ -1207,16 +1205,6 @@ func (u *Handler) TogglePearlDisable() {
 // CanSendMessage returns true if the user can send a message.
 func (h *Handler) CanSendMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
-}
-
-// ToggleSOTW toggles the SOTW of the user.
-func (u *Handler) ToggleSOTW() {
-	u.sotw = !u.sotw
-}
-
-// SOTW returns if the user has SOTW enabled.
-func (u *Handler) SOTW() bool {
-	return u.sotw
 }
 
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {

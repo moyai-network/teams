@@ -67,7 +67,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 
 		if _, ok := sotw.Running(); ok && u.SOTW {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
-		} else if ok := u.PVP.Active(); ok {
+		} else if u.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
 		}
 
