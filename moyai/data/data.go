@@ -2,10 +2,11 @@ package data
 
 import (
 	"context"
+	"strings"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"strings"
 )
 
 // Focus is the focus information for a team
@@ -93,6 +94,17 @@ func init() {
 
 	userCollection = db.Collection("users")
 	teamCollection = db.Collection("teams")
+}
+
+func ResetTeams() {
+	for _, t := range Teams() {
+		DisbandTeam(t)
+	}
+}
+
+func ResetUsers() {
+	users := db.Collection("users")
+	_, _ = users.DeleteMany(context.Background(), bson.M{})
 }
 
 // Close closes and saves the data.

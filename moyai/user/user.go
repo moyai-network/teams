@@ -13,6 +13,7 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/moose/sets"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
@@ -23,6 +24,8 @@ var (
 	playersMu   sync.Mutex
 	players     = map[string]*Handler{}
 	playersXUID = map[string]string{}
+
+	frozen = sets.New[string]()
 )
 
 // All returns a slice of all the users.
