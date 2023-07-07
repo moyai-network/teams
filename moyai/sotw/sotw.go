@@ -42,5 +42,5 @@ func Save() {
 
 // Running returns the SOTW time and if it is running
 func Running() (time.Time, bool) {
-	return sotw, !sotw.IsZero()
+	return sotw, !sotw.IsZero() && time.Now().Before(sotw)
 }

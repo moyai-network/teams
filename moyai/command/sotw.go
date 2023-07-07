@@ -42,11 +42,6 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 		u.SOTW = true
 		_ = data.SaveUser(u)
 	}
-	for _, u := range user.All() {
-		if !u.SOTW() {
-			u.ToggleSOTW()
-		}
-	}
 	user.Broadcast("sotw.commenced")
 }
 
@@ -69,26 +64,27 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 			panic(err)
 		}
 	}
-	for _, u := range user.All() {
-		if u.SOTW() {
-			u.ToggleSOTW()
-		}
-	}
 	user.Broadcast("sotw.ended")
 }
 
 // Run ...
 func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
-	u, ok := user.Lookup(s.(*player.Player).Name())
+	h, ok := user.Lookup(s.(*player.Player).Name())
 	if !ok {
 		return
 	}
-	if !u.SOTW() {
-		u.Message("sotw.disabled.already")
+	u, err := data.LoadUser(h.Player().Name(), "")
+	if err != nil {
 		return
 	}
-	u.Message("sotw.disabled")
-	u.ToggleSOTW()
+	if !u.SOTW {
+		h.Message("sotw.disabled.already")
+		return
+	}
+	h.Message("sotw.disabled")
+
+	u.SOTW = false
+	_ = data.SaveUser(u)
 }
 
 // Allow ...
