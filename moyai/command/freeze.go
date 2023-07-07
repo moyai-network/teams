@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 )
 
@@ -34,7 +35,11 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if t.Frozen() {
+	u, err := data.LoadUser(t.Player().Name(), t.XUID())
+	if err != nil {
+		return
+	}
+	if u.Frozen {
 		user.Alert(s, "staff.alert.unfreeze", target.Name())
 		o.Print(lang.Translatef(l, "command.freeze.unfreeze", target.Name()))
 		t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.unfrozen"))
@@ -43,7 +48,8 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		o.Print(lang.Translatef(l, "command.freeze.freeze", target.Name()))
 		t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.frozen"))
 	}
-	t.ToggleFreeze()
+	u.Frozen = !u.Frozen
+	_ = data.SaveUser(u)
 }
 
 // Allow ...

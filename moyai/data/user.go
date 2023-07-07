@@ -51,6 +51,8 @@ type User struct {
 	// Frozen is the frozen state of the user.
 	Frozen bool
 
+	// LastMessageFrom is the name of the player that sent the user a message.
+	LastMessageFrom string
 	// Balance is the balance in the user's bank.
 	Balance float64
 	// Invitations is a map of the teams that invited the user, with the invitation's expiry.
@@ -61,6 +63,8 @@ type User struct {
 	Lives int
 	// DeathBan is the death-ban cool-down.
 	DeathBan *moose.CoolDown
+	// Report is the report cool-down.
+	Report *moose.CoolDown
 	// SOTW is whether the user their SOTW timer enabled, or not.
 	SOTW bool
 	// Reclaimed is whether the user has already used their reclaim perk.

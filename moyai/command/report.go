@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai/data"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -19,9 +20,8 @@ type Report struct {
 func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
 	p := s.(*player.Player)
-	u, ok := user.Lookup(p.Name())
-	if !ok {
-		// User somehow left midway through, just stop in our tracks.
+	u, err := data.LoadUser(p.Name(), "")
+	if err != nil {
 		return
 	}
 	if len(r.Targets) < 1 {
@@ -37,11 +37,13 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.report.self"))
 		return
 	}
-	if exp := u.ReportSince().Add(time.Minute); exp.After(time.Now()) {
-		o.Error(lang.Translatef(l, "command.report.cooldown", time.Until(exp).Round(time.Millisecond*10)))
+	if u.Report.Active() {
+		o.Error(lang.Translatef(l, "command.report.cooldown", u.Report.Remaining().Round(time.Millisecond*10)))
 		return
 	}
-	u.RenewReportSince()
+	u.Report.Set(time.Minute)
+	_ = data.SaveUser(u)
+
 	o.Print(lang.Translatef(l, "command.report.success"))
 	user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
 	// webhook.Send(webhook.Report, hook.Webhook{

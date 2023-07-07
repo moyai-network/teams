@@ -22,7 +22,16 @@ type Whisper struct {
 // Run ...
 func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	u, err := data.LoadUser(s.(*player.Player).Name(), "")
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	h, ok := user.Lookup(p.Name())
+	if !ok {
+		// The user somehow left in the middle of this, so just stop in our tracks.
+		return
+	}
+	u, err := data.LoadUser(p.Name(), h.XUID())
 	if err != nil {
 		return
 	}
@@ -55,15 +64,15 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}*/
 
-	uTag, uMsg := text.Colourf("<white>%s</white>", u.Name), text.Colourf("<white>%s</white>", msg)
-	tTag, tMsg := text.Colourf("<white>%s</white>", t.Name), text.Colourf("<white>%s</white>", msg)
+	uTag, uMsg := text.Colourf("<white>%s</white>", u.DisplayName), text.Colourf("<white>%s</white>", msg)
+	tTag, tMsg := text.Colourf("<white>%s</white>", t.DisplayName), text.Colourf("<white>%s</white>", msg)
 	if _, ok := u.Roles.Highest().(role.Default); !ok {
 		uMsg = t.Roles.Highest().Colour(msg)
-		uTag = u.Roles.Highest().Colour(u.Name)
+		uTag = u.Roles.Highest().Colour(u.DisplayName)
 	}
 	if _, ok := t.Roles.Highest().(role.Default); !ok {
 		tMsg = u.Roles.Highest().Colour(msg)
-		tTag = t.Roles.Highest().Colour(t.Name)
+		tTag = t.Roles.Highest().Colour(t.DisplayName)
 	}
 
 	uH, ok := user.Lookup(u.Name)
@@ -76,7 +85,9 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	tH.SetLastMessageFrom(uH.Player())
+	t.LastMessageFrom = u.Name
+	_ = data.SaveUser(t)
+
 	tH.Player().PlaySound(sound.Experience{})
 	uH.Player().Message("command.whisper.to", tTag, tMsg)
 	tH.Player().Message("command.whisper.from", uTag, uMsg)

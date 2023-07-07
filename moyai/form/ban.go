@@ -127,7 +127,7 @@ func (b ban) Submit(s form.Submitter) {
 			return
 		}
 
-		tH, ok := user.Lookup(t.XUID)
+		tH, ok := user.Lookup(t.Name)
 		t.Ban = punishment
 
 		if ok {

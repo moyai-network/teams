@@ -13,7 +13,6 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/moose/sets"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
@@ -21,11 +20,8 @@ import (
 )
 
 var (
-	playersMu   sync.Mutex
-	players     = map[string]*Handler{}
-	playersXUID = map[string]string{}
-
-	frozen = sets.New[string]()
+	playersMu sync.Mutex
+	players   = map[string]*Handler{}
 )
 
 // All returns a slice of all the users.
@@ -60,7 +56,7 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 func Lookup(name string) (*Handler, bool) {
 	playersMu.Lock()
 	defer playersMu.Unlock()
-	ha, ok := players[name]
+	ha, ok := players[strings.ToLower(name)]
 	return ha, ok
 }
 

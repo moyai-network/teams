@@ -13,6 +13,7 @@ require (
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4
 	github.com/go-gl/mathgl v1.0.0
+	github.com/google/uuid v1.3.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/moyai-network/moose v0.0.0-20230705153837-baa728cfcaa6
 	github.com/paroxity/portal v1.0.8
@@ -33,7 +34,6 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect

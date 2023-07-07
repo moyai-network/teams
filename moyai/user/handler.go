@@ -14,13 +14,11 @@ import (
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/moose/sets"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/slices"
 
 	"github.com/df-mc/atomic"
@@ -59,8 +57,9 @@ var (
 
 type Handler struct {
 	player.NopHandler
-	s       *session.Session
-	p       *player.Player
+	s *session.Session
+	p *player.Player
+
 	xuid    string
 	logTime time.Time
 
@@ -71,12 +70,6 @@ type Handler struct {
 	itemUse   moose.MappedCoolDown[world.Item]
 	bardItem  moose.MappedCoolDown[world.Item]
 	strayItem moose.MappedCoolDown[world.Item]
-
-	clickWatchersMu sync.Mutex
-	clickWatchers   sets.Set[*Handler]
-	watchingClick   *Handler
-
-	reportSince atomic.Value[time.Time]
 
 	abilities moose.MappedCoolDown[any]
 
@@ -94,15 +87,12 @@ type Handler struct {
 	lastScoreBoard atomic.Value[*scoreboard.Scoreboard]
 	area           atomic.Value[moose.NamedArea]
 
-	lastMessageFrom atomic.Value[string]
-	lastMessage     atomic.Value[time.Time]
+	lastMessage atomic.Value[time.Time]
 
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
 
 	claimPos [2]mgl64.Vec2
-
-	frozen atomic.Bool
 
 	close chan struct{}
 }
@@ -119,8 +109,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		itemUse:   moose.NewMappedCoolDown[world.Item](),
 		bardItem:  moose.NewMappedCoolDown[world.Item](),
 		strayItem: moose.NewMappedCoolDown[world.Item](),
-
-		clickWatchers: sets.New[*Handler](),
 
 		combat: moose.NewTag(nil, nil),
 		archer: moose.NewTag(nil, nil),
@@ -141,6 +129,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	s := player_session(p)
 	u, _ := data.LoadUser(p.Name(), xuid)
 
+	if u.Frozen {
+		p.SetImmobile()
+	}
+
 	u.DisplayName = p.Name()
 	u.Name = strings.ToLower(p.Name())
 	u.XUID = xuid
@@ -155,14 +147,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	ha.logTime = time.Now()
 
 	playersMu.Lock()
-	players[p.XUID()] = ha
-	playersXUID[p.Name()] = xuid
+	players[strings.ToLower(p.Name())] = ha
 	playersMu.Unlock()
-
-	if frozen.Contains(p.Name()) {
-		p.SetImmobile()
-		ha.frozen.Toggle()
-	}
 
 	go startTicker(ha)
 
@@ -579,11 +565,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 }
 
 func (h *Handler) HandleQuit() {
-	logrus.Info("DIsconnected")
 	h.close <- struct{}{}
 	p := h.p
 
-	u, _ := data.LoadUser(p.Name(), playersXUID[p.Name()])
+	u, _ := data.LoadUser(p.Name(), h.xuid)
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 
@@ -724,95 +709,9 @@ func (h *Handler) DropItem(it item.Stack) {
 	w.AddEntity(ent)
 }
 
-// Frozen returns if the user is frozen.
-func (u *Handler) Frozen() bool {
-	return u.frozen.Load()
-}
-
-// ToggleFreeze toggles the frozen state of the user.
-func (u *Handler) ToggleFreeze() {
-	u.frozen.Toggle()
-}
-
-// AddClickWatcher adds a user to the clicksWatchers set.
-func (h *Handler) AddClickWatcher(user *Handler) {
-	h.clickWatchersMu.Lock()
-	defer h.clickWatchersMu.Unlock()
-	h.clickWatchers.Add(user)
-}
-
-// RemoveClickWatcher removes a user from the clicksWatchers set.
-func (h *Handler) RemoveClickWatcher(user *Handler) {
-	h.clickWatchersMu.Lock()
-	defer h.clickWatchersMu.Unlock()
-	h.clickWatchers.Delete(user)
-}
-
-// ClickWatchers returns the users watchingClick the user.
-func (h *Handler) ClickWatchers() (users []*Handler) {
-	h.clickWatchersMu.Lock()
-	for usr := range h.clickWatchers {
-		users = append(users, usr)
-	}
-	h.clickWatchersMu.Unlock()
-	return users
-}
-
-// WatchingClicks returns the user it is currently watchingClick.
-func (h *Handler) WatchingClicks() *Handler {
-	h.clickWatchersMu.Lock()
-	defer h.clickWatchersMu.Unlock()
-	return h.watchingClick
-}
-
-// StartWatchingClicks starts watchingClick the user's clicks.
-func (h *Handler) StartWatchingClicks(user *Handler) {
-	h.clickWatchersMu.Lock()
-	if h.watchingClick != nil {
-		h.watchingClick.RemoveClickWatcher(h)
-	}
-	h.watchingClick = user
-	h.clickWatchersMu.Unlock()
-	user.AddClickWatcher(h)
-}
-
-// StopWatchingClicks stops watchingClick the user's clicks.
-func (h *Handler) StopWatchingClicks() {
-	h.clickWatchersMu.Lock()
-	if h.watchingClick == nil {
-		h.clickWatchersMu.Unlock()
-		return
-	}
-	user := h.watchingClick
-	h.watchingClick = nil
-	h.clickWatchersMu.Unlock()
-	user.RemoveClickWatcher(h)
-}
-
-// RenewReportSince renews the last time the user has made a report.
-func (u *Handler) RenewReportSince() {
-	u.reportSince.Store(time.Now())
-}
-
-// ReportSince returns the last time the user has made a report.
-func (u *Handler) ReportSince() time.Time {
-	return u.reportSince.Load()
-}
-
 // CanSendMessage returns true if the user can send a message.
-func (u *Handler) CanSendMessage() bool {
-	return time.Since(u.lastMessage.Load()) > time.Second*1
-}
-
-// SetLastMessageFrom sets the player passed as the last player who messaged the user.
-func (u *Handler) SetLastMessageFrom(p *player.Player) {
-	u.lastMessageFrom.Store(p.Name())
-}
-
-// LastMessageFrom returns the last user that messaged the user.
-func (u *Handler) LastMessageFrom() (*Handler, bool) {
-	u, ok := Lookup(u.lastMessageFrom.Load())
-	return u, ok
+func (h *Handler) CanSendMessage() bool {
+	return time.Since(h.lastMessage.Load()) > time.Second*1
 }
 
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
