@@ -14,6 +14,7 @@ import (
 	"github.com/moyai-network/teams/moyai/sotw"
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
+	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
@@ -103,7 +104,7 @@ func main() {
 	for _, e := range w.Entities() {
 		w.RemoveEntity(e)
 	}
-	registerCommands()
+	registerCommands(srv)
 
 	srv.Listen()
 	for srv.Accept(acceptFunc(config.Proxy.Enabled)) {
@@ -123,10 +124,35 @@ func acceptFunc(proxy bool) func(*player.Player) {
 	}
 }
 
-func registerCommands() {
+func registerCommands(srv *server.Server) {
 	for _, c := range []cmd.Command{
-		cmd.New("team", text.Colourf("<aqua>Team management commands.</aqua>"), []string{"t", "f"}, command.TeamCreate{}, command.TeamInvite{}, command.TeamJoin{}),
-		cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
+		cmd.New("t", text.Colourf("<aqua>The main team management command.</aqua>"), []string{"f"},
+			command.TeamCreate{},
+			command.NewTeamInformation(srv),
+			//command.TeamDisband{},
+			command.TeamInvite{},
+			command.TeamJoin{},
+			command.NewTeamWho(srv),
+			command.TeamLeave{},
+			command.TeamKick{},
+			// command.TeamPromote{},
+			// command.TeamDemote{},
+			// command.TeamTop{},
+			// command.TeamClaim{},
+			// command.TeamUnClaim{},
+			// command.TeamSetHome{},
+			// command.TeamHome{},
+			// command.TeamList{},
+			// command.TeamUnFocus{},
+			// command.TeamFocusPlayer{},
+			// command.TeamFocusTeam{},
+			// command.TeamChat{},
+			// command.TeamWithdraw{},
+			// command.TeamDeposit{},
+			// command.TeamWithdrawAll{},
+			// command.TeamDepositAll{},
+			// command.TeamStuck{},
+		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
 		cmd.New("logout", text.Colourf("<aqua>Safely logout of PVP.</aqua>"), nil, command.Logout{}),
