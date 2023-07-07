@@ -4,7 +4,7 @@ Address = ':50001'
 [Server]
 Name = ''
 ShutdownMessage = 'Server closed.'
-AuthEnabled = true
+AuthEnabled = false
 JoinMessage = ''
 QuitMessage = ''
 
@@ -25,7 +25,7 @@ Required = true
 
 [Moyai]
 Tebex = ''
-Whitelisted = true
+Whitelisted = false
 Season = 1
 Start = 'Edit this!'
 End = 'Edit this!'

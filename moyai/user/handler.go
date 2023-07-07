@@ -13,10 +13,12 @@ import (
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/slices"
 
 	"github.com/df-mc/atomic"
@@ -34,6 +36,8 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
+
+	proxypacket "github.com/paroxity/portal/socket/packet"
 )
 
 var (
@@ -151,6 +155,15 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
+	if *message == "allah" {
+		h.close <- struct{}{}
+		moyai.Socket().WritePacket(&proxypacket.TransferRequest{
+			PlayerUUID: h.Player().UUID(),
+			Server:     "syn.lobby",
+		})
+		moyai.SocketUnlock()
+		return
+	}
 	u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	if err != nil {
 		return
@@ -547,15 +560,16 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 }
 
 func (h *Handler) HandleQuit() {
+	logrus.Info("DIsconnected")
 	h.close <- struct{}{}
 	p := h.p
 
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(p.Name(), playersXUID[p.Name()])
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 
 	playersMu.Lock()
-	delete(players, h.p.Handler().(*Handler).XUID())
+	delete(players, h.p.Name())
 	playersMu.Unlock()
 }
 

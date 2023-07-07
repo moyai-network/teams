@@ -33,5 +33,6 @@ func DefaultConfig() Config {
 	c.Moyai.Season = 1
 	c.Moyai.Start = "Edit this!"
 	c.Moyai.End = "Edit this!"
+	c.Proxy.Enabled = true
 	return c
 }

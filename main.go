@@ -100,27 +100,34 @@ func main() {
 }
 
 func accept(p *player.Player) {
-	config, _ := readConfig()
+	// config, err := readConfig()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
 
-	if config.Proxy.Enabled {
-		p.Handle(user.NewHandler(p, p.XUID()))
-	} else {
-		var xuid string
+	if true {
 		moyai.Socket().WritePacket(&proxypacket.PlayerInfoRequest{
 			PlayerUUID: p.UUID(),
 		})
-		logrus.Println("ALLAH1")
-		for {
-			logrus.Println("ALLAH2")
-			pk, _ := moyai.Socket().ReadPacket()
-			if pk, ok := pk.(*proxypacket.PlayerInfoResponse); ok {
-				xuid = pk.XUID
-				break
+		moyai.SocketUnlock()
+		logrus.Info("Allah1")
+		ch := moyai.PlayerInfo()
+		info := <-ch
+		logrus.Info(info)
+		if info.PlayerUUID != p.UUID() {
+			logrus.Info("Allah3")
+			inf, ok := moyai.SearchInfo(p.UUID())
+			if !ok {
+				logrus.Info("Allah4")
+				p.Disconnect("fuckshit")
 			}
-			continue
+			logrus.Info("Allah4")
+			info = inf
 		}
-
-		p.Handle(user.NewHandler(p, xuid))
+		logrus.Info("Allah5")
+		p.Handle(user.NewHandler(p, info.XUID))
+	} else {
+		p.Handle(user.NewHandler(p, p.XUID()))
 	}
 	p.SetGameMode(world.GameModeSurvival)
 }

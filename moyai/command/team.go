@@ -165,7 +165,7 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name(), "")
 	if err != nil {
 		return
 	}

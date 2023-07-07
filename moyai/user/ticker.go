@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
 	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -106,6 +107,7 @@ func startTicker(h *Handler) {
 				}
 				h.class.Store(cl)
 			}
+
 			switch h.class.Load().(type) {
 			case class.Bard:
 				if e := h.energy.Load(); e < 100-0.05 {
