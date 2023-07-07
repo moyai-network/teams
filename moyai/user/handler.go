@@ -225,6 +225,15 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
 				m.p.AddEffect(e)
+				go func() {
+					select {
+					case <-time.After(e.Duration()):
+						sortArmourEffects(h)
+						sortClassEffects(h)
+					case <-h.close:
+						return
+					}
+				}()
 			}
 
 			lvl, _ := roman.Itor(e.Level())
@@ -251,6 +260,15 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
 				m.p.AddEffect(e)
+				go func() {
+					select {
+					case <-time.After(e.Duration()):
+						sortArmourEffects(h)
+						sortClassEffects(h)
+					case <-h.close:
+						return
+					}
+				}()
 			}
 
 			lvl, _ := roman.Itor(e.Level())
