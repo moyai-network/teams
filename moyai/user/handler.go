@@ -99,6 +99,7 @@ type Handler struct {
 	area           atomic.Value[moose.NamedArea]
 
 	lastMessage atomic.Value[time.Time]
+	chatType    atomic.Value[int]
 
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
@@ -1113,6 +1114,21 @@ func (h *Handler) Logout() *moose.Teleportation {
 	return h.logout
 }
 
+func (h *Handler) Stuck() *moose.Teleportation {
+	return h.stuck
+}
+
+func (h *Handler) Home() *moose.Teleportation {
+	return h.home
+}
+
+// UpdateState updates the user's state to its viewers.
+func (u *Handler) UpdateState() {
+	for _, v := range u.viewers() {
+		v.ViewEntityState(u.p)
+	}
+}
+
 // AddItemOrDrop adds an item to the user's inventory or drops it if the inventory is full.
 func (h *Handler) AddItemOrDrop(it item.Stack) {
 	if _, err := h.p.Inventory().AddItem(it); err != nil {
@@ -1207,6 +1223,18 @@ func (h *Handler) CanSendMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
 }
 
+// UpdateChatType updates the chat type for the user.
+// 1 is global, 2 is team, 3 is staff
+func (u *Handler) UpdateChatType(t int) {
+	u.chatType.Store(t)
+}
+
+// ChatType returns the chat type the user is currently using.
+// 1 is global, 2 is team, 3 is staff
+func (u *Handler) ChatType() int {
+	return u.chatType.Load()
+}
+
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
 	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
 	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
@@ -1275,6 +1303,17 @@ func (h *Handler) clearWall() {
 		h.wallBlocks[p] = duration - 0.1
 	}
 	h.wallBlocksMu.Unlock()
+}
+
+// viewers returns a list of all viewers of the Player.
+func (u *Handler) viewers() []world.Viewer {
+	viewers := u.p.World().Viewers(u.p.Position())
+	for _, v := range viewers {
+		if v == u.s {
+			return viewers
+		}
+	}
+	return append(viewers, u.s)
 }
 
 // blockReplaceable checks if the combat wall should replace a block.

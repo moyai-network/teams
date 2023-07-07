@@ -96,6 +96,44 @@ func (t Team) WithoutMember(m Member) Team {
 	return t
 }
 
+// Promote promotes a member of the faction.
+func (t Team) Promote(name string) Team {
+	var m Member
+	var l Member
+	for _, me := range t.Members {
+		if me.Name == name {
+			m = me
+		}
+		if t.Leader(me.Name) {
+			l = me
+		}
+	}
+	switch m.Rank {
+	case 1:
+		m.Rank = 2
+	case 2:
+		l.Rank = 2
+		m.Rank = 3
+	}
+
+	return t
+}
+
+// Demote demotes a member of the faction.
+func (t Team) Demote(name string) Team {
+	var m Member
+	for _, me := range t.Members {
+		if me.Name == name {
+			m = me
+		}
+	}
+	if m.Rank == 2 {
+		m.Rank = 1
+	}
+
+	return t
+}
+
 // WithClaim returns the team with the given claim area.
 func (t Team) WithClaim(claim moose.Area) Team {
 	t.Claim = claim
