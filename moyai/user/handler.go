@@ -523,7 +523,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 		if ha := target.Handler().(*Handler); !class.Compare(h.class.Load(), class.Archer{}) && class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
 			ctx.Cancel()
-			ha.archer.Set(time.Second * 10)
+			h.archer.Set(time.Second * 10)
 
 			dist := h.p.Position().Sub(target.Position()).Len()
 			d := math.Round(dist)
