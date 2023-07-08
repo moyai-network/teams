@@ -54,6 +54,10 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	if config.Proxy.Enabled {
+		moyai.NewProxySocket()
+	}
+
 	chat.Global.Subscribe(chat.StdoutSubscriber{})
 
 	c, err := config.Config(log)
