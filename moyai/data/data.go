@@ -2,8 +2,6 @@ package data
 
 import (
 	"context"
-	"strings"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -104,7 +102,7 @@ func Close() error {
 	defer teamsMu.Unlock()
 
 	for _, u := range users {
-		filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(u.Name)}, {"xuid": u.XUID}}}
+		filter := bson.M{"name": bson.M{"$eq": u.Name}}
 		update := bson.M{"$set": u}
 
 		res, err := userCollection.UpdateOne(ctx(), filter, update)

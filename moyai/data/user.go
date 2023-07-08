@@ -119,7 +119,7 @@ func LoadUser(name string) (User, error) {
 	if u, ok := users[strings.ToLower(name)]; ok {
 		return u, nil
 	}
-	filter := bson.M{"$eq": bson.M{"name": strings.ToLower(name)}}
+	filter := bson.M{"name": bson.M{"$eq": strings.ToLower(name)}}
 
 	result := userCollection.FindOne(ctx(), filter)
 	if err := result.Err(); err != nil {
