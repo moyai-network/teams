@@ -146,7 +146,8 @@ func (k *KOTH) StartCapturing(p User, t *data.Team, name string) bool {
 			k.capturing = nil
 			k.running = false
 			if t != nil {
-				t.WithPoints(10)
+				*t = t.WithPoints(10)
+				data.SaveTeam(*t)
 			}
 			Broadcast("koth.captured", k.Name(), name)
 			kothCrate, ok := crate.ByName("KOTH")
