@@ -135,7 +135,7 @@ func (k *KOTH) Capturing() (User, bool) {
 }
 
 // StartCapturing starts the capturing of the KOTH.
-func (k *KOTH) StartCapturing(p User, t *data.Team, name string) bool {
+func (k *KOTH) StartCapturing(p User) bool {
 	if k.capturing != nil || !k.running {
 		return false
 	}
@@ -145,11 +145,18 @@ func (k *KOTH) StartCapturing(p User, t *data.Team, name string) bool {
 		case <-time.After(300 * time.Second):
 			k.capturing = nil
 			k.running = false
-			if t != nil {
-				*t = t.WithPoints(10)
-				data.SaveTeam(*t)
+
+			u, err := data.LoadUser(p.Player().Name(), "")
+			if err != nil {
+				k.StopCapturing(p)
+				return
 			}
-			Broadcast("koth.captured", k.Name(), name)
+			if t, ok := u.Team(); ok {
+				t = t.WithPoints(10)
+				data.SaveTeam(t)
+			}
+
+			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.DisplayName))
 			kothCrate, ok := crate.ByName("KOTH")
 			if !ok {
 				panic("no crate found by the name of KOTH")

@@ -63,16 +63,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 
 	for _, u := range user.All() {
 		if ko.Area().Vec3WithinOrEqualXZ(u.Player().Position()) {
-			if usr, err := data.LoadUser(u.Player().Name(), ""); err != nil {
-				r := usr.Roles.Highest()
-				var tm *data.Team
-				if t, ok := usr.Team(); ok {
-					tm = &t
-				} else {
-					tm = nil
-				}
-				ko.StartCapturing(u, tm, r.Colour(u.Player().Name()))
-			}
+			ko.StartCapturing(u)
 		}
 	}
 
