@@ -1182,13 +1182,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if ok {
 		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
-			var tm *data.Team
-			if t, ok := u.Team(); ok {
-				tm = &t
-			} else {
-				tm = nil
-			}
-			if k.StartCapturing(us, tm, r.Colour(u.Name)) {
+			if k.StartCapturing(us) {
 				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))
 			}
 		} else {
