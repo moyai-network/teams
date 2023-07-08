@@ -242,10 +242,6 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
 			}
 
-			if len(sb.Lines()) == 5 {
-				sb.Remove(4)
-			}
-
 			_, _ = sb.WriteString("\uE000")
 			_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.footer"))
 

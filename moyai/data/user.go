@@ -162,8 +162,24 @@ func LoadUser(name string, xuid string) (User, error) {
 
 // LoadUsersCond loads users using the given filter.
 func LoadUsersCond(cond any) ([]User, error) {
-	var data []User
 	collection := db.Collection("users")
+	count, err := collection.EstimatedDocumentCount(ctx())
+	if err != nil {
+		return nil, err
+	}
+
+	var data = make([]User, count)
+
+	for d := 0; d < int(count); d++ {
+		data[d] = User{
+			DeathBan:    moose.NewCoolDown(),
+			PVP:         moose.NewCoolDown(),
+			Invitations: moose.NewMappedCoolDown[string](),
+			Kits:        moose.NewMappedCoolDown[string](),
+			Report:      moose.NewCoolDown(),
+		}
+	}
+
 	cursor, err := collection.Find(ctx(), cond)
 	if err != nil {
 		return nil, err
@@ -172,6 +188,14 @@ func LoadUsersCond(cond any) ([]User, error) {
 	if err = cursor.All(ctx(), &data); err != nil {
 		return nil, err
 	}
+
+	usersMu.Lock()
+	for i, u := range data {
+		if d, ok := users[u.Name]; ok {
+			data[i] = d
+		}
+	}
+	usersMu.Unlock()
 
 	return data, nil
 }

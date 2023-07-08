@@ -1,5 +1,5 @@
 [Network]
-Address = ':50001'
+Address = '192.168.2.157:19132'
 
 [Server]
 Name = ''
@@ -29,3 +29,6 @@ Whitelisted = false
 Season = 1
 Start = 'Edit this!'
 End = 'Edit this!'
+
+[Proxy]
+Enabled = false

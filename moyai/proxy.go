@@ -19,7 +19,7 @@ type PlayerInformation struct {
 	Address string
 }
 
-func init() {
+func NewProxySocket() *socket.Client {
 	addr, err := net.ResolveTCPAddr("tcp", "localhost:19131")
 	if err != nil {
 		panic(err)
@@ -54,6 +54,7 @@ func init() {
 			}
 		}
 	}()
+	return sock
 }
 
 func SearchInfo(id uuid.UUID) PlayerInformation {
@@ -70,6 +71,6 @@ func SearchInfo(id uuid.UUID) PlayerInformation {
 	return <-ch
 }
 
-func Socket() *socket.Client {
-	return sock
+func Socket() (*socket.Client, bool) {
+	return sock, sock != nil
 }

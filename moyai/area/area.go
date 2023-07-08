@@ -66,14 +66,14 @@ func Protected(w *world.World) []moose.NamedArea {
 
 var (
 	Overworld = Areas{
-		spawn:      moose.NewNamedArea(mgl64.Vec2{89, 89}, mgl64.Vec2{-89, -89}, text.Colourf("<green>Spawn</green>")),
+		spawn:      moose.NewNamedArea(mgl64.Vec2{-88, 88}, mgl64.Vec2{88, -88}, text.Colourf("<green>Spawn</green>")),
 		warZone:    moose.NewNamedArea(mgl64.Vec2{300, 300}, mgl64.Vec2{-300, -300}, text.Colourf("<red>WarZone</red>")),
 		wilderness: moose.NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []moose.NamedArea{
-			moose.NewNamedArea(mgl64.Vec2{-66, -7}, mgl64.Vec2{-2540, 7}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{61, 7}, mgl64.Vec2{2540, -7}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{6, -61}, mgl64.Vec2{-8, -2540}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{-8, 66}, mgl64.Vec2{7, 2540}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{-89, -16}, mgl64.Vec2{-2540, 16}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{89, 16}, mgl64.Vec2{2540, -16}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{16, -89}, mgl64.Vec2{-16, -2540}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{-16, 89}, mgl64.Vec2{16, 2540}, text.Colourf("<red>Road</red>")),
 		},
 		koths: []moose.NamedArea{
 			moose.NewNamedArea(mgl64.Vec2{426, 426}, mgl64.Vec2{526, 550}, text.Colourf("<gold>Oasis</gold>")),

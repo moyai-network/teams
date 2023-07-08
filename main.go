@@ -88,10 +88,13 @@ func main() {
 		sotw.Save()
 		for _, p := range srv.Players() {
 			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
-			_ = moyai.Socket().WritePacket(&proxypacket.TransferRequest{
-				PlayerUUID: p.UUID(),
-				Server:     "syn.lobby",
-			})
+			sock, ok := moyai.Socket()
+			if ok {
+				_ = sock.WritePacket(&proxypacket.TransferRequest{
+					PlayerUUID: p.UUID(),
+					Server:     "syn.lobby",
+				})
+			}
 		}
 		time.Sleep(time.Second)
 		_ = data.Close()
@@ -108,6 +111,7 @@ func main() {
 	w.StopTime()
 	w.SetTickRange(0)
 	w.StopThundering()
+	w.StopRaining()
 
 	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
@@ -171,6 +175,7 @@ func acceptFunc(proxy bool) func(*player.Player) {
 			p.Handle(user.NewHandler(p, p.XUID()))
 		}
 		p.SetGameMode(world.GameModeSurvival)
+		p.ShowCoordinates()
 	}
 }
 
@@ -221,11 +226,13 @@ func registerCommands(srv *server.Server) {
 		cmd.New("sotw", text.Colourf("<aqua>SOTW management commands.</aqua>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
 		cmd.New("freeze", text.Colourf("<aqua>Freeze possible cheaters.</aqua>"), nil, command.Freeze{}),
 		cmd.New("gamemode", text.Colourf("<aqua>Manage gamemodes.</aqua>"), []string{"gm"}, command.GameMode{}),
-		cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.NewHub(moyai.Socket())),
 		cmd.New("key", text.Colourf("<aqua>Manage keys</aqua>"), nil, command.Key{}, command.KeyAll{}),
 		cmd.New("koth", text.Colourf("Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
 	} {
 		cmd.Register(c)
+	}
+	if sock, ok := moyai.Socket(); ok {
+		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
 	}
 }
 

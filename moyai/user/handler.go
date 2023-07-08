@@ -2,15 +2,6 @@ package user
 
 import (
 	"fmt"
-	"math"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
-	"unicode"
-
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -25,6 +16,13 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
 	"golang.org/x/text/language"
+	"math"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -494,17 +492,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 }
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
-	*imm = time.Millisecond * 400
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
-		ctx.Cancel()
-		return
-	}
-
-	u, err := data.LoadUser(h.p.Name(), "")
-	if err != nil {
-		return
-	}
-	if u.PVP.Active() {
 		ctx.Cancel()
 		return
 	}
@@ -515,7 +503,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if t, ok := s.Attacker.(*player.Player); ok {
 			target = t
 		}
+		fmt.Println("hurt")
 		if !canAttack(h.p, target) {
+			fmt.Println("hurt")
 			ctx.Cancel()
 			return
 		}
@@ -544,13 +534,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			if d > 20 {
 				d = 20
 			}
-			*dmg = (d / 10) * 2
-			h.p.Hurt(*dmg, NoArmourAttackEntitySource{
+			damage := (d / 10) * 2
+			h.p.Hurt(damage, NoArmourAttackEntitySource{
 				Attacker: h.p,
 			})
 			h.p.KnockBack(target.Position(), 0.394, 0.394)
 
-			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
+			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
 		}
 
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
@@ -582,26 +572,23 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		ctx.Cancel()
 		p.World().PlaySound(p.Position(), sound.Explosion{})
 
-		l := entity.NewLightningWithDamage(p.Position(), 0, false, 0)
-		p.World().AddEntity(l)
+		npc := player.New(p.Name(), p.Skin(), p.Position())
+		npc.Handle(npcHandler{})
+		npc.SetAttackImmunity(time.Millisecond * 1400)
+		npc.SetNameTag(p.NameTag())
+		npc.SetScale(p.Scale())
+		p.World().AddEntity(npc)
 
-		// npc := player.New(p.Name(), p.Skin(), p.Position())
-		// npc.Handle(npcHandler{})
-		// npc.SetAttackImmunity(time.Millisecond * 1400)
-		// npc.SetNameTag(p.NameTag())
-		// npc.SetScale(p.Scale())
-		// p.World().AddEntity(npc)
+		for _, viewer := range p.World().Viewers(npc.Position()) {
+			viewer.ViewEntityAction(npc, entity.DeathAction{})
+		}
+		time.AfterFunc(time.Second*2, func() {
+			_ = npc.Close()
+		})
 
-		// for _, viewer := range p.World().Viewers(npc.Position()) {
-		// 	viewer.ViewEntityAction(npc, entity.DeathAction{})
-		// }
-		// time.AfterFunc(time.Second*2, func() {
-		// 	_ = npc.Close()
-		// })
-
-		// if att, ok := attackerFromSource(src); ok {
-		// 	npc.KnockBack(att.Position(), 0.5, 0.2)
-		// }
+		if att, ok := attackerFromSource(src); ok {
+			npc.KnockBack(att.Position(), 0.5, 0.2)
+		}
 
 		for _, e := range p.Effects() {
 			p.RemoveEffect(e.Type())
@@ -620,6 +607,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.pearl.Reset()
 		h.archer.Reset()
 
+		u, err := data.LoadUser(h.p.Name(), "")
+		if err != nil {
+			return
+		}
+		u.PVP.Set(time.Hour)
+		_ = data.SaveUser(u)
+
 		DropContents(h.p)
 		p.SetHeldItems(item.Stack{}, item.Stack{})
 
@@ -632,8 +626,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		p.Extinguish()
 		p.SetFood(20)
 		h.class.Store(class.Resolve(p))
-		u.PVP.Set(time.Hour)
-		defer data.SaveUser(u)
 		h.UpdateState()
 
 		// TODO, add deathban later
@@ -655,10 +647,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			if tm, ok := k.Team(); ok {
 				tm.WithPoints(tm.Points + 1)
-				defer data.SaveTeam(tm)
+				data.SaveTeam(tm)
 			}
 
-			defer data.SaveUser(k)
+			_ = data.SaveUser(k)
 
 			held, _ := killer.p.HeldItems()
 			heldName := held.CustomName()
@@ -1141,6 +1133,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if !newPos.ApproxEqual(p.Position()) {
 		h.home.Cancel()
 		h.logout.Cancel()
+		h.stuck.Cancel()
 	}
 
 	h.clearWall()
@@ -1228,263 +1221,6 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		h.area.Store(area.Wilderness(w))
 		h.Message("area.enter", area.Wilderness(w).Name())
 	}
-}
-
-func (h *Handler) Player() *player.Player {
-	return h.p
-}
-
-func (h *Handler) XUID() string {
-	return h.xuid
-}
-
-func (h *Handler) Message(key string, args ...interface{}) {
-	h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
-}
-
-func (h *Handler) Logout() *moose.Teleportation {
-	return h.logout
-}
-
-func (h *Handler) Stuck() *moose.Teleportation {
-	return h.stuck
-}
-
-func (h *Handler) Home() *moose.Teleportation {
-	return h.home
-}
-
-// UpdateState updates the user's state to its viewers.
-func (u *Handler) UpdateState() {
-	for _, v := range u.viewers() {
-		v.ViewEntityState(u.p)
-	}
-}
-
-// AddItemOrDrop adds an item to the user's inventory or drops it if the inventory is full.
-func (h *Handler) AddItemOrDrop(it item.Stack) {
-	if _, err := h.p.Inventory().AddItem(it); err != nil {
-		h.DropItem(it)
-	}
-}
-
-// SubtractItem subtracts d from the count of the item stack passed and returns it, if the player is in
-// survival or adventure mode.
-func (u *Handler) SubtractItem(s item.Stack, d int) item.Stack {
-	if !u.p.GameMode().CreativeInventory() && d != 0 {
-		return s.Grow(-d)
-	}
-	return s
-}
-
-func (h *Handler) Combat() *moose.Tag {
-	return h.combat
-}
-
-func (h *Handler) Pearl() *moose.CoolDown {
-	return h.pearl
-}
-
-func (h *Handler) DropItem(it item.Stack) {
-	p := h.p
-	w, pos := p.World(), p.Position()
-	ent := entity.NewItem(it, pos)
-	ent.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
-	w.AddEntity(ent)
-}
-
-// Boned returns whether the user has been boned.
-func (u *Handler) Boned() bool {
-	return u.bone.Active()
-}
-
-// BoneHits returns the number of bone hits of the user.
-func (u *Handler) BoneHits(p *player.Player) int {
-	hits, ok := u.boneHits[p.Name()]
-	if !ok {
-		return 0
-	}
-	return hits
-}
-
-// AddBoneHit adds a bone hit to the user.
-func (u *Handler) AddBoneHit(p *player.Player) {
-	u.boneHits[p.Name()]++
-	if u.boneHits[p.Name()] >= 3 {
-		u.ResetBoneHits(p)
-		u.bone.Set(15 * time.Second)
-	}
-}
-
-// ResetBoneHits resets the bone hits of the user.
-func (u *Handler) ResetBoneHits(p *player.Player) {
-	u.boneHits[p.Name()] = 0
-}
-
-// ScramblerHits returns the number of scrambler hits of the user.
-func (u *Handler) ScramblerHits(p *player.Player) int {
-	hits, ok := u.scramblerHits[p.Name()]
-	if !ok {
-		return 0
-	}
-	return hits
-}
-
-// AddScramblerHits adds a scrambler hit to the user.
-func (u *Handler) AddScramblerHit(p *player.Player) {
-	u.scramblerHits[p.Name()] = u.scramblerHits[p.Name()] + 1
-}
-
-// ResetScramblerHits resets the scrambler hits of the user.
-func (u *Handler) ResetScramblerHits(p *player.Player) {
-	u.scramblerHits[p.Name()] = 0
-}
-
-// PearlDisabled returns whether the user is pearl disabled.
-func (u *Handler) PearlDisabled() bool {
-	return u.pearlDisabled
-}
-
-// TogglePearlDisable toggles the pearl disabler
-func (u *Handler) TogglePearlDisable() {
-	u.pearlDisabled = !u.pearlDisabled
-}
-
-// CanSendMessage returns true if the user can send a message.
-func (h *Handler) CanSendMessage() bool {
-	return time.Since(h.lastMessage.Load()) > time.Second*1
-}
-
-// LastAttacker returns the last attacker of the user.
-func (u *Handler) LastAttacker() (*Handler, bool) {
-	if time.Since(u.lastAttackTime.Load()) > 15*time.Second {
-		return nil, false
-	}
-	name := u.lastAttackerName.Load()
-	if len(name) == 0 {
-		return nil, false
-	}
-	return Lookup(name)
-}
-
-// SetLastAttacker sets the last attacker of the user.
-func (u *Handler) SetLastAttacker(t *Handler) {
-	u.lastAttackerName.Store(t.p.Name())
-	u.lastAttackTime.Store(time.Now())
-}
-
-// ResetLastAttacker resets the last attacker of the user.
-func (u *Handler) ResetLastAttacker() {
-	u.lastAttackerName.Store("")
-	u.lastAttackTime.Store(time.Time{})
-}
-
-// UpdateChatType updates the chat type for the user.
-// 1 is global, 2 is team, 3 is staff
-func (u *Handler) UpdateChatType(t int) {
-	u.chatType.Store(t)
-}
-
-// ChatType returns the chat type the user is currently using.
-// 1 is global, 2 is team, 3 is staff
-func (u *Handler) ChatType() int {
-	return u.chatType.Load()
-}
-
-func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
-	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
-	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
-	wallBlock := block.StainedGlass{Colour: color}
-	const wallLength, wallHeight = 15, 10
-
-	if newPos.X() >= areaMin.X() && newPos.X() <= areaMax.X() { // edges of the top and bottom walls (relative to South)
-		zCoord := areaMin.Z()
-		if newPos.Z() >= areaMax.Z() {
-			zCoord = areaMax.Z()
-		}
-		for horizontal := newPos.X() - wallLength; horizontal < newPos.X()+wallLength; horizontal++ {
-			if horizontal >= areaMin.X() && horizontal <= areaMax.X() {
-				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
-					blockPos := cube.Pos{horizontal, vertical, zCoord}
-					if blockReplaceable(h.p.World().Block(blockPos)) {
-						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
-						h.wallBlocksMu.Lock()
-						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
-						h.wallBlocksMu.Unlock()
-					}
-				}
-			}
-		}
-	}
-	if newPos.Z() >= areaMin.Z() && newPos.Z() <= areaMax.Z() { // edges of the left and right walls (relative to South)
-		xCoord := areaMin.X()
-		if newPos.X() >= areaMax.X() {
-			xCoord = areaMax.X()
-		}
-		for horizontal := newPos.Z() - wallLength; horizontal < newPos.Z()+wallLength; horizontal++ {
-			if horizontal >= areaMin.Z() && horizontal <= areaMax.Z() {
-				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
-					blockPos := cube.Pos{xCoord, vertical, horizontal}
-					if blockReplaceable(h.p.World().Block(blockPos)) {
-						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
-						h.wallBlocksMu.Lock()
-						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
-						h.wallBlocksMu.Unlock()
-					}
-				}
-			}
-		}
-	}
-}
-
-func formatItemName(s string) string {
-	split := strings.Split(s, "_")
-	for i, str := range split {
-		upperCasesPrefix := unicode.ToUpper(rune(str[0]))
-		split[i] = string(upperCasesPrefix) + str[1:]
-	}
-	return strings.Join(split, " ")
-}
-
-// clearWall clears the users walls or lowers the remaining duration.
-func (h *Handler) clearWall() {
-	h.wallBlocksMu.Lock()
-	for p, duration := range h.wallBlocks {
-		if duration <= 0 {
-			delete(h.wallBlocks, p)
-			h.s.ViewBlockUpdate(p, block.Air{}, 0)
-			h.p.ShowParticle(p.Vec3(), particle.BlockForceField{})
-			continue
-		}
-		h.wallBlocks[p] = duration - 0.1
-	}
-	h.wallBlocksMu.Unlock()
-}
-
-// viewers returns a list of all viewers of the Player.
-func (u *Handler) viewers() []world.Viewer {
-	viewers := u.p.World().Viewers(u.p.Position())
-	for _, v := range viewers {
-		if v == u.s {
-			return viewers
-		}
-	}
-	return append(viewers, u.s)
-}
-
-// blockReplaceable checks if the combat wall should replace a block.
-func blockReplaceable(b world.Block) bool {
-	_, air := b.(block.Air)
-	_, doubleFlower := b.(block.DoubleFlower)
-	_, flower := b.(block.Flower)
-	_, tallGrass := b.(block.TallGrass)
-	_, doubleTallGrass := b.(block.DoubleTallGrass)
-	_, deadBush := b.(block.DeadBush)
-	//_, cobweb := b.(block.Cobweb)
-	//_, sapling := b.(block.Sapling)
-	_, torch := b.(block.Torch)
-	_, fire := b.(block.Fire)
-	return air || tallGrass || deadBush || torch || fire || flower || doubleFlower || doubleTallGrass
 }
 
 type npcHandler struct {

@@ -15,7 +15,7 @@ require (
 	github.com/go-gl/mathgl v1.0.0
 	github.com/google/uuid v1.3.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/moyai-network/moose v0.0.0-20230705153837-baa728cfcaa6
+	github.com/moyai-network/moose v0.0.0-20230708135246-7e214deb1edf
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
