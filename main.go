@@ -9,6 +9,7 @@ import (
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/moose/worlds"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
@@ -181,6 +182,8 @@ func acceptFunc(proxy bool) func(*player.Player) {
 		p.SetGameMode(world.GameModeSurvival)
 		p.ShowCoordinates()
 		p.SetFood(20)
+		u, _ := data.LoadUser(p.Name(), "")
+		u.Roles.Add(role.Revenant{})
 	}
 }
 
