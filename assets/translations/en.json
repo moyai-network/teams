@@ -40,6 +40,7 @@
     "team.invite.self": "<red>You can't invite yourself to your own team.</red>",
     "team.invite.member": "<red>%s is already in your team.</red>",
     "team.invite.target": "<green>You have been invited to %s</green>",
+    "team.invite.has-team": "<red>You cannot invite this player as they are already in a team.</red>",
 
     "team.join.target": "<green>You have joined the team %s.</green>",
     "team.join.error": "<red>You are already in a team.</red>",
