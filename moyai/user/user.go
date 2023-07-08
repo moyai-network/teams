@@ -81,6 +81,11 @@ func Broadcast(key string, args ...any) {
 	}
 }
 
+// DropContents drops the contents of the user.
+func DropContents(p *player.Player) {
+	drop_contents(p)
+}
+
 // addEffects adds a list of effects to the user.
 func addEffects(p *player.Player, effects ...effect.Effect) {
 	for _, e := range effects {
@@ -195,3 +200,8 @@ func NearbyCombat(p *player.Player, dist float64) []*Handler {
 //
 //go:linkname player_session github.com/df-mc/dragonfly/server/player.(*Player).session
 func player_session(*player.Player) *session.Session
+
+// noinspection ALL
+//
+//go:linkname drop_contents github.com/df-mc/dragonfly/server/player.(*Player).dropContents
+func drop_contents(*player.Player)

@@ -24,6 +24,7 @@ import (
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/exp/slices"
+	"golang.org/x/text/language"
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -97,6 +98,9 @@ type Handler struct {
 
 	lastScoreBoard atomic.Value[*scoreboard.Scoreboard]
 	area           atomic.Value[moose.NamedArea]
+
+	lastAttackerName atomic.Value[string]
+	lastAttackTime   atomic.Value[time.Time]
 
 	lastMessage atomic.Value[time.Time]
 	chatType    atomic.Value[int]
@@ -495,6 +499,16 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		ctx.Cancel()
 		return
 	}
+
+	u, err := data.LoadUser(h.p.Name(), "")
+	if err != nil {
+		return
+	}
+	if u.PVP.Active() {
+		ctx.Cancel()
+		return
+	}
+
 	var target *player.Player
 	switch s := src.(type) {
 	case NoArmourAttackEntitySource:
@@ -537,6 +551,136 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			h.p.KnockBack(target.Position(), 0.394, 0.394)
 
 			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), *dmg/2))
+		}
+
+		if s.Projectile.Type() == (it.SwitcherBallType{}) {
+			if k, ok := koth.Running(); ok {
+				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
+					target.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
+					break
+				}
+			}
+
+			dist := h.p.Position().Sub(target.Position()).Len()
+			if dist > 10 {
+				target.Message(text.Colourf("<red>You are too far away from %s</red>", h.p.Name()))
+				break
+			}
+
+			ctx.Cancel()
+			targetPos := target.Position()
+			pos := h.p.Position()
+
+			target.Teleport(pos)
+			h.p.Teleport(targetPos)
+		}
+	}
+
+	p := h.p
+
+	if (p.Health()-p.FinalDamageFrom(*dmg, src) <= 0 || (src == entity.VoidDamageSource{})) && !ctx.Cancelled() {
+		ctx.Cancel()
+		p.World().PlaySound(p.Position(), sound.Explosion{})
+
+		l := entity.NewLightningWithDamage(p.Position(), 0, false, 0)
+		p.World().AddEntity(l)
+
+		// npc := player.New(p.Name(), p.Skin(), p.Position())
+		// npc.Handle(npcHandler{})
+		// npc.SetAttackImmunity(time.Millisecond * 1400)
+		// npc.SetNameTag(p.NameTag())
+		// npc.SetScale(p.Scale())
+		// p.World().AddEntity(npc)
+
+		// for _, viewer := range p.World().Viewers(npc.Position()) {
+		// 	viewer.ViewEntityAction(npc, entity.DeathAction{})
+		// }
+		// time.AfterFunc(time.Second*2, func() {
+		// 	_ = npc.Close()
+		// })
+
+		// if att, ok := attackerFromSource(src); ok {
+		// 	npc.KnockBack(att.Position(), 0.5, 0.2)
+		// }
+
+		for _, e := range p.Effects() {
+			p.RemoveEffect(e.Type())
+		}
+		for _, et := range h.p.World().Entities() {
+			if be, ok := et.(entity.Behaviour); ok {
+				if pro, ok := be.(*entity.ProjectileBehaviour); ok {
+					if pro.Owner() == p {
+						h.p.World().RemoveEntity(et)
+					}
+				}
+			}
+		}
+
+		h.combat.Set(0)
+		p.Message("disabled")
+		h.pearl.Reset()
+		h.archer.Reset()
+
+		usr, err := data.LoadUser(h.p.Name(), "")
+		if err != nil {
+			return
+		}
+
+		DropContents(h.p)
+		p.SetHeldItems(item.Stack{}, item.Stack{})
+
+		// u.EnableDeathban()
+		// u.SubtractLife()
+		// deathban.Deathban().AddPlayer(p)
+
+		p.ResetFallDistance()
+		p.Heal(20, effect.InstantHealingSource{})
+		p.Extinguish()
+		p.SetFood(20)
+		h.class.Store(class.Resolve(p))
+		usr.PVP.Set(time.Hour)
+		data.SaveUser(usr)
+		h.UpdateState()
+
+		// TODO, add deathban later
+		h.p.Teleport(mgl64.Vec3{0, 67, 0})
+		h.p.SetMobile()
+
+		if tm, ok := usr.Team(); ok {
+			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
+			data.SaveTeam(tm)
+		}
+
+		killer, ok := h.LastAttacker()
+		if ok {
+			k, err := data.LoadUser(killer.p.Name(), "")
+			if err != nil {
+				return
+			}
+			k.Stats.Kills += 1
+
+			if tm, ok := k.Team(); ok {
+				tm.WithPoints(tm.Points + 1)
+				data.SaveTeam(tm)
+			}
+
+			data.SaveUser(k)
+
+			held, _ := killer.p.HeldItems()
+			heldName := held.CustomName()
+
+			if len(heldName) <= 0 {
+				heldName = moose.ItemName(held.Item())
+			}
+
+			if held.Empty() || len(heldName) <= 0 {
+				heldName = "their fist"
+			}
+
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), usr.Stats.Kills, killer.p.Name(), k.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+			h.ResetLastAttacker()
+		} else {
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), usr.Stats.Kills))
 		}
 	}
 
@@ -1025,7 +1169,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			}
 
 			mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
-			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) {
+			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(newPos) {
 				h.sendWall(cubePos, a, item.ColourBlue())
 			}
 		}
@@ -1223,6 +1367,30 @@ func (h *Handler) CanSendMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
 }
 
+// LastAttacker returns the last attacker of the user.
+func (u *Handler) LastAttacker() (*Handler, bool) {
+	if time.Since(u.lastAttackTime.Load()) > 15*time.Second {
+		return nil, false
+	}
+	name := u.lastAttackerName.Load()
+	if len(name) == 0 {
+		return nil, false
+	}
+	return Lookup(name)
+}
+
+// SetLastAttacker sets the last attacker of the user.
+func (u *Handler) SetLastAttacker(t *Handler) {
+	u.lastAttackerName.Store(t.p.Name())
+	u.lastAttackTime.Store(time.Now())
+}
+
+// ResetLastAttacker resets the last attacker of the user.
+func (u *Handler) ResetLastAttacker() {
+	u.lastAttackerName.Store("")
+	u.lastAttackTime.Store(time.Time{})
+}
+
 // UpdateChatType updates the chat type for the user.
 // 1 is global, 2 is team, 3 is staff
 func (u *Handler) UpdateChatType(t int) {
@@ -1329,6 +1497,14 @@ func blockReplaceable(b world.Block) bool {
 	_, torch := b.(block.Torch)
 	_, fire := b.(block.Fire)
 	return air || tallGrass || deadBush || torch || fire || flower || doubleFlower || doubleTallGrass
+}
+
+type npcHandler struct {
+	player.NopHandler
+}
+
+func (npcHandler) HandleItemPickup(ctx *event.Context, _ *item.Stack) {
+	ctx.Cancel()
 }
 
 type NoArmourAttackEntitySource struct {

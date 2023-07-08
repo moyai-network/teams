@@ -182,12 +182,12 @@ func (t Team) MaxDTR() float64 {
 // DTRString returns the DTR string of the faction
 func (t Team) DTRString() string {
 	if t.DTR == t.MaxDTR() {
-		return text.Colourf("<green>%.1f%s</green>", t.DTR, t.DTRDot())
+		return text.Colourf("<green>%.2f%s</green>", t.DTR, t.DTRDot())
 	}
 	if t.DTR < 0 {
-		return text.Colourf("<redstone>%.1f%s</redstone>", t.DTR, t.DTRDot())
+		return text.Colourf("<redstone>%.2f%s</redstone>", t.DTR, t.DTRDot())
 	}
-	return text.Colourf("<yellow>%.1f%s</yellow>", t.DTR, t.DTRDot())
+	return text.Colourf("<yellow>%.2f%s</yellow>", t.DTR, t.DTRDot())
 }
 
 // DTRDot returns the DTR dot of the faction.
