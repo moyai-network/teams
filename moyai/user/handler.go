@@ -218,6 +218,10 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	}
 }
 
+func (h *Handler) HandleFoodLoss(ctx *event.Context, _ int, _ *int) {
+	ctx.Cancel()
+}
+
 func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 	p := h.Player()
 
