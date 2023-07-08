@@ -19,6 +19,8 @@
     "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
     "team.create.already": "<red>You're already in a team.</red>",
 
+    "command.kit.cooldown": "<red>You may not use this for another %v</red>",
+
     "command.role.add": "<green>You added the role %s to %s for %s.</green>",
     "command.role.has": "<red>This player has already been assigned %s.</red>",
     "command.role.higher": "<red>You cannot modify the role of a player that is higher than yours.</red>",

@@ -20,7 +20,7 @@ func init() {
 	t := time.NewTicker(time.Hour * 4)
 	n := rand.Intn(len(All()))
 	k := All()[n]
-	chat.Global.WriteString(text.Colourf("%s is now active!", k.name))
+	_, _ = chat.Global.WriteString(text.Colourf("%s is now active!", k.name))
 	k.Start()
 	go func() {
 		for range t.C {
@@ -29,7 +29,7 @@ func init() {
 			}
 			n := rand.Intn(len(All()))
 			k := All()[n]
-			chat.Global.WriteString(text.Colourf("%s is now active!", k.name))
+			_, _ = chat.Global.WriteString(text.Colourf("%s is now active!", k.name))
 			k.Start()
 		}
 	}()

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// logFile will temporary (hackishly) store the timestamp of the SOTW
+// logFile will temporarily store the timestamp of the SOTW
 const logFile = "assets/sotw.log"
 
 // sotw represents the private global object of the SOTW time

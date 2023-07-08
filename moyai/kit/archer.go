@@ -35,8 +35,6 @@ func (Archer) Items(*player.Player) [36]item.Stack {
 	flame := item.NewEnchantment(enchantment.Flame{}, 1)
 	items[2] = item.NewStack(item.Bow{}, 1).WithEnchantments(infinity, flame)
 	items[9] = item.NewStack(item.Arrow{}, 64)
-
-	items[27] = item.NewStack(item.Bucket{Content: item.MilkBucketContent()}, 1)
 	return items
 }
 

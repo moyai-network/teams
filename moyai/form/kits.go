@@ -59,8 +59,8 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	case "Archer":
 		kit.Apply(kit.Archer{}, p)
 	case "Master":
-		if !u.Roles.Contains(role.Wraith{}) {
-			h.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
+		if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
+			p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
 			return
 		}
 		kit.Apply(kit.Master{}, p)

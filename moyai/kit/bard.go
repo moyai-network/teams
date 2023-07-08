@@ -37,8 +37,6 @@ func (Bard) Items(*player.Player) [36]item.Stack {
 	items[5] = item.NewStack(item.Sugar{}, 64)
 	items[6] = item.NewStack(item.MagmaCream{}, 64)
 	items[6] = item.NewStack(item.Feather{}, 64)
-
-	items[27] = item.NewStack(item.Bucket{Content: item.MilkBucketContent()}, 1)
 	return items
 }
 

@@ -38,8 +38,6 @@ func (Rogue) Items(*player.Player) [36]item.Stack {
 	items[26] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
 	items[34] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
 	items[35] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-
-	items[27] = item.NewStack(item.Bucket{Content: item.MilkBucketContent()}, 1)
 	return items
 }
 

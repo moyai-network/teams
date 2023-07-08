@@ -32,10 +32,8 @@ func (Stray) Items(*player.Player) [36]item.Stack {
 	}
 
 	items[2] = item.NewStack(item.BlazePowder{}, 64)
-	items[5] = item.NewStack(item.Sugar{}, 64)
-	items[6] = item.NewStack(item.FermentedSpiderEye{}, 64)
-
-	items[27] = item.NewStack(item.Bucket{Content: item.MilkBucketContent()}, 1)
+	items[3] = item.NewStack(item.Sugar{}, 64)
+	items[4] = item.NewStack(item.FermentedSpiderEye{}, 64)
 	return items
 }
 
