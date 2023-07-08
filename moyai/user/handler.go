@@ -746,10 +746,9 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 				return
 			}
 		}
-		u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
+				if h.p.GameMode() != world.GameModeCreative {
 					ctx.Cancel()
 					return
 				}
