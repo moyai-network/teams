@@ -1108,7 +1108,11 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		}
 	}
 
-	t.Handler().(*Handler).combat.Set(time.Second * 20)
+	th, ok := t.Handler().(*Handler)
+	if ok {
+		th.SetLastAttacker(h)
+		th.combat.Set(time.Second * 20)
+	}
 	h.combat.Set(time.Second * 20)
 }
 
