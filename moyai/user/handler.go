@@ -736,19 +736,20 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]item.Stack, xp *int) {
 	w := h.p.World()
 
+	for _, a := range area.Protected(w) {
+		if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
+			if h.p.GameMode() != world.GameModeCreative {
+				ctx.Cancel()
+				return
+			}
+		}
+	}
+
 	for _, t := range data.Teams() {
 		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
-			}
-		}
-		for _, a := range area.Protected(w) {
-			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-				if h.p.GameMode() != world.GameModeCreative {
-					ctx.Cancel()
-					return
-				}
 			}
 		}
 	}

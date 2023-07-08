@@ -13,6 +13,8 @@ func Spawn(w *world.World) moose.NamedArea {
 		return Overworld.Spawn()
 	case world.Nether:
 		return Nether.Spawn()
+	default:
+		panic("should never happen")
 	}
 	return moose.NamedArea{}
 }
@@ -23,6 +25,8 @@ func WarZone(w *world.World) moose.NamedArea {
 		return Overworld.WarZone()
 	case world.Nether:
 		return Nether.WarZone()
+	default:
+		panic("should never happen")
 	}
 	return moose.NamedArea{}
 }
@@ -33,6 +37,8 @@ func Wilderness(w *world.World) moose.NamedArea {
 		return Overworld.Wilderness()
 	case world.Nether:
 		return Nether.Wilderness()
+	default:
+		panic("should never happen")
 	}
 	return moose.NamedArea{}
 }
@@ -43,6 +49,8 @@ func Roads(w *world.World) []moose.NamedArea {
 		return Overworld.Roads()
 	case world.Nether:
 		return Nether.Roads()
+	default:
+		panic("should never happen")
 	}
 	return []moose.NamedArea{}
 }
@@ -53,6 +61,8 @@ func KOTHs(w *world.World) []moose.NamedArea {
 		return Overworld.KOTHs()
 	case world.Nether:
 		return Nether.KOTHs()
+	default:
+		panic("should never happen")
 	}
 	return []moose.NamedArea{}
 }
