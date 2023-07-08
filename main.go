@@ -223,6 +223,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("gamemode", text.Colourf("<aqua>Manage gamemodes.</aqua>"), []string{"gm"}, command.GameMode{}),
 		cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.NewHub(moyai.Socket())),
 		cmd.New("key", text.Colourf("<aqua>Manage keys</aqua>"), nil, command.Key{}, command.KeyAll{}),
+		cmd.New("koth", text.Colourf("Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
 	} {
 		cmd.Register(c)
 	}

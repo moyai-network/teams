@@ -616,15 +616,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			}
 		}
 
-		h.combat.Set(0)
-		p.Message("disabled")
+		h.combat.Reset()
 		h.pearl.Reset()
 		h.archer.Reset()
-
-		usr, err := data.LoadUser(h.p.Name(), "")
-		if err != nil {
-			return
-		}
 
 		DropContents(h.p)
 		p.SetHeldItems(item.Stack{}, item.Stack{})
@@ -638,17 +632,17 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		p.Extinguish()
 		p.SetFood(20)
 		h.class.Store(class.Resolve(p))
-		usr.PVP.Set(time.Hour)
-		data.SaveUser(usr)
+		u.PVP.Set(time.Hour)
+		defer data.SaveUser(u)
 		h.UpdateState()
 
 		// TODO, add deathban later
 		h.p.Teleport(mgl64.Vec3{0, 67, 0})
 		h.p.SetMobile()
 
-		if tm, ok := usr.Team(); ok {
+		if tm, ok := u.Team(); ok {
 			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
-			data.SaveTeam(tm)
+			defer data.SaveTeam(tm)
 		}
 
 		killer, ok := h.LastAttacker()
@@ -661,10 +655,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			if tm, ok := k.Team(); ok {
 				tm.WithPoints(tm.Points + 1)
-				data.SaveTeam(tm)
+				defer data.SaveTeam(tm)
 			}
 
-			data.SaveUser(k)
+			defer data.SaveUser(k)
 
 			held, _ := killer.p.HeldItems()
 			heldName := held.CustomName()
@@ -677,10 +671,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				heldName = "their fist"
 			}
 
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), usr.Stats.Kills, killer.p.Name(), k.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.Stats.Kills, killer.p.Name(), k.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 			h.ResetLastAttacker()
 		} else {
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), usr.Stats.Kills))
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.Stats.Kills))
 		}
 	}
 
