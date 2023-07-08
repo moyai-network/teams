@@ -6,7 +6,6 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -17,7 +16,7 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -36,7 +35,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -51,7 +50,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	target, err := data.LoadUser(t.Name(), t.XUID())
+	target, err := data.LoadUser(t.Name())
 	if err != nil {
 		return
 	}
@@ -86,7 +85,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -106,7 +105,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	t, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	t, err := data.LoadUser(p.Name())
 	if err != nil {
 		out.Error("user has never joined the server")
 		return

@@ -14,7 +14,6 @@ import (
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"golang.org/x/exp/slices"
 	"golang.org/x/text/language"
 	"math"
 	"math/rand"
@@ -150,7 +149,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	}
 
 	s := player_session(p)
-	u, _ := data.LoadUser(p.Name(), xuid)
+	u, _ := data.LoadUser(p.Name())
 
 	if u.Frozen {
 		p.SetImmobile()
@@ -183,7 +182,7 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
-	u, err := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	u, err := data.LoadUser(h.p.Name())
 	if err != nil {
 		return
 	}
@@ -203,9 +202,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 			formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 			formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 			for _, t := range All() {
-				if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-					return member.XUID == t.p.Handler().(*Handler).XUID()
-				}) {
+				if tm.Member(t.p.Name()) {
 					t.p.Message(formatTeam)
 				} else {
 					t.p.Message(formatEnemy)
@@ -277,12 +274,12 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 // HandleItemUse ...
 func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, left := h.p.HeldItems()
-	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(h.p.Name())
 	if v, ok := held.Value("MONEY_NOTE"); ok {
 		u.Balance = u.Balance + v.(float64)
 		h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 		h.p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
-		data.SaveUser(u)
+		_ = data.SaveUser(u)
 		return
 	}
 	switch held.Item().(type) {
@@ -411,7 +408,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		return
 	}
 
-	u, err := data.LoadUser(h.p.Name(), h.XUID())
+	u, err := data.LoadUser(h.p.Name())
 	if err != nil {
 		ctx.Cancel()
 		return
@@ -611,7 +608,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.pearl.Reset()
 		h.archer.Reset()
 
-		u, err := data.LoadUser(h.p.Name(), "")
+		u, err := data.LoadUser(h.p.Name())
 		if err != nil {
 			return
 		}
@@ -643,7 +640,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 		killer, ok := h.LastAttacker()
 		if ok {
-			k, err := data.LoadUser(killer.p.Name(), "")
+			k, err := data.LoadUser(killer.p.Name())
 			if err != nil {
 				return
 			}
@@ -714,15 +711,13 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 	}
 
 	for _, t := range data.Teams() {
-		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
-			return member.XUID == h.p.Handler().(*Handler).XUID()
-		}) {
+		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
 		}
-		u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+		u, _ := data.LoadUser(h.p.Name())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
@@ -738,9 +733,7 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 	w := h.p.World()
 
 	for _, t := range data.Teams() {
-		if !slices.ContainsFunc(t.Members, func(member data.Member) bool {
-			return member.XUID == h.p.Handler().(*Handler).XUID()
-		}) {
+		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
@@ -770,7 +763,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 	}
 
-	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(h.p.Name())
 	switch it := i.Item().(type) {
 	case item.Hoe:
 		ctx.Cancel()
@@ -938,7 +931,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			choice = strings.ReplaceAll(choice, "[", "")
 			choice = strings.ReplaceAll(choice, "]", "")
 
-			u, err := data.LoadUser(h.p.Name(), h.XUID())
+			u, err := data.LoadUser(h.p.Name())
 			if err != nil {
 				return
 			}
@@ -1123,7 +1116,7 @@ func (h *Handler) HandleQuit() {
 	close(h.close)
 	p := h.p
 
-	u, _ := data.LoadUser(p.Name(), h.xuid)
+	u, _ := data.LoadUser(p.Name())
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 
@@ -1133,7 +1126,7 @@ func (h *Handler) HandleQuit() {
 }
 
 func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
-	u, _ := data.LoadUser(h.p.Name(), h.p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(h.p.Name())
 	p := h.p
 	w := p.World()
 

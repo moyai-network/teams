@@ -146,7 +146,7 @@ func (k *KOTH) StartCapturing(p User) bool {
 			k.capturing = nil
 			k.running = false
 
-			u, err := data.LoadUser(p.Player().Name(), "")
+			u, err := data.LoadUser(p.Player().Name())
 			if err != nil {
 				k.StopCapturing(p)
 				return

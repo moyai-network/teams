@@ -1,6 +1,7 @@
 package user
 
 import (
+	"strings"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/packethandler"
@@ -59,7 +60,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		u, _ := data.LoadUser(p.Name(), p.XUID())
+		u, _ := data.LoadUser(p.Name())
 		tm, ok := u.Team()
 		if !ok {
 			return
@@ -71,15 +72,13 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
 		}
 
-		if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-			return member.XUID == target.p.XUID()
-		}) {
+		if tm.Member(t.Name()) {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
 			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
 		} else if slices.ContainsFunc(FocusingPlayers(tm), func(p *player.Player) bool {
-			return p.XUID() == target.p.XUID()
+			return strings.EqualFold(p.Name(), t.Name())
 		}) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
 		}

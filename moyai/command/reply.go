@@ -29,7 +29,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		// The user somehow left in the middle of this, so just stop in our tracks.
 		return
 	}
-	u, err := data.LoadUser(p.Name(), h.XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -48,7 +48,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.reply.none"))
 		return
 	}
-	t, err := data.LoadUser(u.LastMessageFrom, target.XUID())
+	t, err := data.LoadUser(u.LastMessageFrom)
 	if err != nil {
 		return
 	}

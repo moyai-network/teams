@@ -8,7 +8,6 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -35,7 +34,7 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(target.Name(), target.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(target.Name())
 	if err != nil {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return

@@ -73,7 +73,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		t, err = data.LoadUser(tP.Name(), tP.Handler().(*user.Handler).XUID())
+		t, err = data.LoadUser(tP.Name())
 		if err != nil {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
@@ -83,7 +83,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			return
 		}
 	} else {
-		t, err = data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		t, err = data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -92,7 +92,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(a.Role))
 	if isPlayer {
-		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		u, err := data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -168,7 +168,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		t, err = data.LoadUser(tP.Name(), tP.Handler().(*user.Handler).XUID())
+		t, err = data.LoadUser(tP.Name())
 		if err != nil {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
@@ -178,7 +178,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			return
 		}
 	} else {
-		t, err = data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		t, err = data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -187,7 +187,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(d.Role))
 	if isPlayer {
-		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		u, err := data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -217,7 +217,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	t, err := data.LoadUser(a.Target, "")
+	t, err := data.LoadUser(a.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -225,7 +225,7 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(a.Role))
 	if p, ok := s.(*player.Player); ok {
-		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		u, err := data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -265,7 +265,7 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (d RoleRemoveOffline) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	t, err := data.LoadUser(d.Target, "")
+	t, err := data.LoadUser(d.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -273,7 +273,7 @@ func (d RoleRemoveOffline) Run(s cmd.Source, o *cmd.Output) {
 
 	r, _ := role.ByName(string(d.Role))
 	if p, ok := s.(*player.Player); ok {
-		u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+		u, err := data.LoadUser(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
@@ -356,7 +356,7 @@ func (roles) Type() string {
 func (roles) Options(s cmd.Source) (roles []string) {
 	p, disallow := s.(*player.Player)
 	if disallow {
-		u, err := data.LoadUser(p.Name(), "")
+		u, err := data.LoadUser(p.Name())
 		if err == nil {
 			disallow = !u.Roles.Contains(role.Operator{})
 		}

@@ -17,7 +17,7 @@ type Online struct{}
 func (Online) Run(s cmd.Source, o *cmd.Output) {
 	var users []string
 	for _, u := range user.All() {
-		d, err := data.LoadUser(u.Player().Name(), u.Player().Handler().(*user.Handler).XUID())
+		d, err := data.LoadUser(u.Player().Name())
 		if err != nil {
 			o.Print(lang.Translatef(locale(s), "target.data.load.error", u.Player().Name()))
 			return

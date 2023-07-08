@@ -26,12 +26,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	h, ok := user.Lookup(p.Name())
-	if !ok {
-		// The user somehow left in the middle of this, so just stop in our tracks.
-		return
-	}
-	u, err := data.LoadUser(p.Name(), h.XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -54,7 +49,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	t, err := data.LoadUser(tP.Name(), "")
+	t, err := data.LoadUser(tP.Name())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return

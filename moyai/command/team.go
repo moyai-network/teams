@@ -20,7 +20,6 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"golang.org/x/exp/slices"
 )
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
@@ -181,7 +180,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, _ := data.LoadUser(p.Name())
 	if _, ok = u.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.already"))
 		return
@@ -226,7 +225,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.self"))
 		return
 	}
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, _ := data.LoadUser(p.Name())
 	tm, ok := u.Team()
 	if !ok {
 		out.Error(lang.Translatef(p.Locale(), "user.team-less"))
@@ -238,14 +237,12 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-		return strings.EqualFold(target.Name(), member.Name)
-	}) {
+	if tm.Member(target.Name()) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.member", target.Name()))
 		return
 	}
 
-	tg, _ := data.LoadUser(target.Name(), target.XUID())
+	tg, _ := data.LoadUser(target.Name())
 
 	if _, ok := tg.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.has-team", target.Name()))
@@ -269,7 +266,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 	l := locale(src)
 
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, _ := data.LoadUser(p.Name())
 	if _, ok := u.Team(); ok {
 		out.Error(lang.Translatef(l, "team.join.error"))
 		return
@@ -292,10 +289,14 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 // Run ...
 func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	sourceName := s.(cmd.NamedTarget).Name()
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
 	n, _ := t.Name.Load()
 	name := string(n)
-	u, err := data.LoadUser(sourceName, "")
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -333,7 +334,8 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), "")
+
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -365,10 +367,14 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	sourceName := s.(cmd.NamedTarget).Name()
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
 	n, _ := t.Name.Load()
 	name := string(n)
-	u, err := data.LoadUser(sourceName, "")
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -403,7 +409,7 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
 	src := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUser(src, "")
+	u, err := data.LoadUser(src)
 	if err != nil {
 		return
 	}
@@ -444,8 +450,12 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	sourceName := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUser(sourceName, "")
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -454,11 +464,11 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "user.team-less"))
 		return
 	}
-	if !tm.Leader(sourceName) && !tm.Captain(sourceName) {
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.kick.missing.permission"))
 		return
 	}
-	if string(t.Member) == sourceName {
+	if strings.EqualFold(p.Name(), string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.kick.self"))
 		return
 	}
@@ -466,7 +476,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.team.kick.leader"))
 		return
 	}
-	if tm.Captain(sourceName) && tm.Captain(string(t.Member)) {
+	if tm.Captain(p.Name()) && tm.Captain(string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.kick.captain"))
 		return
 	}
@@ -506,8 +516,12 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	sourceName := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUser(sourceName, "")
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -516,19 +530,19 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "user.team-less"))
 		return
 	}
-	if !tm.Leader(sourceName) || !tm.Captain(sourceName) {
+	if !tm.Leader(p.Name()) || !tm.Captain(p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.promote.missing.permission"))
 		return
 	}
-	if string(t.Member) == sourceName {
+	if strings.EqualFold(p.Name(), string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.promote.self"))
 		return
 	}
-	if tm.Leader(sourceName) {
+	if tm.Leader(p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.promote.leader"))
 		return
 	}
-	if tm.Captain(sourceName) && tm.Captain(string(t.Member)) {
+	if tm.Captain(p.Name()) && tm.Captain(string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.promote.captain"))
 		return
 	}
@@ -556,8 +570,12 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	sourceName := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUser(sourceName, "")
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -566,11 +584,11 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "user.team-less"))
 		return
 	}
-	if !tm.Leader(sourceName) {
+	if !tm.Leader(p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.demote.missing.permission"))
 		return
 	}
-	if strings.EqualFold(string(t.Member), sourceName) {
+	if strings.EqualFold(string(t.Member), p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.demote.self"))
 		return
 	}
@@ -605,7 +623,8 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -644,7 +663,7 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -665,7 +684,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -688,7 +707,7 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -720,7 +739,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	us, ok := user.Lookup(p.Name())
 	if err != nil || !ok {
 		return
@@ -765,7 +784,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -820,7 +839,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -958,7 +977,7 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -987,7 +1006,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -1028,7 +1047,7 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -1065,7 +1084,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -1102,7 +1121,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -1137,7 +1156,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	us, ok := user.Lookup(p.Name())
 	if err != nil || !ok {
 		return
@@ -1340,7 +1359,7 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name(), "")
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
@@ -1360,7 +1379,7 @@ func (member) Type() string {
 // Options ...
 func (member) Options(src cmd.Source) []string {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name(), "")
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return nil
 	}

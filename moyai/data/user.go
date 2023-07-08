@@ -5,7 +5,6 @@ import (
 	"github.com/moyai-network/moose/role"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/exp/slices"
 	"strings"
 	"sync"
 	"time"
@@ -75,9 +74,7 @@ type User struct {
 
 func (u User) Team() (Team, bool) {
 	for _, t := range Teams() {
-		if slices.ContainsFunc(t.Members, func(member Member) bool {
-			return u.XUID == member.XUID
-		}) {
+		if t.Member(u.Name) {
 			return t, true
 		}
 	}
@@ -98,9 +95,8 @@ type Stats struct {
 }
 
 // DefaultUser creates a default user.
-func DefaultUser(xuid, name string) User {
+func DefaultUser(name string) User {
 	return User{
-		XUID:        xuid,
 		FirstLogin:  time.Now(),
 		DisplayName: name,
 		Name:        strings.ToLower(name),
@@ -116,19 +112,19 @@ func DefaultUser(xuid, name string) User {
 }
 
 // LoadUser loads a user using the given name or xuid.
-func LoadUser(name string, xuid string) (User, error) {
+func LoadUser(name string) (User, error) {
 	usersMu.Lock()
 	defer usersMu.Unlock()
 
 	if u, ok := users[strings.ToLower(name)]; ok {
 		return u, nil
 	}
-	filter := bson.M{"$or": []bson.M{{"name": strings.ToLower(name)}, {"xuid": xuid}}}
+	filter := bson.M{"$eq": bson.M{"name": strings.ToLower(name)}}
 
 	result := userCollection.FindOne(ctx(), filter)
 	if err := result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
-			return DefaultUser(xuid, name), nil
+			return DefaultUser(name), nil
 		}
 		return User{}, err
 	}

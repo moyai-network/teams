@@ -6,7 +6,6 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Kick is a command that disconnects another player from the server.
@@ -19,7 +18,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	l, single := locale(s), true
 	if len(k.Targets) > 1 {
 		if p, ok := s.(*player.Player); ok {
-			if u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID()); err == nil && !u.Roles.Contains(role.Operator{}) {
+			if u, err := data.LoadUser(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
 				o.Error(lang.Translatef(l, "command.targets.exceed"))
 				return
 			}
@@ -30,7 +29,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	var kicked int
 	for _, p := range k.Targets {
 		if p, ok := p.(*player.Player); ok {
-			u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+			u, err := data.LoadUser(p.Name())
 			if err != nil || u.Roles.Contains(role.Operator{}) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue

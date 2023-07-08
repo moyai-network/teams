@@ -18,7 +18,7 @@ func (TL) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		o.Error(lang.Translate(locale(s), "user.data.load.error"))
 		return

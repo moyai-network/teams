@@ -20,7 +20,7 @@ type Report struct {
 func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
 	p := s.(*player.Player)
-	u, err := data.LoadUser(p.Name(), "")
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}

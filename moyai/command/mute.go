@@ -92,7 +92,7 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -114,7 +114,7 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (m MuteInfoOffline) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	u, err := data.LoadUser(m.Target, "")
+	u, err := data.LoadUser(m.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -140,7 +140,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -160,7 +160,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 // Run ...
 func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output) {
 	l := locale(src)
-	u, err := data.LoadUser(m.Target, "")
+	u, err := data.LoadUser(m.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -199,7 +199,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.self"))
 		return
 	}
-	u, err := data.LoadUser(t.Name(), t.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(t.Name())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -232,7 +232,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 	l := locale(src)
 	sn := src.(cmd.NamedTarget)
 
-	u, err := data.LoadUser(m.Target, "")
+	u, err := data.LoadUser(m.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return

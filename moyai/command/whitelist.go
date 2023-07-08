@@ -18,7 +18,7 @@ func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "invalid.username"))
 		return
 	}
-	u, err := data.LoadUser(w.Target, "")
+	u, err := data.LoadUser(w.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "target.data.load.error", w.Target))
 		return
@@ -45,7 +45,7 @@ func (w WhiteListRemove) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "invalid.username"))
 		return
 	}
-	u, err := data.LoadUser(w.Target, "")
+	u, err := data.LoadUser(w.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "target.data.load.error", w.Target))
 		return

@@ -71,7 +71,7 @@ func (b BlacklistList) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (b BlacklistInfoOffline) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	u, _ := data.LoadUser(b.Target, "")
+	u, _ := data.LoadUser(b.Target)
 	if u.Ban.Expired() || !u.Ban.Permanent {
 		o.Error(lang.Translate(l, "command.blacklist.not"))
 		return
@@ -88,7 +88,7 @@ func (b BlacklistInfoOffline) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (b BlacklistLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 	l := locale(src)
-	u, err := data.LoadUser(b.Target, "")
+	u, err := data.LoadUser(b.Target)
 	if err != nil {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return
@@ -128,7 +128,7 @@ func (b Blacklist) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translate(l, "command.blacklist.self"))
 		return
 	}
-	u, err := data.LoadUser(t.Name(), t.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(t.Name())
 	if err != nil {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return
@@ -169,7 +169,7 @@ func (b BlacklistOffline) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translate(l, "command.blacklist.self"))
 		return
 	}
-	u, err := data.LoadUser(b.Target, "")
+	u, err := data.LoadUser(b.Target)
 	if err != nil {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return

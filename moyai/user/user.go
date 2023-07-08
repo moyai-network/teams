@@ -28,7 +28,6 @@ import (
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 var (
@@ -80,7 +79,7 @@ func Alert(s cmd.Source, key string, args ...any) {
 	}
 	for _, h := range All() {
 
-		if u, _ := data.LoadUser(h.p.Name(), p.Handler().(*Handler).XUID()); role.Staff(u.Roles.Highest()) {
+		if u, _ := data.LoadUser(h.p.Name()); role.Staff(u.Roles.Highest()) {
 			h.p.Message(lang.Translatef(h.p.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.p.Locale(), key), args...)))
 		}
 	}
@@ -388,8 +387,8 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	u, _ := data.LoadUser(pl.Name(), pl.Handler().(*Handler).XUID())
-	t, _ := data.LoadUser(pl.Name(), pl.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(pl.Name())
+	t, _ := data.LoadUser(pl.Name())
 
 	_, sotwRunning := sotw.Running()
 	if (u.PVP.Active() || t.PVP.Active()) || (sotwRunning && (u.SOTW || t.SOTW)) {
@@ -401,9 +400,7 @@ func canAttack(pl, target *player.Player) bool {
 		return true
 	}
 
-	return !slices.ContainsFunc(tm.Members, func(member data.Member) bool {
-		return strings.EqualFold(member.Name, target.Name())
-	})
+	return !tm.Member(target.Name())
 }
 
 // Nearby returns the nearby users of a certain distance from the user
@@ -426,7 +423,7 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 // NearbyEnemies returns the nearby enemies of a certain distance from the user
 func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(p.Name())
 	tm, ok := u.Team()
 	if !ok {
 		return Nearby(p, dist)
@@ -444,7 +441,7 @@ func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
-	u, _ := data.LoadUser(p.Name(), p.Handler().(*Handler).XUID())
+	u, _ := data.LoadUser(p.Name())
 	tm, ok := u.Team()
 	if !ok {
 		return []*Handler{p.Handler().(*Handler)}
@@ -465,7 +462,7 @@ func NearbyCombat(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 
 	for _, target := range Nearby(p, dist) {
-		t, _ := data.LoadUser(target.p.Name(), target.p.Handler().(*Handler).XUID())
+		t, _ := data.LoadUser(target.p.Name())
 		if !t.PVP.Active() {
 			pl = append(pl, target)
 		}

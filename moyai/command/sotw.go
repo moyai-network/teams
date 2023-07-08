@@ -73,7 +73,7 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(h.Player().Name(), "")
+	u, err := data.LoadUser(h.Player().Name())
 	if err != nil {
 		return
 	}

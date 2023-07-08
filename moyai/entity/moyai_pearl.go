@@ -56,7 +56,7 @@ func teleport(e *entity.Ent, target trace.Result) {
 					return
 				}
 
-				u, _ := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+				u, _ := data.LoadUser(p.Name())
 				if u.PVP.Active() {
 					for _, t := range data.Teams() {
 						a := t.Claim

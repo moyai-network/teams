@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -20,7 +19,7 @@ func (c PvpEnable) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	u, err := data.LoadUser(p.Name())
 	if err != nil {
 		return
 	}
