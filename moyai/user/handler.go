@@ -12,6 +12,7 @@ import (
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/koth"
+	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
@@ -298,7 +299,8 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	switch h.class.Load().(type) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
-			if u.PVP.Active() || u.SOTW {
+			_, sotwRunning := sotw.Running()
+			if u.PVP.Active() || sotwRunning && u.SOTW {
 				return
 			}
 			if cd := h.bardItem.Key(held.Item()); cd.Active() {

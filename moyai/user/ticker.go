@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/moyai/koth"
+	"golang.org/x/exp/slices"
 	"strings"
 	"time"
 
@@ -50,6 +51,24 @@ func sortArmourEffects(h *Handler) {
 	lastArmour := h.armour.Load()
 	arm := armourStacks(h.p.Armour())
 
+	var effects []effect.Effect
+
+	for _, i := range arm {
+		if i.Empty() {
+			continue
+		}
+
+		for _, e := range i.Enchantments() {
+			if enc, ok := e.Type().(ench.EffectEnchantment); ok {
+				effects = append(effects, enc.Effect())
+			}
+		}
+	}
+
+	for _, e := range effects {
+		h.p.AddEffect(e)
+	}
+
 	var lastEffects []effect.Effect
 
 	for _, i := range lastArmour {
@@ -63,29 +82,18 @@ func sortArmourEffects(h *Handler) {
 		}
 	}
 
-	for _, e := range lastEffects {
-		typ := e.Type()
-		if hasEffectLevel(h.p, e) {
+	for _, ef := range lastEffects {
+		if slices.ContainsFunc(effects, func(e effect.Effect) bool {
+			return e.Type() == ef.Type() && ef.Level() == e.Level()
+		}) {
+			continue
+		}
+		typ := ef.Type()
+		if hasEffectLevel(h.p, ef) {
 			h.p.RemoveEffect(typ)
 		}
 	}
 
-	for _, i := range arm {
-		if i.Empty() {
-			continue
-		}
-		var effects []effect.Effect
-
-		for _, e := range i.Enchantments() {
-			if enc, ok := e.Type().(ench.EffectEnchantment); ok {
-				effects = append(effects, enc.Effect())
-			}
-		}
-
-		for _, e := range effects {
-			h.p.AddEffect(e)
-		}
-	}
 	h.armour.Store(arm)
 }
 
@@ -93,13 +101,37 @@ func sortClassEffects(h *Handler) {
 	lastClass := h.class.Load()
 	cl := class.Resolve(h.p)
 
-	if class.CompareAny(cl, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-		addEffects(h.p, cl.Effects()...)
-	} else if class.CompareAny(lastClass, class.Bard{}, class.Archer{}, class.Rogue{}, class.Miner{}, class.Stray{}) {
-		h.energy.Store(0)
-		removeEffects(h.p, lastClass.Effects()...)
-	}
 	h.class.Store(cl)
+
+	if lastClass == nil {
+		if cl != nil {
+			addEffects(h.p, cl.Effects()...)
+		}
+		return
+	} else if cl == nil {
+		if lastClass != nil {
+			h.energy.Store(0)
+			removeEffects(h.p, lastClass.Effects()...)
+		}
+		return
+	}
+
+	effects := cl.Effects()
+	addEffects(h.p, effects...)
+
+	lastEffects := lastClass.Effects()
+
+	for _, ef := range lastEffects {
+		if slices.ContainsFunc(effects, func(e effect.Effect) bool {
+			return e.Type() == ef.Type() && ef.Level() == e.Level()
+		}) {
+			continue
+		}
+		typ := ef.Type()
+		if hasEffectLevel(h.p, ef) {
+			h.p.RemoveEffect(typ)
+		}
+	}
 }
 
 // startTicker starts the user's tickers.
