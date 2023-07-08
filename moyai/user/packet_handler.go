@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/moyai-network/teams/moyai/data"
 	"strings"
 	_ "unsafe"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
@@ -61,10 +61,6 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		}()
 
 		u, _ := data.LoadUser(p.Name())
-		tm, ok := u.Team()
-		if !ok {
-			return
-		}
 
 		if u.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
@@ -72,6 +68,10 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
 		}
 
+		tm, ok := u.Team()
+		if !ok {
+			return
+		}
 		if tm.Member(t.Name()) {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
