@@ -335,9 +335,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 	case class.Stray:
 		if e, ok := StrayEffectFromItem(held.Item()); ok {
-			if u.PVP.Active() || u.SOTW {
+			_, sotwRunning := sotw.Running()
+			if u.PVP.Active() || sotwRunning && u.SOTW {
 				return
 			}
+
 			if cd := h.strayItem.Key(held.Item()); cd.Active() {
 				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
 				return
