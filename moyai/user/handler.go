@@ -1109,11 +1109,15 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 
 	th, ok := t.Handler().(*Handler)
-	if ok {
+	if !ok {
+		return
+	}
+
+	if canAttack(h.p, t) {
 		th.SetLastAttacker(h)
 		th.combat.Set(time.Second * 20)
+		h.combat.Set(time.Second * 20)
 	}
-	h.combat.Set(time.Second * 20)
 }
 
 func (h *Handler) HandleQuit() {
