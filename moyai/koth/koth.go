@@ -156,7 +156,7 @@ func (k *KOTH) StartCapturing(p User) bool {
 				data.SaveTeam(t)
 			}
 
-			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.DisplayName))
+			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.Name))
 			kothCrate, ok := crate.ByName("KOTH")
 			if !ok {
 				panic("no crate found by the name of KOTH")
