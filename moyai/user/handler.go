@@ -510,41 +510,38 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		return
 	}
 
-	var target *player.Player
+	var attacker *player.Player
 	switch s := src.(type) {
 	case NoArmourAttackEntitySource:
 		if t, ok := s.Attacker.(*player.Player); ok {
-			target = t
+			attacker = t
 		}
-		if !canAttack(h.p, target) {
+		if !canAttack(h.p, attacker) {
 			ctx.Cancel()
 			return
 		}
 	case entity.AttackDamageSource:
 		if t, ok := s.Attacker.(*player.Player); ok {
-			target = t
+			attacker = t
 		}
-		if !canAttack(h.p, target) {
+		if !canAttack(h.p, attacker) {
 			ctx.Cancel()
 			return
 		}
 	case entity.ProjectileDamageSource:
 		if t, ok := s.Owner.(*player.Player); ok {
-			target = t
+			attacker = t
 		}
-
-		attacker := target
-		target := h.p
 
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
 			if k, ok := koth.Running(); ok {
 				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
-					target.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
+					attacker.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
 					break
 				}
 			}
 
-			dist := attacker.Position().Sub(target.Position()).Len()
+			dist := attacker.Position().Sub(attacker.Position()).Len()
 			if dist > 10 {
 				attacker.Message(text.Colourf("<red>You are too far away from %s</red>", h.p.Name()))
 				break
@@ -552,16 +549,16 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			ctx.Cancel()
 			attackerPos := attacker.Position()
-			targetPos := target.Position()
+			targetPos := attacker.Position()
 
-			target.PlaySound(sound.Burp{})
+			attacker.PlaySound(sound.Burp{})
 			attacker.PlaySound(sound.Burp{})
 
-			target.Teleport(attackerPos)
+			attacker.Teleport(attackerPos)
 			attacker.Teleport(targetPos)
 		}
 
-		if !canAttack(h.p, target) {
+		if !canAttack(h.p, attacker) {
 			ctx.Cancel()
 			return
 		}
@@ -569,7 +566,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ha := attacker.Handler().(*Handler)
 			if class.Compare(ha.class, class.Archer{}) && !class.Compare(h.class, class.Archer{}) {
 				h.archer.Set(time.Second * 10)
-				dist := h.p.Position().Sub(target.Position()).Len()
+				dist := h.p.Position().Sub(attacker.Position()).Len()
 				d := math.Round(dist)
 				if d > 20 {
 					d = 20
@@ -578,9 +575,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				h.p.Hurt(damage, NoArmourAttackEntitySource{
 					Attacker: h.p,
 				})
-				h.p.KnockBack(target.Position(), 0.394, 0.394)
+				h.p.KnockBack(attacker.Position(), 0.394, 0.394)
 
-				target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
+				attacker.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
 			}
 
 		}
@@ -690,8 +687,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 	}
 
-	if canAttack(h.p, target) {
-		target.Handler().(*Handler).combat.Set(time.Second * 20)
+	if canAttack(h.p, attacker) {
+		attacker.Handler().(*Handler).combat.Set(time.Second * 20)
 		h.combat.Set(time.Second * 20)
 	}
 }
