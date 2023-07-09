@@ -1016,7 +1016,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if !tm.Leader(p.Name()) || !tm.Captain(p.Name()) {
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		o.Error("You cannot withdraw any balance from your team.")
 		return
 	}
@@ -1095,7 +1095,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if !tm.Leader(p.Name()) || !tm.Captain(p.Name()) {
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		o.Error("You cannot withdraw any balance from your team.")
 		return
 	}
