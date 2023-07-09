@@ -292,6 +292,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		} else if h.pearlDisabled {
 			h.p.Message(text.Colourf("<red>Pearl Disabled! Pearl was refunded!</red>"))
 			h.TogglePearlDisable()
+			ctx.Cancel()
 		} else {
 			cd.Set(15 * time.Second)
 		}
