@@ -1036,7 +1036,8 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	u.Balance = u.Balance + amt
 
 	data.SaveTeam(tm)
-	data.SaveUser(u)
+	_ = data.SaveUser(u)
+
 	o.Print(text.Colourf("<green>You withdrew $%.2f from %s.</green>", amt, tm.DisplayName))
 }
 

@@ -214,7 +214,7 @@ func (t Team) Leader(name string) bool {
 // Captain returns whether the given username is the one of the captain.
 func (t Team) Captain(name string) bool {
 	for _, m := range t.Members {
-		if m.Rank == 2 {
+		if strings.EqualFold(m.Name, name) && m.Rank == 2 {
 			return true
 		}
 	}
