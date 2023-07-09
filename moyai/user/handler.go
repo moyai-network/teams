@@ -565,21 +565,24 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ctx.Cancel()
 			return
 		}
-		if ha := target.Handler().(*Handler); !class.Compare(h.class.Load(), class.Archer{}) && class.Compare(ha.class.Load(), class.Archer{}) && (s.Projectile.Type() == (entity.ArrowType{})) {
-			h.archer.Set(time.Second * 10)
+		if s.Projectile.Type() == (entity.ArrowType{}) {
+			ha := attacker.Handler().(*Handler)
+			if class.Compare(ha.class, class.Archer{}) && !class.Compare(h.class, class.Archer{}) {
+				h.archer.Set(time.Second * 10)
+				dist := h.p.Position().Sub(target.Position()).Len()
+				d := math.Round(dist)
+				if d > 20 {
+					d = 20
+				}
+				damage := (d / 10) * 2
+				h.p.Hurt(damage, NoArmourAttackEntitySource{
+					Attacker: h.p,
+				})
+				h.p.KnockBack(target.Position(), 0.394, 0.394)
 
-			dist := h.p.Position().Sub(target.Position()).Len()
-			d := math.Round(dist)
-			if d > 20 {
-				d = 20
+				target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
 			}
-			damage := (d / 10) * 2
-			h.p.Hurt(damage, NoArmourAttackEntitySource{
-				Attacker: h.p,
-			})
-			h.p.KnockBack(target.Position(), 0.394, 0.394)
 
-			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
 		}
 	}
 
