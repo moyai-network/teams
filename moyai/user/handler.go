@@ -2,6 +2,14 @@ package user
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -16,13 +24,6 @@ import (
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
-	"math"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -397,6 +398,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 			}
 		case it.SwitcherBallType:
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on snowball cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				ctx.Cancel()
+				break
+			}
 			h.abilities.Key(kind).Set(time.Second * 10)
 		case it.FullInvisibilityType:
 			// Restart TODO
@@ -508,9 +514,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if t, ok := s.Attacker.(*player.Player); ok {
 			target = t
 		}
-		fmt.Println("hurt")
 		if !canAttack(h.p, target) {
-			fmt.Println("hurt")
 			ctx.Cancel()
 			return
 		}
@@ -526,6 +530,35 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if t, ok := s.Owner.(*player.Player); ok {
 			target = t
 		}
+
+		attacker := target
+		target := h.p
+
+		if s.Projectile.Type() == (it.SwitcherBallType{}) {
+			if k, ok := koth.Running(); ok {
+				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
+					target.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
+					break
+				}
+			}
+
+			dist := attacker.Position().Sub(target.Position()).Len()
+			if dist > 10 {
+				attacker.Message(text.Colourf("<red>You are too far away from %s</red>", h.p.Name()))
+				break
+			}
+
+			ctx.Cancel()
+			attackerPos := attacker.Position()
+			targetPos := target.Position()
+
+			target.PlaySound(sound.Burp{})
+			attacker.PlaySound(sound.Burp{})
+
+			target.Teleport(attackerPos)
+			attacker.Teleport(targetPos)
+		}
+
 		if !canAttack(h.p, target) {
 			ctx.Cancel()
 			return
@@ -546,28 +579,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			h.p.KnockBack(target.Position(), 0.394, 0.394)
 
 			target.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
-		}
-
-		if s.Projectile.Type() == (it.SwitcherBallType{}) {
-			if k, ok := koth.Running(); ok {
-				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
-					target.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
-					break
-				}
-			}
-
-			dist := h.p.Position().Sub(target.Position()).Len()
-			if dist > 10 {
-				target.Message(text.Colourf("<red>You are too far away from %s</red>", h.p.Name()))
-				break
-			}
-
-			ctx.Cancel()
-			targetPos := target.Position()
-			pos := h.p.Position()
-
-			target.Teleport(pos)
-			h.p.Teleport(targetPos)
 		}
 	}
 
@@ -639,7 +650,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 		if tm, ok := u.Team(); ok {
 			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
-			defer data.SaveTeam(tm)
+			data.SaveTeam(tm)
 		}
 
 		killer, ok := h.LastAttacker()
@@ -651,7 +662,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			k.Stats.Kills += 1
 
 			if tm, ok := k.Team(); ok {
-				tm.WithPoints(tm.Points + 1)
+				tm = tm.WithPoints(tm.Points + 1)
 				data.SaveTeam(tm)
 			}
 
@@ -1078,13 +1089,12 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 			target.AddScramblerHit(h.p)
 			if target.ScramblerHits(h.p) >= 3 {
-				inv := target.Player().Inventory()
 				for i := 36; i <= 44; i++ {
 					j := rand.Intn(i+1-36) + 36
-					it1, _ := inv.Item(i)
-					it2, _ := inv.Item(j)
-					inv.SetItem(i, it1)
-					inv.SetItem(j, it2)
+					it1, _ := target.Player().Inventory().Item(i)
+					it2, _ := target.Player().Inventory().Item(j)
+					target.Player().Inventory().SetItem(i, it1)
+					target.Player().Inventory().SetItem(j, it2)
 				}
 				target.Player().Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
 				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))

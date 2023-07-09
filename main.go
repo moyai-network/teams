@@ -72,7 +72,7 @@ func main() {
 
 	c.Name = text.Colourf("<bold><redstone>SYN</redstone></bold>") + "§8"
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
-	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
+	c.WorldProvider = world.NopProvider{}
 
 	if config.Oomph.Enabled {
 		o := oomph.New(log, ":19134")
