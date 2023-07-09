@@ -60,12 +60,12 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		u, _ := data.LoadUser(p.Name())
+		u, _ := data.LoadUser(t.Name())
 
 		if u.PVP.Active() {
-			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
+			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
 		} else if _, ok := sotw.Running(); ok && u.SOTW {
-			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)
+			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
 		}
 
 		tm, ok := u.Team()
