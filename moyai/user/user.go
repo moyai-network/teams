@@ -2,6 +2,14 @@ package user
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"strings"
+	"sync"
+	"time"
+	"unicode"
+	_ "unsafe"
+
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -11,13 +19,6 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/teams/moyai/sotw"
-	"math"
-	"math/rand"
-	"strings"
-	"sync"
-	"time"
-	"unicode"
-	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -410,7 +411,7 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 		if e.Position().ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
 			return math.Max(f, f2)-math.Min(f, f2) < dist
 		}) {
-			if target, ok := e.(*player.Player); ok {
+			if target, ok := e.(*player.Player); ok && target.Name() != p.Name() {
 				if h, ok := target.Handler().(*Handler); ok {
 					pl = append(pl, h)
 				}
