@@ -503,6 +503,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 }
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
+	*dmg = *dmg / 1.25
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
 		return
