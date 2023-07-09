@@ -770,7 +770,33 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cube.Face, clickPos mgl64.Vec3) {
 	w := h.p.World()
 
-	i, _ := h.p.HeldItems()
+	i, left := h.p.HeldItems()
+	b := w.Block(pos)
+
+	for _, c := range crate.All() {
+		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
+			if _, ok := i.Value(c.Name()); !ok {
+				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", moose.StripMinecraftColour(c.Name())))
+				break
+			}
+			h.AddItemOrDrop(ench.AddEnchantmentLore(crate.SelectReward(c)))
+
+			h.p.SetHeldItems(h.SubtractItem(i, 1), left)
+
+			w.AddEntity(entity.NewFirework(c.Position().Add(mgl64.Vec3{0, 1, 0}), cube.Rotation{90, 90}, item.Firework{
+				Duration: 0,
+				Explosions: []item.FireworkExplosion{
+					{
+						Shape:   item.FireworkShapeStar(),
+						Trail:   true,
+						Colour:  moose.RandomColour(),
+						Twinkle: true,
+					},
+				},
+			}))
+		}
+	}
+
 	if _, ok := i.Item().(item.Bucket); ok {
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
@@ -780,7 +806,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 	}
 
-	u, _ := data.LoadUser(h.p.Name())
 	switch it := i.Item().(type) {
 	case item.Hoe:
 		ctx.Cancel()
@@ -795,7 +820,10 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			if !ok {
 				return
 			}
-
+			u, err := data.LoadUser(h.p.Name())
+			if err != nil {
+				return
+			}
 			t, ok := u.Team()
 			if !ok {
 				return
@@ -854,7 +882,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			h.Message("team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
 		}
 	}
-	b := w.Block(pos)
 
 	switch b.(type) {
 	case block.WoodFenceGate, block.Chest:
