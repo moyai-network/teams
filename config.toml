@@ -1,5 +1,5 @@
 [Network]
-Address = '192.168.2.157:19132'
+Address = ':50001'
 
 [Server]
 Name = ''
@@ -32,3 +32,6 @@ End = 'Edit this!'
 
 [Proxy]
 Enabled = false
+
+[Oomph]
+Enabled = true

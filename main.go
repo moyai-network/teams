@@ -14,6 +14,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/oomph-ac/oomph"
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
@@ -37,6 +38,7 @@ import (
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 
 	"github.com/restartfu/gophig"
+	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 
 	"github.com/sirupsen/logrus"
@@ -72,17 +74,31 @@ func main() {
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
-	pk := packethandler.NewPacketListener()
-	pk.Listen(":19134", &c, true)
-	go func() {
-		for {
-			p, err := pk.Accept()
-			if err != nil {
-				return
+	if config.Oomph.Enabled {
+		o := oomph.New(log, ":19134")
+		o.Listen(&c, "SYN", []minecraft.Protocol{}, true)
+		go func() {
+			for {
+				p, err := o.Accept()
+				if err != nil {
+					return
+				}
+				p.Handle(user.NewOomphHandler(p))
 			}
-			p.Handle(user.NewPacketHandler(p))
-		}
-	}()
+		}()
+	} else {
+		pk := packethandler.NewPacketListener()
+		pk.Listen(":19134", &c, true)
+		go func() {
+			for {
+				p, err := pk.Accept()
+				if err != nil {
+					return
+				}
+				p.Handle(user.NewPacketHandler(p))
+			}
+		}()
+	}
 
 	srv := c.New()
 

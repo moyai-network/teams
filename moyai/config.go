@@ -23,6 +23,11 @@ type Config struct {
 		Name    string
 		Secret  string
 	}
+
+	Oomph struct {
+		Enabled bool
+		// Other shit
+	}
 }
 
 // DefaultConfig returns a default config for the server.
@@ -34,5 +39,6 @@ func DefaultConfig() Config {
 	c.Moyai.Start = "Edit this!"
 	c.Moyai.End = "Edit this!"
 	c.Proxy.Enabled = true
+	c.Oomph.Enabled = true
 	return c
 }
