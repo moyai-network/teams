@@ -34,8 +34,8 @@ func NewKey(keyType KeyType, n int) item.Stack {
 		customName = text.Colourf("<red>KOTH Crate Key</red>")
 	case 1:
 		colour = item.ColourCyan()
-		value = "crate-key_Pharaoh"
-		customName = text.Colourf("<redstone>Pharaoh Crate Key</redstone>")
+		value = "crate-key_Revenant"
+		customName = text.Colourf("<redstone>Revenant Crate Key</redstone>")
 	default:
 		panic("should never happen")
 	}
