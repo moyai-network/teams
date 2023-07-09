@@ -775,7 +775,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 
 	for _, c := range crate.All() {
 		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
-			if _, ok := i.Value(c.Name()); !ok {
+			if _, ok := i.Value("crate-key_" + moose.StripMinecraftColour(c.Name())); !ok {
 				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", moose.StripMinecraftColour(c.Name())))
 				break
 			}
