@@ -533,6 +533,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			attacker = t
 		}
 
+		if !canAttack(h.p, attacker) {
+			ctx.Cancel()
+			return
+		}
+
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
 			if k, ok := koth.Running(); ok {
 				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
@@ -558,10 +563,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			attacker.Teleport(targetPos)
 		}
 
-		if !canAttack(h.p, attacker) {
-			ctx.Cancel()
-			return
-		}
 		if s.Projectile.Type() == (entity.ArrowType{}) {
 			ha := attacker.Handler().(*Handler)
 			if class.Compare(ha.class, class.Archer{}) && !class.Compare(h.class, class.Archer{}) {
