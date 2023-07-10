@@ -231,6 +231,40 @@ func (t Team) Member(name string) bool {
 	return false
 }
 
+func (t Team) FocusedPlayer() (string, bool) {
+	if t.Focus.Type() == FocusTypePlayer() {
+		return t.Focus.value, t.Focus.value != ""
+	}
+
+	return "", false
+}
+
+// FocusedTeam returns the focused team.
+func (t *Team) FocusedTeam() (Team, bool) {
+	if t.Focus.Type() == FocusTypeTeam() {
+		return LoadTeam(t.Focus.value)
+	}
+	return Team{}, false
+}
+
+// FocusTeam sets the focused team.
+func (t *Team) FocusTeam(tm Team) {
+	t.Focus.focusType = FocusTypeTeam()
+	t.Focus.value = tm.Name
+}
+
+// FocusPlayer sets the focused player.
+func (t *Team) FocusPlayer(name string) {
+	t.Focus.focusType = FocusTypePlayer()
+	t.Focus.value = name
+}
+
+// UnFocus unfocuses the team.
+func (t *Team) UnFocus() {
+	t.Focus.focusType = FocusTypeNone()
+	t.Focus.value = ""
+}
+
 // Member represents a team member.
 type Member struct {
 	Name        string

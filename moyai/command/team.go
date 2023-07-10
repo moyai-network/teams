@@ -862,116 +862,112 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("You cannot focus your own team.")
 		return
 	}
-	// tm.FocusTeam(targetTeam)
+	tm.FocusTeam(targetTeam)
 
-	// us, ok := user.Lookup(p.Name())
-	// if !ok {
-	// 	return
-	// }
-	// members, _ := u.Focusing()
-	// for _, m := range members {
-	// 	p, ok := user.LookupName(m.Name())
-	// 	if !ok {
-	// 		continue
-	// 	}
-	// 	p.UpdateState()
-	// }
+	members, _ := u.Focusing()
+	for _, m := range members {
+		p, ok := user.Lookup(m.Name)
+		if !ok {
+			continue
+		}
+		p.UpdateState()
+	}
 
-	// tm.Broadcast("command.team.focus", targetTeam.DisplayName())
+	user.BroadcastTeam(tm, "command.team.focus", targetTeam.Name)
 }
 
 // Run ...
 func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
-	// p, ok := s.(*player.Player)
-	// if !ok {
-	// 	return
-	// }
-	// u, err := data.LoadUserOrCreate(p.Name(), p.Handler().(*user.Handler).XUID())
-	// if err != nil {
-	// 	return
-	// }
-	// tm, ok := u.Team()
-	// if !ok {
-	// 	o.Error("You are not in a team.")
-	// 	return
-	// }
-	// if !ok {
-	// 	o.Error("You are not in a team.")
-	// 	return
-	// }
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	u, ok := data.LoadUser(p.Name())
+	if !ok {
+		return
+	}
+	tm, ok := u.Team()
+	if !ok {
+		o.Error("You are not in a team.")
+		return
+	}
+	if !ok {
+		o.Error("You are not in a team.")
+		return
+	}
 
-	// var name string
+	var name string
 
-	// focused, okTeam := tm.FocusedTeam()
-	// focusedPlayer, okPlayer := tm.FocusedPlayer()
+	focused, okTeam := tm.FocusedTeam()
+	focusedPlayer, okPlayer := tm.FocusedPlayer()
 
-	// if okTeam {
-	// 	name = focused.DisplayName()
-	// } else if okPlayer {
-	// 	name = focusedPlayer
-	// } else {
-	// 	o.Error("Your team is not focusing another team.")
-	// 	return
-	// }
-	// members, _ := u.Focusing()
-	// tm.UnFocus()
+	if okTeam {
+		name = focused.Name
+	} else if okPlayer {
+		name = focusedPlayer
+	} else {
+		o.Error("Your team is not focusing another team.")
+		return
+	}
+	members, _ := u.Focusing()
+	tm.UnFocus()
 
-	// for _, m := range members {
-	// 	p, ok := user.LookupName(m.Name())
-	// 	if !ok {
-	// 		continue
-	// 	}
-	// 	p.UpdateState()
-	// }
+	for _, m := range members {
+		p, ok := user.Lookup(m.Name)
+		if !ok {
+			continue
+		}
+		p.UpdateState()
+	}
 
-	// tm.Broadcast("command.team.unfocus", name)
+	user.BroadcastTeam(tm, "command.team.unfocus", name)
 }
 
 // Run ...
 func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
-	// l := locale(s)
-	// p, ok := s.(*player.Player)
-	// if !ok {
-	// 	return
-	// }
-	// u, ok := user.Lookup(p)
-	// if !ok {
-	// 	return
-	// }
-	// tm, ok := u.Team()
-	// if !ok {
-	// 	o.Error("You are not in a team.")
-	// 	return
-	// }
-	// if len(t.Target) > 1 {
-	// 	o.Error(lang.Translatef(l, "command.targets.exceed"))
-	// 	return
-	// }
-	// trg := t.Target[0]
-	// target, ok := trg.(*player.Player)
-	// if !ok {
-	// 	o.Error("You must target a player.")
-	// 	return
-	// }
-	// targetUser, ok := user.Lookup(target)
-	// if !ok {
-	// 	o.Error("That player is not online.")
-	// 	return
-	// }
+	l := locale(s)
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	u, ok := data.LoadUser(p.Name())
+	if !ok {
+		return
+	}
+	tm, ok := u.Team()
+	if !ok {
+		o.Error("You are not in a team.")
+		return
+	}
+	if len(t.Target) > 1 {
+		o.Error(lang.Translatef(l, "command.targets.exceed"))
+		return
+	}
+	trg := t.Target[0]
+	target, ok := trg.(*player.Player)
+	if !ok {
+		o.Error("You must target a player.")
+		return
+	}
+	targetUser, ok := user.Lookup(target.Name())
+	if !ok {
+		o.Error("That player is not online.")
+		return
+	}
 
-	// if targetUser == u {
-	// 	o.Error("You cannot focus yourself.")
-	// 	return
-	// }
+	if targetUser.Player().Name() == u.Name {
+		o.Error("You cannot focus yourself.")
+		return
+	}
 
-	// if _, ok := tm.Member(targetUser.Name()); ok {
-	// 	o.Error("You cannot focus a member of your team.")
-	// 	return
-	// }
+	if tm.Member(targetUser.Player().Name()) {
+		o.Error("You cannot focus a member of your team.")
+		return
+	}
 
-	// tm.FocusPlayer(targetUser.Name())
-	// targetUser.UpdateState()
-	// tm.Broadcast("command.team.focus", target.Name())
+	tm.FocusPlayer(targetUser.Player().Name())
+	targetUser.UpdateState()
+	user.BroadcastTeam(tm, "command.team.focus", target.Name())
 }
 
 // Run ...

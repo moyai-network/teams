@@ -1,13 +1,14 @@
 package data
 
 import (
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/role"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -79,6 +80,33 @@ func (u User) Team() (Team, bool) {
 		}
 	}
 	return Team{}, false
+}
+
+// Focusing returns whether the user is focusing.
+func (u User) Focusing() ([]User, bool) {
+	tm, ok := u.Team()
+	if !ok {
+		return nil, false
+	}
+	if p, ok := tm.FocusedPlayer(); ok {
+		t, ok := LoadUser(p)
+		if !ok {
+			return nil, false
+		}
+		return []User{t}, true
+	}
+	if t, ok := tm.FocusedTeam(); ok {
+		var users []User
+		for _, m := range t.Members {
+			us, ok := LoadUser(m.Name)
+			if !ok {
+				continue
+			}
+			users = append(users, us)
+		}
+		return users, true
+	}
+	return nil, false
 }
 
 // Stats contains all the stats of a user.
