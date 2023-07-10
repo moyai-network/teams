@@ -1,12 +1,6 @@
 package main
 
 import (
-	"math"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/role"
@@ -16,6 +10,11 @@ import (
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/oomph-ac/oomph"
 	proxypacket "github.com/paroxity/portal/socket/packet"
+	"math"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/block"
@@ -106,19 +105,21 @@ func main() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
-		sotw.Save()
 		for _, p := range srv.Players() {
 			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
 			sock, ok := moyai.Socket()
 			if ok {
-				_ = sock.WritePacket(&proxypacket.TransferRequest{
-					PlayerUUID: p.UUID(),
-					Server:     "syn.lobby",
-				})
+				go func() {
+					_ = sock.WritePacket(&proxypacket.TransferRequest{
+						PlayerUUID: p.UUID(),
+						Server:     "syn.lobby",
+					})
+				}()
 			}
 		}
-		time.Sleep(time.Second)
+		time.Sleep(time.Millisecond * 500)
 		_ = data.Close()
+		sotw.Save()
 		if err := srv.Close(); err != nil {
 			log.Errorf("close server: %v", err)
 		}
