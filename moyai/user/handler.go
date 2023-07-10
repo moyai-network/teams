@@ -320,6 +320,114 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 			ctx.Cancel()
 		}
 	}
+	w := h.p.World()
+
+	if !h.p.Sneaking() {
+		return
+	}
+
+	i, ok := held.Item().(item.Hoe)
+	if !ok || i.Tier != item.ToolTierDiamond {
+		return
+	}
+	_, ok = held.Value("CLAIM_WAND")
+	if !ok {
+		return
+	}
+
+	u, _ := data.LoadUser(h.p.Name())
+	t, ok := u.Team()
+	if !ok {
+		return
+	}
+	if !t.Leader(u.Name) {
+		h.Message("team.not-leader")
+		return
+	}
+	if t.Claim != (moose.Area{}) {
+		h.Message("team.has-claim")
+		return
+	}
+
+	pos := h.claimPos
+	if pos[0] == (mgl64.Vec2{}) || pos[1] == (mgl64.Vec2{}) {
+		h.Message("team.area.too-close")
+		return
+	}
+	claim := moose.NewArea(pos[0], pos[1])
+	var blocksPos []cube.Pos
+	min := claim.Min()
+	max := claim.Max()
+	for x := min[0]; x <= max[0]; x++ {
+		for y := min[1]; y <= max[1]; y++ {
+			blocksPos = append(blocksPos, cube.PosFromVec3(mgl64.Vec3{x, 0, y}))
+		}
+	}
+	for _, a := range area.Protected(w) {
+		for _, b := range blocksPos {
+			if a.Vec3WithinOrEqualXZ(b.Vec3()) {
+				h.Message("team.area.already-claimed")
+				return
+			}
+			if a.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+				h.Message("team.area.too-close")
+				return
+			}
+		}
+		if a.Vec2WithinOrEqual(pos[0]) || a.Vec2WithinOrEqual(pos[1]) {
+			h.Message("team.area.already-claimed")
+			return
+		}
+		if a.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || a.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
+			h.Message("team.area.too-close")
+			return
+		}
+	}
+
+	for _, tm := range data.Teams() {
+		c := tm.Claim
+		if c == (moose.Area{}) {
+			continue
+		}
+		for _, b := range blocksPos {
+			if c.Vec3WithinOrEqualXZ(b.Vec3()) {
+				h.Message("team.area.already-claimed")
+				return
+			}
+			if c.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+				h.Message("team.area.too-close")
+				return
+			}
+		}
+		if c.Vec2WithinOrEqual(pos[0]) || c.Vec2WithinOrEqual(pos[1]) {
+			h.Message("team.area.already-claimed")
+			return
+		}
+		if c.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || c.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
+			h.Message("team.area.too-close")
+			return
+		}
+	}
+
+	x := claim.Max().X() - claim.Min().X()
+	y := claim.Max().Y() - claim.Min().Y()
+	ar := x * y
+	if ar > 75*75 {
+		h.Message("team.claim.too-big")
+		return
+	}
+	cost := ar * 5
+
+	if t.Balance < cost {
+		h.Message("team.claim.no-money")
+		return
+	}
+
+	t.Balance -= cost
+	t.Claim = claim
+	data.SaveTeam(t)
+
+	h.Message("command.claim.success", pos[0], pos[1], cost)
 }
 
 // HandleItemUse ...
