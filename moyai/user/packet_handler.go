@@ -34,6 +34,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		return
 	}
 	p := ph.p
+	u, _ := data.LoadUser(p.Name())
 
 	switch pkt := pk.(type) {
 	case *packet.SetActorData:
@@ -59,8 +60,6 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		defer func() {
 			pkt.EntityMetadata = meta
 		}()
-
-		u, _ := data.LoadUserOrCreate(t.Name())
 
 		if u.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
