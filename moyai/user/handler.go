@@ -129,6 +129,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 		wallBlocks: map[cube.Pos]float64{},
 
+		chatType: *atomic.NewValue(1),
+
 		itemUse:   moose.NewMappedCoolDown[world.Item](),
 		bardItem:  moose.NewMappedCoolDown[world.Item](),
 		strayItem: moose.NewMappedCoolDown[world.Item](),
@@ -200,21 +202,68 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 	if msg := strings.TrimSpace(*message); len(msg) > 0 {
 		msg = formatRegex.ReplaceAllString(msg, "")
-		if tm, ok := u.Team(); ok {
-			formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
-			formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
-			for _, t := range All() {
-				if tm.Member(t.p.Name()) {
-					t.p.Message(formatTeam)
-				} else {
-					t.p.Message(formatEnemy)
+
+		global := func() {
+			if tm, ok := u.Team(); ok {
+				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
+				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
+				for _, t := range All() {
+					if tm.Member(t.p.Name()) {
+						t.p.Message(formatTeam)
+					} else {
+						t.p.Message(formatEnemy)
+					}
+				}
+				chat.StdoutSubscriber{}.Message(formatEnemy)
+			} else {
+				_, _ = chat.Global.WriteString(r.Chat(h.p.Name(), msg))
+			}
+		}
+
+		staff := func() {
+			for _, s := range All() {
+				if us, err := data.LoadUser(s.p.Name()); err != nil && role.Staff(us.Roles.Highest()) {
+					s.Message("staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 				}
 			}
-			chat.StdoutSubscriber{}.Message(formatEnemy)
-		} else {
-			_, _ = chat.Global.WriteString(r.Chat(h.p.Name(), msg))
+		}
+
+		switch h.ChatType() {
+		case 1:
+			if msg[0] == '!' && role.Staff(r) {
+				staff()
+				return
+			}
+			global()
+		case 2:
+			if msg[0] == '!' && role.Staff(r) {
+				staff()
+				return
+			}
+			u, err := data.LoadUser(h.p.Name())
+			if err != nil {
+				return
+			}
+			tm, ok := u.Team()
+			if !ok {
+				h.UpdateChatType(1)
+				global()
+				return
+			}
+			for _, u := range tm.Members {
+				if m, ok := Lookup(u.Name); ok {
+					m.p.Message(text.Colourf("<dark-aqua>[<yellow>T</yellow>] %s: %s</dark-aqua>", h.p.Name(), msg))
+				}
+			}
+		case 3:
+			if msg[0] == '!' {
+				global()
+				return
+			}
+			staff()
 		}
 	}
+
 }
 
 func (h *Handler) HandleFoodLoss(ctx *event.Context, _ int, _ *int) {

@@ -994,8 +994,13 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	switch us.ChatType() {
 	case 2:
 		us.UpdateChatType(1)
+		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
 	case 1:
 		us.UpdateChatType(2)
+		o.Print(text.Colourf("<green>Switched to faction chat.</green>"))
+	default:
+		us.UpdateChatType(1)
+		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
 	}
 }
 

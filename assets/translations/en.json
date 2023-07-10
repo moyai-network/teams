@@ -354,6 +354,8 @@
    "staff.alert.vanish.off": "left vanish",
    "staff.alert.vanish.on": "entered vanish",
 
+   "staff.chat": "<grey>[S]</grey> <red>[%v] %v:</red> <grey>%v</grey>",
+
    "target.whisper.disabled": "<red>This player has private messages disabled.</red>",
    "user.whisper.disabled": "<red>You have private messages disabled.</red>",
 
