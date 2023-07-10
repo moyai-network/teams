@@ -411,7 +411,7 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 		if e.Position().ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
 			return math.Max(f, f2)-math.Min(f, f2) < dist
 		}) {
-			if target, ok := e.(*player.Player); ok && target.Name() != p.Name() {
+			if target, ok := e.(*player.Player); ok && target != p {
 				if h, ok := target.Handler().(*Handler); ok {
 					pl = append(pl, h)
 				}
