@@ -2,10 +2,11 @@ package user
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai/koth"
-	"golang.org/x/exp/slices"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/koth"
+	"golang.org/x/exp/slices"
 
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/moyai-network/teams/moyai/sotw"
@@ -207,17 +208,15 @@ func startTicker(h *Handler) {
 			sb.RemovePadding()
 
 			u, _ := data.LoadUserOrCreate(h.p.Name())
-			if tm, ok := u.Team(); ok && tm.Focus.Type() == data.FocusTypeTeam() {
-				if foc := FocusingPlayers(tm); len(foc) > 0 {
-					if ft, ok := data.LoadTeam(tm.Focus.Value()); ok {
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTR))
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
-						if hm := ft.Home; hm != (mgl64.Vec3{}) {
-							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
-						}
-						_, _ = sb.WriteString("§3")
+			if tm, ok := u.Team(); ok {
+				if ft, ok := tm.FocusedTeam(); ok {
+					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
+					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
+					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
+					if hm := ft.Home; hm != (mgl64.Vec3{}) {
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
 					}
+					_, _ = sb.WriteString("§3")
 				}
 			}
 

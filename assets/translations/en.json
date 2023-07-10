@@ -122,7 +122,7 @@
     "scoreboard.tag.spawn": "<red>Spawn Tag<grey>:</grey> %.1fs</red>",
     "scoreboard.tag.archer": "<gold>Archer Tag<grey>:</grey> %.1fs</gold>",
     "scoreboard.focus.name": "<purple>[%s]</purple>",
-    "scoreboard.focus.dtr": "<dark-purple>▌</dark-purple> <purple>DTR</purple><grey>: %.1f</grey>",
+    "scoreboard.focus.dtr": "<dark-purple>▌</dark-purple> <purple>DTR</purple><grey>: %s</grey>",
     "scoreboard.focus.online": "<dark-purple>▌</dark-purple> <purple>Online</purple><grey>: %d/%d</grey>",
     "scoreboard.focus.home": "<dark-purple>▌</dark-purple> <purple>Home</purple><grey>: %.1f, %.1f</grey>",
     "scoreboard.teleportation.stuck": "<red>Stuck<grey>:</grey> %.1fs</red>",

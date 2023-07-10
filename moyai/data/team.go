@@ -175,13 +175,16 @@ func (t Team) WithDTR(dtr float64) Team {
 
 // MaxDTR returns the max DTR of the faction.
 func (t Team) MaxDTR() float64 {
-	dtr := 1.1 * float64(len(t.Members))
+	dtr := 1.01 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
 }
 
 // DTRString returns the DTR string of the faction
 func (t Team) DTRString() string {
-	if t.DTR == t.MaxDTR() {
+	eq := func(a, b float64) bool {
+		return math.Abs(a-b) <= 1e-5
+	}
+	if eq(t.DTR, t.MaxDTR()) {
 		return text.Colourf("<green>%.2f%s</green>", t.DTR, t.DTRDot())
 	}
 	if t.DTR < 0 {
@@ -192,7 +195,10 @@ func (t Team) DTRString() string {
 
 // DTRDot returns the DTR dot of the faction.
 func (t Team) DTRDot() string {
-	if t.DTR == t.MaxDTR() {
+	eq := func(a, b float64) bool {
+		return math.Abs(a-b) <= 1e-5
+	}
+	if eq(t.DTR, t.MaxDTR()) {
 		return "<green>■</green>"
 	}
 	if t.DTR < 0 {
@@ -242,7 +248,7 @@ func (t Team) FocusedPlayer() (string, bool) {
 // FocusedTeam returns the focused team.
 func (t *Team) FocusedTeam() (Team, bool) {
 	if t.Focus.Type() == FocusTypeTeam() {
-		return LoadTeam(t.Focus.value)
+		return LoadTeam(strings.ToLower(t.Focus.value))
 	}
 	return Team{}, false
 }

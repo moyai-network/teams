@@ -311,7 +311,7 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 	}
 	var anyFound bool
 
-	tm, ok := data.LoadTeam(name)
+	tm, ok := data.LoadTeam(strings.ToLower(name))
 	if ok {
 		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
@@ -852,7 +852,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("You are not in a team.")
 		return
 	}
-	targetTeam, ok := data.LoadTeam(string(t.Name))
+	targetTeam, ok := data.LoadTeam(strings.ToLower(string(t.Name)))
 	if !ok {
 		o.Error("That team does not exist.")
 		return
@@ -863,17 +863,17 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	tm.FocusTeam(targetTeam)
+	data.SaveTeam(tm)
 
-	members, _ := u.Focusing()
-	for _, m := range members {
-		p, ok := user.Lookup(m.Name)
+	for _, m := range user.FocusingPlayers(tm) {
+		p, ok := user.Lookup(m.Name())
 		if !ok {
 			continue
 		}
 		p.UpdateState()
 	}
 
-	user.BroadcastTeam(tm, "command.team.focus", targetTeam.Name)
+	user.BroadcastTeam(tm, "command.team.focus", targetTeam.DisplayName)
 }
 
 // Run ...
