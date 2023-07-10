@@ -45,7 +45,7 @@ func (KothList) Run(s cmd.Source, o *cmd.Output) {
 func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	if p, ok := s.(*player.Player); ok {
-		if u, err := data.LoadUser(p.Name()); err != nil {
+		if u, err := data.LoadUserOrCreate(p.Name()); err != nil {
 			r := u.Roles.Highest()
 			name = r.Colour(p.Name())
 		}
@@ -75,7 +75,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 func (KothStop) Run(s cmd.Source, o *cmd.Output) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	if p, ok := s.(*player.Player); ok {
-		if u, err := data.LoadUser(p.Name()); err != nil {
+		if u, err := data.LoadUserOrCreate(p.Name()); err != nil {
 			r := u.Roles.Highest()
 			name = r.Colour(p.Name())
 		}

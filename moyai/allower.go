@@ -21,7 +21,7 @@ func NewAllower(whitelisted bool) *Allower {
 }
 
 func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
-	u, err := data.LoadUser(d.DisplayName)
+	u, err := data.LoadUserOrCreate(d.DisplayName)
 	if err != nil {
 		fmt.Println(err)
 		return lang.Translatef(language.English, "user.data.load.error"), false

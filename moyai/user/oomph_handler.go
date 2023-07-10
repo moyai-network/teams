@@ -64,7 +64,7 @@ func (h OomphHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		u, _ := data.LoadUser(p.Name())
+		u, _ := data.LoadUserOrCreate(p.Name())
 
 		if u.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", u.Name)

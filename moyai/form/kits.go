@@ -19,7 +19,7 @@ type Kits struct{}
 
 func NewKitForm(p *player.Player) form.Menu {
 	f := form.NewMenu(Kits{}, "Kits")
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserOrCreate(p.Name())
 	for _, k := range kit.All() {
 		t := k.Name()
 		if !u.Roles.Contains(role.Wraith{}) && k == (kit.Master{}) {
@@ -41,7 +41,7 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 		return
 	}
 
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserOrCreate(p.Name())
 
 	if h.Combat().Active() {
 		h.Message("command.kit.tagged")

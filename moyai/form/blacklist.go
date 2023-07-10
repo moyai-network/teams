@@ -50,7 +50,7 @@ func NewBlacklist() form.Form {
 // Submit ...
 func (b blacklist) Submit(s form.Submitter) {
 	p := s.(*player.Player)
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		// User somehow left midway through the form.
 		return
@@ -81,7 +81,7 @@ func (b blacklist) Submit(s form.Submitter) {
 			h.Message("command.blacklist.self")
 			return
 		}
-		t, err := data.LoadUser(offlineName)
+		t, err := data.LoadUserOrCreate(offlineName)
 		if err != nil {
 			h.Message("command.target.unknown")
 			return
@@ -99,7 +99,7 @@ func (b blacklist) Submit(s form.Submitter) {
 
 		name = t.DisplayName
 	} else {
-		t, err := data.LoadUser(b.online[b.OnlinePlayer.Options[b.OnlinePlayer.Value()]])
+		t, err := data.LoadUserOrCreate(b.online[b.OnlinePlayer.Options[b.OnlinePlayer.Value()]])
 		if err != nil {
 			h.Message("command.target.unknown")
 			return

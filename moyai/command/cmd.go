@@ -27,7 +27,7 @@ func allow(src cmd.Source, console bool, roles ...moose.Role) bool {
 	if roles == nil {
 		return true
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return false
 	}

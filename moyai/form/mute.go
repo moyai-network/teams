@@ -51,7 +51,7 @@ func NewMute(p *player.Player) form.Form {
 // Submit ...
 func (m mute) Submit(s form.Submitter) {
 	p := s.(*player.Player)
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		// User somehow left midway through the form.
 		return
@@ -91,7 +91,7 @@ func (m mute) Submit(s form.Submitter) {
 			h.Message("command.mute.self")
 			return
 		}
-		t, err := data.LoadUser(offlineName)
+		t, err := data.LoadUserOrCreate(offlineName)
 		if err != nil {
 			h.Message("command.target.unknown")
 			return
@@ -112,7 +112,7 @@ func (m mute) Submit(s form.Submitter) {
 		h.Message("command.mute.success", t.DisplayName, reason)
 		return
 	}
-	t, err := data.LoadUser(m.online[m.OnlinePlayer.Options[m.OnlinePlayer.Value()]])
+	t, err := data.LoadUserOrCreate(m.online[m.OnlinePlayer.Options[m.OnlinePlayer.Value()]])
 	if err != nil {
 		h.Message("command.target.unknown")
 		return

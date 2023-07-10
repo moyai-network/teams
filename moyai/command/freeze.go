@@ -35,7 +35,7 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(t.Player().Name())
+	u, err := data.LoadUserOrCreate(t.Player().Name())
 	if err != nil {
 		return
 	}

@@ -180,7 +180,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserOrCreate(p.Name())
 	if _, ok = u.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.already"))
 		return
@@ -225,7 +225,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.self"))
 		return
 	}
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserOrCreate(p.Name())
 	tm, ok := u.Team()
 	if !ok {
 		out.Error(lang.Translatef(p.Locale(), "user.team-less"))
@@ -242,7 +242,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	tg, _ := data.LoadUser(target.Name())
+	tg, _ := data.LoadUserOrCreate(target.Name())
 
 	if _, ok := tg.Team(); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.has-team", target.Name()))
@@ -266,7 +266,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 	l := locale(src)
 
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserOrCreate(p.Name())
 	if _, ok := u.Team(); ok {
 		out.Error(lang.Translatef(l, "team.join.error"))
 		return
@@ -296,11 +296,11 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 
 	n, _ := t.Name.Load()
 	name := string(n)
-	u, err := data.LoadUser(p.Name())
-	if err != nil {
-		return
-	}
 	if strings.TrimSpace(name) == "" {
+		u, err := data.LoadUserOrCreate(p.Name())
+		if err != nil {
+			return
+		}
 		tm, ok := u.Team()
 		if !ok {
 			o.Error(lang.Translatef(l, "user.team-less"))
@@ -316,7 +316,9 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
-	tm, ok = u.Team()
+
+	targ, ok := data.LoadUser(name)
+	tm, ok = targ.Team()
 	if ok {
 		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
@@ -335,7 +337,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -374,11 +376,11 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 
 	n, _ := t.Name.Load()
 	name := string(n)
-	u, err := data.LoadUser(p.Name())
-	if err != nil {
-		return
-	}
 	if strings.TrimSpace(name) == "" {
+		u, err := data.LoadUserOrCreate(p.Name())
+		if err != nil {
+			return
+		}
 		tm, ok := u.Team()
 		if !ok {
 			o.Error(lang.Translatef(l, "user.team-less"))
@@ -394,7 +396,9 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
 	}
-	tm, ok = u.Team()
+
+	targ, ok := data.LoadUser(name)
+	tm, ok = targ.Team()
 	if ok {
 		o.Print(teamInformationFormat(tm, t.srv))
 		anyFound = true
@@ -409,7 +413,7 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
 	src := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUser(src)
+	u, err := data.LoadUserOrCreate(src)
 	if err != nil {
 		return
 	}
@@ -455,7 +459,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -521,7 +525,7 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -575,7 +579,7 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -624,7 +628,7 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -663,7 +667,7 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -684,7 +688,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -707,7 +711,7 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -739,7 +743,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	us, ok := user.Lookup(p.Name())
 	if err != nil || !ok {
 		return
@@ -784,7 +788,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -839,7 +843,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -882,7 +886,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	// if !ok {
 	// 	return
 	// }
-	// u, err := data.LoadUser(p.Name(), p.Handler().(*user.Handler).XUID())
+	// u, err := data.LoadUserOrCreate(p.Name(), p.Handler().(*user.Handler).XUID())
 	// if err != nil {
 	// 	return
 	// }
@@ -977,7 +981,7 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1011,7 +1015,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1053,7 +1057,7 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1090,7 +1094,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1127,7 +1131,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1162,7 +1166,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	us, ok := user.Lookup(p.Name())
 	if err != nil || !ok {
 		return
@@ -1365,7 +1369,7 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -1385,7 +1389,7 @@ func (member) Type() string {
 // Options ...
 func (member) Options(src cmd.Source) []string {
 	p := src.(*player.Player)
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return nil
 	}

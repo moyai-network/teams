@@ -16,7 +16,7 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -50,7 +50,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	target, err := data.LoadUser(t.Name())
+	target, err := data.LoadUserOrCreate(t.Name())
 	if err != nil {
 		return
 	}
@@ -85,7 +85,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -105,7 +105,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	t, err := data.LoadUser(p.Name())
+	t, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		out.Error("user has never joined the server")
 		return

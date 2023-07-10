@@ -64,7 +64,7 @@ func (tp TeleportTargetsToTarget) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return
@@ -95,7 +95,7 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return

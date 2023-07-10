@@ -199,7 +199,7 @@ func acceptFunc(proxy bool) func(*player.Player) {
 		p.SetGameMode(world.GameModeSurvival)
 		p.ShowCoordinates()
 		p.SetFood(20)
-		u, _ := data.LoadUser(p.Name())
+		u, _ := data.LoadUserOrCreate(p.Name())
 		u.Roles.Add(role.Revenant{})
 	}
 }

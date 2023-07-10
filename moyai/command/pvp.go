@@ -19,7 +19,7 @@ func (c PvpEnable) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}

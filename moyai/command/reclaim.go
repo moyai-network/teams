@@ -33,7 +33,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -110,7 +110,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 // Run ...
 func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
 	for _, p := range user.All() {
-		u, err := data.LoadUser(p.Player().Name())
+		u, err := data.LoadUserOrCreate(p.Player().Name())
 		if err != nil {
 			continue
 		}

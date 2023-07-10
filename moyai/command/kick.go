@@ -18,7 +18,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	l, single := locale(s), true
 	if len(k.Targets) > 1 {
 		if p, ok := s.(*player.Player); ok {
-			if u, err := data.LoadUser(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
+			if u, err := data.LoadUserOrCreate(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
 				o.Error(lang.Translatef(l, "command.targets.exceed"))
 				return
 			}
@@ -29,7 +29,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	var kicked int
 	for _, p := range k.Targets {
 		if p, ok := p.(*player.Player); ok {
-			u, err := data.LoadUser(p.Name())
+			u, err := data.LoadUserOrCreate(p.Name())
 			if err != nil || u.Roles.Contains(role.Operator{}) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue

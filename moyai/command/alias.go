@@ -34,7 +34,7 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUser(target.Name())
+	u, err := data.LoadUserOrCreate(target.Name())
 	if err != nil {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return

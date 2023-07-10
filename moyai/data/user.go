@@ -111,8 +111,8 @@ func DefaultUser(name string) User {
 	}
 }
 
-// LoadUser loads a user using the given name or xuid.
-func LoadUser(name string) (User, error) {
+// LoadUserOrCreate loads a user using the given name.
+func LoadUserOrCreate(name string) (User, error) {
 	usersMu.Lock()
 	defer usersMu.Unlock()
 
@@ -154,6 +154,49 @@ func LoadUser(name string) (User, error) {
 	users[u.Name] = u
 
 	return u, nil
+}
+
+// LoadUser loads a user using the given name.
+func LoadUser(name string) (User, bool) {
+	usersMu.Lock()
+	defer usersMu.Unlock()
+
+	if u, ok := users[strings.ToLower(name)]; ok {
+		return u, true
+	}
+
+	filter := bson.M{"name": bson.M{"$eq": strings.ToLower(name)}}
+
+	result := userCollection.FindOne(ctx(), filter)
+	if err := result.Err(); err != nil {
+		return User{}, false
+	}
+	var u User
+
+	u.DeathBan = moose.NewCoolDown()
+	u.PVP = moose.NewCoolDown()
+	u.Invitations = moose.NewMappedCoolDown[string]()
+	u.Kits = moose.NewMappedCoolDown[string]()
+	u.Report = moose.NewCoolDown()
+
+	err := result.Decode(&u)
+	if err != nil {
+		return User{}, false
+	}
+
+	for key, value := range u.Invitations {
+		if !value.Active() {
+			delete(u.Invitations, key)
+		}
+	}
+	for key, value := range u.Kits {
+		if !value.Active() {
+			delete(u.Kits, key)
+		}
+	}
+	users[u.Name] = u
+
+	return u, true
 }
 
 // LoadUsersCond loads users using the given filter.

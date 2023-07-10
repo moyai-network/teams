@@ -60,7 +60,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		u, _ := data.LoadUser(t.Name())
+		u, _ := data.LoadUserOrCreate(t.Name())
 
 		if u.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())

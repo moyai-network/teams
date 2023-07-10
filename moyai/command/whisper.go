@@ -26,7 +26,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUser(p.Name())
+	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
 		return
 	}
@@ -49,7 +49,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	t, err := data.LoadUser(tP.Name())
+	t, err := data.LoadUserOrCreate(tP.Name())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
