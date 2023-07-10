@@ -181,9 +181,6 @@ func (t Team) MaxDTR() float64 {
 
 // DTRString returns the DTR string of the faction
 func (t Team) DTRString() string {
-	eq := func(a, b float64) bool {
-		return math.Abs(a-b) <= 1e-5
-	}
 	if eq(t.DTR, t.MaxDTR()) {
 		return text.Colourf("<green>%.2f%s</green>", t.DTR, t.DTRDot())
 	}
@@ -195,9 +192,6 @@ func (t Team) DTRString() string {
 
 // DTRDot returns the DTR dot of the faction.
 func (t Team) DTRDot() string {
-	eq := func(a, b float64) bool {
-		return math.Abs(a-b) <= 1e-5
-	}
 	if eq(t.DTR, t.MaxDTR()) {
 		return "<green>■</green>"
 	}
@@ -299,6 +293,9 @@ func (m Member) WithRank(n int) Member {
 func LoadTeam(name string) (Team, bool) {
 	teamsMu.Lock()
 	t, ok := teams[name]
+	if t.RegenerationTime.Before(time.Now()) && t.DTR < t.MaxDTR() {
+		t = t.WithDTR(t.MaxDTR())
+	}
 	teamsMu.Unlock()
 	return t, ok
 }
@@ -315,4 +312,8 @@ func SaveTeam(t Team) {
 	teamsMu.Lock()
 	teams[t.Name] = t
 	teamsMu.Unlock()
+}
+
+func eq(a, b float64) bool {
+	return math.Abs(a-b) <= 1e-5
 }
