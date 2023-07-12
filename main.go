@@ -1,6 +1,12 @@
 package main
 
 import (
+	"math"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/role"
@@ -10,11 +16,6 @@ import (
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/oomph-ac/oomph"
 	proxypacket "github.com/paroxity/portal/socket/packet"
-	"math"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/block"

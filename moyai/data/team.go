@@ -36,6 +36,9 @@ func init() {
 
 	teamsMu.Lock()
 	for _, t := range tms {
+		if t.RegenerationTime.Before(time.Now()) && t.DTR < t.MaxDTR() {
+			t = t.WithDTR(t.MaxDTR())
+		}
 		teams[t.Name] = t
 	}
 	teamsMu.Unlock()
