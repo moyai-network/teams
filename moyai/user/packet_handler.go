@@ -1,9 +1,10 @@
 package user
 
 import (
-	"github.com/moyai-network/teams/moyai/data"
 	"strings"
 	_ "unsafe"
+
+	"github.com/moyai-network/teams/moyai/data"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"

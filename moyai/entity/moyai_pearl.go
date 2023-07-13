@@ -30,8 +30,8 @@ func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Ent
 }
 
 var moyaiPearlConf = entity.ProjectileBehaviourConfig{
-	Gravity:  0.085,
-	Drag:     0.01,
+	Gravity:  0.03,
+	Drag:     0.008,
 	Particle: particle.EndermanTeleport{},
 	Sound:    sound.Teleport{},
 	Hit:      teleport,
