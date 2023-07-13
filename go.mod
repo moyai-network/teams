@@ -6,12 +6,10 @@ replace github.com/bedrock-gophers/packethandler => github.com/moyai-network/pac
 
 replace github.com/paroxity/portal v1.0.8 => github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/dragonfly v0.9.8-0.20230711175526-254a73cb1ba7
-
 require (
 	github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8
 	github.com/df-mc/atomic v1.10.0
-	github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4
+	github.com/df-mc/dragonfly v0.9.8
 	github.com/go-gl/mathgl v1.0.0
 	github.com/google/uuid v1.3.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -20,7 +18,7 @@ require (
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
-	github.com/sandertv/gophertunnel v1.30.1-0.20230711115546-de9f23871800
+	github.com/sandertv/gophertunnel v1.31.0
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.12.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
@@ -41,6 +39,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
+	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect

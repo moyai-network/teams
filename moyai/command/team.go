@@ -911,6 +911,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	}
 	members, _ := u.Focusing()
 	tm.UnFocus()
+	data.SaveTeam(tm)
 
 	for _, m := range members {
 		p, ok := user.Lookup(m.Name)
