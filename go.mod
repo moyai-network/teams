@@ -9,7 +9,7 @@ replace github.com/paroxity/portal v1.0.8 => github.com/moyai-network/portal v1.
 require (
 	github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8
 	github.com/df-mc/atomic v1.10.0
-	github.com/df-mc/dragonfly v0.9.8
+	github.com/df-mc/dragonfly v0.9.9-0.20230714144543-281943e6efc4
 	github.com/go-gl/mathgl v1.0.0
 	github.com/google/uuid v1.3.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
