@@ -209,7 +209,8 @@ func startTicker(h *Handler) {
 
 			u, _ := data.LoadUserOrCreate(h.p.Name())
 			if tm, ok := u.Team(); ok {
-				if ft, ok := tm.FocusedTeam(); ok {
+				focus := tm.Focus
+				if ft, ok := data.LoadTeam(focus.Value()); focus.Type() == data.FocusTypeTeam() && ok {
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))

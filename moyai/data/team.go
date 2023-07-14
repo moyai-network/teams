@@ -234,22 +234,6 @@ func (t Team) Member(name string) bool {
 	return false
 }
 
-func (t Team) FocusedPlayer() (string, bool) {
-	if t.Focus.Type() == FocusTypePlayer() {
-		return t.Focus.value, t.Focus.value != ""
-	}
-
-	return "", false
-}
-
-// FocusedTeam returns the focused team.
-func (t Team) FocusedTeam() (Team, bool) {
-	if t.Focus.Type() == FocusTypeTeam() {
-		return LoadTeam(strings.ToLower(t.Focus.value))
-	}
-	return Team{}, false
-}
-
 // WithTeamFocus returns the team with the given team as the focus.
 func (t Team) WithTeamFocus(tm Team) Team {
 	t.Focus.focusType = FocusTypeTeam()

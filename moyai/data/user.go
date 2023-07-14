@@ -88,23 +88,28 @@ func (u User) Focusing() ([]User, bool) {
 	if !ok {
 		return nil, false
 	}
-	if p, ok := tm.FocusedPlayer(); ok {
-		t, ok := LoadUser(p)
+	focus := tm.Focus
+	switch focus.Type() {
+	case FocusTypePlayer():
+		t, ok := LoadUser(focus.value)
 		if !ok {
 			return nil, false
 		}
 		return []User{t}, true
-	}
-	if t, ok := tm.FocusedTeam(); ok {
-		var users []User
+	case FocusTypeTeam():
+		t, ok := LoadTeam(focus.value)
+		if !ok {
+			return nil, false
+		}
+		var usrs []User
 		for _, m := range t.Members {
 			us, ok := LoadUser(m.Name)
 			if !ok {
 				continue
 			}
-			users = append(users, us)
+			usrs = append(usrs, us)
 		}
-		return users, true
+		return usrs, true
 	}
 	return nil, false
 }
