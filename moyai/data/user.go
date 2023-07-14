@@ -71,6 +71,9 @@ type User struct {
 	Reclaimed bool
 	// PVP is the PVP timer of the user.
 	PVP *moose.CoolDown
+	// Dead is the live status of the logger.
+	// If true, the user should be cleared.
+	Dead bool
 }
 
 func (u User) Team() (Team, bool) {

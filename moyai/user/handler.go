@@ -111,7 +111,9 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
-	close chan struct{}
+	logger bool
+	close  chan struct{}
+	death  chan struct{}
 }
 
 func NewHandler(p *player.Player, xuid string) *Handler {
@@ -152,10 +154,25 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		}),
 
 		close: make(chan struct{}, 0),
+		death: make(chan struct{}, 0),
+	}
+
+	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
+
+	if h, ok := Lookup(p.Name()); ok {
+		p.Teleport(h.p.Position())
+		close(h.close)
 	}
 
 	s := player_session(p)
 	u, _ := data.LoadUserOrCreate(p.Name())
+
+	if u.Dead {
+		p.Armour().Clear()
+		p.Inventory().Clear()
+		p.Teleport(p.World().Spawn().Vec3Middle())
+		u.Dead = false
+	}
 
 	if u.Frozen {
 		p.SetImmobile()
@@ -178,6 +195,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	players[strings.ToLower(p.Name())] = ha
 	playersMu.Unlock()
 
+	ha.UpdateState()
 	go startTicker(ha)
 	return ha
 }
@@ -849,6 +867,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		} else {
 			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.Stats.Kills))
 		}
+		h.death <- struct{}{}
 	}
 
 	if canAttack(h.p, attacker) {
@@ -1333,13 +1352,65 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 }
 
 func (h *Handler) HandleQuit() {
-	close(h.close)
+	if h.logger {
+		return
+	}
+	h.close <- struct{}{}
 	p := h.p
 
 	u, _ := data.LoadUserOrCreate(p.Name())
 	u.PlayTime += time.Since(h.logTime)
 	_ = data.SaveUser(u)
 
+	tm, _ := u.Team()
+	_, sotwRunning := sotw.Running()
+	if !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.SOTW) || u.PVP.Active()) {
+		arm := h.p.Armour()
+		inv := h.p.Inventory()
+
+		h.p = player.New(p.Name(), p.Skin(), p.Position())
+		h.p.SetNameTag(text.Colourf("<red>%s</red> <grey>(LOGGER)</grey>", p.Name()))
+		h.p.Handle(h)
+		if p.Health() < 20 {
+			h.p.Hurt(20-p.Health(), effect.InstantDamageSource{})
+		}
+
+		for j, i := range inv.Slots() {
+			_ = h.p.Inventory().SetItem(j, i)
+		}
+		h.p.Armour().Set(arm.Helmet(), arm.Chestplate(), arm.Leggings(), arm.Boots())
+
+		p.World().AddEntity(h.p)
+		go func() {
+			select {
+			case <-time.After(time.Second * 30):
+				playersMu.Lock()
+				delete(players, h.p.Name())
+				playersMu.Unlock()
+				_ = h.p.Close()
+			case <-h.close:
+				playersMu.Lock()
+				delete(players, h.p.Name())
+				playersMu.Unlock()
+				_ = h.p.Close()
+			case <-h.death:
+				u, ok := data.LoadUser(h.p.Name())
+				if !ok {
+					return
+				}
+				u.Dead = true
+				_ = data.SaveUser(u)
+
+				playersMu.Lock()
+				delete(players, h.p.Name())
+				playersMu.Unlock()
+				_ = h.p.Close()
+			}
+		}()
+		h.logger = true
+		h.UpdateState()
+		return
+	}
 	playersMu.Lock()
 	delete(players, h.p.Name())
 	playersMu.Unlock()

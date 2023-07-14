@@ -62,7 +62,8 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		if u.PVP.Active() {
+		tg, _ := data.LoadUser(p.Name())
+		if tg.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
 		} else if _, ok := sotw.Running(); ok && u.SOTW {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
@@ -81,6 +82,11 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			return strings.EqualFold(p.Name(), t.Name())
 		}) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
+		}
+
+		if target.logger {
+			tag := meta[protocol.EntityDataKeyName]
+			meta[protocol.EntityDataKeyName] = text.Colourf("%s <grey>(LOGGER)</grey>", tag)
 		}
 	}
 }
