@@ -862,7 +862,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("You cannot focus your own team.")
 		return
 	}
-	tm.FocusTeam(targetTeam)
+	tm = tm.WithTeamFocus(targetTeam)
 	data.SaveTeam(tm)
 
 	for _, m := range user.FocusingPlayers(tm) {
@@ -910,7 +910,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	members, _ := u.Focusing()
-	tm.UnFocus()
+	tm = tm.WithoutFocus()
 	data.SaveTeam(tm)
 
 	for _, m := range members {
@@ -966,7 +966,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	tm.FocusPlayer(targetUser.Player().Name())
+	tm = tm.WithPlayerFocus(targetUser.Player().Name())
 	targetUser.UpdateState()
 	user.BroadcastTeam(tm, "command.team.focus", target.Name())
 }

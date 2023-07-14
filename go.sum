@@ -12,8 +12,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/df-mc/atomic v1.10.0 h1:0ZuxBKwR/hxcFGorKiHIp+hY7hgY+XBTzhCYD2NqSEg=
 github.com/df-mc/atomic v1.10.0/go.mod h1:Gw9rf+rPIbydMjA329Jn4yjd/O2c/qusw3iNp4tFGSc=
-github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4 h1:ZjjlMP3GKEamwAalBco9A9yan2W/NSh6aXNGIkNd+Ks=
-github.com/df-mc/dragonfly v0.9.8-0.20230619020232-90039d2c33c4/go.mod h1:qMeRrQwzd2mZuwc/beEAO7GQltWINMUYZP7ipO77sJU=
 github.com/df-mc/dragonfly v0.9.8 h1:mTVYU05qpYAuKMgNJGB9D7MdTNjfQSW2RFd55r0/QL8=
 github.com/df-mc/dragonfly v0.9.8/go.mod h1:Ee4LEtS6k1j6O+U7rkM4r8/RoA8qe+iSb0crOZ9gbgE=
 github.com/df-mc/goleveldb v1.1.9 h1:ihdosZyy5jkQKrxucTQmN90jq/2lUwQnJZjIYIC/9YU=
@@ -71,7 +69,6 @@ github.com/onsi/gomega v1.4.3/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1Cpa
 github.com/oomph-ac/oomph v0.0.0-20230628173142-142b900a0ec1 h1:H5Rz2l+AEI4hTFSGnVLkRPl53a1chVMeyKiH9V+PnCY=
 github.com/oomph-ac/oomph v0.0.0-20230628173142-142b900a0ec1/go.mod h1:f66SghthUQDbNrh8aDkbobShyiYibPgiIyWcXRTCPkY=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
-github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.0.8 h1:0ctb6s9mE31h0/lhu+J6OPmVeDxJn+kYnJc2jZR9tGQ=
 github.com/pelletier/go-toml/v2 v2.0.8/go.mod h1:vuYfssBdrU2XDZ9bYydBu6t+6a6PYNcZljzZR9VXg+4=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
