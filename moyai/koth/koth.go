@@ -24,7 +24,7 @@ func init() {
 	k.Start()
 	go func() {
 		for range t.C {
-			if _, ok := Running(); !ok {
+			if _, ok := Running(); ok {
 				continue
 			}
 			n := rand.Intn(len(All()))

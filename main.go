@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/moyai-network/moose/worlds"
 	"math"
 	"os"
 	"os/signal"
@@ -10,7 +11,6 @@ import (
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/moose/worlds"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/sotw"
@@ -75,7 +75,7 @@ func main() {
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	if config.Oomph.Enabled {
-		o := oomph.New(log, ":19134")
+		o := oomph.New(log, ":19132")
 		o.Listen(&c, "SYN", []minecraft.Protocol{}, true)
 		go func() {
 			for {
@@ -88,7 +88,7 @@ func main() {
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(":19134", &c, true)
+		pk.Listen(&c, ":19132", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()
@@ -101,30 +101,7 @@ func main() {
 	}
 
 	srv := c.New()
-
-	ch := make(chan os.Signal, 2)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-ch
-		for _, p := range srv.Players() {
-			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
-			sock, ok := moyai.Socket()
-			if ok {
-				go func() {
-					_ = sock.WritePacket(&proxypacket.TransferRequest{
-						PlayerUUID: p.UUID(),
-						Server:     "syn.lobby",
-					})
-				}()
-			}
-		}
-		time.Sleep(time.Millisecond * 500)
-		_ = data.Close()
-		sotw.Save()
-		if err := srv.Close(); err != nil {
-			log.Errorf("close server: %v", err)
-		}
-	}()
+	handleServerClose(srv)
 
 	w := srv.World()
 	w.Handle(&worlds.Handler{})
@@ -260,6 +237,32 @@ func registerCommands(srv *server.Server) {
 	if sock, ok := moyai.Socket(); ok {
 		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
 	}
+}
+
+func handleServerClose(srv *server.Server) {
+	ch := make(chan os.Signal, 2)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-ch
+		for _, p := range srv.Players() {
+			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
+			sock, ok := moyai.Socket()
+			if ok {
+				go func() {
+					_ = sock.WritePacket(&proxypacket.TransferRequest{
+						PlayerUUID: p.UUID(),
+						Server:     "syn.lobby",
+					})
+				}()
+			}
+		}
+		time.Sleep(time.Millisecond * 500)
+		_ = data.Close()
+		sotw.Save()
+		if err := srv.Close(); err != nil {
+			logrus.Fatalln("close server: %v", err)
+		}
+	}()
 }
 
 func readConfig() (moyai.Config, error) {

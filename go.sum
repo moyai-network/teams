@@ -1,5 +1,9 @@
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
+github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8 h1:lOk9Cn8C/HK3xPwJhHluzGSa8KLCGHZ5G0hSmLkqEK4=
+github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8/go.mod h1:jXCZPyGlfrdAS8Uo46tL263a+awKtNXWUCwBHwlJ5Ng=
+github.com/bedrock-gophers/packethandler v0.0.0-20230714140442-368cd2e34db0 h1:J6TMtirgxkMc2mXxyJHO3t0UfgePQtCMyzMWVhUPzFo=
+github.com/bedrock-gophers/packethandler v0.0.0-20230714140442-368cd2e34db0/go.mod h1:QPLTdqfD3rY1q5aieOaXfa149UtO4kUVWLDJicrdixA=
 github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 h1:/G0ghZwrhou0Wq21qc1vXXMm/t/aKWkALWwITptKbE0=
 github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9/go.mod h1:TOk10ahXejq9wkEaym3KPRNeuR/h5Jx+s8QRWIa2oTM=
 github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
@@ -57,8 +61,6 @@ github.com/montanaflynn/stats v0.7.1 h1:etflOAAHORrCC44V+aR6Ftzort912ZU+YLiSTuV8
 github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
 github.com/moyai-network/moose v0.0.0-20230709143116-b203c3552bbc h1:E8ZCeMcMStyy8pIMRzTYcHN0XuN6Je/855+a2r10JlI=
 github.com/moyai-network/moose v0.0.0-20230709143116-b203c3552bbc/go.mod h1:ACagGSoFYUgQ9nThRyMInbxqWLUd2zDmNy2JGegEZdM=
-github.com/moyai-network/packethandler v0.0.0-20230706145553-a6f52345eaea h1:OMIbErP0W5KcTFB48NgnXaklDobDx7zHQGO1hv2fx6U=
-github.com/moyai-network/packethandler v0.0.0-20230706145553-a6f52345eaea/go.mod h1:jXCZPyGlfrdAS8Uo46tL263a+awKtNXWUCwBHwlJ5Ng=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4 h1:shcx6aTtRNOIpwF83hdiUOp/HaU7UW+BcNUX9SLdQfE=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4/go.mod h1:xzstLrcan1t2l1C0fEUdmYmK2ieaV2ZmeE1sztuSu5w=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=
@@ -124,6 +126,8 @@ golang.org/x/crypto v0.11.0 h1:6Ewdq3tDic1mg5xRO4milcWCfMVQhI4NkqWWvqejpuA=
 golang.org/x/crypto v0.11.0/go.mod h1:xgJhtzW8F9jGdVFWZESrid1U1bjeNy4zgy5cRr/CIio=
 golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df h1:UA2aFVmmsIlefxMk29Dp2juaUSth8Pyn3Tq5Y5mJGME=
 golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=
+golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 h1:MGwJjxBy0HJshjDNfLsYO8xppfqWlA5ZT9OhtUUhTNw=
+golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.9.0 h1:QrzfX26snvCM20hIhBwuHI/ThTg18b/+kcKdXHvnR+g=
 golang.org/x/image v0.9.0/go.mod h1:jtrku+n79PfroUbvDdeUWMAI+heR786BofxrbiSF+J0=

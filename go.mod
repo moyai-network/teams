@@ -2,12 +2,10 @@ module github.com/moyai-network/teams
 
 go 1.20
 
-replace github.com/bedrock-gophers/packethandler => github.com/moyai-network/packethandler v0.0.0-20230706145553-a6f52345eaea
-
 replace github.com/paroxity/portal v1.0.8 => github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4
 
 require (
-	github.com/bedrock-gophers/packethandler v0.0.0-20230618021151-ed14a93b98d8
+	github.com/bedrock-gophers/packethandler v0.0.0-20230714140442-368cd2e34db0
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.9-0.20230714144543-281943e6efc4
 	github.com/go-gl/mathgl v1.0.0
@@ -21,7 +19,7 @@ require (
 	github.com/sandertv/gophertunnel v1.31.0
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.12.0
-	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
+	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 	golang.org/x/text v0.11.0
 )
 

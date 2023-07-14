@@ -862,7 +862,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("You cannot focus your own team.")
 		return
 	}
-	tm.FocusTeam(targetTeam)
+	tm = tm.WithTeamFocus(targetTeam)
 	data.SaveTeam(tm)
 
 	for _, m := range user.FocusingPlayers(tm) {
@@ -896,21 +896,15 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	var name string
+	focus := tm.Focus
 
-	focused, okTeam := tm.FocusedTeam()
-	focusedPlayer, okPlayer := tm.FocusedPlayer()
-
-	if okTeam {
-		name = focused.Name
-	} else if okPlayer {
-		name = focusedPlayer
-	} else {
-		o.Error("Your team is not focusing another team.")
+	if focus.Type() == data.FocusTypeNone() {
+		o.Error("Your team is not focusing anyone.")
 		return
 	}
+
 	members, _ := u.Focusing()
-	tm.UnFocus()
+	tm = tm.WithoutFocus()
 	data.SaveTeam(tm)
 
 	for _, m := range members {
@@ -921,7 +915,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		p.UpdateState()
 	}
 
-	user.BroadcastTeam(tm, "command.team.unfocus", name)
+	user.BroadcastTeam(tm, "command.team.unfocus", focus.Value())
 }
 
 // Run ...
@@ -966,7 +960,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	tm.FocusPlayer(targetUser.Player().Name())
+	tm = tm.WithPlayerFocus(targetUser.Player().Name())
 	targetUser.UpdateState()
 	user.BroadcastTeam(tm, "command.team.focus", target.Name())
 }
