@@ -171,6 +171,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		p.Armour().Clear()
 		p.Inventory().Clear()
 		p.Teleport(p.World().Spawn().Vec3Middle())
+		p.Heal(20, effect.InstantHealingSource{})
 		u.Dead = false
 	}
 
