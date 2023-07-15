@@ -308,6 +308,9 @@
    "user.kick.autoclicker": "<red>We detected that your CPS is unfair, please try increasing your\ndebounce time or terminate your external program!\n<grey><i>For questions or concerns, refer to discord.gg/synhcf</grey></i>",
    "user.kick.description": "<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/synhcf</grey></i>",
 
+    "oomph.staff.alert": "<gold>[<redstone>Oomph</redstone>]</gold> <aqua>%v was flagged for %v (%v)</aqua> <grey>%v [x%v]</grey>",
+
+
    "command.target.unknown": "<red>Unknown target %s</red>",
    "command.targets.exceed": "<red>You may only choose one player at a time.</red>",
 

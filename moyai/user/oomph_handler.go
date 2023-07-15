@@ -5,12 +5,18 @@ import (
 
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/oomph-ac/oomph/check"
 	pl "github.com/oomph-ac/oomph/player"
+	"github.com/oomph-ac/oomph/utils"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/sirupsen/logrus"
+	"github.com/unickorn/strutils"
 	"golang.org/x/exp/slices"
 )
 
@@ -28,10 +34,10 @@ func NewOomphHandler(p *pl.Player) *OomphHandler {
 }
 
 // HandleClientPacket ...
-func (OomphHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet) {}
+func (*OomphHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet) {}
 
 // HandleServerPacket ...
-func (h OomphHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
+func (h *OomphHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
 	u, ok := Lookup(h.p.Name())
 	if !ok {
 		return
@@ -87,4 +93,27 @@ func (h OomphHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
 		}
 	}
+}
+
+func (h *OomphHandler) HandleFlag(ctx *event.Context, ch check.Check, params map[string]any, _ *bool) {
+	logrus.Info("NEGRO")
+	// add oomph data handler and staff shit, i just wanna debug it for now
+	name, variant := ch.Name()
+	Broadcast("oomph.staff.alert",
+		h.p.Name(),
+		name,
+		variant,
+		utils.PrettyParameters(params, true),
+		mgl64.Round(ch.Violations(), 2),
+	)
+}
+
+func (o *OomphHandler) HandlePunishment(ctx *event.Context, ch check.Check, msg *string) {
+	ctx.Cancel()
+	n, v := ch.Name()
+	// just to test
+	o.p.Disconnect(strutils.CenterLine(strings.Join([]string{
+		lang.Translatef(o.p.Locale(), "user.kick.header.oomph"),
+		lang.Translatef(o.p.Locale(), "user.kick.description", n+v),
+	}, "\n")))
 }

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/moyai-network/moose/worlds"
 	"math"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/moyai-network/moose/worlds"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
@@ -75,20 +76,21 @@ func main() {
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	if config.Oomph.Enabled {
-		o := oomph.New(log, ":19132")
-		o.Listen(&c, "SYN", []minecraft.Protocol{}, true)
+		o := oomph.New(log, ":19134")
+		o.Listen(&c, "SYN", []minecraft.Protocol{}, true, config.Proxy.Enabled)
 		go func() {
 			for {
 				p, err := o.Accept()
 				if err != nil {
 					return
 				}
+				logrus.Info("Joined")
 				p.Handle(user.NewOomphHandler(p))
 			}
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19132", []minecraft.Protocol{})
+		pk.Listen(&c, ":19134", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()

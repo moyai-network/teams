@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/moyai-network/moose v0.0.0-20230709143116-b203c3552bbc
-	github.com/oomph-ac/oomph v0.0.0-20230628173142-142b900a0ec1
+	github.com/oomph-ac/oomph v0.0.0-20230715153612-4735f5e9a9b5
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
@@ -43,6 +43,7 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/sandertv/go-raknet v1.12.0 // indirect
 	github.com/scylladb/go-set v1.0.3-0.20200225121959-cc7b2070d91e // indirect
+	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
