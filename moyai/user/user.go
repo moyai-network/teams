@@ -64,7 +64,7 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	return nil, false
 }
 
-// Lookup looks up the Handler of a XUID passed.
+// Lookup looks up the Handler of a name passed.
 func Lookup(name string) (*Handler, bool) {
 	playersMu.Lock()
 	defer playersMu.Unlock()
