@@ -111,9 +111,10 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
-	logger bool
-	close  chan struct{}
-	death  chan struct{}
+	loggedOut bool
+	logger    bool
+	close     chan struct{}
+	death     chan struct{}
 }
 
 func NewHandler(p *player.Player, xuid string) *Handler {
@@ -146,9 +147,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		home: moose.NewTeleportation(func(t *moose.Teleportation) {
 			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
 		}),
-		logout: moose.NewTeleportation(func(t *moose.Teleportation) {
-			p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
-		}),
 		stuck: moose.NewTeleportation(func(t *moose.Teleportation) {
 			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
 		}),
@@ -156,6 +154,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		close: make(chan struct{}, 0),
 		death: make(chan struct{}, 0),
 	}
+	ha.logout = moose.NewTeleportation(func(t *moose.Teleportation) {
+		ha.loggedOut = true
+		p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
+	})
 
 	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
 
@@ -1352,71 +1354,6 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 }
 
-func (h *Handler) HandleQuit() {
-	if h.logger {
-		return
-	}
-	h.close <- struct{}{}
-	p := h.p
-
-	u, _ := data.LoadUserOrCreate(p.Name())
-	u.PlayTime += time.Since(h.logTime)
-	_ = data.SaveUser(u)
-
-	tm, _ := u.Team()
-	_, sotwRunning := sotw.Running()
-	if !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.SOTW) || u.PVP.Active()) {
-		arm := h.p.Armour()
-		inv := h.p.Inventory()
-
-		h.p = player.New(p.Name(), p.Skin(), p.Position())
-		h.p.SetNameTag(text.Colourf("<red>%s</red> <grey>(LOGGER)</grey>", p.Name()))
-		h.p.Handle(h)
-		if p.Health() < 20 {
-			h.p.Hurt(20-p.Health(), effect.InstantDamageSource{})
-		}
-
-		for j, i := range inv.Slots() {
-			_ = h.p.Inventory().SetItem(j, i)
-		}
-		h.p.Armour().Set(arm.Helmet(), arm.Chestplate(), arm.Leggings(), arm.Boots())
-
-		p.World().AddEntity(h.p)
-		go func() {
-			select {
-			case <-time.After(time.Second * 30):
-				playersMu.Lock()
-				delete(players, h.p.Name())
-				playersMu.Unlock()
-				_ = h.p.Close()
-			case <-h.close:
-				playersMu.Lock()
-				delete(players, h.p.Name())
-				playersMu.Unlock()
-				_ = h.p.Close()
-			case <-h.death:
-				u, ok := data.LoadUser(h.p.Name())
-				if !ok {
-					return
-				}
-				u.Dead = true
-				_ = data.SaveUser(u)
-
-				playersMu.Lock()
-				delete(players, h.p.Name())
-				playersMu.Unlock()
-				_ = h.p.Close()
-			}
-		}()
-		h.logger = true
-		h.UpdateState()
-		return
-	}
-	playersMu.Lock()
-	delete(players, h.p.Name())
-	playersMu.Unlock()
-}
-
 func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
 	u, _ := data.LoadUserOrCreate(h.p.Name())
 	p := h.p
@@ -1517,6 +1454,62 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		h.area.Store(area.Wilderness(w))
 		h.Message("area.enter", area.Wilderness(w).Name())
 	}
+}
+
+func (h *Handler) HandleQuit() {
+	if h.logger {
+		return
+	}
+	h.close <- struct{}{}
+	p := h.p
+
+	u, _ := data.LoadUserOrCreate(p.Name())
+	u.PlayTime += time.Since(h.logTime)
+	_ = data.SaveUser(u)
+
+	tm, _ := u.Team()
+	_, sotwRunning := sotw.Running()
+	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.SOTW) || u.PVP.Active()) {
+		arm := h.p.Armour()
+		inv := h.p.Inventory()
+
+		h.p = player.New(p.Name(), p.Skin(), p.Position())
+		h.p.SetNameTag(text.Colourf("<red>%s</red> <grey>(LOGGER)</grey>", p.Name()))
+		h.p.Handle(h)
+		if p.Health() < 20 {
+			h.p.Hurt(20-p.Health(), effect.InstantDamageSource{})
+		}
+
+		for j, i := range inv.Slots() {
+			_ = h.p.Inventory().SetItem(j, i)
+		}
+		h.p.Armour().Set(arm.Helmet(), arm.Chestplate(), arm.Leggings(), arm.Boots())
+
+		p.World().AddEntity(h.p)
+		go func() {
+			select {
+			case <-time.After(time.Second * 30):
+			case <-h.close:
+			case <-h.death:
+				u, ok := data.LoadUser(h.p.Name())
+				if !ok {
+					return
+				}
+				u.Dead = true
+				_ = data.SaveUser(u)
+			}
+			playersMu.Lock()
+			delete(players, h.p.Name())
+			playersMu.Unlock()
+			_ = h.p.Close()
+		}()
+		h.logger = true
+		h.UpdateState()
+		return
+	}
+	playersMu.Lock()
+	delete(players, h.p.Name())
+	playersMu.Unlock()
 }
 
 type npcHandler struct {
