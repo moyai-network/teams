@@ -602,10 +602,7 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm.Demote(string(t.Member))
 	data.SaveTeam(tm)
-	if err != nil {
-		o.Error(lang.Translatef(l, "team.save.fail"))
-		return
-	}
+
 	for _, m := range tm.Members {
 		if u, ok := user.Lookup(m.Name); ok {
 			u.Message("command.team.demote.user.demoted", string(t.Member), "Member")
@@ -688,7 +685,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		o.Error("You are not in a team.")
 	}
-	if tm.Leader(u.Name) {
+	if !tm.Leader(u.Name) {
 		o.Error("You are not the team leader.")
 		return
 	}
@@ -1065,7 +1062,7 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	u.Balance = u.Balance - amt
 
 	data.SaveTeam(tm)
-	data.SaveUser(u)
+	_ = data.SaveUser(u)
 
 	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.DisplayName))
 }
@@ -1102,7 +1099,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	u.Balance = u.Balance + amt
 
 	data.SaveTeam(tm)
-	data.SaveUser(u)
+	_ = data.SaveUser(u)
 
 	o.Print(text.Colourf("<green>You withdrew $%d from %s.</green>", amt, tm.Name))
 }
@@ -1138,7 +1135,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	u.Balance = u.Balance - amt
 
 	data.SaveTeam(tm)
-	data.SaveUser(u)
+	_ = data.SaveUser(u)
 
 	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", amt, tm.Name))
 }
