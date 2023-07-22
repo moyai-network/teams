@@ -1,6 +1,13 @@
 package user
 
 import (
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/moose/lang"
+	"github.com/oomph-ac/oomph/check"
+	pl "github.com/oomph-ac/oomph/player"
+	"github.com/oomph-ac/oomph/utils"
+	"github.com/sirupsen/logrus"
+	"github.com/unickorn/strutils"
 	"strings"
 	_ "unsafe"
 
@@ -19,13 +26,23 @@ import (
 )
 
 type PacketHandler struct {
-	packethandler.NopHandler
+	pl.NopHandler
 	c *packethandler.Conn
+
+	oomph bool
+	p     *pl.Player
 }
 
 func NewPacketHandler(c *packethandler.Conn) *PacketHandler {
 	return &PacketHandler{
 		c: c,
+	}
+}
+
+func NewOomphHandler(p *pl.Player) *PacketHandler {
+	return &PacketHandler{
+		p:     p,
+		oomph: true,
 	}
 }
 
@@ -100,6 +117,30 @@ func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
 	default:
 		m[key] = v.(int64) &^ (1 << int64(index))
 	}
+}
+
+func (h *PacketHandler) HandleFlag(ctx *event.Context, ch check.Check, params map[string]any, _ *bool) {
+	logrus.Info("NEGRO")
+	// add oomph data handler and staff shit, i just wanna debug it for now
+	name, variant := ch.Name()
+	Broadcast("oomph.staff.alert",
+		h.p.Name(),
+		name,
+		variant,
+		utils.PrettyParameters(params, true),
+		mgl64.Round(ch.Violations(), 2),
+	)
+}
+
+func (h *PacketHandler) HandlePunishment(ctx *event.Context, ch check.Check, msg *string) {
+	ctx.Cancel()
+	n, v := ch.Name()
+	// just to test
+	l := h.p.Locale()
+	h.p.Disconnect(strutils.CenterLine(strings.Join([]string{
+		lang.Translatef(l, "user.kick.header.oomph"),
+		lang.Translatef(l, "user.kick.description", n+v),
+	}, "\n")))
 }
 
 // noinspection ALL
