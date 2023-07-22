@@ -46,7 +46,7 @@
 
     "team.join.target": "<green>You have joined the team %s.</green>",
     "team.join.error": "<red>You are already in a team.</red>",
-    "team.join.broadcast": "<green%s has joined the team.</green>",
+    "team.join.broadcast": "<green>%s has joined the team.</green>",
 
     "whitelist.add": "<green>%s has been added to the whitelist</green>",
     "whitelist.remove": "<green>%s has been removed from the whitelist</green>",
