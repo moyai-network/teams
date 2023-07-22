@@ -236,7 +236,7 @@
    "command.team.kick.leader": "<red>You cannot kick the leader!</red>",
    "command.team.kick.kicked": "<yellow>%s has been <red>kicked</red> from the team.</yellow>",
    "command.team.kick.self": "<red>You cannot kick yourself!</red>",
-   "command.team.kick.user.kicked": "<yellow>You have been <red>kicked</red> from the team <blue>%s</blue>.</yellow>",
+   "command.team.kick.user.kicked": "<red>You have been kicked from the team %s.</red>",
 
    "command.team.stuck.no-safe": "<red>Failed to find a safe position to teleport!</red>",
    "command.team.stuck.teleporting": "<yellow>Teleporting to <green>[%d %d %d]</green> in <green>%ds</green></yellow>",

@@ -412,9 +412,13 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	src := s.(cmd.NamedTarget).Name()
-	u, err := data.LoadUserOrCreate(src)
-	if err != nil {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	u, ok := data.LoadUser(p.Name())
+	if !ok {
 		return
 	}
 	tm, ok := u.Team()
@@ -432,23 +436,15 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	players := tm.Members
-	p := s.(*player.Player)
-	if !ok {
-		return
-	}
-	tm = tm.WithoutMember(data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()))
+	tm = tm.WithoutMember(p.Name())
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			mem.UpdateState()
+			mem.Player().Message(lang.Translatef(l, "command.team.leave.user.left", p.Name()))
 		}
+
 	}
 	data.SaveTeam(tm)
-	for _, m := range players {
-		if u, ok := user.Lookup(m.Name); ok {
-			u.Player().Message(lang.Translatef(l, "command.team.leave.user.left", p.Name()))
-		}
-	}
 }
 
 // Run ...
@@ -484,7 +480,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.team.kick.captain"))
 		return
 	}
-	if tm.Member(string(t.Member)) {
+	if !tm.Member(string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.kick.not.found", string(t.Member)))
 		return
 	}
@@ -496,9 +492,9 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 
 	us, ok := user.Lookup(string(t.Member))
 	if ok {
-		tm = tm.WithoutMember(data.DefaultMember(us.XUID(), us.Player().Name()))
-		us.Message(lang.Translatef(l, "command.team.kick.user.kicked"))
+		us.Message(lang.Translatef(l, "command.team.kick.user.kicked", tm.DisplayName))
 	}
+	tm = tm.WithoutMember(string(t.Member))
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			mem.UpdateState()
@@ -506,7 +502,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 	}
 	for _, m := range tm.Members {
 		if u, ok := user.Lookup(m.Name); ok {
-			u.Player().Message(lang.Translatef(l, "command.team.kick.user.kicked", string(t.Member)))
+			u.Player().Message(lang.Translatef(l, "command.team.kick.kicked"))
 		}
 	}
 

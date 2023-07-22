@@ -90,9 +90,11 @@ func (t Team) WithMembers(m ...Member) Team {
 }
 
 // WithoutMember returns the team without the given member
-func (t Team) WithoutMember(m Member) Team {
-	if i := slices.Index(t.Members, m); i != -1 {
-		slices.Delete(t.Members, i, i+1)
+func (t Team) WithoutMember(name string) Team {
+	for i, m := range t.Members {
+		if strings.EqualFold(name, m.Name) {
+			t.Members = slices.Delete(t.Members, i, i+1)
+		}
 	}
 	return t
 }
