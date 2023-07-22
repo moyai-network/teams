@@ -389,7 +389,7 @@ func canAttack(pl, target *player.Player) bool {
 	}
 
 	u, _ := data.LoadUserOrCreate(pl.Name())
-	t, _ := data.LoadUserOrCreate(pl.Name())
+	t, _ := data.LoadUserOrCreate(target.Name())
 
 	_, sotwRunning := sotw.Running()
 	if (u.PVP.Active() || t.PVP.Active()) || (sotwRunning && (u.SOTW || t.SOTW)) {
