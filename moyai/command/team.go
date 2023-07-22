@@ -498,11 +498,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			mem.UpdateState()
-		}
-	}
-	for _, m := range tm.Members {
-		if u, ok := user.Lookup(m.Name); ok {
-			u.Player().Message(lang.Translatef(l, "command.team.kick.kicked"))
+			mem.Player().Message(lang.Translatef(l, "command.team.kick.kicked"))
 		}
 	}
 
