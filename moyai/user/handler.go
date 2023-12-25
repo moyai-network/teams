@@ -209,10 +209,6 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
-	h.SetWayPoint(&WayPoint{
-		name:     "Rally",
-		position: mgl64.Vec3{0, 60, 100},
-	})
 	u, err := data.LoadUserOrCreate(h.p.Name())
 	if err != nil {
 		return

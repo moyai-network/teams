@@ -1,10 +1,11 @@
 package moyai
 
 import (
+	"net"
+
 	"github.com/google/uuid"
 	"github.com/paroxity/portal/socket"
 	"github.com/sirupsen/logrus"
-	"net"
 
 	proxypacket "github.com/paroxity/portal/socket/packet"
 )

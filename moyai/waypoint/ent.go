@@ -16,6 +16,7 @@ import (
 // (breaking) changes.
 type Ent struct {
 	world.Entity
+	*entity.Ent
 
 	conf entity.Config
 	t    world.EntityType

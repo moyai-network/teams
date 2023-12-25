@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/moyai-network/moose/worlds"
+	"github.com/oomph-ac/oomph"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
@@ -15,7 +16,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/sotw"
-	"github.com/oomph-ac/oomph"
+
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
@@ -232,7 +233,8 @@ func registerCommands(srv *server.Server) {
 		cmd.New("freeze", text.Colourf("<aqua>Freeze possible cheaters.</aqua>"), nil, command.Freeze{}),
 		cmd.New("gamemode", text.Colourf("<aqua>Manage gamemodes.</aqua>"), []string{"gm"}, command.GameMode{}),
 		cmd.New("key", text.Colourf("<aqua>Manage keys</aqua>"), nil, command.Key{}, command.KeyAll{}),
-		cmd.New("koth", text.Colourf("Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
+		cmd.New("koth", text.Colourf("<aqua>Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
+		cmd.New("pp", text.Colourf("<aqua>Manage partner packages.</aqua>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 	} {
 		cmd.Register(c)
 	}

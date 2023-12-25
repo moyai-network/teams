@@ -2,6 +2,7 @@ package user
 
 import (
 	"math"
+	"strings"
 	"sync"
 
 	"github.com/df-mc/dragonfly/server/player"
@@ -9,7 +10,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
-	"github.com/moyai-network/teams/moyai/waypoint"
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 
@@ -23,49 +24,86 @@ var (
 	entityCount = 10000000
 )
 
-func NewWayPoint(name string, p *player.Player, pos mgl64.Vec3) *waypoint.Ent {
-	e := waypoint.New(name, pos)
-	return e
-}
-
 type WayPoint struct {
-	name     string
-	position mgl64.Vec3
-	ent      *waypoint.Ent
+	name            string
+	position        mgl64.Vec3
+	entityRuntimeID uint64
 }
 
 func (h *Handler) SetWayPoint(w *WayPoint) {
 	waypointMu.Lock()
 	defer waypointMu.Unlock()
+	skin := protocol.Skin{
+		SkinImageHeight: 64,
+		SkinImageWidth:  32,
+		SkinData:        []byte(strings.Repeat("\x00", 8192)),
+	}
 	id, _ := uuid.NewRandom()
 	name := text.Colourf("<purple>%s</purple> [%.1fm]", w.name, h.DistanceToWayPoint())
-	w.ent = NewWayPoint(name, h.p, w.position)
-	h.p.World().AddEntity(w.ent)
+	entityCount += 1
+	w.entityRuntimeID = uint64(entityCount)
+	pl := &packet.PlayerList{
+		ActionType: packet.PlayerListActionAdd,
+		Entries: []protocol.PlayerListEntry{
+			{
+				UUID:           id,
+				EntityUniqueID: int64(w.entityRuntimeID),
+				Username:       name,
+				Skin:           skin,
+			},
+		},
+	}
+	ap := &packet.AddPlayer{
+		UUID:            id,
+		Username:        name,
+		EntityRuntimeID: uint64(w.entityRuntimeID),
+		Position:        vec64To32(w.position),
+	}
+
+	meta := protocol.NewEntityMetadata()
+	meta.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagNoAI)
+	meta[protocol.EntityDataKeyScale] = float32(0.01)
+	ap.EntityMetadata = meta
+
+	session_writePacket(h.s, pl)
+	session_writePacket(h.s, ap)
+
 	waypoints[id] = h.p
 	h.waypoint = w
 }
+
 func (h *Handler) UpdateWayPointPosition() {
 	if h.waypoint == nil {
 		return
 	}
 
-	h.waypoint.ent.SetPosition(h.waypoint.position)
+	move := &packet.MovePlayer{
+		EntityRuntimeID: h.waypoint.entityRuntimeID,
+		Position:        h.WayPointClientPosition(),
+		Mode:            packet.MoveModeNormal,
+	}
 
-	// Set the nametag of the waypoint entity with the updated distance to the waypoint.
-	distance := h.DistanceToWayPoint()
-	nametag := text.Colourf("<purple>%s</purple> [%.1fm]", h.waypoint.name, distance)
-	h.waypoint.ent.SetNameTag(nametag)
+	meta := protocol.NewEntityMetadata()
+	meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple> [%.1fm]", h.waypoint.name, h.DistanceToWayPoint())
+
+	set := &packet.SetActorData{
+		EntityRuntimeID: h.waypoint.entityRuntimeID,
+		EntityMetadata:  meta,
+	}
+
+	session_writePacket(h.s, move)
+	session_writePacket(h.s, set)
 }
 
-func (h *Handler) WayPointClientPosition() mgl64.Vec3 {
+func (h *Handler) WayPointClientPosition() mgl32.Vec3 {
 	var clientPos mgl64.Vec3
-	if h.DistanceToWayPoint() > 5 {
-		clientPos = h.p.Position().Add(h.waypoint.position.Sub(h.p.Position()).Normalize().Mul(5))
+	if h.DistanceToWayPoint() > 20 {
+		clientPos = h.p.Position().Add(h.waypoint.position.Sub(h.p.Position()).Normalize().Mul(20))
 	} else {
 		clientPos = h.waypoint.position
 	}
 	clientPos = clientPos.Add(mgl64.Vec3{0, h.p.EyeHeight()})
-	return clientPos
+	return vec64To32(clientPos)
 }
 
 func (h *Handler) DistanceToWayPoint() float64 {
