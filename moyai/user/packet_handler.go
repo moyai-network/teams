@@ -1,14 +1,15 @@
 package user
 
 import (
+	"strings"
+	_ "unsafe"
+
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/lang"
 	"github.com/oomph-ac/oomph/check"
 	pl "github.com/oomph-ac/oomph/player"
 	"github.com/oomph-ac/oomph/utils"
 	"github.com/unickorn/strutils"
-	"strings"
-	_ "unsafe"
 
 	"github.com/moyai-network/teams/moyai/data"
 
@@ -46,7 +47,13 @@ func NewOomphHandler(p *pl.Player) *PacketHandler {
 }
 
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
-	ph, ok := Lookup(h.c.IdentityData().DisplayName)
+	var name string
+	if h.oomph {
+		name = h.p.IdentityData().DisplayName
+	} else {
+		name = h.c.IdentityData().DisplayName
+	}
+	ph, ok := Lookup(name)
 	if !ok {
 		return
 	}
