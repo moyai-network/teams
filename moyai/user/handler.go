@@ -584,6 +584,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				ctx.Cancel()
 				break
 			}
+			h.ability.Set(time.Second * 10)
 			h.abilities.Key(kind).Set(time.Second * 10)
 		case it.FullInvisibilityType:
 			// Restart TODO
@@ -734,13 +735,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			ctx.Cancel()
 			attackerPos := attacker.Position()
-			targetPos := attacker.Position()
+			targetPos := h.p.Position()
 
 			attacker.PlaySound(sound.Burp{})
 			attacker.PlaySound(sound.Burp{})
 
-			attacker.Teleport(attackerPos)
 			attacker.Teleport(targetPos)
+			h.p.Teleport(attackerPos)
 		}
 
 		if s.Projectile.Type() == (entity.ArrowType{}) {

@@ -31,7 +31,7 @@ Start = 'Edit this!'
 End = 'Edit this!'
 
 [Proxy]
-Enabled = false
+Enabled = true
 
 [Oomph]
 Enabled = false
