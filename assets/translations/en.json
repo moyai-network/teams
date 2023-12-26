@@ -63,13 +63,13 @@
     "user.reclaimed": "<red>You have already claimed your reclaim this map.</red>",
 
 
-    "user.ban.header": "<b><red>You are banned from Syn</red></b>",
-    "user.ban.header.oomph": "<b><red>You were banned from Syn by Oomph</red></b>",
-    "user.ban.header.alt": "<b><red>An account linked to you is banned from Syn</red></b>",
+    "user.ban.header": "<b><red>You are banned from Moyai</red></b>",
+    "user.ban.header.oomph": "<b><red>You were banned from Moyai by Oomph</red></b>",
+    "user.ban.header.alt": "<b><red>An account linked to you is banned from Moyai</red></b>",
     "user.ban.description": "<gold>Reason:</gold> <yellow>%s</yellow>\n<dark-green>Remaining:</dark-green> <green>%s</green>\n<grey><i>For questions or concerns, refer to discord.gg/tWCfwQrRWn</grey></i>",
 
-    "user.blacklist.header": "<b><red>You are blacklisted from Syn</red></b>",
-    "user.blacklist.header.alt": "<b><red>An account linked to you is blacklisted from Syn</red></b>",
+    "user.blacklist.header": "<b><red>You are blacklisted from Moyai</red></b>",
+    "user.blacklist.header.alt": "<b><red>An account linked to you is blacklisted from Moyai</red></b>",
     "user.blacklist.description":"<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/tWCfwQrRWn</grey></i>",
 
     "command.alias.accounts": "\n<yellow>Listed accounts under %v's IP</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's DID</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's SSID</yellow>\n<grey>%v</grey>\n\n",
@@ -85,7 +85,7 @@
     "command.ban.success": "<green>You banned %s for %s.</green>",
 
     "command.blacklist.already": "<red>That player is already blacklisted.</red>",
-    "command.blacklist.broadcast": "\n<yellow>%v</yellow> has blacklisted <gold>%v</gold> from Syn\n\n",
+    "command.blacklist.broadcast": "\n<yellow>%v</yellow> has blacklisted <gold>%v</gold> from Moyai\n\n",
     "command.blacklist.lift": "<green>You unblacklisted %s.</green>",
     "command.blacklist.list": "<green>Blacklisted Players (%d)\n%s</green>",
     "command.blacklist.none": "<red>There are no players blacklisted.</red>",
@@ -114,7 +114,7 @@
     "command.report.self": "<red>You cannot report yourself.</red>",
     "command.report.success": "<green>We appreciate your report, staff will handle it as soon as possible.</green>",
 
-    "scoreboard.title": "<b><redstone>SYN</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
+    "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
     "scoreboard.koth.running": "<red>%s<grey>:</grey> %s</red>",
     "scoreboard.logout": "<red>Logout<grey>:</grey> %.1fs</red>",
     "scoreboard.timer.sotw": "<green>SOTW<grey>:</grey> %s</green>",
@@ -132,7 +132,7 @@
     "scoreboard.cooldown.golden.apple": "<gold>Golden Apple<grey>:</grey> %.1fs</gold>",
     "scoreboard.bard.energy": "<green>Bard Energy<grey>:</grey> %.1f</green>",
     "scoreboard.stray.energy": "<amethyst>Stray Energy<grey>:</grey> %.1f</amethyst>",
-    "scoreboard.footer": "<grey><i>discord.gg/synhcf</i></grey>",
+    "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
 
    "bard.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> teammates</yellow>",
    "bard.ability.receive": "<yellow>You have received <green>%s %v</green> from <blue>%v</blue> teammates</yellow>",
@@ -287,10 +287,10 @@
    "command.usage.self": "<red>You cannot use this command on yourself.</red>",
    "command.vanish.disabled": "<green>You are no longer vanished.</green>",
    "command.vanish.enabled": "<green>You are now vanished.</green>",
-   "command.variant.locked": "<green>You locked the %v variant of Syn+ for %v.</green>",
-   "command.variant.locked.already": "<red>%v already doesn't have the %v variant of Syn+.</red>",
-   "command.variant.unlocked": "<green>You unlocked the %v variant of Syn+ for %v.</green>",
-   "command.variant.unlocked.already": "<red>%v already has the %v variant of Syn+.</red>",
+   "command.variant.locked": "<green>You locked the %v variant of Moyai+ for %v.</green>",
+   "command.variant.locked.already": "<red>%v already doesn't have the %v variant of Moyai+.</red>",
+   "command.variant.unlocked": "<green>You unlocked the %v variant of Moyai+ for %v.</green>",
+   "command.variant.unlocked.already": "<red>%v already has the %v variant of Moyai+.</red>",
    "command.whitelist": "<green>Whitelisted Players (%v): %v</green>",
    "command.whitelist.added": "<green>%v has been added to the whitelist.</green>",
    "command.whitelist.already.added": "<red>%v is already whitelisted.</red>",
@@ -304,9 +304,9 @@
 
    "command.error.combat-tagged": "<red>You may not run this command in combat.</red>",
 
-   "user.kick.header.oomph": "<b><red>You were kicked from Syn by Oomph</red></b>",
-   "user.kick.autoclicker": "<red>We detected that your CPS is unfair, please try increasing your\ndebounce time or terminate your external program!\n<grey><i>For questions or concerns, refer to discord.gg/synhcf</grey></i>",
-   "user.kick.description": "<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/synhcf</grey></i>",
+   "user.kick.header.oomph": "<b><red>You were kicked from Moyai by Oomph</red></b>",
+   "user.kick.autoclicker": "<red>We detected that your CPS is unfair, please try increasing your\ndebounce time or terminate your external program!\n<grey><i>For questions or concerns, refer to discord.gg/moyai</grey></i>",
+   "user.kick.description": "<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/moyai</grey></i>",
 
     "oomph.staff.alert": "<gold>[<redstone>Oomph</redstone>]</gold> <aqua>%v was flagged for %v (%v)</aqua> <grey>%v [x%v]</grey>",
 
@@ -373,6 +373,6 @@
    "sotw.disabled": "<red>Your SOTW timer has been disabled.</red>",
    "sotw.disabled.already": "<red>You already disabled your SOTW timer</red>",
 
-   "proxy.error": "<red>Proxy Error: Please contact staff/developers at discord.gg/synhcf</red>"
+   "proxy.error": "<red>Proxy Error: Please contact staff/developers at discord.gg/moyai</red>"
   }
 }

@@ -72,13 +72,13 @@ func main() {
 
 	c.Entities = ent.Registry
 
-	c.Name = text.Colourf("<bold><redstone>SYN</redstone></bold>") + "§8"
+	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	if config.Oomph.Enabled {
 		o := oomph.New(log, ":19134")
-		o.Listen(&c, "SYN", []minecraft.Protocol{}, true, config.Proxy.Enabled)
+		o.Listen(&c, "MOYAI", []minecraft.Protocol{}, true, config.Proxy.Enabled)
 		go func() {
 			for {
 				p, err := o.Accept()
@@ -239,7 +239,7 @@ func registerCommands(srv *server.Server) {
 		cmd.Register(c)
 	}
 	if sock, ok := moyai.Socket(); ok {
-		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Syn Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
+		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
 	}
 }
 
