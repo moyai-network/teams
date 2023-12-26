@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/kit"
 	"math"
 	"math/rand"
 	"regexp"
@@ -681,6 +682,30 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 				}, Back: s.Back}, nil)
 			}
 		})
+	case "[kit]":
+		if len(lines) < 2 {
+			return
+		}
+
+		if !u.Roles.Contains(role.Admin{}) {
+			h.p.World().SetBlock(h.sign, block.Air{}, nil)
+			return
+		}
+
+		var newLines []string
+		newLines = append(newLines, text.Colourf("<dark-aqua>[Kit]</dark-aqua>"))
+		newLines = append(newLines, text.Colourf("<yellow>%s</yellow>", lines[1]))
+
+		time.AfterFunc(time.Millisecond, func() {
+			b := h.p.World().Block(h.sign)
+			if s, ok := b.(block.Sign); ok {
+				h.p.World().SetBlock(h.sign, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+					Text:       strings.Join(newLines, "\n"),
+					BaseColour: s.Front.BaseColour,
+					Glowing:    false,
+				}, Back: s.Back}, nil)
+			}
+		})
 	}
 }
 
@@ -1224,6 +1249,17 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 						//log.Fatal(err)
 					}
 				}
+			}
+		} else if title == "[kit]" {
+			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
+			case "diamond":
+				kit.Apply(kit.Master{}, h.p)
+			case "archer":
+				kit.Apply(kit.Archer{}, h.p)
+			case "bard":
+				kit.Apply(kit.Bard{}, h.p)
+			case "rogue":
+				kit.Apply(kit.Rogue{}, h.p)
 			}
 		}
 	}
