@@ -10,7 +10,7 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = 'assets/kek'
+Folder = 'assets/hcfworld'
 
 [Players]
 MaxCount = 0
