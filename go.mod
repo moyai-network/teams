@@ -43,6 +43,7 @@ require (
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
+	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect

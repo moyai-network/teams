@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/moyai-network/carrot"
 	"github.com/moyai-network/teams/moyai/koth"
 	"golang.org/x/exp/slices"
 
@@ -203,7 +204,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(lang.Translatef(l, "scoreboard.title"))
+			sb := scoreboard.New(carrot.GlyphFont("Moyai Kitmap"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 

@@ -76,20 +76,17 @@ func Protected(w *world.World) []moose.NamedArea {
 
 var (
 	Overworld = Areas{
-		spawn:      moose.NewNamedArea(mgl64.Vec2{-88, 88}, mgl64.Vec2{88, -88}, text.Colourf("<green>Spawn</green>")),
-		warZone:    moose.NewNamedArea(mgl64.Vec2{300, 300}, mgl64.Vec2{-300, -300}, text.Colourf("<red>WarZone</red>")),
+		spawn:      moose.NewNamedArea(mgl64.Vec2{51, 51}, mgl64.Vec2{-51, -51}, text.Colourf("<green>Spawn</green>")),
+		warZone:    moose.NewNamedArea(mgl64.Vec2{221, 192}, mgl64.Vec2{-221, -192}, text.Colourf("<red>WarZone</red>")),
 		wilderness: moose.NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []moose.NamedArea{
-			moose.NewNamedArea(mgl64.Vec2{-89, -16}, mgl64.Vec2{-2540, 16}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{89, 16}, mgl64.Vec2{2540, -16}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{16, -89}, mgl64.Vec2{-16, -2540}, text.Colourf("<red>Road</red>")),
-			moose.NewNamedArea(mgl64.Vec2{-16, 89}, mgl64.Vec2{16, 2540}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{20, 51}, mgl64.Vec2{-20, 3000}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{-52, 20}, mgl64.Vec2{-3000, -20}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{-20, -52}, mgl64.Vec2{20, -3000}, text.Colourf("<red>Road</red>")),
+			moose.NewNamedArea(mgl64.Vec2{51, -20}, mgl64.Vec2{3000, 20}, text.Colourf("<red>Road</red>")),
 		},
 		koths: []moose.NamedArea{
-			moose.NewNamedArea(mgl64.Vec2{426, 426}, mgl64.Vec2{526, 550}, text.Colourf("<gold>Oasis</gold>")),
-			moose.NewNamedArea(mgl64.Vec2{434, -561}, mgl64.Vec2{578, -417}, text.Colourf("<dark-green>Forest</dark-green>")),
-			moose.NewNamedArea(mgl64.Vec2{-603, 601}, mgl64.Vec2{-405, 403}, text.Colourf("<amethyst>Fortress</amethyst>")),
-			moose.NewNamedArea(mgl64.Vec2{-471, -471}, mgl64.Vec2{-572, -572}, text.Colourf("<aqua>Eden</aqua>")),
+			moose.NewNamedArea(mgl64.Vec2{147, 86}, mgl64.Vec2{177, 116}, text.Colourf("<red>Spiral</red>")),
 		},
 	}
 	Nether = Areas{
