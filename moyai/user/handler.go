@@ -905,6 +905,8 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 	w := h.p.World()
 
 	switch b.(type) {
+	case block.Sign:
+		h.sign = pos
 	case block.EnderChest:
 		held, left := h.p.HeldItems()
 		if _, ok := held.Value("PARTNER_PACKAGE"); !ok {
