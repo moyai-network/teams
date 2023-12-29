@@ -11,7 +11,6 @@ import (
 
 	"github.com/df-mc/dragonfly/server/player/form"
 	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -59,12 +58,12 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	switch name {
 	case "Archer":
 		kit.Apply(kit.Archer{}, p)
-	case "Diamond":
-		if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
-			p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
-			return
-		}
-		kit.Apply(kit.Diamond{}, p)
+	/*case "Master":
+	if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
+		p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
+		return
+	}
+	kit.Apply(kit.Master{}, p)*/
 	case "Bard":
 		kit.Apply(kit.Bard{}, p)
 	case "Rogue":
