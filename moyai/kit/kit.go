@@ -25,7 +25,7 @@ type Kit interface {
 
 func All() []Kit {
 	return []Kit{
-		Refill{},
+		//Refill{},
 		Miner{},
 		Builder{},
 		Archer{},
@@ -33,7 +33,6 @@ func All() []Kit {
 		Stray{},
 		Rogue{},
 		Diamond{},
-		Master{},
 	}
 }
 

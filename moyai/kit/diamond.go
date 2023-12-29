@@ -1,14 +1,6 @@
 package kit
 
-import (
-	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/item/enchantment"
-	"github.com/df-mc/dragonfly/server/item/potion"
-	"github.com/df-mc/dragonfly/server/player"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
-)
-
-// Diamond represents the Diamond kit.
+/*// Diamond represents the Diamond kit.
 type Diamond struct{}
 
 // Name ...
@@ -52,4 +44,4 @@ func (Diamond) Armour(*player.Player) [4]item.Stack {
 		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking),
 		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling),
 	}
-}
+}*/

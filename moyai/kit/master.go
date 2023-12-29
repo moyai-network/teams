@@ -9,20 +9,20 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-// Master represents the Master kit.
-type Master struct{}
+// Diamond represents the Diamond kit.
+type Diamond struct{}
 
 // Name ...
-func (Master) Name() string {
-	return "Master"
+func (Diamond) Name() string {
+	return "Diamond"
 }
 
-func (Master) Texture() string {
+func (Diamond) Texture() string {
 	return "textures/items/diamond_helmet"
 }
 
 // Items ...
-func (Master) Items(*player.Player) [36]item.Stack {
+func (Diamond) Items(*player.Player) [36]item.Stack {
 	items := [36]item.Stack{
 		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
 		item.NewStack(item.EnderPearl{}, 16),
@@ -36,7 +36,7 @@ func (Master) Items(*player.Player) [36]item.Stack {
 }
 
 // Armour ...
-func (Master) Armour(*player.Player) [4]item.Stack {
+func (Diamond) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, 2)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 	speed := item.NewEnchantment(ench.Speed{}, 2)
@@ -47,9 +47,9 @@ func (Master) Armour(*player.Player) [4]item.Stack {
 	invisibility := item.NewEnchantment(ench.Invisibility{}, 1)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invisibility).WithCustomName(text.Colourf("§r<purple>Master Helmet</purple>")),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, fireResistance).WithCustomName(text.Colourf("§r<purple>Master Chestplate</purple>")),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, recovery).WithCustomName(text.Colourf("§r<purple>Master Leggings</purple>")),
-		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Master Boots</purple>")),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invisibility).WithCustomName(text.Colourf("§r<purple>Diamond Helmet</purple>")),
+		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, fireResistance).WithCustomName(text.Colourf("§r<purple>Diamond Chestplate</purple>")),
+		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, recovery).WithCustomName(text.Colourf("§r<purple>Diamond Leggings</purple>")),
+		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Diamond Boots</purple>")),
 	}
 }

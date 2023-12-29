@@ -22,7 +22,7 @@ func NewKitForm(p *player.Player) form.Menu {
 	u, _ := data.LoadUserOrCreate(p.Name())
 	for _, k := range kit.All() {
 		t := k.Name()
-		//if !u.Roles.Contains(role.Wraith{}) && k == (kit.Master{}) {
+		//if !u.Roles.Contains(role.Wraith{}) && k == (kit.Diamond{}) {
 		//	t = text.Colourf("<red>%s</red>", t)
 		//}
 		cd := u.Kits.Key(t)
@@ -59,12 +59,12 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	switch name {
 	case "Archer":
 		kit.Apply(kit.Archer{}, p)
-	case "Master":
+	case "Diamond":
 		if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
 			p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
 			return
 		}
-		kit.Apply(kit.Master{}, p)
+		kit.Apply(kit.Diamond{}, p)
 	case "Bard":
 		kit.Apply(kit.Bard{}, p)
 	case "Rogue":

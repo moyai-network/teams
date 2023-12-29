@@ -1275,13 +1275,19 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		} else if title == "[kit]" {
 			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
 			case "diamond":
-				kit.Apply(kit.Master{}, h.p)
+				kit.Apply(kit.Diamond{}, h.p)
 			case "archer":
 				kit.Apply(kit.Archer{}, h.p)
 			case "bard":
 				kit.Apply(kit.Bard{}, h.p)
 			case "rogue":
 				kit.Apply(kit.Rogue{}, h.p)
+			case "stray":
+				kit.Apply(kit.Stray{}, h.p)
+			case "miner":
+				kit.Apply(kit.Miner{}, h.p)
+			case "builder":
+				kit.Apply(kit.Builder{}, h.p)
 			}
 		}
 	}
