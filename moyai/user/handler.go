@@ -694,8 +694,8 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		}
 
 		var newLines []string
-		newLines = append(newLines, text.Colourf("<dark-aqua>[Kit]</dark-aqua>"))
-		newLines = append(newLines, text.Colourf("<yellow>%s</yellow>", lines[1]))
+		newLines = append(newLines, text.Colourf("<dark-red>[Kit]</dark-red>"))
+		newLines = append(newLines, text.Colourf("%s", lines[1]))
 
 		time.AfterFunc(time.Millisecond, func() {
 			b := h.p.World().Block(h.sign)

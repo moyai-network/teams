@@ -22,9 +22,9 @@ func NewKitForm(p *player.Player) form.Menu {
 	u, _ := data.LoadUserOrCreate(p.Name())
 	for _, k := range kit.All() {
 		t := k.Name()
-		if !u.Roles.Contains(role.Wraith{}) && k == (kit.Master{}) {
-			t = text.Colourf("<red>%s</red>", t)
-		}
+		//if !u.Roles.Contains(role.Wraith{}) && k == (kit.Master{}) {
+		//	t = text.Colourf("<red>%s</red>", t)
+		//}
 		cd := u.Kits.Key(t)
 		if cd.Active() {
 			t += text.Colourf("\n<red>%s</red>", cd.Remaining().Round(time.Second))
@@ -43,17 +43,18 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 
 	u, _ := data.LoadUserOrCreate(p.Name())
 
-	if h.Combat().Active() {
+	/*if h.Combat().Active() {
 		h.Message("command.kit.tagged")
 		return
-	}
+	}*/
+
 	name := strings.Split(moose.StripMinecraftColour(pressed.Text), "\n")[0]
 	cd := u.Kits.Key(name)
 	if cd.Active() {
 		h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 		return
 	} else {
-		cd.Set(10 * time.Minute)
+		cd.Set(5 * time.Minute)
 	}
 	switch name {
 	case "Archer":
