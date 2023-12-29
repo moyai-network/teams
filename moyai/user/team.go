@@ -50,3 +50,13 @@ func TeamOnlineCount(t data.Team) int {
 	}
 	return count
 }
+
+func TeamOnline(t data.Team) []*Handler {
+	var hs []*Handler
+	for _, m := range t.Members {
+		if h, ok := Lookup(m.Name); ok {
+			hs = append(hs, h)
+		}
+	}
+	return hs
+}

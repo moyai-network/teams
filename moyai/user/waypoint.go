@@ -30,6 +30,13 @@ type WayPoint struct {
 	entityRuntimeID uint64
 }
 
+func NewWayPoint(name string, pos mgl64.Vec3) *WayPoint {
+	return &WayPoint{
+		name:     name,
+		position: pos,
+	}
+}
+
 func (h *Handler) SetWayPoint(w *WayPoint) {
 	waypointMu.Lock()
 	defer waypointMu.Unlock()
@@ -97,12 +104,12 @@ func (h *Handler) UpdateWayPointPosition() {
 
 func (h *Handler) WayPointClientPosition() mgl32.Vec3 {
 	var clientPos mgl64.Vec3
-	if h.DistanceToWayPoint() > 20 {
-		clientPos = h.p.Position().Add(h.waypoint.position.Sub(h.p.Position()).Normalize().Mul(20))
+	if h.DistanceToWayPoint() > 10 {
+		clientPos = h.p.Position().Add(h.waypoint.position.Sub(h.p.Position()).Normalize().Mul(10))
 	} else {
 		clientPos = h.waypoint.position
 	}
-	clientPos = clientPos.Add(mgl64.Vec3{0, h.p.EyeHeight()})
+	clientPos = clientPos.Add(mgl64.Vec3{0, h.p.EyeHeight() * 2})
 	return vec64To32(clientPos)
 }
 
