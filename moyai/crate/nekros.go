@@ -18,7 +18,7 @@ func (nekros) Name() string {
 }
 
 func (nekros) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 65, 35}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{10, 71, 31}).Vec3Middle()
 }
 
 var nekrosEnchantments = []item.Enchantment{

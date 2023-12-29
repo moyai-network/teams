@@ -21,7 +21,7 @@ func (revenant) Name() string {
 }
 
 func (revenant) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 65, 39}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{10, 71, 35}).Vec3Middle()
 }
 
 var revenantEnchantments = []item.Enchantment{

@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai/kit"
 	"math"
 	"math/rand"
 	"regexp"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/kit"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -716,6 +717,17 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		return
 	}
 
+	u, _ := data.LoadUserOrCreate(h.p.Name())
+	if u.PVP.Active() {
+		ctx.Cancel()
+		return
+	}
+
+	if _, ok := sotw.Running(); ok {
+		ctx.Cancel()
+		return
+	}
+
 	var attacker *player.Player
 	switch s := src.(type) {
 	case NoArmourAttackEntitySource:
@@ -853,8 +865,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.UpdateState()
 
 		// TODO, add deathban later
-		h.p.Teleport(mgl64.Vec3{0, 67, 0})
-		h.p.SetMobile()
+		h.p.Teleport(mgl64.Vec3{0, 100, 0})
+		//h.p.SetMobile()
 
 		if tm, ok := u.Team(); ok {
 			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
@@ -1443,6 +1455,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if ok {
 		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+			// Need to handle for Y-axis cases because some koths are irregular
 			if k.StartCapturing(us) {
 				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))
 			}

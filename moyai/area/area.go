@@ -87,6 +87,9 @@ var (
 		},
 		koths: []moose.NamedArea{
 			moose.NewNamedArea(mgl64.Vec2{147, 86}, mgl64.Vec2{177, 116}, text.Colourf("<red>Spiral</red>")),
+			moose.NewNamedArea(mgl64.Vec2{63, 124}, mgl64.Vec2{57, 118}, text.Colourf("<amethyst>Dragon</amethyst>")),
+			moose.NewNamedArea(mgl64.Vec2{-88, 114}, mgl64.Vec2{-118, 85}, text.Colourf("<dark-green>Circle<dark-green>")),
+			moose.NewNamedArea(mgl64.Vec2{0, 182}, mgl64.Vec2{-4, 178}, text.Colourf("<aqua>Stairs</aqua>")),
 		},
 	}
 	Nether = Areas{

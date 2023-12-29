@@ -18,7 +18,7 @@ func (nova) Name() string {
 }
 
 func (nova) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 65, 31}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{10, 71, 27}).Vec3Middle()
 }
 
 var novaEnchantments = []item.Enchantment{

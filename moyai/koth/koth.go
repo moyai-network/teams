@@ -42,27 +42,27 @@ type User interface {
 
 var (
 	Broadcast = func(format string, a ...interface{}) {}
-	Oasis     = &KOTH{
-		name:        text.Colourf("<gold>Oasis</gold>"),
-		area:        moose.NewArea(mgl64.Vec2{473, 495}, mgl64.Vec2{479, 501}),
+	Spiral    = &KOTH{
+		name:        text.Colourf("<gold>Spiral</gold>"),
+		area:        moose.NewArea(mgl64.Vec2{159, 98}, mgl64.Vec2{165, 104}),
 		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{500, 500},
+		coordinates: mgl64.Vec2{162, 101},
 	}
-	Forest = &KOTH{
-		name:        text.Colourf("<dark-green>Forest</dark-green>"),
-		area:        moose.NewArea(mgl64.Vec2{509, -486}, mgl64.Vec2{503, -492}),
+	Depths = &KOTH{
+		name:        text.Colourf("<dark-green>Circle</dark-green>"),
+		area:        moose.NewArea(mgl64.Vec2{-88, 114}, mgl64.Vec2{-118, 85}),
 		cancel:      make(chan struct{}, 0),
 		coordinates: mgl64.Vec2{500, -500},
 	}
-	Fortress = &KOTH{
-		name:        text.Colourf("<amethyst>Fortress</amethyst>"),
-		area:        moose.NewArea(mgl64.Vec2{-506, 500}, mgl64.Vec2{-502, 504}),
+	Dragon = &KOTH{
+		name:        text.Colourf("<amethyst>Dragon</amethyst>"),
+		area:        moose.NewArea(mgl64.Vec2{63, 124}, mgl64.Vec2{57, 118}),
 		cancel:      make(chan struct{}, 0),
 		coordinates: mgl64.Vec2{-500, 500},
 	}
-	Eden = &KOTH{
-		name:        text.Colourf("<aqua>Eden</aqua>"),
-		area:        moose.NewArea(mgl64.Vec2{-508, -508}, mgl64.Vec2{-514, -514}),
+	Stairs = &KOTH{
+		name:        text.Colourf("<aqua>Stairs</aqua>"),
+		area:        moose.NewArea(mgl64.Vec2{0, 182}, mgl64.Vec2{-4, 178}),
 		cancel:      make(chan struct{}, 0),
 		coordinates: mgl64.Vec2{-500, -500},
 	}
@@ -70,7 +70,7 @@ var (
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Oasis, Forest, Fortress, Eden}
+	return []*KOTH{Spiral, Depths, Dragon, Stairs}
 }
 
 // Running returns true if the KOTH passed is currently running.
