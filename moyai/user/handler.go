@@ -153,8 +153,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
 		}),
 
-		close: make(chan struct{}, 0),
-		death: make(chan struct{}, 0),
+		close: make(chan struct{}),
+		death: make(chan struct{}),
 	}
 	ha.logout = moose.NewTeleportation(func(t *moose.Teleportation) {
 		ha.loggedOut = true
@@ -730,6 +730,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 	var attacker *player.Player
 	switch s := src.(type) {
+	case entity.FallDamageSource:
+		u, ok := data.LoadUser(h.p.Name())
+		if !ok || u.PVP.Active() {
+			ctx.Cancel()
+			return
+		}
 	case NoArmourAttackEntitySource:
 		if t, ok := s.Attacker.(*player.Player); ok {
 			attacker = t
@@ -904,7 +910,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		} else {
 			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.Stats.Kills))
 		}
-		h.death <- struct{}{}
+		if h.logger {
+			h.death <- struct{}{}
+		}
 	}
 
 	if canAttack(h.p, attacker) {
@@ -1430,7 +1438,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if u.PVP.Active() {
 		for _, a := range data.Teams() {
 			a := a.Claim
-			if a.Vec3WithinOrEqualXZ(newPos) {
+			if a != (moose.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
 				ctx.Cancel()
 				return
 			}
