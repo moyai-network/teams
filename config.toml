@@ -10,11 +10,11 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = 'assets/hcfworld'
+Folder = 'assets/kek/hcfworld'
 
 [Players]
 MaxCount = 0
-MaximumChunkRadius = 32
+MaximumChunkRadius = 16
 SaveData = true
 Folder = 'assets/players'
 

@@ -115,6 +115,9 @@
     "command.report.success": "<green>We appreciate your report, staff will handle it as soon as possible.</green>",
 
     "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
+    "scoreboard.kills": "<purple>Kills: <grey>%d</grey></purple>",
+    "scoreboard.deaths": "<purple>Deaths: <grey>%d</grey></purple>",
+    "scoreboard.killstreak": "<purple>Killstreak: <grey>%d</grey></purple>",
     "scoreboard.koth.running": "<red>%s<grey>:</grey> %s</red>",
     "scoreboard.logout": "<red>Logout<grey>:</grey> %.1fs</red>",
     "scoreboard.timer.sotw": "<green>SOTW<grey>:</grey> %s</green>",

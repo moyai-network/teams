@@ -13,6 +13,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/sirupsen/logrus"
 
 	_ "unsafe"
 )
@@ -26,6 +27,7 @@ var (
 
 type WayPoint struct {
 	name            string
+	id              uuid.UUID
 	position        mgl64.Vec3
 	entityRuntimeID uint64
 }
@@ -49,11 +51,12 @@ func (h *Handler) SetWayPoint(w *WayPoint) {
 	name := text.Colourf("<purple>%s</purple> [%.1fm]", w.name, h.DistanceToWayPoint())
 	entityCount += 1
 	w.entityRuntimeID = uint64(entityCount)
+	w.id = id
 	pl := &packet.PlayerList{
 		ActionType: packet.PlayerListActionAdd,
 		Entries: []protocol.PlayerListEntry{
 			{
-				UUID:           id,
+				UUID:           w.id,
 				EntityUniqueID: int64(w.entityRuntimeID),
 				Username:       name,
 				Skin:           skin,
@@ -61,7 +64,7 @@ func (h *Handler) SetWayPoint(w *WayPoint) {
 		},
 	}
 	ap := &packet.AddPlayer{
-		UUID:            id,
+		UUID:            w.id,
 		Username:        name,
 		EntityRuntimeID: uint64(w.entityRuntimeID),
 		Position:        vec64To32(w.position),
@@ -77,6 +80,35 @@ func (h *Handler) SetWayPoint(w *WayPoint) {
 
 	waypoints[id] = h.p
 	h.waypoint = w
+}
+
+func (h *Handler) RemoveWaypoint() {
+	if h.waypoint == nil {
+		return
+	}
+	waypointMu.Lock()
+	defer waypointMu.Unlock()
+	pl := &packet.PlayerList{
+		ActionType: packet.PlayerListActionRemove,
+		Entries: []protocol.PlayerListEntry{
+			{
+				UUID: h.waypoint.id,
+			},
+		},
+	}
+	logrus.Info(h.waypoint.entityRuntimeID)
+	for _, e := range h.p.World().Entities() {
+		logrus.Info(e.Type(), e.Position(), "\n")
+	}
+	r := &packet.RemoveActor{
+		EntityUniqueID: int64(h.waypoint.entityRuntimeID),
+	}
+
+	session_writePacket(h.s, pl)
+	session_writePacket(h.s, r)
+
+	delete(waypoints, h.waypoint.id)
+	h.waypoint = nil
 }
 
 func (h *Handler) UpdateWayPointPosition() {

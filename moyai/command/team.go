@@ -180,7 +180,7 @@ type TeamRally struct {
 
 // TeamRally is a command that disable waypoint to rally.
 type TeamUnRally struct {
-	Sub cmd.SubCommand `cmd:"rally"`
+	Sub cmd.SubCommand `cmd:"unrally"`
 }
 
 func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
@@ -202,6 +202,28 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 	online := user.TeamOnline(tm)
 	for _, o := range online {
 		o.SetWayPoint(user.NewWayPoint("Rally", p.Position()))
+	}
+}
+
+func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
+	l := locale(s)
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	u, err := data.LoadUserOrCreate(p.Name())
+	if err != nil {
+		return
+	}
+	tm, ok := u.Team()
+	if !ok {
+		o.Error(lang.Translatef(l, "user.team-less"))
+		return
+	}
+	online := user.TeamOnline(tm)
+	for _, o := range online {
+		o.RemoveWaypoint()
 	}
 }
 

@@ -222,6 +222,12 @@ func startTicker(h *Handler) {
 				}
 			}
 
+			sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.Stats.Kills))
+			sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.Stats.Deaths))
+			sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.Stats.KillStreak))
+
+			_, _ = sb.WriteString("§2")
+
 			if d, ok := sotw.Running(); ok && u.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
 			}

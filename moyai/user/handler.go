@@ -879,6 +879,16 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			data.SaveTeam(tm)
 		}
 
+		victim, ok := data.LoadUser(h.p.Name())
+		if ok {
+			victim.Stats.Deaths += 1
+			if victim.Stats.KillStreak > victim.Stats.BestKillStreak {
+				victim.Stats.BestKillStreak = victim.Stats.KillStreak
+			}
+			victim.Stats.KillStreak = 0
+			_ = data.SaveUser(victim)
+		}
+
 		killer, ok := h.LastAttacker()
 		if ok {
 			k, err := data.LoadUserOrCreate(killer.p.Name())

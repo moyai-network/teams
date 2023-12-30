@@ -214,6 +214,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamDepositAll{},
 			command.TeamStuck{},
 			command.TeamRally{},
+			command.TeamUnRally{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
