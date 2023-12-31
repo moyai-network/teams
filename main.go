@@ -15,6 +15,7 @@ import (
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
+	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/sotw"
 
 	proxypacket "github.com/paroxity/portal/socket/packet"
@@ -180,6 +181,17 @@ func acceptFunc(proxy bool) func(*player.Player) {
 		p.SetGameMode(world.GameModeSurvival)
 		p.ShowCoordinates()
 		p.SetFood(20)
+
+		p.Message(text.Colourf("<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>"))
+		inv := p.Inventory()
+		for slot, i := range inv.Slots() {
+			for _, sp := range it.SpecialItems() {
+				if _, ok := i.Value(sp.Key()); ok {
+					_ = inv.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
+				}
+			}
+		}
+
 		u, _ := data.LoadUserOrCreate(p.Name())
 		u.Roles.Add(role.Revenant{})
 	}

@@ -18,7 +18,7 @@ func (koth) Name() string {
 }
 
 func (koth) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{0, 72, 44}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{-40, 73, 8}).Vec3Middle()
 }
 
 var kothEnchantments = []item.Enchantment{

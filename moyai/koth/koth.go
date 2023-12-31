@@ -48,29 +48,29 @@ var (
 		cancel:      make(chan struct{}, 0),
 		coordinates: mgl64.Vec2{162, 101},
 	}
-	Depths = &KOTH{
+	Circle = &KOTH{
 		name:        text.Colourf("<dark-green>Circle</dark-green>"),
 		area:        moose.NewArea(mgl64.Vec2{-88, 114}, mgl64.Vec2{-118, 85}),
 		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{500, -500},
+		coordinates: mgl64.Vec2{-103, 100},
 	}
 	Dragon = &KOTH{
 		name:        text.Colourf("<amethyst>Dragon</amethyst>"),
 		area:        moose.NewArea(mgl64.Vec2{63, 124}, mgl64.Vec2{57, 118}),
 		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{-500, 500},
+		coordinates: mgl64.Vec2{60, 121},
 	}
 	Stairs = &KOTH{
 		name:        text.Colourf("<aqua>Stairs</aqua>"),
 		area:        moose.NewArea(mgl64.Vec2{0, 182}, mgl64.Vec2{-4, 178}),
 		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{-500, -500},
+		coordinates: mgl64.Vec2{-2, -180},
 	}
 )
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Spiral, Depths, Dragon, Stairs}
+	return []*KOTH{Spiral, Circle, Dragon, Stairs}
 }
 
 // Running returns true if the KOTH passed is currently running.
@@ -156,7 +156,7 @@ func (k *KOTH) StartCapturing(p User) bool {
 				data.SaveTeam(t)
 			}
 
-			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.Name))
+			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.DisplayName))
 			kothCrate, ok := crate.ByName("KOTH")
 			if !ok {
 				panic("no crate found by the name of KOTH")

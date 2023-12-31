@@ -1480,6 +1480,19 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
 			// Need to handle for Y-axis cases because some koths are irregular
+			if k == koth.Spiral {
+				if newPos.Y() < 120 {
+					return
+				}
+			} else if k == koth.Dragon {
+				if newPos.Y() < 109 {
+					return
+				}
+			} else if k == koth.Stairs {
+				if newPos.Y() < 150 {
+					return
+				}
+			}
 			if k.StartCapturing(us) {
 				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))
 			}

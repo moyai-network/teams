@@ -795,7 +795,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		o.Error("You are not in a team.")
 	}
-	if u.PVP.Active() {
+	if p.Handler().(*user.Handler).Combat().Active() {
 		o.Error("You cannot teleport while in combat.")
 		return
 	}
