@@ -7,7 +7,7 @@ import (
 	"github.com/paroxity/portal/socket"
 	"github.com/sirupsen/logrus"
 
-	proxypacket "github.com/paroxity/portal/socket/packet"
+	portal "github.com/paroxity/portal/socket/packet"
 )
 
 var (
@@ -32,12 +32,12 @@ func NewProxySocket() *socket.Client {
 	}
 
 	sock = socket.NewClient(conn, logrus.New())
-	_ = sock.WritePacket(&proxypacket.AuthRequest{
+	_ = sock.WritePacket(&portal.AuthRequest{
 		Protocol: 1,
 		Secret:   "abc123",
 		Name:     "syn.hcf",
 	})
-	_ = sock.WritePacket(&proxypacket.RegisterServer{
+	_ = sock.WritePacket(&portal.RegisterServer{
 		Address: "127.0.0.1:19134",
 	})
 
@@ -50,7 +50,7 @@ func NewProxySocket() *socket.Client {
 				panic(err)
 			}
 
-			if i, ok := pk.(*proxypacket.PlayerInfoResponse); ok {
+			if i, ok := pk.(*portal.PlayerInfoResponse); ok {
 				xuids[i.PlayerUUID] <- PlayerInformation{XUID: i.XUID, Address: i.Address}
 			}
 		}
@@ -65,7 +65,7 @@ func SearchInfo(id uuid.UUID) PlayerInformation {
 	defer delete(xuids, id)
 	defer close(ch)
 
-	_ = sock.WritePacket(&proxypacket.PlayerInfoRequest{
+	_ = sock.WritePacket(&portal.PlayerInfoRequest{
 		PlayerUUID: id,
 	})
 
