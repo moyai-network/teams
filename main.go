@@ -79,14 +79,13 @@ func main() {
 
 	if config.Oomph.Enabled {
 		o := oomph.New(log, ":19134")
-		o.Listen(&c, "MOYAI", []minecraft.Protocol{}, true, config.Proxy.Enabled)
+		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, config.Proxy.Enabled)
 		go func() {
 			for {
 				p, err := o.Accept()
 				if err != nil {
 					return
 				}
-				logrus.Info("Joined")
 				p.Handle(user.NewOomphHandler(p))
 			}
 		}()
@@ -154,7 +153,9 @@ func main() {
 	}
 
 	for _, e := range w.Entities() {
-		w.RemoveEntity(e)
+		if _, ok := e.Type().(entity.TextType); ok {
+			w.RemoveEntity(e)
+		}
 	}
 
 	for _, c := range crate.All() {
@@ -227,6 +228,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamStuck{},
 			command.TeamRally{},
 			command.TeamUnRally{},
+			command.TeamMap{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),

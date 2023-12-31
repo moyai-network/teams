@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -181,6 +182,103 @@ type TeamRally struct {
 // TeamRally is a command that disable waypoint to rally.
 type TeamUnRally struct {
 	Sub cmd.SubCommand `cmd:"unrally"`
+}
+
+// TeamMap displays the claims and areas
+type TeamMap struct {
+	Sub cmd.SubCommand `cmd:"map"`
+}
+
+func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
+	p, _ := s.(*player.Player)
+	posX := int(p.Position().X())
+	posZ := int(p.Position().Z())
+
+	i := 0
+	rows := 30
+	disp := make([][]string, rows)
+	for i := range disp {
+		disp[i] = make([]string, 30)
+		for j := range disp[i] {
+			disp[i][j] = text.Colourf("<grey>█</grey>")
+		}
+	}
+	areas := area.Protected(p.World())
+	for _, t := range data.Teams() {
+		areas = append(areas, moose.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
+	}
+
+	for x := posX - 15; x < posX+15; x++ {
+		for z := posZ - 15; z < posZ+15; z++ {
+			found := false
+			for _, a := range areas {
+				if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(x), float64(z)}) {
+					found = true
+					if found {
+						if a == area.WarZone(p.World()) {
+							disp[i][z-(posZ-15)] = text.Colourf("<red>█</red>")
+						} else if slices.Contains(area.Roads(p.World()), a) {
+							disp[i][z-(posZ-15)] = text.Colourf("<black>█</black>")
+						} else if a == area.Spawn(p.World()) {
+							disp[i][z-(posZ-15)] = text.Colourf("<green>█</green>")
+						} else if slices.Contains(area.KOTHs(p.World()), a) {
+							disp[i][z-(posZ-15)] = text.Colourf("<dark-red>█</dark-red>")
+						} else {
+							disp[i][z-(posZ-15)] = text.Colourf("<aqua>█</aqua>")
+						}
+					} else {
+						disp[i][z-(posZ-15)] = text.Colourf("<grey>█</grey>")
+					}
+				}
+			}
+		}
+		i++
+	}
+	disp[15][15] = text.Colourf("<gold>✪</gold>")
+	var b strings.Builder
+	for _, row := range disp {
+		b.WriteString(strings.Join(row, ""))
+		b.WriteString("\n")
+	}
+	p.Message("\uE000\uE000")
+	p.Message(b.String())
+	p.Message("\uE000\uE000")
+}
+
+func createEmptyMap(size int) [][]rune {
+	// Create an empty map with the specified size
+	myMap := make([][]rune, size)
+	for i := range myMap {
+		myMap[i] = make([]rune, size)
+		for j := range myMap[i] {
+			myMap[i][j] = '.'
+		}
+	}
+	return myMap
+}
+
+func markClaim(myMap [][]rune, x1, z1, x2, z2 int) {
+	// Mark the claimed area on the map
+	for x := min(x1, x2); x <= max(x1, x2); x++ {
+		for z := min(z1, z2); z <= max(z1, z2); z++ {
+			myMap[z][x] = 'X'
+		}
+	}
+}
+
+func displayMap(myMap [][]rune, size, centerX, centerZ int) {
+	// Display the map with only the nearby claims
+	startX := max(0, centerX-size/2)
+	startZ := max(0, centerZ-size/2)
+	endX := min(size-1, centerX+size/2)
+	endZ := min(size-1, centerZ+size/2)
+
+	for z := startZ; z <= endZ; z++ {
+		for x := startX; x <= endX; x++ {
+			fmt.Print(string(myMap[z][x]))
+		}
+		fmt.Println()
+	}
 }
 
 func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
@@ -771,7 +869,7 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("You are not within your team's claim.")
 		return
 	}
-	if !tm.Leader(u.Name) || !tm.Captain(u.Name) {
+	if !tm.Leader(u.Name) && !tm.Captain(u.Name) {
 		o.Error("You are not the team leader or captain.")
 		return
 	}

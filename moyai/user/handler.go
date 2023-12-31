@@ -449,7 +449,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	}
 
 	t.Balance -= cost
-	t.Claim = claim
+	t = t.WithClaim(claim)
 	data.SaveTeam(t)
 
 	h.Message("command.claim.success", pos[0], pos[1], cost)
@@ -712,6 +712,9 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	*dmg = *dmg / 1.25
+	if h.logger {
+
+	}
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
 		return

@@ -7,7 +7,6 @@ toolchain go1.21.3
 replace github.com/paroxity/portal v1.0.8 => github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4
 
 require (
-	github.com/bedrock-gophers/living v0.0.0-20231216224824-0e1599282e89
 	github.com/bedrock-gophers/packethandler v0.0.0-20230714140442-368cd2e34db0
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.13-0.20231210131520-21eb18fd3299
@@ -27,7 +26,10 @@ require (
 	golang.org/x/text v0.14.0
 )
 
-require github.com/oomph-ac/oomph v0.0.0-20231220234947-7be568992db9
+require (
+	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872
+	github.com/oomph-ac/oomph v0.0.0-20231231045105-1873be030088
+)
 
 require (
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
@@ -43,7 +45,6 @@ require (
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
@@ -68,6 +69,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-//replace github.com/oomph-ac/oomph => ./oomph
+replace github.com/oomph-ac/oomph => ./oomph
 
 replace github.com/sandertv/gophertunnel v1.34.1 => github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89
