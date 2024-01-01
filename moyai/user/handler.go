@@ -784,7 +784,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			targetPos := h.p.Position()
 
 			attacker.PlaySound(sound.Burp{})
-			attacker.PlaySound(sound.Burp{})
+			h.p.PlaySound(sound.Burp{})
 
 			attacker.Teleport(targetPos)
 			h.p.Teleport(attackerPos)

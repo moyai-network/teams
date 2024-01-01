@@ -86,6 +86,7 @@ func main() {
 				if err != nil {
 					return
 				}
+				p.ShouldHandleTransfer(true)
 				p.Handle(user.NewOomphHandler(p))
 			}
 		}()
