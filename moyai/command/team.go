@@ -215,16 +215,21 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 				if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(x), float64(z)}) {
 					found = true
 					if found {
-						if a == area.WarZone(p.World()) {
-							disp[i][z-(posZ-15)] = text.Colourf("<red>█</red>")
-						} else if slices.Contains(area.Roads(p.World()), a) {
+						if slices.Contains(area.Roads(p.World()), a) {
 							disp[i][z-(posZ-15)] = text.Colourf("<black>█</black>")
 						} else if a == area.Spawn(p.World()) {
 							disp[i][z-(posZ-15)] = text.Colourf("<green>█</green>")
 						} else if slices.Contains(area.KOTHs(p.World()), a) {
 							disp[i][z-(posZ-15)] = text.Colourf("<dark-red>█</dark-red>")
+						} else if a == area.WarZone(p.World()) {
+							if disp[i][z-(posZ-15)] == text.Colourf("<grey>█</grey>") {
+								disp[i][z-(posZ-15)] = text.Colourf("<red>█</red>")
+							}
 						} else {
-							disp[i][z-(posZ-15)] = text.Colourf("<aqua>█</aqua>")
+							if a != area.Wilderness(p.World()) {
+								disp[i][z-(posZ-15)] = text.Colourf("<aqua>█</aqua>")
+
+							}
 						}
 					} else {
 						disp[i][z-(posZ-15)] = text.Colourf("<grey>█</grey>")
