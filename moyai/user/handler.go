@@ -1386,12 +1386,12 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 			target.AddScramblerHit(h.p)
 			if target.ScramblerHits(h.p) >= 3 {
-				for i := 36; i <= 44; i++ {
-					j := rand.Intn(i+1-36) + 36
-					it1, _ := target.Player().Inventory().Item(i)
-					it2, _ := target.Player().Inventory().Item(j)
-					target.Player().Inventory().SetItem(i, it1)
-					target.Player().Inventory().SetItem(j, it2)
+				for i := 0; i <= 8; i++ {
+					j := rand.Intn(8)
+					it1, _ := h.p.Inventory().Item(i)
+					it2, _ := h.p.Inventory().Item(j)
+					h.p.Inventory().SetItem(j, it1)
+					h.p.Inventory().SetItem(i, it2)
 				}
 				target.Player().Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
 				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))
