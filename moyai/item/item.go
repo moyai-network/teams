@@ -62,11 +62,11 @@ func RegisterSpecialItem(typ SpecialItemType) {
 
 func init() {
 	RegisterSpecialItem(SwitcherBallType{})
-	RegisterSpecialItem(NinjaStarType{})
+	//RegisterSpecialItem(NinjaStarType{})
 	RegisterSpecialItem(ScramblerType{})
 	RegisterSpecialItem(ExoticBoneType{})
 	RegisterSpecialItem(PearlDisablerType{})
-	RegisterSpecialItem(FullInvisibilityType{})
+	//RegisterSpecialItem(FullInvisibilityType{})
 	RegisterSpecialItem(SigilType{})
 	creative.RegisterItem(NewPartnerPackage(1))
 }
