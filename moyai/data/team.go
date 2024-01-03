@@ -307,6 +307,15 @@ func SaveTeam(t Team) {
 	teamsMu.Lock()
 	teams[t.Name] = t
 	teamsMu.Unlock()
+
+	filter := bson.M{"name": bson.M{"$eq": t.Name}}
+	update := bson.M{"$set": t}
+
+	res, _ := teamCollection.UpdateOne(ctx(), filter, update)
+
+	if res.MatchedCount == 0 {
+		_, _ = teamCollection.InsertOne(ctx(), t)
+	}
 }
 
 func eq(a, b float64) bool {
