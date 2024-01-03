@@ -105,6 +105,23 @@ func main() {
 	}
 
 	srv := c.New()
+
+	t := time.NewTicker(time.Minute * 1)
+	go func() {
+		for range t.C {
+			log.Println("Saving all users and teams.")
+			for _, u := range user.All() {
+				d, ok := data.LoadUser(u.Player().Name())
+				if ok {
+					_ = data.SaveUser(d)
+				}
+			}
+			for _, t := range data.Teams() {
+				data.SaveTeam(t)
+			}
+		}
+	}()
+
 	handleServerClose(srv)
 
 	w := srv.World()

@@ -297,6 +297,9 @@ func DisbandTeam(t Team) {
 	teamsMu.Lock()
 	delete(teams, t.Name)
 	teamsMu.Unlock()
+
+	filter := bson.M{"name": bson.M{"$eq": t.Name}}
+	teamCollection.DeleteOne(ctx(), filter)
 }
 
 // SaveTeam saves the given team.

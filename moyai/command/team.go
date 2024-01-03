@@ -509,7 +509,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if tm.Frozen() {
-		o.Error(lang.Translatef(l, "command.team..dtr"))
+		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
 	players := tm.Members
