@@ -1449,7 +1449,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if h.combat.Active() {
 		a := area.Spawn(w)
 		mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
-		if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) {
+		if mul.Vec3WithinOrEqualFloorXZ(p.Position()) {
 			h.sendWall(cubePos, area.Overworld.Spawn().Area, item.ColourRed())
 		}
 	}
@@ -1515,7 +1515,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		if t, ok := u.Team(); ok && strings.EqualFold(t.Name, tm.Name) {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
-		areas = append(areas, moose.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Max().X()}, mgl64.Vec2{a.Min().Y(), a.Max().Y()}, name))
+		areas = append(areas, moose.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
 	}
 
 	ar := h.area.Load()

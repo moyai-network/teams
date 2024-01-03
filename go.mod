@@ -13,7 +13,7 @@ require (
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/moyai-network/moose v0.0.0-20230709143116-b203c3552bbc
+	github.com/moyai-network/moose v0.0.0-20240103205015-3bcd3e52924a
 	//github.com/oomph-ac/oomph v0.0.0-20231220234947-7be568992db9
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
