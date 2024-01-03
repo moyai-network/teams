@@ -1390,8 +1390,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 					j := rand.Intn(8)
 					it1, _ := h.p.Inventory().Item(i)
 					it2, _ := h.p.Inventory().Item(j)
-					h.p.Inventory().SetItem(j, it1)
-					h.p.Inventory().SetItem(i, it2)
+					target.Player().Inventory().SetItem(j, it1)
+					target.Player().Inventory().SetItem(i, it2)
 				}
 				target.Player().Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
 				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))
@@ -1495,6 +1495,10 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				if newPos.Y() < 150 {
 					return
 				}
+			}
+
+			if u.PVP.Active() {
+				return
 			}
 			if k.StartCapturing(us) {
 				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))

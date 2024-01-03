@@ -652,6 +652,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		us.Message(lang.Translatef(l, "command.team.kick.user.kicked", tm.DisplayName))
 	}
 	tm = tm.WithoutMember(string(t.Member))
+	tm = tm.WithDTR(tm.MaxDTR())
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			mem.UpdateState()
