@@ -195,10 +195,10 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 	posZ := int(p.Position().Z())
 
 	i := 0
-	rows := 30
+	rows := 10
 	disp := make([][]string, rows)
 	for i := range disp {
-		disp[i] = make([]string, 30)
+		disp[i] = make([]string, 10)
 		for j := range disp[i] {
 			disp[i][j] = text.Colourf("<grey>█</grey>")
 		}
@@ -208,38 +208,38 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 		areas = append(areas, moose.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
 	}
 
-	for x := posX - 15; x < posX+15; x++ {
-		for z := posZ - 15; z < posZ+15; z++ {
+	for x := posX - 5; x < posX+5; x++ {
+		for z := posZ - 5; z < posZ+5; z++ {
 			found := false
 			for _, a := range areas {
 				if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(x), float64(z)}) {
 					found = true
 					if found {
 						if slices.Contains(area.Roads(p.World()), a) {
-							disp[i][z-(posZ-15)] = text.Colourf("<black>█</black>")
+							disp[i][z-(posZ-5)] = text.Colourf("<black>█</black>")
 						} else if a == area.Spawn(p.World()) {
-							disp[i][z-(posZ-15)] = text.Colourf("<green>█</green>")
+							disp[i][z-(posZ-5)] = text.Colourf("<green>█</green>")
 						} else if slices.Contains(area.KOTHs(p.World()), a) {
-							disp[i][z-(posZ-15)] = text.Colourf("<dark-red>█</dark-red>")
+							disp[i][z-(posZ-5)] = text.Colourf("<dark-red>█</dark-red>")
 						} else if a == area.WarZone(p.World()) {
-							if disp[i][z-(posZ-15)] == text.Colourf("<grey>█</grey>") {
-								disp[i][z-(posZ-15)] = text.Colourf("<red>█</red>")
+							if disp[i][z-(posZ-5)] == text.Colourf("<grey>█</grey>") {
+								disp[i][z-(posZ-5)] = text.Colourf("<red>█</red>")
 							}
 						} else {
 							if a != area.Wilderness(p.World()) {
-								disp[i][z-(posZ-15)] = text.Colourf("<aqua>█</aqua>")
+								disp[i][z-(posZ-5)] = text.Colourf("<aqua>█</aqua>")
 
 							}
 						}
 					} else {
-						disp[i][z-(posZ-15)] = text.Colourf("<grey>█</grey>")
+						disp[i][z-(posZ-5)] = text.Colourf("<grey>█</grey>")
 					}
 				}
 			}
 		}
 		i++
 	}
-	disp[15][15] = text.Colourf("<gold>✪</gold>")
+	disp[5][5] = text.Colourf("<gold>✪</gold>")
 	var b strings.Builder
 	for _, row := range disp {
 		b.WriteString(strings.Join(row, ""))
@@ -848,7 +848,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm = tm.WithClaim(moose.Area{}).WithHome(mgl64.Vec3{})
 	data.SaveTeam(tm)
-	p.Message(lang.Translate(p.Locale(), "command.unclaim.success"))
+	o.Print(lang.Translate(p.Locale(), "command.unclaim.success"))
 }
 
 // Run ...
