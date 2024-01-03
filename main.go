@@ -9,6 +9,7 @@ import (
 
 	"github.com/moyai-network/moose/worlds"
 	"github.com/oomph-ac/oomph"
+	"github.com/oomph-ac/oomph/utils"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
@@ -86,7 +87,13 @@ func main() {
 				if err != nil {
 					return
 				}
-				p.ShouldHandleTransfer(true)
+
+				p.ShouldHandleTransfer(false)
+				p.SetCombatMode(utils.ModeFullAuthoritative)
+				p.SetMovementMode(utils.ModeSemiAuthoritative)
+				p.SetCombatCutoff(5)
+				p.SetKnockbackCutoff(3)
+
 				p.Handle(user.NewOomphHandler(p))
 			}
 		}()
