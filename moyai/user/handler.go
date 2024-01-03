@@ -714,6 +714,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	*dmg = *dmg / 1.25
 	if h.logger {
 
+		return
 	}
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
