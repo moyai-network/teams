@@ -24,6 +24,10 @@ github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89 h1:y7tryhD6
 github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89/go.mod h1:+Dbhj3bs74gZoSkyab7kglx1Rbq8S5G7sJd/wr5Qm9g=
 github.com/fatih/set v0.2.1 h1:nn2CaJyknWE/6txyUDGwysr3G5QC6xWB/PtVjPBbeaA=
 github.com/fatih/set v0.2.1/go.mod h1:+RKtMCH+favT2+3YecHGxcc0b4KyVWA1QWWJUs4E0CI=
+github.com/flonja/multiversion v0.0.0-20230721160723-cb86537a0ee6 h1:Zq6uXudhaU8iRavPQIgCXmzEB6Q8UXjIJCSKf67U1xM=
+github.com/flonja/multiversion v0.0.0-20230721160723-cb86537a0ee6/go.mod h1:4xEID4Gqd2A8kQE6tjmYgBrOArdG7hn4keVhZ1xeJD0=
+github.com/flonja/multiversion v0.0.0-20230727204349-88d4a8c393a0 h1:41DzRqrlvmkLhi7BHjQf5jTC2uemuS6I15ROXFKAhKw=
+github.com/flonja/multiversion v0.0.0-20230727204349-88d4a8c393a0/go.mod h1:XKZFTqhVj0AAQRevPgF94P+dENmjKTna49vcVVffKFM=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/getsentry/sentry-go v0.25.0 h1:q6Eo+hS+yoJlTO3uu/azhQadsD8V+jQn2D8VvX1eOyI=
 github.com/getsentry/sentry-go v0.25.0/go.mod h1:lc76E2QywIyW8WuBnwl8Lc4bkmQH4+w1gwTf25trprY=
@@ -94,6 +98,8 @@ github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6 h1:71rZQsXnTEORPG2
 github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6/go.mod h1:GPBWwxxErUF7Q/GAtahbBW+loc1xtClkrmNadwn+STs=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=
 github.com/rogpeppe/go-internal v1.12.0/go.mod h1:E+RYuTGaKKdloAfM02xzb0FW3Paa99yedzYV+kq4uf4=
+github.com/samber/lo v1.38.1 h1:j2XEAqXKb09Am4ebOg31SpvzUTTs6EN3VfgeLUhPdXM=
+github.com/samber/lo v1.38.1/go.mod h1:+m/ZKRl6ClXCE2Lgf3MsQlWfh4bn1bz6CXEOxnEXnEA=
 github.com/sandertv/go-raknet v1.12.1 h1:CXDfeXGaQD8kwlatlaAS1wQsMBLLGlDSH6upZv28Pss=
 github.com/sandertv/go-raknet v1.12.1/go.mod h1:Gx+WgZBMQ0V2UoouGoJ8Wj6CDrMBQ4SB2F/ggpl5/+Y=
 github.com/scylladb/go-set v1.0.3-0.20200225121959-cc7b2070d91e h1:7q6NSFZDeGfvvtIRwBrU/aegEYJYmvev0cHAwo17zZQ=

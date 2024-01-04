@@ -42,8 +42,8 @@ func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Ent
 }
 
 var moyaiPearlConf = entity.ProjectileBehaviourConfig{
-	Gravity:               0.085,
-	Drag:                  0.01,
+	Gravity:               0.03,
+	Drag:                  0.008,
 	KnockBackHeightAddend: 0.388 - 0.45,
 	KnockBackForceAddend:  0.39 - 0.3608,
 	Particle:              particle.EndermanTeleport{},
@@ -299,11 +299,15 @@ func validTaliPearl(e *entity.Ent, target trace.Result, direction cube.Direction
 func validBlock(block2 world.Block) bool {
 	//TODO: this needs a lot of work :pain:
 
-	var blocks = []world.Block{block.DoubleFlower{}, block.DoubleTallGrass{}, block.TallGrass{}, block.Flower{}, block.DoubleFlower{}, block.Air{}, block.Grass{}, block.Sand{}, block.Leaves{}}
+	var blocks = []world.Block{block.DoubleFlower{}, block.DoubleTallGrass{}, block.TallGrass{}, block.Flower{}, block.DoubleFlower{}, block.Air{}, block.Grass{}, block.Sand{}, block.Leaves{}, block.GlassPane{}, block.StainedGlassPane{}}
 
 	name, _ := block2.EncodeBlock()
 	for _, bk := range blocks {
 		targetName, _ := bk.EncodeBlock()
+
+		if strings.HasSuffix(name, "glass_pane") {
+			return true
+		}
 
 		if targetName == name {
 			return true

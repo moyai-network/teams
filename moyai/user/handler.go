@@ -1650,6 +1650,16 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				h.sendWall(cubePos, a, item.ColourBlue())
 			}
 		}
+
+		if newPos.Y() < 0 {
+			h.p.Teleport(mgl64.Vec3{0, 100, 0})
+		}
+	}
+
+	if _, ok := sotw.Running(); ok || u.SOTW {
+		if newPos.Y() < 0 {
+			h.p.Teleport(mgl64.Vec3{0, 100, 0})
+		}
 	}
 
 	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(newPos) && h.combat.Active() {
