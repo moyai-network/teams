@@ -10,13 +10,13 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = 'assets/kek/hcfworld'
+Folder = ""
 
 [Players]
 MaxCount = 0
 MaximumChunkRadius = 16
 SaveData = true
-Folder = 'assets/players'
+Folder = ""
 
 [Resources]
 AutoBuildPack = true

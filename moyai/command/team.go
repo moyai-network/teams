@@ -17,10 +17,12 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/lang"
+	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"golang.org/x/text/language"
 )
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
@@ -187,6 +189,46 @@ type TeamUnRally struct {
 // TeamMap displays the claims and areas
 type TeamMap struct {
 	Sub cmd.SubCommand `cmd:"map"`
+}
+
+type TeamDelete struct {
+	Sub  cmd.SubCommand `cmd:"delete"`
+	Name teamName       `cmd:"name"`
+}
+
+type TeamSetDTR struct {
+	Sub  cmd.SubCommand `cmd:"setdtr"`
+	Name teamName       `cmd:"name"`
+	DTR  float64        `cmd:"dtr"`
+}
+
+func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
+	tm, ok := data.LoadTeam(string(t.Name))
+	if !ok {
+		o.Error("Invalid Team.")
+	}
+
+	tm = tm.WithDTR(t.DTR)
+	data.SaveTeam(tm)
+	o.Printf("Successfully set DTR to %v", t.DTR)
+}
+
+func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
+	tm, ok := data.LoadTeam(string(t.Name))
+	if !ok {
+		o.Error("Invalid Team.")
+	}
+
+	players := tm.Members
+	data.DisbandTeam(tm)
+	o.Print("Disbanded faction.")
+	for _, m := range players {
+		mem, ok := user.Lookup(m.Name)
+		if ok {
+			mem.UpdateState()
+			mem.Player().Message(lang.Translatef(language.English, "command.team.disband.disbanded", "MANAGEMENT"))
+		}
+	}
 }
 
 func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
@@ -504,6 +546,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	if err != nil {
 		return
 	}
+
 	name := p.Name()
 	tm, ok := u.Team()
 	if !ok {
@@ -1496,6 +1539,14 @@ func (TeamWithdrawAll) Allow(s cmd.Source) bool {
 // Allow ...
 func (TeamDepositAll) Allow(s cmd.Source) bool {
 	return allow(s, false)
+}
+
+func (TeamDelete) Allow(s cmd.Source) bool {
+	return allow(s, true, role.Admin{})
+}
+
+func (TeamSetDTR) Allow(s cmd.Source) bool {
+	return allow(s, true, role.Admin{})
 }
 
 type (

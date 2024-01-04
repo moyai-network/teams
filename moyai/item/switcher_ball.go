@@ -14,7 +14,7 @@ import (
 type SwitcherBallType struct{}
 
 func (SwitcherBallType) Name() string {
-	return text.Colourf("<aqua>Switcher Ball</aqua>")
+	return text.Colourf("<aqua>nlsqn's Switcher Ball</aqua>")
 }
 
 func (SwitcherBallType) Item() world.Item {

@@ -30,7 +30,9 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
+	"github.com/df-mc/dragonfly/server/player/playerdb"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/dragonfly/server/world/mcdb"
 	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -48,6 +50,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
+
+var playerProvider *playerdb.Provider
+var worldProvider *mcdb.DB
 
 func main() {
 	lang.Register(language.English)
@@ -69,10 +74,24 @@ func main() {
 
 	c, err := config.Config(log)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	c.Entities = ent.Registry
+
+	pProv, err := playerdb.NewProvider("assets/players")
+	if err != nil {
+		panic(err)
+	}
+	playerProvider = pProv
+	c.PlayerProvider = playerProvider
+
+	wProv, err := mcdb.Open("assets/hcfworld")
+	if err != nil {
+		panic(err)
+	}
+	worldProvider = wProv
+	c.WorldProvider = worldProvider
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.Generator = func(dim world.Dimension) world.Generator { return nil }
@@ -116,16 +135,19 @@ func main() {
 	t := time.NewTicker(time.Minute * 1)
 	go func() {
 		for range t.C {
-			log.Println("Saving all users and teams.")
 			for _, u := range user.All() {
+				_ = playerProvider.Save(u.Player().UUID(), u.Player().Data())
+				_ = worldProvider.SavePlayerSpawnPosition(u.Player().UUID(), cube.PosFromVec3(u.Player().Position()))
 				d, ok := data.LoadUser(u.Player().Name())
 				if ok {
 					_ = data.SaveUser(d)
 				}
 			}
+			log.Println("Saving all users/world data.")
 			for _, t := range data.Teams() {
 				data.SaveTeam(t)
 			}
+			log.Println("Saving all team/data.")
 		}
 	}()
 
@@ -259,6 +281,8 @@ func registerCommands(srv *server.Server) {
 			command.TeamRally{},
 			command.TeamUnRally{},
 			command.TeamMap{},
+			command.TeamSetDTR{},
+			command.TeamDelete{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
