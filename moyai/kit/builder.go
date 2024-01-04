@@ -3,6 +3,7 @@ package kit
 import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 )
@@ -27,23 +28,27 @@ func (Builder) Items(*player.Player) [36]item.Stack {
 		block.Grass{},
 		block.Stone{},
 		block.Cobblestone{},
+		block.CraftingTable{},
+		item.Bucket{
+			Content: item.LiquidBucketContent(block.Water{}),
+		},
+		item.Bucket{
+			Content: item.LiquidBucketContent(block.Water{}),
+		},
+		item.Bucket{
+			Content: item.LiquidBucketContent(block.Lava{}),
+		},
 		block.Wood{
 			Wood: block.OakWood(),
 		},
 		block.Wood{
-			Wood: block.BirchWood(),
+			Wood: block.OakWood(),
 		},
 		block.Wood{
-			Wood: block.SpruceWood(),
+			Wood: block.OakWood(),
 		},
 		block.Wood{
-			Wood: block.JungleWood(),
-		},
-		block.Wood{
-			Wood: block.AcaciaWood(),
-		},
-		block.Wood{
-			Wood: block.DarkOakWood(),
+			Wood: block.OakWood(),
 		},
 		block.Sand{},
 		block.Sandstone{},
@@ -61,23 +66,15 @@ func (Builder) Items(*player.Player) [36]item.Stack {
 		block.Wool{
 			Colour: item.ColourBrown(),
 		},
-		block.Wool{
-			Colour: item.ColourBlue(),
-		},
-		block.Wool{
-			Colour: item.ColourPurple(),
-		},
-		block.Wool{
-			Colour: item.ColourCyan(),
-		},
 	}
 	items := [36]item.Stack{
-		item.NewStack(item.Axe{Tier: item.ToolTierDiamond}, 1),
-		item.NewStack(item.Shovel{Tier: item.ToolTierDiamond}, 1),
+		item.NewStack(item.Axe{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 2)),
+		item.NewStack(item.Pickaxe{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 2)),
+		item.NewStack(item.Shovel{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 2)),
 	}
 
 	for i, b := range blocks {
-		items[i+2] = item.NewStack(b, 64)
+		items[i+3] = item.NewStack(b, 64)
 	}
 	return items
 }

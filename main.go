@@ -28,6 +28,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/inventory"
+	"github.com/df-mc/dragonfly/server/item/recipe"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/playerdb"
@@ -218,6 +219,7 @@ func main() {
 	}
 
 	registerCommands(srv)
+	registerRecipes()
 
 	srv.Listen()
 	for srv.Accept(acceptFunc(config.Proxy.Enabled)) {
@@ -314,6 +316,72 @@ func registerCommands(srv *server.Server) {
 	if sock, ok := moyai.Socket(); ok {
 		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
 	}
+}
+
+func registerRecipes() {
+	recipe.Register(recipe.NewShapeless([]item.Stack{
+		item.NewStack(block.Wood{}, 1),
+	}, item.NewStack(block.Planks{}, 4), "crafting_table"))
+
+	recipe.Register(recipe.NewShapeless([]item.Stack{
+		item.NewStack(block.Log{}, 1),
+	}, item.NewStack(block.Planks{}, 4), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+	}, item.NewStack(block.Slab{
+		Block: block.Planks{},
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+	}, item.NewStack(block.Stairs{
+		Block: block.Planks{},
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(item.Stick{}, 1), item.NewStack(block.Air{}, 0),
+	}, item.NewStack(block.Sign{
+		Wood: block.OakWood(),
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+	}, item.NewStack(block.WoodDoor{
+		Wood: block.OakWood(),
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+	}, item.NewStack(block.WoodTrapdoor{
+		Wood: block.OakWood(),
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1),
+		item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+	}, item.NewStack(block.WoodFenceGate{
+		Wood: block.OakWood(),
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+	}, item.NewStack(block.WoodFence{
+		Wood: block.OakWood(),
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))
 }
 
 func handleServerClose(srv *server.Server) {
