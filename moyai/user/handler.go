@@ -939,6 +939,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				if d > 20 {
 					d = 20
 				}
+				*dmg = *dmg * 1.25
 				damage := (d / 10) * 2
 				h.p.Hurt(damage, NoArmourAttackEntitySource{
 					Attacker: h.p,
