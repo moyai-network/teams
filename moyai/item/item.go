@@ -66,7 +66,7 @@ func init() {
 	RegisterSpecialItem(ScramblerType{})
 	RegisterSpecialItem(ExoticBoneType{})
 	RegisterSpecialItem(PearlDisablerType{})
-	//RegisterSpecialItem(FullInvisibilityType{})
+	RegisterSpecialItem(FullInvisibilityType{})
 	RegisterSpecialItem(SigilType{})
 	creative.RegisterItem(NewPartnerPackage(1))
 }

@@ -2,6 +2,8 @@ package user
 
 import (
 	"fmt"
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"math"
 	"math/rand"
 	"strings"
@@ -257,6 +259,50 @@ func (h *Handler) ChatType() int {
 	return h.chatType.Load()
 }
 
+// ShowArmor displays or removes players armor visibility from other players.
+func (h *Handler) ShowArmor(visible bool) {
+	p := h.Player()
+
+	air := item.NewStack(block.Air{}, 1)
+
+	helmet := item.NewStack(block.Air{}, 1)
+	if !p.Armour().Helmet().Equal(air) && visible {
+		helmet = p.Armour().Helmet()
+	}
+
+	chestplate := item.NewStack(block.Air{}, 1)
+	if !p.Armour().Chestplate().Equal(air) && visible {
+		chestplate = p.Armour().Chestplate()
+	}
+
+	leggings := item.NewStack(block.Air{}, 1)
+	if !p.Armour().Leggings().Equal(air) && visible {
+		leggings = p.Armour().Leggings()
+	}
+
+	boots := item.NewStack(block.Air{}, 1)
+	if !p.Armour().Boots().Equal(air) && visible {
+		boots = p.Armour().Boots()
+	}
+
+	for _, pl := range players {
+		u, _ := data.LoadUser(p.Name())
+
+		if t, ok := u.Team(); ok {
+			// maybe add an option eventually, so we can use this for staff mode and other stuff IDK?
+			if !t.Member(pl.Player().Name()) {
+				session_writePacket(pl.s, &packet.MobArmourEquipment{
+					EntityRuntimeID: session_entityRuntimeID(pl.s, p),
+					Helmet:          instanceFromItem(pl.s, helmet),
+					Chestplate:      instanceFromItem(pl.s, chestplate),
+					Leggings:        instanceFromItem(pl.s, leggings),
+					Boots:           instanceFromItem(pl.s, boots),
+				})
+			}
+		}
+	}
+}
+
 func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
 	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
 	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
@@ -485,3 +531,8 @@ func player_session(*player.Player) *session.Session
 //
 //go:linkname drop_contents github.com/df-mc/dragonfly/server/player.(*Player).dropContents
 func drop_contents(*player.Player)
+
+// noinspection ALL
+//
+//go:linkname instanceFromItem github.com/df-mc/dragonfly/server/session.instanceFromItem
+func instanceFromItem(*session.Session, item.Stack) protocol.ItemInstance

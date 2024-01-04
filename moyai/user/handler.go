@@ -593,7 +593,13 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.ability.Set(time.Second * 10)
 			h.abilities.Key(kind).Set(time.Second * 10)
 		case it.FullInvisibilityType:
-			// Restart TODO
+			h.ShowArmor(false)
+			h.Player().AddEffect(effect.New(effect.Invisibility{}, 1, time.Hour).WithoutParticles())
+			h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+			h.ability.Set(time.Second * 10)
+			h.abilities.Set(kind, time.Minute*2)
+
+			h.Player().Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
 		case it.NinjaStarType:
 			// TODO
 		}
@@ -809,6 +815,18 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				attacker.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
 			}
 
+		}
+	}
+
+	if attacker != nil {
+		if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
+			for _, i := range h.Player().Armour().Inventory().Items() {
+				if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
+					h.Player().RemoveEffect(effect.Invisibility{})
+				}
+			}
+
+			h.ShowArmor(true)
 		}
 	}
 
@@ -1313,6 +1331,17 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok {
 		return
 	}
+
+	if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
+		for _, i := range h.Player().Armour().Inventory().Items() {
+			if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
+				h.Player().RemoveEffect(effect.Invisibility{})
+			}
+		}
+
+		h.ShowArmor(true)
+	}
+
 	if !canAttack(h.p, t) {
 		ctx.Cancel()
 		return
