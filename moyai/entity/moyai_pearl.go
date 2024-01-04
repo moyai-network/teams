@@ -58,11 +58,12 @@ type teleporter interface {
 // teleport teleports the owner of an Ent to a trace.Result's position.
 func teleport(e *entity.Ent, target trace.Result) {
 	p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
-	usr, _ := user.Lookup(p.Name())
+	usr, ok2 := user.Lookup(p.Name())
 
-	if !ok {
+	if !ok || !ok2 {
 		e.World().RemoveEntity(e)
 		_ = e.Close()
+		return
 	}
 
 	if usr.Combat().Active() && area.Spawn(usr.Player().World()).Vec3WithinOrEqualXZ(target.Position()) {
