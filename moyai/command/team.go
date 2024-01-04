@@ -589,7 +589,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "user.team-less"))
 		return
 	}
-	if !tm.Leader(u.Name) {
+	if tm.Leader(u.Name) {
 		o.Error(lang.Translatef(l, "command.team.leave.leader"))
 		return
 	}
