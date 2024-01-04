@@ -140,6 +140,7 @@ func main() {
 	w.SetTickRange(0)
 	w.StopThundering()
 	w.StopRaining()
+	w.SetSpawn(cube.Pos{0, 80, 0})
 
 	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
