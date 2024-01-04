@@ -898,7 +898,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm = tm.WithClaim(moose.Area{}).WithHome(mgl64.Vec3{})
 	data.SaveTeam(tm)
-	o.Print(lang.Translate(p.Locale(), "command.unclaim.success"))
+	o.Print(text.Colourf(lang.Translate(p.Locale(), "command.unclaim.success")))
 }
 
 // Run ...
@@ -1308,7 +1308,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
 
-	o.Print(text.Colourf("<green>You withdrew $%d from %s.</green>", amt, tm.Name))
+	o.Print(text.Colourf("<green>You withdrew $%d from %s.</green>", int(amt), tm.Name))
 }
 
 // Run ...
@@ -1344,7 +1344,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
 
-	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", amt, tm.Name))
+	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.Name))
 }
 
 // Run ...
