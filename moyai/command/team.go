@@ -1016,12 +1016,12 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 			break
 		}
 
-		dtr := text.Colourf("<green>%.1f■</green>", tm.DTR)
+		dtr := text.Colourf("<green>%.2f■</green>", tm.DTR)
 		if tm.DTR < 5 {
-			dtr = text.Colourf("<yellow>%.1f■</yellow>", tm.DTR)
+			dtr = text.Colourf("<yellow>%.2f■</yellow>", tm.DTR)
 		}
 		if tm.DTR <= 0 {
-			dtr = text.Colourf("<red>%.1f■</red>", tm.DTR)
+			dtr = text.Colourf("<red>%.2f■</red>", tm.DTR)
 		}
 		if ok && userTeam.Name == tm.Name {
 			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s <yellow>DTR</yellow>\n", i+1, tm.DisplayName, user.TeamOnlineCount(tm), len(tm.Members), dtr)
