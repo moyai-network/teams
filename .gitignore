@@ -3,3 +3,4 @@ assets/
 oomph/
 *.exe*
 *.toml*
+db/

@@ -86,7 +86,9 @@ func main() {
 	playerProvider = pProv
 	c.PlayerProvider = playerProvider
 
-	wProv, err := mcdb.Open("assets/hcfworld")
+	wProv, err := mcdb.Config{
+		Log: log,
+	}.Open("assets/hcfworld")
 	if err != nil {
 		panic(err)
 	}
@@ -164,7 +166,7 @@ func main() {
 	w.StopRaining()
 	w.SetSpawn(cube.Pos{0, 80, 0})
 
-	l := world.NewLoader(32, w, world.NopViewer{})
+	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
 
@@ -284,6 +286,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamSetDTR{},
 			command.TeamDelete{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
+		cmd.New("tl", text.Colourf("<aqua>Send your location to teammates</aqua>"), nil, command.TL{}),
 		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
 		cmd.New("logout", text.Colourf("<aqua>Safely logout of PVP.</aqua>"), nil, command.Logout{}),

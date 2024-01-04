@@ -9,7 +9,7 @@ import (
 type SigilType struct{}
 
 func (SigilType) Name() string {
-	return text.Colourf("<aqua>Allah's Sigil</aqua>")
+	return text.Colourf("<aqua>Sigil of Jihad</aqua>")
 }
 
 func (SigilType) Item() world.Item {
@@ -17,7 +17,7 @@ func (SigilType) Item() world.Item {
 }
 
 func (SigilType) Lore() []string {
-	return []string{text.Colourf("<grey>Call upon the All-Powerful Allah.</grey>")}
+	return []string{text.Colourf("<grey>Call upon the force of Light.</grey>")}
 }
 
 func (SigilType) Key() string {
