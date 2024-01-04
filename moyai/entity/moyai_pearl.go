@@ -1,6 +1,11 @@
 package entity
 
 import (
+	"fmt"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/sandertv/gophertunnel/minecraft/text"
+	"math"
+	"strings"
 	_ "unsafe"
 
 	"github.com/moyai-network/teams/moyai/area"
@@ -17,15 +22,21 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 )
+
+var directions = map[world.Entity]cube.Direction{}
+
+var yaws = map[world.Entity]float64{}
 
 // NewMoyaiPearl creates an EnderPearl entity. EnderPearl is a smooth, greenish-
 // blue item used to teleport.
 func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Entity {
 	e := entity.Config{Behaviour: moyaiPearlConf.New(owner)}.New(entity.EnderPearlType{}, pos)
 	e.SetVelocity(vel)
+
+	directions[owner] = owner.Rotation().Direction()
+	yaws[owner] = math.Round(owner.Rotation().Yaw())
 	return e
 }
 
@@ -46,50 +57,255 @@ type teleporter interface {
 
 // teleport teleports the owner of an Ent to a trace.Result's position.
 func teleport(e *entity.Ent, target trace.Result) {
-	if u, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
-		if p, ok := u.(*player.Player); ok {
-			if usr, ok := user.Lookup(p.Name()); ok {
-				if usr.Combat().Active() && area.Spawn(u.World()).Vec3WithinOrEqualXZ(target.Position()) {
-					usr.Pearl().Reset()
-					return
-				}
+	p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
+	usr, _ := user.Lookup(p.Name())
 
-				u, _ := data.LoadUserOrCreate(p.Name())
-				if u.PVP.Active() {
-					for _, t := range data.Teams() {
-						a := t.Claim
-						if a.Vec3WithinOrEqualXZ(target.Position()) {
-							usr.Pearl().Reset()
-							return
-						}
-					}
-				}
+	if !ok {
+		e.World().RemoveEntity(e)
+		_ = e.Close()
+	}
+
+	if usr.Combat().Active() && area.Spawn(usr.Player().World()).Vec3WithinOrEqualXZ(target.Position()) {
+		usr.Pearl().Reset()
+		return
+	}
+
+	u, _ := data.LoadUserOrCreate(p.Name())
+	if u.PVP.Active() {
+		for _, t := range data.Teams() {
+			a := t.Claim
+			if a.Vec3WithinOrEqualXZ(target.Position()) {
+				usr.Pearl().Reset()
+				return
+			}
+		}
+	}
+
+	if pos, ok := validPosition(e, target, directions[p]); ok {
+		p.Teleport(pos.Add(mgl64.Vec3{0.5, 0, 0.5}))
+		p.PlaySound(sound.Teleport{})
+		p.Hurt(5, entity.FallDamageSource{})
+	} else {
+		p.SendPopup(text.Colourf("<red>Pearl Refunded"))
+		if !p.GameMode().CreativeInventory() {
+			_, _ = p.Inventory().AddItem(item.NewStack(item.EnderPearl{}, 1))
+		}
+	}
+}
+
+func validSlabPosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
+	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+
+	newPos := cube.Pos{}
+
+	switch direction.String() {
+	case "west":
+		newPos = pos.Sub(cube.Pos{1, 0, 0})
+	case "east":
+		newPos = pos.Add(cube.Pos{1, 0, 0})
+	case "north":
+		newPos = pos.Sub(cube.Pos{0, 0, 1})
+	case "south":
+		newPos = pos.Add(cube.Pos{0, 0, 1})
+	}
+
+	if _, ok := e.World().Block(newPos).(block.Air); ok {
+		if _, ok := e.World().Block(newPos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
+			return newPos.Vec3(), true
+		}
+	}
+
+	return mgl64.Vec3{}, false
+}
+
+func validAirPosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
+	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+	if _, ok := e.World().Block(pos.Add(cube.Pos{0, 1, 0})).(block.Air); !ok {
+		newPos := cube.Pos{}
+
+		switch direction.String() {
+		case "west":
+			newPos = pos.Sub(cube.Pos{1, 0, 0})
+		case "east":
+			newPos = pos.Add(cube.Pos{1, 0, 0})
+		case "north":
+			newPos = pos.Sub(cube.Pos{0, 0, 1})
+		case "south":
+			newPos = pos.Add(cube.Pos{0, 0, 1})
+		}
+
+		if _, ok := e.World().Block(newPos).(block.Air); ok {
+			if _, ok := e.World().Block(newPos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
+				return newPos.Vec3(), true
+			}
+		}
+		return mgl64.Vec3{}, false
+	}
+
+	return mgl64.Vec3{}, false
+}
+
+func validFencePosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
+	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+
+	if b, ok := e.World().Block(pos).(block.WoodFenceGate); ok {
+		if b.Open {
+			newPos := cube.Pos{}
+
+			switch direction.String() {
+			case "west":
+				newPos = pos.Sub(cube.Pos{1, 0, 0})
+			case "east":
+				newPos = pos.Add(cube.Pos{1, 0, 0})
+			case "north":
+				newPos = pos.Sub(cube.Pos{0, 0, 1})
+			case "south":
+				newPos = pos.Add(cube.Pos{0, 0, 1})
 			}
 
+			if _, ok := e.World().Block(newPos).(block.Air); ok {
+				if _, ok := e.World().Block(newPos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
+					return newPos.Vec3(), true
+				}
+			}
+		} else {
+			return pos.Vec3(), true
 		}
-
-		b := e.World().Block(cube.PosFromVec3(target.Position()))
-		p := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter).(*player.Player)
-		rot := p.Rotation()
-		if f, ok := b.(block.WoodFenceGate); ok || f.Open {
-			session_writePacket(player_session(p), &packet.MovePlayer{
-				EntityRuntimeID: 1,
-				Position:        mgl32.Vec3{float32(e.Position()[0]), float32(e.Position()[1] + 1.621), float32(e.Position()[2])},
-				Pitch:           float32(rot[1]),
-				Yaw:             float32(rot[0]),
-				HeadYaw:         float32(rot[0]),
-				Mode:            packet.MoveModeNormal,
-			})
-		}
-		onGround := p.OnGround()
-		for _, v := range p.World().Viewers(p.Position()) {
-			v.ViewEntityMovement(p, e.Position(), rot, onGround)
-		}
-
-		e.World().PlaySound(u.Position(), sound.Teleport{})
-		u.Teleport(target.Position())
-		u.Hurt(5, entity.FallDamageSource{})
 	}
+
+	return mgl64.Vec3{}, false
+}
+
+func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
+	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+
+	b := e.World().Block(pos)
+	name, properties := b.EncodeBlock()
+
+	fmt.Println(name)
+	fmt.Println(properties)
+
+	if validBlock(b) && validBlock(e.World().Block(pos.Add(cube.Pos{0, 1, 0}))) {
+		return pos.Vec3(), true
+	}
+
+	if strings.Contains(name, "slab") {
+		if strings.Contains(name, "double") {
+			return mgl64.Vec3{}, false
+		}
+
+		if slabPos, slabOk := validSlabPosition(e, target, direction); slabOk {
+			fmt.Println("Slab Pearl")
+			return slabPos, true
+		}
+	}
+
+	if name == "minecraft:air" || strings.Contains(name, "stairs") {
+		if strings.Contains(name, "stairs") {
+			if len(properties) != 0 {
+				if properties["upside_down_bit"] == false && properties["weirdo_direction"] == int32(1) {
+					return mgl64.Vec3{}, false
+				}
+			}
+		}
+
+		if airPos, airOk := validAirPosition(e, target, direction); airOk {
+			fmt.Println("Air Pearl")
+			return airPos, true
+		}
+	}
+
+	if name == "minecraft:fence_gate" {
+		if fencePos, fenceOk := validFencePosition(e, target, direction); fenceOk {
+			return fencePos, true
+		}
+	}
+
+	if taliPos, ok := validTaliPearl(e, target, direction); ok {
+		fmt.Println("Tali Pearl")
+		return taliPos, true
+	}
+
+	return mgl64.Vec3{}, false
+}
+
+func validTaliPearl(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
+	p, _ := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
+	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+
+	newPos := cube.Pos{}
+	yaw := yaws[p]
+
+	switch direction.String() {
+	case "west":
+		if yaw >= 120 && yaw <= 140 {
+			newPos = pos.Add(cube.Pos{-1, 0, -1})
+		}
+
+		if yaw <= 60 && yaw >= 40 {
+			newPos = pos.Add(cube.Pos{-1, 0, 1})
+		}
+
+		fmt.Println("west")
+	case "east":
+		if yaw >= -70 && yaw <= -50 {
+			newPos = pos.Add(cube.Pos{1, 0, 1})
+			fmt.Println("option 1")
+		}
+
+		if yaw >= -130 && yaw <= -110 {
+			newPos = pos.Add(cube.Pos{1, 0, -1})
+			fmt.Println("option 2")
+		}
+
+		fmt.Println("east")
+	case "north":
+		if yaw <= -160 && yaw >= -180 {
+			newPos = pos.Add(cube.Pos{-1, 0, 1})
+		}
+
+		if yaw <= 160 && yaw >= 140 {
+			newPos = pos.Add(cube.Pos{-1, 0, -1})
+		}
+		fmt.Println("north")
+	case "south":
+		if yaw >= 20 && yaw <= 40 {
+			newPos = pos.Add(cube.Pos{-1, 0, 1})
+			fmt.Println("option 1")
+		}
+
+		if yaw <= -20 && yaw >= -40 {
+			newPos = pos.Add(cube.Pos{1, 0, 1})
+			fmt.Println("option 2")
+		}
+
+		fmt.Println("south")
+	}
+
+	if _, ok := e.World().Block(newPos).(block.Air); ok {
+		if _, ok := e.World().Block(newPos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
+			return newPos.Vec3(), true
+		}
+	}
+
+	return mgl64.Vec3{}, false
+}
+
+func validBlock(block2 world.Block) bool {
+	//TODO: this needs a lot of work :pain:
+
+	var blocks = []world.Block{block.DoubleFlower{}, block.DoubleTallGrass{}, block.TallGrass{}, block.Flower{}, block.DoubleFlower{}, block.Air{}, block.Grass{}, block.Sand{}, block.Leaves{}}
+
+	name, _ := block2.EncodeBlock()
+	for _, bk := range blocks {
+		targetName, _ := bk.EncodeBlock()
+
+		if targetName == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 // noinspection ALL
