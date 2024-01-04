@@ -978,7 +978,12 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 
 		keys := it.SpecialItems()
 		i := it.NewSpecialItem(keys[rand.Intn(len(keys))], rand.Intn(3)+1)
-
+		if ite, ok := it.SpecialItem(i); ok {
+			if _, ok2 := ite.(it.SigilType); ok2 {
+				// Hacky way to re-roll so that it's lower probability
+				i = it.NewSpecialItem(keys[rand.Intn(len(keys))], rand.Intn(3)+1)
+			}
+		}
 		ctx.Cancel()
 
 		h.p.SetHeldItems(held.Grow(-1), left)
