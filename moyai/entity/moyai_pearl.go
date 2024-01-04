@@ -2,11 +2,12 @@ package entity
 
 import (
 	"fmt"
-	"github.com/df-mc/dragonfly/server/item"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math"
 	"strings"
 	_ "unsafe"
+
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
@@ -41,11 +42,13 @@ func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Ent
 }
 
 var moyaiPearlConf = entity.ProjectileBehaviourConfig{
-	Gravity:  0.03,
-	Drag:     0.008,
-	Particle: particle.EndermanTeleport{},
-	Sound:    sound.Teleport{},
-	Hit:      teleport,
+	Gravity:               0.085,
+	Drag:                  0.01,
+	KnockBackHeightAddend: 0.388 - 0.45,
+	KnockBackForceAddend:  0.39 - 0.3608,
+	Particle:              particle.EndermanTeleport{},
+	Sound:                 sound.Teleport{},
+	Hit:                   teleport,
 }
 
 // teleporter represents a living entity that can teleport.

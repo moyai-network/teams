@@ -1,6 +1,9 @@
 package entity
 
 import (
+	"image/color"
+	"time"
+
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -13,8 +16,6 @@ import (
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/nbtconv"
-	"image/color"
-	"time"
 )
 
 const (
@@ -47,8 +48,8 @@ func NewMoyaiPotion(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity, t potion
 }
 
 var moyaiPotionConf = entity.ProjectileBehaviourConfig{
-	Gravity: 0.05,
-	Drag:    0.01,
+	Gravity: 0.06,
+	Drag:    0.0025,
 	Damage:  -1,
 	Sound:   sound.GlassBreak{},
 }
