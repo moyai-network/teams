@@ -1656,7 +1656,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
-	if _, ok := sotw.Running(); ok || u.SOTW {
+	if _, ok := sotw.Running(); ok && u.SOTW {
 		if newPos.Y() < 0 {
 			h.p.Teleport(mgl64.Vec3{0, 100, 0})
 		}
