@@ -712,10 +712,6 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	*dmg = *dmg / 1.25
-	if h.logger {
-
-		return
-	}
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
 		return
@@ -1589,6 +1585,15 @@ func (h *Handler) HandleQuit() {
 					return
 				}
 				u.Dead = true
+				u.Stats.Deaths = 0
+				if u.Stats.KillStreak > u.Stats.BestKillStreak {
+					u.Stats.BestKillStreak = u.Stats.KillStreak
+				}
+				u.Stats.KillStreak = 0
+				if tm, ok := u.Team(); ok {
+					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
+					data.SaveTeam(tm)
+				}
 				_ = data.SaveUser(u)
 			}
 			playersMu.Lock()
