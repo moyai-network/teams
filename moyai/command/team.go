@@ -690,7 +690,7 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "user.team-less"))
 		return
 	}
-	if !tm.Leader(p.Name()) || !tm.Captain(p.Name()) {
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		o.Error(lang.Translatef(l, "command.team.promote.missing.permission"))
 		return
 	}
