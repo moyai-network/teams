@@ -147,6 +147,10 @@ func (h *Handler) Pearl() *moose.CoolDown {
 	return h.pearl
 }
 
+func (h *Handler) FactionCreate() *moose.CoolDown {
+	return h.factionCreate
+}
+
 func (h *Handler) DropItem(it item.Stack) {
 	p := h.p
 	w, pos := p.World(), p.Position()

@@ -357,6 +357,11 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
+	if p.Handler().(*user.Handler).FactionCreate().Active() {
+		out.Error("You are on faction creation cooldown (lasts 3 minutes)")
+		return
+	}
+
 	if _, ok := data.LoadTeam(t.Name); ok {
 		out.Error(lang.Translatef(p.Locale(), "team.create.exists"))
 		return
@@ -364,6 +369,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	tm := data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()).WithRank(3))
 	data.SaveTeam(tm)
 
+	p.Handler().(*user.Handler).FactionCreate().Set(time.Minute * 3)
 	out.Print(lang.Translatef(p.Locale(), "team.create.success", tm.DisplayName))
 	user.Broadcast("team.create.success.broadcast", p.Name(), tm.DisplayName)
 }

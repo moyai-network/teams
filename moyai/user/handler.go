@@ -73,6 +73,8 @@ type Handler struct {
 	rogue       *moose.CoolDown
 	goldenApple *moose.CoolDown
 
+	factionCreate *moose.CoolDown
+
 	itemUse   moose.MappedCoolDown[world.Item]
 	bardItem  moose.MappedCoolDown[world.Item]
 	strayItem moose.MappedCoolDown[world.Item]
@@ -128,6 +130,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		rogue:       moose.NewCoolDown(),
 		goldenApple: moose.NewCoolDown(),
 		ability:     moose.NewCoolDown(),
+
+		factionCreate: moose.NewCoolDown(),
 
 		bone:     moose.NewCoolDown(),
 		boneHits: map[string]int{},
