@@ -142,7 +142,7 @@ func main() {
 	w.StopRaining()
 	w.SetSpawn(cube.Pos{0, 80, 0})
 
-	l := world.NewLoader(8, w, world.NopViewer{})
+	l := world.NewLoader(32, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
 
@@ -180,6 +180,10 @@ func main() {
 
 	for _, e := range w.Entities() {
 		if _, ok := e.Type().(entity.TextType); ok {
+			w.RemoveEntity(e)
+		}
+
+		if _, ok := e.Type().(entity.ItemType); ok {
 			w.RemoveEntity(e)
 		}
 	}
