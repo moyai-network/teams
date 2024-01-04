@@ -1426,6 +1426,9 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 }
 
 func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
+	if h.logger {
+		return
+	}
 	u, _ := data.LoadUserOrCreate(h.p.Name())
 	p := h.p
 	w := p.World()
