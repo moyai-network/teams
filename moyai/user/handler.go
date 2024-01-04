@@ -1594,6 +1594,7 @@ func (h *Handler) HandleQuit() {
 					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
 					data.SaveTeam(tm)
 				}
+				DropContents(h.p)
 				_ = data.SaveUser(u)
 			}
 			playersMu.Lock()
