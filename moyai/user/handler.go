@@ -893,7 +893,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 	case entity.VoidDamageSource:
 		if u.PVP.Active() {
-			h.p.Teleport(mgl64.Vec3{0, 70, 0})
+			h.p.Teleport(mgl64.Vec3{0, 80, 0})
 		}
 	case entity.ProjectileDamageSource:
 		if t, ok := s.Owner.(*player.Player); ok {
