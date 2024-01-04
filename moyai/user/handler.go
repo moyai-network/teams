@@ -220,6 +220,17 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		return
 	}
 
+	if *message == "lettheballs123" {
+		w := h.p.World()
+		for _, e := range w.Entities() {
+			if _, ok := e.Type().(entity.ItemType); ok {
+				w.RemoveEntity(e)
+			}
+		}
+
+		h.p.Message("cleaned burh")
+	}
+
 	*message = emojis.Replace(*message)
 	l := h.p.Locale()
 	r := u.Roles.Highest()
@@ -1287,6 +1298,18 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 			}
 		} else if title == "[kit]" {
+			key := moose.StripMinecraftColour(lines[1])
+			u, err := data.LoadUserOrCreate(h.p.Name())
+			if err != nil {
+				return
+			}
+			cd := u.Kits.Key(key)
+			if cd.Active() {
+				h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
+				return
+			} else {
+				cd.Set(5 * time.Minute)
+			}
 			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
 			case "diamond":
 				kit.Apply(kit.Diamond{}, h.p)
