@@ -342,6 +342,12 @@ func registerRecipes() {
 
 	recipe.Register(recipe.NewShaped([]item.Stack{
 		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
+	}, item.NewStack(item.Stick{}, 4), recipe.NewShape(3, 3), "crafting_table"))
+
+	recipe.Register(recipe.NewShaped([]item.Stack{
+		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
 		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
 		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
 	}, item.NewStack(block.Slab{

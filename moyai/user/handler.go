@@ -1587,8 +1587,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 						continue
 					}
 					used = append(used, j)
-					it1, _ := h.p.Inventory().Item(i)
-					it2, _ := h.p.Inventory().Item(j)
+					it1, _ := target.Player().Inventory().Item(i)
+					it2, _ := target.Player().Inventory().Item(j)
 					target.Player().Inventory().SetItem(j, it1)
 					target.Player().Inventory().SetItem(i, it2)
 				}
