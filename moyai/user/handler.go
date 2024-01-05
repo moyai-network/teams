@@ -1573,7 +1573,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 			target.AddScramblerHit(h.p)
 			if target.ScramblerHits(h.p) >= 3 {
-				for i := 0; i <= 8; i++ {
+				for i := 0; i <= 7; i++ {
 					j := rand.Intn(8)
 					it1, _ := h.p.Inventory().Item(i)
 					it2, _ := h.p.Inventory().Item(j)
