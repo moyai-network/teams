@@ -1052,6 +1052,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				return
 			}
 			k.Stats.Kills += 1
+			k.Stats.KillStreak += 1
+
+			if k.Stats.KillStreak%5 == 0 {
+				Broadcast("user.killstreak", killer.p.Name(), k.Stats.KillStreak)
+				killer.AddItemOrDrop(it.NewKey(it.KeyTypePartner, int(k.Stats.KillStreak)/2))
+			}
 
 			if tm, ok := k.Team(); ok {
 				tm = tm.WithPoints(tm.Points + 1)
