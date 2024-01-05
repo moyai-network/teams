@@ -1540,6 +1540,13 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		}
 	}
 
+	if !t.OnGround() {
+		max, min := maxMin(t.Position().Y(), h.p.Position().Y())
+		if max-min >= 2.5 {
+			*height = 0.38 / 1.25
+		}
+	}
+
 	//u, err := data.LoadUserOrCreate(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	target, ok := Lookup(t.Name())
 	typ, ok2 := it.SpecialItem(held)
@@ -1616,6 +1623,13 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		th.combat.Set(time.Second * 20)
 		h.combat.Set(time.Second * 20)
 	}
+}
+
+func maxMin(n, n2 float64) (max float64, min float64) {
+	if n > n2 {
+		return n, n2
+	}
+	return n2, n
 }
 
 func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
