@@ -14,7 +14,7 @@ func Spawn(w *world.World) moose.NamedArea {
 	case world.Nether:
 		return Nether.Spawn()
 	default:
-		panic("should never happen")
+		return Overworld.Spawn()
 	}
 	return moose.NamedArea{}
 }
