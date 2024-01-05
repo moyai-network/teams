@@ -346,7 +346,9 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 	}
 	online := user.TeamOnline(tm)
 	for _, o := range online {
-		o.SetWayPoint(user.NewWayPoint("Rally", p.Position()))
+		pos := p.Position()
+		o.SetWayPoint(user.NewWayPoint("Rally", pos))
+		o.Player().Message(text.Colourf("<green>%s rallying at</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z())))
 	}
 }
 

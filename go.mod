@@ -28,7 +28,7 @@ require (
 
 require (
 	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872
-	github.com/oomph-ac/oomph v0.0.0-20231231194453-4aeeea26478b
+	github.com/oomph-ac/oomph v0.0.0-20240104152942-db39bf5d9bdf
 )
 
 require (
@@ -38,7 +38,6 @@ require (
 	github.com/df-mc/goleveldb v1.1.9 // indirect
 	github.com/df-mc/worldupgrader v1.0.11 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
-	github.com/flonja/multiversion v0.0.0-20230721160723-cb86537a0ee6 // indirect
 	github.com/getsentry/sentry-go v0.25.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -50,7 +49,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/samber/lo v1.38.1 // indirect
 	github.com/sandertv/go-raknet v1.12.1 // indirect
 	github.com/scylladb/go-set v1.0.3-0.20200225121959-cc7b2070d91e // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
@@ -72,5 +70,6 @@ require (
 )
 
 //replace github.com/oomph-ac/oomph => ./oomph
+replace github.com/flonja/multiversion => ./mv
 
 replace github.com/sandertv/gophertunnel v1.34.1 => github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89

@@ -1623,7 +1623,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		h.stuck.Cancel()
 	}
 
-	if h.waypoint != nil {
+	if h.waypoint != nil && h.waypoint.active {
 		h.UpdateWayPointPosition()
 	}
 
