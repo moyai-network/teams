@@ -1594,11 +1594,14 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 			if !target.PearlDisabled() {
 				target.Player().Message(text.Colourf("<red>You have been pearl disabled by %s</red>", h.p.Name()))
-				h.p.Message(text.Colourf("<green>You have pearl disabled %s</green>", t.Name()))
+				target.pearl.Set(time.Second * 15)
 				target.TogglePearlDisable()
+
+				h.p.Message(text.Colourf("<green>You have pearl disabled %s</green>", t.Name()))
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute)
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
+
 			}
 		}
 	}
