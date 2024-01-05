@@ -1580,8 +1580,19 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 			target.AddScramblerHit(h.p)
 			if target.ScramblerHits(h.p) >= 3 {
+				var used []int
 				for i := 0; i <= 7; i++ {
 					j := rand.Intn(8)
+					var u bool
+					for _, v := range used {
+						if v == j {
+							u = true
+						}
+					}
+					if u {
+						continue
+					}
+					used = append(used, j)
 					it1, _ := h.p.Inventory().Item(i)
 					it2, _ := h.p.Inventory().Item(j)
 					target.Player().Inventory().SetItem(j, it1)

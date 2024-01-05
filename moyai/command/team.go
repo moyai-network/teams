@@ -203,7 +203,7 @@ type TeamSetDTR struct {
 }
 
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
-	tm, ok := data.LoadTeam(string(t.Name))
+	tm, ok := data.LoadTeam(strings.ToLower(string(t.Name)))
 	if !ok {
 		o.Error("Invalid Team.")
 	}
@@ -214,9 +214,10 @@ func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 }
 
 func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
-	tm, ok := data.LoadTeam(string(t.Name))
+	tm, ok := data.LoadTeam(strings.ToLower(string(t.Name)))
 	if !ok {
 		o.Error("Invalid Team.")
+		return
 	}
 
 	players := tm.Members
