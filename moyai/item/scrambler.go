@@ -9,7 +9,7 @@ import (
 type ScramblerType struct{}
 
 func (ScramblerType) Name() string {
-	return text.Colourf("<gold>Scrambler</gold>")
+	return text.Colourf("<gold>V0E's Scrambler</gold>")
 }
 
 func (ScramblerType) Item() world.Item {

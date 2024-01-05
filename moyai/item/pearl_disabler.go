@@ -9,7 +9,7 @@ import (
 type PearlDisablerType struct{}
 
 func (PearlDisablerType) Name() string {
-	return text.Colourf("<purple>Pearl Disabler</purple>")
+	return text.Colourf("<purple>xNatsuri's Pearl Disabler</purple>")
 }
 
 func (PearlDisablerType) Item() world.Item {

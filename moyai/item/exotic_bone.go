@@ -9,7 +9,7 @@ import (
 type ExoticBoneType struct{}
 
 func (ExoticBoneType) Name() string {
-	return text.Colourf("<red>Exotic Bone</red>")
+	return text.Colourf("<red>RestartFU's Exotic Bone</red>")
 }
 
 func (ExoticBoneType) Item() world.Item {
