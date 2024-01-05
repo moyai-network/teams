@@ -236,6 +236,9 @@ func acceptFunc(proxy bool) func(*player.Player) {
 			p.Handle(user.NewHandler(p, p.XUID()))
 		}
 		p.SetGameMode(world.GameModeSurvival)
+		for _, ef := range p.Effects() {
+			p.RemoveEffect(ef.Type())
+		}
 		p.ShowCoordinates()
 		p.SetFood(20)
 
