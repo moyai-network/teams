@@ -50,7 +50,7 @@ var (
 	}
 	Circle = &KOTH{
 		name:        text.Colourf("<dark-green>Circle</dark-green>"),
-		area:        moose.NewArea(mgl64.Vec2{-88, 114}, mgl64.Vec2{-118, 85}),
+		area:        moose.NewArea(mgl64.Vec2{-100, 97}, mgl64.Vec2{-106, 103}),
 		cancel:      make(chan struct{}, 0),
 		coordinates: mgl64.Vec2{-103, 100},
 	}
