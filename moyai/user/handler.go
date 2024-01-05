@@ -220,17 +220,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		return
 	}
 
-	if *message == "lettheballs123" {
-		w := h.p.World()
-		for _, e := range w.Entities() {
-			if _, ok := e.Type().(entity.ItemType); ok {
-				w.RemoveEntity(e)
-			}
-		}
-
-		h.p.Message("cleaned burh")
-	}
-
 	*message = emojis.Replace(*message)
 	l := h.p.Locale()
 	r := u.Roles.Highest()
@@ -858,6 +847,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 	u, _ := data.LoadUserOrCreate(h.p.Name())
 	if u.PVP.Active() {
+		ctx.Cancel()
+		return
+	}
+
+	if u.Frozen {
 		ctx.Cancel()
 		return
 	}
@@ -1672,6 +1666,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
+	if u.Frozen {
+		ctx.Cancel()
+		return
+	}
+
 	if u.PVP.Active() {
 		for _, a := range data.Teams() {
 			a := a.Claim
@@ -1729,7 +1728,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				return
 			}
 			if k.StartCapturing(us) {
-				Broadcast("koth.capturing", k.Name(), r.Colour(u.Name))
+				Broadcast("koth.capturing", k.Name(), r.Colour(u.DisplayName))
 			}
 		} else {
 			if k.StopCapturing(us) {

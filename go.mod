@@ -27,8 +27,9 @@ require (
 )
 
 require (
+	github.com/df-mc/npc v1.0.4
 	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872
-	github.com/oomph-ac/oomph v0.0.0-20240104152942-db39bf5d9bdf
+	github.com/oomph-ac/oomph v0.0.0-20231231045105-1873be030088
 )
 
 require (
@@ -36,7 +37,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
 	github.com/df-mc/goleveldb v1.1.9 // indirect
-	github.com/df-mc/npc v1.0.4 // indirect
 	github.com/df-mc/worldupgrader v1.0.11 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
 	github.com/getsentry/sentry-go v0.25.0 // indirect
@@ -71,6 +71,7 @@ require (
 )
 
 //replace github.com/oomph-ac/oomph => ./oomph
+
 replace github.com/flonja/multiversion => ./mv
 
 replace github.com/sandertv/gophertunnel v1.34.1 => github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89
