@@ -800,7 +800,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			//h.p.SetMobile()
 
 			if tm, ok := u.Team(); ok {
-				tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
+				tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 				data.SaveTeam(tm)
 			}
 
@@ -1031,7 +1031,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		//h.p.SetMobile()
 
 		if tm, ok := u.Team(); ok {
-			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
+			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 			data.SaveTeam(tm)
 		}
 
@@ -1460,7 +1460,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 				return
 			} else {
-				cd.Set(5 * time.Minute)
+				cd.Set(time.Minute)
 			}
 			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
 			case "diamond":
@@ -1794,7 +1794,7 @@ func (h *Handler) HandleQuit() {
 				}
 				u.Stats.KillStreak = 0
 				if tm, ok := u.Team(); ok {
-					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 15))
+					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 					data.SaveTeam(tm)
 				}
 				DropContents(h.p)

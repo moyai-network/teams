@@ -53,7 +53,7 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 		h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 		return
 	} else {
-		cd.Set(5 * time.Minute)
+		cd.Set(time.Minute)
 	}
 	switch name {
 	case "Archer":
