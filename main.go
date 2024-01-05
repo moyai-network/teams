@@ -1,6 +1,9 @@
 package main
 
 import (
+	"image"
+	"image/png"
+	"io/ioutil"
 	"math"
 	"os"
 	"os/signal"
@@ -17,6 +20,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/sotw"
 
 	proxypacket "github.com/paroxity/portal/socket/packet"
@@ -32,8 +36,10 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/playerdb"
+	"github.com/df-mc/dragonfly/server/player/skin"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/mcdb"
+	"github.com/df-mc/npc"
 	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -220,6 +226,7 @@ func main() {
 
 	registerCommands(srv)
 	registerRecipes()
+	//registerSlappers(w)
 
 	srv.Listen()
 	for srv.Accept(acceptFunc(config.Proxy.Enabled)) {
@@ -386,6 +393,76 @@ func registerRecipes() {
 	}, item.NewStack(block.WoodFence{
 		Wood: block.OakWood(),
 	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+}
+
+func registerSlappers(w *world.World) {
+	s, err := decodeSkin("./assets/models/steve.png", "geometry.humanoid.custom", "")
+
+	if err != nil {
+		panic(err)
+	}
+	npc.Create(npc.Settings{
+		Name:       text.Colourf("<aqua>Diamond</aqua>"),
+		Position:   mgl64.Vec3{9, 80, 21},
+		Skin:       s,
+		Immobile:   true,
+		Vulnerable: false,
+		Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1),
+		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1),
+		Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1),
+		Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1),
+		MainHand:   item.NewStack(item.Sword{item.ToolTierDiamond}, 1),
+	}, w, func(p *player.Player) {
+		u, err := data.LoadUserOrCreate(p.Name())
+		if err != nil {
+			return
+		}
+		cd := u.Kits.Key("diamond")
+		if cd.Active() {
+			p.Handler().(*user.Handler).Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
+			return
+		} else {
+			cd.Set(5 * time.Minute)
+		}
+		kit.Apply(kit.Diamond{}, p)
+	})
+}
+
+func decodeSkin(path, geometry, geometryPath string) (skin.Skin, error) {
+	var f *os.File
+	var err error
+
+	if f, err = os.OpenFile(path, os.O_RDWR, 0777); os.IsNotExist(err) {
+		return skin.Skin{}, err
+	}
+
+	img, err := png.Decode(f)
+	if err != nil {
+		return skin.Skin{}, err
+	}
+	s := skin.New(img.Bounds().Max.X, img.Bounds().Max.Y)
+	s.Pix = pix(img)
+	s.ModelConfig = skin.ModelConfig{Default: geometry}
+	if geometryPath != "" {
+		b, err := ioutil.ReadFile(geometryPath)
+		if err != nil {
+			panic(err)
+		}
+		s.Model = b
+	}
+	return s, nil
+}
+
+// pix converts an image.Image into a []uint8.
+func pix(i image.Image) (p []uint8) {
+	for y := 0; y <= i.Bounds().Max.Y-1; y++ {
+		for x := 0; x <= i.Bounds().Max.X-1; x++ {
+			color := i.At(x, y)
+			r, g, b, a := color.RGBA()
+			p = append(p, uint8(r), uint8(g), uint8(b), uint8(a))
+		}
+	}
+	return
 }
 
 func handleServerClose(srv *server.Server) {

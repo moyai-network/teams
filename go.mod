@@ -36,6 +36,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
 	github.com/df-mc/goleveldb v1.1.9 // indirect
+	github.com/df-mc/npc v1.0.4 // indirect
 	github.com/df-mc/worldupgrader v1.0.11 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
 	github.com/getsentry/sentry-go v0.25.0 // indirect

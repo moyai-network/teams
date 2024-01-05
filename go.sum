@@ -16,6 +16,8 @@ github.com/df-mc/dragonfly v0.9.13-0.20231210131520-21eb18fd3299 h1:SV5ekDwMZu5W
 github.com/df-mc/dragonfly v0.9.13-0.20231210131520-21eb18fd3299/go.mod h1:AkiKzAuAbSE5XPLPS0Y1PesLzilK4Jn2ssBo7ht4aOc=
 github.com/df-mc/goleveldb v1.1.9 h1:ihdosZyy5jkQKrxucTQmN90jq/2lUwQnJZjIYIC/9YU=
 github.com/df-mc/goleveldb v1.1.9/go.mod h1:+NHCup03Sci5q84APIA21z3iPZCuk6m6ABtg4nANCSk=
+github.com/df-mc/npc v1.0.4 h1:oANT7jOPlRgBoXBijH8r7BFl9btPaJEvO8wq150w0OE=
+github.com/df-mc/npc v1.0.4/go.mod h1:mNgbn4993NDgTq2QoffR+aCMZan4bBAvGNN125eAJng=
 github.com/df-mc/worldupgrader v1.0.11 h1:7dlebxDXY8QND3MnDPnty7qeAqtxJE8kVqvs6VDs1YI=
 github.com/df-mc/worldupgrader v1.0.11/go.mod h1:tsSOLTRm9mpG7VHvYpAjjZrkRHWmSbKZAm9bOLNnlDk=
 github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 h1:cdvxuwQ3kS23Hb2Zb7EoHeDM8IMs64C2B8ZpCkVRlp4=
