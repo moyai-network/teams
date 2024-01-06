@@ -4,6 +4,7 @@ oomph/
 *.exe*
 *.toml*
 db/
+df/
 mv/
 multi/
 teams
