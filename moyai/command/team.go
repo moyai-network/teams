@@ -445,6 +445,11 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
+	if len(tm.Members) == 6 {
+		out.Error(text.Colourf("<red>Team is full!</red>"))
+		return
+	}
+
 	if tm.Member(target.Name()) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.member", target.Name()))
 		return
@@ -485,6 +490,12 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 		// TODO: error message
 		return
 	}
+
+	if len(tm.Members) == 6 {
+		out.Error(text.Colourf("<red>Team is full!</red>"))
+		return
+	}
+
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()))...)
 	tm = tm.WithDTR(tm.DTR + 1)
 

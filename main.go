@@ -322,6 +322,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("koth", text.Colourf("<aqua>Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
 		cmd.New("pp", text.Colourf("<aqua>Manage partner packages.</aqua>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 		cmd.New("ping", text.Colourf("<aqua>Check your ping.</aqua>"), nil, command.Ping{}),
+		cmd.New("data", text.Colourf("<aqua>Clear data.</aqua>"), nil, command.DataReset{}),
 	} {
 		cmd.Register(c)
 	}
