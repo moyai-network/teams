@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/moyai-network/moose/crate"
 	"github.com/moyai-network/teams/moyai/data"
+	it "github.com/moyai-network/teams/moyai/item"
 
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -157,11 +157,7 @@ func (k *KOTH) StartCapturing(p User) bool {
 			}
 
 			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Colour(u.DisplayName))
-			kothCrate, ok := crate.ByName("KOTH")
-			if !ok {
-				panic("no crate found by the name of KOTH")
-			}
-			p.AddItemOrDrop(item.NewStack(item.Dye{Colour: item.ColourRed()}, 3).WithValue(kothCrate.Name(), true).WithCustomName(text.Colourf("<red>KOTH Crate Key</red>")))
+			p.AddItemOrDrop(it.NewKey(it.KeyTypeKOTH, 2))
 		case <-k.cancel:
 			k.capturing = nil
 			return
