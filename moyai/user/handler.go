@@ -1547,7 +1547,6 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if ok && ok2 {
 		if cd := h.ability; cd.Active() {
 			h.p.Message(text.Colourf("<red>You are on Partner Items cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
-			ctx.Cancel()
 			return
 		}
 		switch kind := typ.(type) {
