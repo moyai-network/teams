@@ -1774,6 +1774,14 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 }
 
+func (*Handler) HandleItemPickup(ctx *event.Context, i *item.Stack) {
+	for _, sp := range it.SpecialItems() {
+		if _, ok := i.Value(sp.Key()); ok {
+			*i = it.NewSpecialItem(sp, i.Count())
+		}
+	}
+}
+
 func (h *Handler) HandleQuit() {
 	if h.logger {
 		return
