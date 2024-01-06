@@ -575,7 +575,8 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 			nb := NearbyCombat(h.p, 10)
 			for _, e := range nb {
-				e.p.World().AddEntity(entity.NewLightningWithDamage(e.p.Position(), 3, false, 0))
+				e.p.World().AddEntity(entity.NewLightning(e.p.Position()))
+				e.p.Hurt(8, NoArmourAttackEntitySource{})
 				e.p.AddEffect(effect.New(effect.Poison{}, 1, time.Second*3))
 				e.p.AddEffect(effect.New(effect.Blindness{}, 2, time.Second*7))
 				e.p.AddEffect(effect.New(effect.Nausea{}, 2, time.Second*7))
