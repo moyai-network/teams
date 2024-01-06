@@ -51,31 +51,31 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	switch r {
 	case role.Default{}:
 		items = append(items, it.NewPartnerPackage(1))
-		items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 3))
 	case role.Trial{}:
 		items = append(items, it.NewPartnerPackage(2))
 		items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
 		lives = 3
 	case role.Khufu{}:
-		items = append(items, it.NewPartnerPackage(6))
-		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
-		items = append(items, it.NewKey(it.KeyTypeMenes, 15))
-		items = append(items, it.NewKey(it.KeyTypePartner, 10))
-		items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
+		items = append(items, it.NewPartnerPackage(3))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 10))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 5))
+		items = append(items, it.NewKey(it.KeyTypePartner, 3))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
 		lives = 30
 	case role.Ramses{}:
-		items = append(items, it.NewPartnerPackage(7))
-		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
-		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
-		items = append(items, it.NewKey(it.KeyTypePartner, 12))
-		items = append(items, it.NewKey(it.KeyTypePharaoh, 5))
+		items = append(items, it.NewPartnerPackage(5))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 15))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 10))
+		items = append(items, it.NewKey(it.KeyTypePartner, 6))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
 		lives = 45
 	case role.Menes{}:
-		items = append(items, it.NewPartnerPackage(8))
-		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
-		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
-		items = append(items, it.NewKey(it.KeyTypePartner, 15))
-		items = append(items, it.NewKey(it.KeyTypePharaoh, 6))
+		items = append(items, it.NewPartnerPackage(7))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 20))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 15))
+		items = append(items, it.NewKey(it.KeyTypePartner, 12))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
 		lives = 60
 	case role.Pharaoh{}:
 		items = append(items, it.NewPartnerPackage(9))
