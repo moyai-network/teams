@@ -51,67 +51,45 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	switch r {
 	case role.Default{}:
 		items = append(items, it.NewPartnerPackage(1))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 1))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
 	case role.Trial{}:
 		items = append(items, it.NewPartnerPackage(2))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 2))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
 		lives = 3
-	case role.Mod{}, role.Knight{}:
-		items = append(items, it.NewPartnerPackage(3))
-		items = append(items, it.NewKey(it.KeyTypeNova, 15))
-		items = append(items, it.NewKey(it.KeyTypePartner, 3))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 3))
-		lives = 5
-	case role.Media{}, role.Ares{}:
-		// 6x Partner, 20x Nova, 8x Nekros
-		items = append(items, it.NewPartnerPackage(4))
-		items = append(items, it.NewKey(it.KeyTypeNova, 20))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 8))
-		items = append(items, it.NewKey(it.KeyTypePartner, 6))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 2))
-		lives = 10
-	case role.Famous{}, role.Ivara{}:
-		// just look at website smh
-		items = append(items, it.NewPartnerPackage(5))
-		items = append(items, it.NewKey(it.KeyTypeNova, 25))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 10))
-		items = append(items, it.NewKey(it.KeyTypePartner, 8))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 3))
-		lives = 20
-	case role.Nekros{}:
+	case role.Khufu{}:
 		items = append(items, it.NewPartnerPackage(6))
-		items = append(items, it.NewKey(it.KeyTypeNova, 30))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 15))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 15))
 		items = append(items, it.NewKey(it.KeyTypePartner, 10))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 4))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
 		lives = 30
-	case role.Artemis{}:
+	case role.Ramses{}:
 		items = append(items, it.NewPartnerPackage(7))
-		items = append(items, it.NewKey(it.KeyTypeNova, 30))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 20))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
 		items = append(items, it.NewKey(it.KeyTypePartner, 12))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 5))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 5))
 		lives = 45
-	case role.Revenant{}:
+	case role.Menes{}:
 		items = append(items, it.NewPartnerPackage(8))
-		items = append(items, it.NewKey(it.KeyTypeNova, 30))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 20))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
 		items = append(items, it.NewKey(it.KeyTypePartner, 15))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 6))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 6))
 		lives = 60
-	case role.Wraith{}:
+	case role.Pharaoh{}:
 		items = append(items, it.NewPartnerPackage(9))
-		items = append(items, it.NewKey(it.KeyTypeNova, 30))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 20))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
 		items = append(items, it.NewKey(it.KeyTypePartner, 18))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 8))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 8))
 		lives = 75
 	case role.Partner{}, role.Manager{}, role.Admin{}, role.Owner{}:
 		items = append(items, it.NewPartnerPackage(10))
-		items = append(items, it.NewKey(it.KeyTypeNova, 30))
-		items = append(items, it.NewKey(it.KeyTypeNekros, 20))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 20))
 		items = append(items, it.NewKey(it.KeyTypePartner, 20))
-		items = append(items, it.NewKey(it.KeyTypeRevenant, 10))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 10))
 		lives = 85
 	}
 	for _, i := range items {

@@ -13,30 +13,30 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-type nova struct{}
+type menes struct{}
 
-func (nova) Name() string {
-	return text.Colourf("<aqua>Nova</aqua>")
+func (menes) Name() string {
+	return text.Colourf("<emerald>Menes</emerald>")
 }
 
-func (nova) Position() mgl64.Vec3 {
+func (menes) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{-31, 73, 13}).Vec3Middle()
 }
 
-var novaEnchantments = []item.Enchantment{
+var menesEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 2),
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),
 }
 
-func (nova) Rewards() []moose.Reward {
+func (menes) Rewards() []moose.Reward {
 	return []moose.Reward{
-		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(novaEnchantments...).WithCustomName(text.Colourf("<aqua>Nova Helmet</aqua>")), 10),
-		crate.NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(novaEnchantments...).WithCustomName(text.Colourf("<aqua>Nova Chestplate</aqua>")), 10),
-		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(novaEnchantments...).WithCustomName(text.Colourf("<aqua>Nova Leggings</aqua>")), 10),
+		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Helmet</emerald>")), 10),
+		crate.NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Chestplate</emerald>")), 10),
+		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Leggings</emerald>")), 10),
 		crate.NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(novaEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<aqua>Nova Boots</aqua>")), 10),
+			append(menesEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<emerald>Menes Boots</emerald>")), 10),
 		crate.NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
-			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<aqua>Nova Sword</aqua>")), 10),
+			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<emerald>Menes Sword</emerald>")), 10),
 
 		crate.NewReward(it.NewMoneyNote(250, 1), 10),
 		crate.NewReward(it.NewMoneyNote(1000, 1), 10),

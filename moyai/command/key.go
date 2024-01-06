@@ -39,7 +39,7 @@ func (k Key) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
 	for _, t := range user.All() {
-		t.AddItemOrDrop(it.NewKey(it.KeyTypeRevenant, k.Count))
+		t.AddItemOrDrop(it.NewKey(it.KeyTypePharaoh, k.Count))
 		t.Message("command.key.give.received", k.Count)
 	}
 

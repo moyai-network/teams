@@ -16,7 +16,6 @@ import (
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
@@ -259,8 +258,8 @@ func acceptFunc(proxy bool) func(*player.Player) {
 			}
 		}
 
-		u, _ := data.LoadUserOrCreate(p.Name())
-		u.Roles.Add(role.Revenant{})
+		// u, _ := data.LoadUserOrCreate(p.Name())
+		// u.Roles.Add(role.Pharaoh{})
 	}
 }
 

@@ -11,20 +11,20 @@ type KeyType struct {
 }
 
 const (
-	KeyTypeKOTH     = 0
-	KeyTypeRevenant = 1
-	KeyTypePartner  = 2
-	KeyTypeNekros   = 3
-	KeyTypeNova     = 4
+	KeyTypeKOTH    = 0
+	KeyTypePharaoh = 1
+	KeyTypePartner = 2
+	KeyTypeMenes   = 3
+	KeyTypeRamses  = 4
 )
 
 func AllKeyTypes() []KeyType {
 	return []KeyType{
 		{key: KeyTypeKOTH},
-		{key: KeyTypeRevenant},
+		{key: KeyTypePharaoh},
 		{key: KeyTypePartner},
-		{key: KeyTypeNekros},
-		{key: KeyTypeNova},
+		{key: KeyTypeMenes},
+		{key: KeyTypeRamses},
 	}
 }
 
@@ -38,22 +38,22 @@ func NewKey(keyType int, n int) item.Stack {
 		colour = item.ColourRed()
 		value = "crate-key_KOTH"
 		customName = text.Colourf("<red>KOTH Crate Key</red>")
-	case KeyTypeRevenant:
-		colour = item.ColourCyan()
-		value = "crate-key_Revenant"
-		customName = text.Colourf("<redstone>Revenant Crate Key</redstone>")
+	case KeyTypePharaoh:
+		colour = item.ColourBlack()
+		value = "crate-key_Pharaoh"
+		customName = text.Colourf("<black>Pharaoh Crate Key</black>")
 	case KeyTypePartner:
-		colour = item.ColourGreen()
+		colour = item.ColourPurple()
 		value = "crate-key_Partner"
 		customName = text.Colourf("<green>Partner Crate Key</green>")
-	case KeyTypeNekros:
-		colour = item.ColourPurple()
-		value = "crate-key_Nekros"
-		customName = text.Colourf("<purple>Nekros Crate Key</purple>")
-	case KeyTypeNova:
-		colour = item.ColourYellow()
-		value = "crate-key_Nova"
-		customName = text.Colourf("<yellow>Nova Crate Key</yellow>")
+	case KeyTypeMenes:
+		colour = item.ColourGreen()
+		value = "crate-key_Menes"
+		customName = text.Colourf("<emerald>Menes Crate Key</emerald>")
+	case KeyTypeRamses:
+		colour = item.ColourLightBlue()
+		value = "crate-key_Ramses"
+		customName = text.Colourf("<diamond>Ramses Crate Key</diamond>")
 	default:
 		panic("should never happen")
 	}

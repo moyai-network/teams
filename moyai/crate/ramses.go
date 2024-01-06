@@ -13,32 +13,32 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-type nekros struct{}
+type ramses struct{}
 
-func (nekros) Name() string {
-	return text.Colourf("<amethyst>Nekros</amethyst>")
+func (ramses) Name() string {
+	return text.Colourf("<diamond>Ramses</diamond>")
 }
 
-func (nekros) Position() mgl64.Vec3 {
+func (ramses) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{-34, 73, 12}).Vec3Middle()
 }
 
-var nekrosEnchantments = []item.Enchantment{
+var ramsesEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 2),
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),
 }
 
-func (nekros) Rewards() []moose.Reward {
+func (ramses) Rewards() []moose.Reward {
 	return []moose.Reward{
 		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(nekrosEnchantments, item.NewEnchantment(ench.NightVision{}, 1))...).WithCustomName(text.Colourf("<amethyst>Nekros Helmet</amethyst>")), 10),
+			append(ramsesEnchantments, item.NewEnchantment(ench.NightVision{}, 1))...).WithCustomName(text.Colourf("<diamond>Ramses Helmet</diamond>")), 10),
 		crate.NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(nekrosEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<amethyst>Nekros Chestplate</amethyst>")), 10),
-		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(nekrosEnchantments...).WithCustomName(text.Colourf("<amethyst>Nekros Leggings</amethyst>")), 10),
+			append(ramsesEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<diamond>Ramses Chestplate</diamond>")), 10),
+		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(ramsesEnchantments...).WithCustomName(text.Colourf("<diamond>Ramses Leggings</diamond>")), 10),
 		crate.NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(nekrosEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<amethyst>Nekros Boots</amethyst>")), 10),
+			append(ramsesEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<diamond>Ramses Boots</diamond>")), 10),
 		crate.NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
-			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<amethyst>Nekros Sword</amethyst>")), 10),
+			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<diamond>Ramses Sword</diamond>")), 10),
 
 		crate.NewReward(it.NewMoneyNote(500, 1), 10),
 		crate.NewReward(it.NewMoneyNote(1500, 1), 10),

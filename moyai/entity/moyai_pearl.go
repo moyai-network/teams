@@ -93,6 +93,19 @@ func teleport(e *entity.Ent, target trace.Result) {
 				Mode:            packet.MoveModeNormal,
 			})
 		}
+
+		if taliPos, ok := validTaliPearl(e, target, directions[p]); ok {
+			fmt.Println("Tali Pearl")
+			session_writePacket(player_session(p), &packet.MovePlayer{
+				EntityRuntimeID: 1,
+				Position:        mgl32.Vec3{float32(taliPos[0]), float32(taliPos[1] + 1.621), float32(taliPos[2])},
+				Pitch:           float32(rot[1]),
+				Yaw:             float32(rot[0]),
+				HeadYaw:         float32(rot[0]),
+				Mode:            packet.MoveModeNormal,
+			})
+		}
+
 		onGround := p.OnGround()
 		for _, v := range p.World().Viewers(p.Position()) {
 			v.ViewEntityMovement(p, e.Position(), rot, onGround)

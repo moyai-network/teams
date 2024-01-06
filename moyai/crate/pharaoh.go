@@ -14,34 +14,34 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-type revenant struct{}
+type pharaoh struct{}
 
-func (revenant) Name() string {
-	return text.Colourf("<redstone>Revenant</redstone>")
+func (pharaoh) Name() string {
+	return text.Colourf("<black>Pharaoh</black>")
 }
 
-func (revenant) Position() mgl64.Vec3 {
+func (pharaoh) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{-37, 73, 11}).Vec3Middle()
 }
 
-var revenantEnchantments = []item.Enchantment{
+var pharaohEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 3),
 	item.NewEnchantment(enchantment.Unbreaking{}, 3),
 }
 
-func (revenant) Rewards() []moose.Reward {
+func (pharaoh) Rewards() []moose.Reward {
 	return []moose.Reward{
 		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(revenantEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<redstone>Revenant Helmet</redstone>")), 10),
+			append(pharaohEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<black>Pharaoh Helmet</black>")), 10),
 
 		crate.NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(revenantEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<redstone>Revenant Chestplate</redstone>")), 10),
+			append(pharaohEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<black>Pharaoh Chestplate</black>")), 10),
 		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(revenantEnchantments, item.NewEnchantment(ench.Recovery{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<redstone>Revenant Leggings</redstone>")), 10),
+			append(pharaohEnchantments, item.NewEnchantment(ench.Recovery{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<black>Pharaoh Leggings</black>")), 10),
 		crate.NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
-			append(revenantEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<redstone>Revenant Boots</redstone>")), 10),
+			append(pharaohEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<black>Pharaoh Boots</black>")), 10),
 		crate.NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
-			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<redstone>Revenant Sword</redstone>")), 10),
+			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<black>Pharaoh Sword</black>")), 10),
 
 		crate.NewReward(it.NewMoneyNote(1000, 1), 10),
 		crate.NewReward(it.NewMoneyNote(2500, 1), 10),
