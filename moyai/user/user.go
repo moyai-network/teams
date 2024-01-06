@@ -508,11 +508,11 @@ func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*Handler {
-	var pl []*Handler
+	pl := []*Handler{p.Handler().(*Handler)}
 	u, _ := data.LoadUserOrCreate(p.Name())
 	tm, ok := u.Team()
 	if !ok {
-		return []*Handler{p.Handler().(*Handler)}
+		return pl
 	}
 
 	for _, target := range Nearby(p, dist) {

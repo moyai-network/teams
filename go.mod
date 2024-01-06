@@ -74,6 +74,6 @@ require (
 
 replace github.com/flonja/multiversion => ./mv
 
-replace github.com/df-mc/dragonfly => ./df
+replace github.com/df-mc/dragonfly => github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381
 
 replace github.com/sandertv/gophertunnel v1.34.1 => github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89
