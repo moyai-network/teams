@@ -2,8 +2,6 @@ package user
 
 import (
 	"fmt"
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
-	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"math"
 	"math/rand"
 	"strings"
@@ -11,6 +9,9 @@ import (
 	"time"
 	"unicode"
 	_ "unsafe"
+
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -151,6 +152,22 @@ func (h *Handler) Pearl() *moose.CoolDown {
 
 func (h *Handler) FactionCreate() *moose.CoolDown {
 	return h.factionCreate
+}
+
+func (h *Handler) SetLastPearlPos(pos mgl64.Vec3) {
+	h.lastPearlPos = pos
+}
+
+func (h *Handler) SetLastHitBy(p *player.Player) {
+	h.lastHitBy = p
+}
+
+func (h *Handler) LastPearlPos() mgl64.Vec3 {
+	return h.lastPearlPos
+}
+
+func (h *Handler) LastHitBy() *player.Player {
+	return h.lastHitBy
 }
 
 func (h *Handler) DropItem(it item.Stack) {

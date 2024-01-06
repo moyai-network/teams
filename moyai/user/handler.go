@@ -97,6 +97,9 @@ type Handler struct {
 	scramblerHits map[string]int
 	pearlDisabled bool
 
+	lastPearlPos mgl64.Vec3
+	lastHitBy    *player.Player
+
 	logout *moose.Teleportation
 	stuck  *moose.Teleportation
 	home   *moose.Teleportation
@@ -481,6 +484,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			ctx.Cancel()
 		} else {
 			cd.Set(15 * time.Second)
+			h.lastPearlPos = h.p.Position()
 		}
 	}
 
@@ -568,6 +572,24 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 
 		switch kind := v.(type) {
+		case it.TimeWarpType:
+			if h.lastPearlPos == (mgl64.Vec3{}) {
+				h.p.Message(text.Colourf("<red>You do not have a last thrown pearl.</red>"))
+				break
+			}
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on timewarp cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			h.p.Message(text.Colourf("<green>Teleporting in 2 seconds...</green>"))
+			h.ability.Set(time.Second * 10)
+			h.abilities.Set(kind, time.Minute*1)
+			time.AfterFunc(time.Second*2, func() {
+				if h.p != nil {
+					h.p.Teleport(h.lastPearlPos)
+					h.lastPearlPos = mgl64.Vec3{}
+				}
+			})
 		case it.SigilType:
 			if cd := h.abilities.Key(kind); cd.Active() {
 				h.p.Message(text.Colourf("<red>You are on sigil cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
@@ -599,10 +621,25 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 			h.ability.Set(time.Second * 10)
 			h.abilities.Set(kind, time.Minute*2)
-
 			h.Player().Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
 		case it.NinjaStarType:
-			// TODO
+			if h.lastHitBy == nil {
+				h.p.Message(text.Colourf("<red>No last hit found</red>"))
+				break
+			}
+			if cd := h.abilities.Key(kind); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on Ninja Star cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			h.p.Message(text.Colourf("<green>Teleporting to %s in 5 seconds...</red>", h.lastHitBy.Name()))
+			h.lastHitBy.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
+			h.ability.Set(time.Second * 10)
+			h.abilities.Set(kind, time.Minute*2)
+			time.AfterFunc(time.Second*5, func() {
+				if h.p != nil && h.lastHitBy != nil {
+					h.p.Teleport(h.lastHitBy.Position())
+				}
+			})
 		}
 	}
 }
@@ -878,6 +915,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ctx.Cancel()
 			return
 		}
+		h.lastHitBy = attacker
 	case entity.AttackDamageSource:
 		if t, ok := s.Attacker.(*player.Player); ok {
 			attacker = t
@@ -886,6 +924,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ctx.Cancel()
 			return
 		}
+		h.lastHitBy = attacker
 	case entity.VoidDamageSource:
 		if u.PVP.Active() {
 			h.p.Teleport(mgl64.Vec3{0, 80, 0})
@@ -924,6 +963,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			attacker.Teleport(targetPos)
 			h.p.Teleport(attackerPos)
 		}
+
+		h.lastHitBy = attacker
 
 		if s.Projectile.Type() == (entity.ArrowType{}) {
 			ha := attacker.Handler().(*Handler)

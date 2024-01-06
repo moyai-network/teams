@@ -29,9 +29,11 @@ var partnerEnchantments = []item.Enchantment{
 
 func (partner) Rewards() []moose.Reward {
 	return []moose.Reward{
+		2:  crate.NewReward(it.NewSpecialItem(it.NinjaStarType{}, 1), 5),
 		3:  crate.NewReward(it.NewSpecialItem(it.PearlDisablerType{}, 1), 10),
 		4:  crate.NewReward(it.NewSpecialItem(it.SigilType{}, 1), 10),
 		5:  crate.NewReward(it.NewSpecialItem(it.FullInvisibilityType{}, 1), 10),
+		6:  crate.NewReward(it.NewSpecialItem(it.TimeWarpType{}, 1), 10),
 		12: crate.NewReward(it.NewSpecialItem(it.ExoticBoneType{}, 1), 20),
 		13: crate.NewReward(it.NewSpecialItem(it.ScramblerType{}, 1), 20),
 		14: crate.NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
