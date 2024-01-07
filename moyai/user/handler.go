@@ -483,7 +483,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.TogglePearlDisable()
 			ctx.Cancel()
 		} else {
-			cd.Set(15 * time.Second)
+			//cd.Set(15 * time.Second)
 			h.lastPearlPos = h.p.Position()
 		}
 	}
@@ -788,7 +788,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				p.RemoveEffect(e.Type())
 			}
 			for _, et := range h.p.World().Entities() {
-				if be, ok := et.(entity.Behaviour); ok {
+				if be, ok := et.Type().(entity.Behaviour); ok {
 					if pro, ok := be.(*entity.ProjectileBehaviour); ok {
 						if pro.Owner() == p {
 							h.p.World().RemoveEntity(et)
@@ -1030,7 +1030,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		for _, et := range h.p.World().Entities() {
 			if be, ok := et.(entity.Behaviour); ok {
 				if pro, ok := be.(*entity.ProjectileBehaviour); ok {
+					fmt.Println(pro.Owner().Position())
 					if pro.Owner() == p {
+						et.Close()
 						h.p.World().RemoveEntity(et)
 					}
 				}
@@ -1253,7 +1255,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	case item.EnderPearl:
 		if f, ok := b.(block.WoodFenceGate); ok && f.Open {
 			if cd := h.Pearl(); !cd.Active() {
-				cd.Set(15 * time.Second)
+				//cd.Set(15 * time.Second)
 				it.Use(w, h.p, &item.UseContext{})
 				h.p.SetHeldItems(h.SubtractItem(i, 1), left)
 				ctx.Cancel()
