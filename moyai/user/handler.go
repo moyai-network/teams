@@ -67,6 +67,8 @@ type Handler struct {
 	xuid    string
 	logTime time.Time
 
+	vanished atomic.Bool
+
 	sign cube.Pos
 
 	pearl       *moose.CoolDown
@@ -485,6 +487,13 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		} else {
 			cd.Set(15 * time.Second)
 			h.lastPearlPos = h.p.Position()
+		}
+	case item.GoldenApple:
+		if cd := h.goldenApple; cd.Active() {
+			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
+			ctx.Cancel()
+		} else {
+			cd.Set(time.Second * 30)
 		}
 	}
 
@@ -1260,6 +1269,13 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				h.p.SetHeldItems(h.SubtractItem(i, 1), left)
 				ctx.Cancel()
 			}
+		}
+	case item.GoldenApple:
+		if cd := h.goldenApple; cd.Active() {
+			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
+			ctx.Cancel()
+		} else {
+			cd.Set(time.Second * 30)
 		}
 	case item.Hoe:
 		ctx.Cancel()
