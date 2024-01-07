@@ -176,6 +176,16 @@ func main() {
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
 
+	// LOL
+	for x := -50; x < -30; x++ {
+		for z := 190; z < 210; z++ {
+			b := w.Block(cube.Pos{x, 28, z})
+			if _, ok := b.(block.Hopper); ok {
+				w.SetBlock(cube.Pos{x, 28, z}, block.Air{}, nil)
+			}
+		}
+	}
+
 	// Doing this twice so that w.Entities isn't empty, even when it shouldn't be
 	for _, c := range crate.All() {
 		b := block.NewChest()
