@@ -11,17 +11,16 @@ import (
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/paroxity/portal/session"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/block/cube/trace"
 	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 )
 
@@ -59,99 +58,99 @@ type teleporter interface {
 
 // teleport teleports the owner of an Ent to a trace.Result's position.
 func teleport(e *entity.Ent, target trace.Result) {
-	// if u, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
-	// 	if p, ok := u.(*player.Player); ok {
-	// 		if usr, ok := user.Lookup(p.Name()); ok {
-	// 			if usr.Combat().Active() && area.Spawn(u.World()).Vec3WithinOrEqualXZ(target.Position()) {
-	// 				usr.Pearl().Reset()
-	// 				return
-	// 			}
+	if u, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
+		if p, ok := u.(*player.Player); ok {
+			if usr, ok := user.Lookup(p.Name()); ok {
+				if usr.Combat().Active() && area.Spawn(u.World()).Vec3WithinOrEqualXZ(target.Position()) {
+					usr.Pearl().Reset()
+					return
+				}
 
-	// 			u, _ := data.LoadUserOrCreate(p.Name())
-	// 			if u.PVP.Active() {
-	// 				for _, t := range data.Teams() {
-	// 					a := t.Claim
-	// 					if a.Vec3WithinOrEqualXZ(target.Position()) {
-	// 						usr.Pearl().Reset()
-	// 						return
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-
-	// 	}
-
-	// 	b := e.World().Block(cube.PosFromVec3(target.Position()))
-	// 	p := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter).(*player.Player)
-	// 	rot := p.Rotation()
-	// 	if f, ok := b.(block.WoodFenceGate); ok || f.Open {
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(e.Position()[0]), float32(e.Position()[1] + 1.621), float32(e.Position()[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	}
-
-	// 	if taliPos, ok := validTaliPearl(e, target, directions[p]); ok {
-	// 		fmt.Println("Tali Pearl")
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(taliPos[0]), float32(taliPos[1] + 1.621), float32(taliPos[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	}
-
-	// 	onGround := p.OnGround()
-	// 	for _, v := range p.World().Viewers(p.Position()) {
-	// 		v.ViewEntityMovement(p, e.Position(), rot, onGround)
-	// 	}
-
-	// 	e.World().PlaySound(u.Position(), sound.Teleport{})
-	// 	u.Teleport(target.Position())
-	// 	u.Hurt(5, entity.FallDamageSource{})
-	// }
-	p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
-	usr, ok2 := user.Lookup(p.Name())
-
-	if !ok || !ok2 {
-		e.World().RemoveEntity(e)
-		_ = e.Close()
-		return
-	}
-
-	if usr.Combat().Active() && area.Spawn(usr.Player().World()).Vec3WithinOrEqualXZ(target.Position()) {
-		usr.Pearl().Reset()
-		return
-	}
-
-	u, _ := data.LoadUserOrCreate(p.Name())
-	if u.PVP.Active() {
-		for _, t := range data.Teams() {
-			a := t.Claim
-			if a.Vec3WithinOrEqualXZ(target.Position()) {
-				usr.Pearl().Reset()
-				return
+				u, _ := data.LoadUserOrCreate(p.Name())
+				if u.PVP.Active() {
+					for _, t := range data.Teams() {
+						a := t.Claim
+						if a.Vec3WithinOrEqualXZ(target.Position()) {
+							usr.Pearl().Reset()
+							return
+						}
+					}
+				}
 			}
-		}
-	}
 
-	if pos, ok := validPosition(e, target, directions[p]); ok {
-		p.Teleport(pos)
-		p.PlaySound(sound.Teleport{})
-		p.Hurt(5, entity.FallDamageSource{})
-	} else {
-		usr.Pearl().Reset()
-		p.SendPopup(text.Colourf("<red>Pearl Refunded"))
-		if !p.GameMode().CreativeInventory() {
-			_, _ = p.Inventory().AddItem(item.NewStack(item.EnderPearl{}, 1))
 		}
+
+		b := e.World().Block(cube.PosFromVec3(target.Position()))
+		p := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter).(*player.Player)
+		rot := p.Rotation()
+		if f, ok := b.(block.WoodFenceGate); ok || f.Open {
+			session_writePacket(player_session(p), &packet.MovePlayer{
+				EntityRuntimeID: 1,
+				Position:        mgl32.Vec3{float32(e.Position()[0]), float32(e.Position()[1] + 1.621), float32(e.Position()[2])},
+				Pitch:           float32(rot[1]),
+				Yaw:             float32(rot[0]),
+				HeadYaw:         float32(rot[0]),
+				Mode:            packet.MoveModeNormal,
+			})
+		}
+
+		if taliPos, ok := validTaliPearl(e, target, directions[p]); ok {
+			fmt.Println("Tali Pearl")
+			session_writePacket(player_session(p), &packet.MovePlayer{
+				EntityRuntimeID: 1,
+				Position:        mgl32.Vec3{float32(taliPos[0]), float32(taliPos[1] + 1.621), float32(taliPos[2])},
+				Pitch:           float32(rot[1]),
+				Yaw:             float32(rot[0]),
+				HeadYaw:         float32(rot[0]),
+				Mode:            packet.MoveModeNormal,
+			})
+		}
+
+		onGround := p.OnGround()
+		for _, v := range p.World().Viewers(p.Position()) {
+			v.ViewEntityMovement(p, e.Position(), rot, onGround)
+		}
+
+		e.World().PlaySound(u.Position(), sound.Teleport{})
+		u.Teleport(target.Position())
+		u.Hurt(5, entity.FallDamageSource{})
 	}
+	// p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
+	// usr, ok2 := user.Lookup(p.Name())
+
+	// if !ok || !ok2 {
+	// 	e.World().RemoveEntity(e)
+	// 	_ = e.Close()
+	// 	return
+	// }
+
+	// if usr.Combat().Active() && area.Spawn(usr.Player().World()).Vec3WithinOrEqualXZ(target.Position()) {
+	// 	usr.Pearl().Reset()
+	// 	return
+	// }
+
+	// u, _ := data.LoadUserOrCreate(p.Name())
+	// if u.PVP.Active() {
+	// 	for _, t := range data.Teams() {
+	// 		a := t.Claim
+	// 		if a.Vec3WithinOrEqualXZ(target.Position()) {
+	// 			usr.Pearl().Reset()
+	// 			return
+	// 		}
+	// 	}
+	// }
+
+	// if pos, ok := validPosition(e, target, directions[p]); ok {
+	// 	p.Teleport(pos)
+	// 	p.PlaySound(sound.Teleport{})
+	// 	p.Hurt(5, entity.FallDamageSource{})
+	// } else {
+	// 	usr.Pearl().Reset()
+	// 	p.SendPopup(text.Colourf("<red>Pearl Refunded"))
+	// 	if !p.GameMode().CreativeInventory() {
+	// 		_, _ = p.Inventory().AddItem(item.NewStack(item.EnderPearl{}, 1))
+	// 	}
+	// }
 }
 
 func validSlabPosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
@@ -287,7 +286,7 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 		return taliPos, true
 	}
 
-	return pos.Vec3(), true
+	return pos.Vec3(), false
 }
 
 func validTaliPearl(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
