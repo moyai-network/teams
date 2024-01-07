@@ -96,11 +96,19 @@ func init() {
 }
 
 func ResetTeams() {
+	teamsMu.Lock()
+	defer teamsMu.Unlock()
+
+	for _, t := range teams {
+		DisbandTeam(t)
+	}
 	teams := db.Collection("teams")
 	_, _ = teams.DeleteMany(context.Background(), bson.M{})
 }
 
 func ResetUsers() {
+	usersMu.Lock()
+	defer usersMu.Unlock()
 	users := db.Collection("users")
 	_, _ = users.DeleteMany(context.Background(), bson.M{})
 }
