@@ -91,7 +91,7 @@ func (KothStop) Run(s cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (KothList) Allow(s cmd.Source) bool {
-	return allow(s, true, nil)
+	return allow(s, true)
 }
 
 // Allow ...
