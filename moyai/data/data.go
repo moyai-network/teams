@@ -106,6 +106,21 @@ func ResetTeams() {
 	_, _ = teams.DeleteMany(context.Background(), bson.M{})
 }
 
+func ResetButSaveUsers() {
+	users, err := LoadUsersCond(bson.M{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, u := range users {
+		u.Balance = 0
+		u.Reclaimed = false
+		u.Stats = Stats{}
+		SaveUser(u)
+	}
+
+}
+
 func ResetUsers() {
 	usersMu.Lock()
 	defer usersMu.Unlock()
