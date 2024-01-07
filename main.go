@@ -147,6 +147,24 @@ func main() {
 
 	srv := c.New()
 
+	clg := time.NewTicker(time.Minute * 5)
+	go func() {
+		for range clg.C {
+			var itemCount int64
+
+			for _, e := range srv.World().Entities() {
+				if _, ok := e.Type().(entity.ItemType); ok {
+					err := e.Close()
+					if err != nil {
+						continue
+					}
+					srv.World().RemoveEntity(e)
+					itemCount++
+				}
+			}
+		}
+	}()
+
 	t := time.NewTicker(time.Minute * 1)
 	go func() {
 		for range t.C {
