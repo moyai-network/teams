@@ -483,7 +483,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.TogglePearlDisable()
 			ctx.Cancel()
 		} else {
-			//cd.Set(15 * time.Second)
+			cd.Set(15 * time.Second)
 			h.lastPearlPos = h.p.Position()
 		}
 	}
@@ -1255,7 +1255,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	case item.EnderPearl:
 		if f, ok := b.(block.WoodFenceGate); ok && f.Open {
 			if cd := h.Pearl(); !cd.Active() {
-				//cd.Set(15 * time.Second)
+				cd.Set(15 * time.Second)
 				it.Use(w, h.p, &item.UseContext{})
 				h.p.SetHeldItems(h.SubtractItem(i, 1), left)
 				ctx.Cancel()
