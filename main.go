@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/moyai-network/carrot/tebex"
 	"github.com/moyai-network/teams/moyai/koth"
 	"image"
 	"image/png"
@@ -265,12 +266,15 @@ func main() {
 	//registerSlappers(w)
 
 	srv.Listen()
-	for srv.Accept(acceptFunc(config.Proxy.Enabled)) {
+
+	store := loadStore(config.Moyai.Tebex, log)
+
+	for srv.Accept(acceptFunc(store, config.Proxy.Enabled)) {
 		// Do nothing.
 	}
 }
 
-func acceptFunc(proxy bool) func(*player.Player) {
+func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
 		if proxy {
 			info := moyai.SearchInfo(p.UUID())
@@ -298,6 +302,17 @@ func acceptFunc(proxy bool) func(*player.Player) {
 		// u, _ := data.LoadUserOrCreate(p.Name())
 		// u.Roles.Add(role.Pharaoh{})
 	}
+
+} // loadStore initializes the Tebex store connection.
+func loadStore(key string, log *logrus.Logger) *tebex.Client {
+	store := tebex.NewClient(log, time.Second*5, key)
+	name, domain, err := store.Information()
+	if err != nil {
+		log.Fatalf("tebex: %v", err)
+		return nil
+	}
+	log.Infof("Connected to Tebex under %v (%v).", name, domain)
+	return store
 }
 
 func registerCommands(srv *server.Server) {
