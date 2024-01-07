@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/koth"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -238,6 +239,8 @@ func main() {
 		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
 		w.AddEntity(t)
 	}
+
+	koth.Broadcast = user.Broadcast
 
 	registerCommands(srv)
 	registerRecipes()
