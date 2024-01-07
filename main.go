@@ -333,6 +333,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("pp", text.Colourf("<aqua>Manage partner packages.</aqua>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 		cmd.New("ping", text.Colourf("<aqua>Check your ping.</aqua>"), nil, command.Ping{}),
 		cmd.New("data", text.Colourf("<aqua>Clear data.</aqua>"), nil, command.DataReset{}),
+		cmd.New("vanish", text.Colourf("<aqua>Vanish as staff.</aqua>"), []string{"v"}, command.Vanish{}),
 	} {
 		cmd.Register(c)
 	}

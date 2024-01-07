@@ -36,7 +36,7 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 		o.Print(lang.Translatef(u.Player().Locale(), "command.vanish.disabled"))
 	} else {
 		user.Alert(s, "staff.alert.vanish.on")
-		u.Player().SetGameMode(vanishGameMode{})
+		u.Player().SetGameMode(world.GameModeSpectator)
 		o.Print(lang.Translatef(u.Player().Locale(), "command.vanish.enabled"))
 	}
 	for _, t := range user.All() {
