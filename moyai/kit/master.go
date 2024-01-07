@@ -39,17 +39,12 @@ func (Diamond) Items(*player.Player) [36]item.Stack {
 func (Diamond) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, 2)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
-	speed := item.NewEnchantment(ench.Speed{}, 2)
-	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
-	fireResistance := item.NewEnchantment(ench.FireResistance{}, 1)
-	recovery := item.NewEnchantment(ench.Recovery{}, 1)
 	featherFalling := item.NewEnchantment(enchantment.FeatherFalling{}, 4)
-	invisibility := item.NewEnchantment(ench.Invisibility{}, 1)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invisibility).WithCustomName(text.Colourf("§r<purple>Diamond Helmet</purple>")),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, fireResistance).WithCustomName(text.Colourf("§r<purple>Diamond Chestplate</purple>")),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, recovery).WithCustomName(text.Colourf("§r<purple>Diamond Leggings</purple>")),
-		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Diamond Boots</purple>")),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Helmet</purple>")),
+		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Chestplate</purple>")),
+		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Leggings</purple>")),
+		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling).WithCustomName(text.Colourf("§r<purple>Diamond Boots</purple>")),
 	}
 }

@@ -204,7 +204,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(carrot.GlyphFont("Moyai Kitmap"))
+			sb := scoreboard.New(carrot.GlyphFont("Kitmap"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 

@@ -30,7 +30,7 @@ var menesEnchantments = []item.Enchantment{
 
 func (menes) Rewards() []moose.Reward {
 	return []moose.Reward{
-		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Helmet</emerald>")), 10),
+		crate.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(append(menesEnchantments, item.NewEnchantment(ench.NightVision{}, 1))...).WithCustomName(text.Colourf("<emerald>Menes Helmet</emerald>")), 10),
 		crate.NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Chestplate</emerald>")), 10),
 		crate.NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(menesEnchantments...).WithCustomName(text.Colourf("<emerald>Menes Leggings</emerald>")), 10),
 		crate.NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
