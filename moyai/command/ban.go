@@ -240,7 +240,7 @@ func (banReason) Options(cmd.Source) []string {
 	return []string{
 		"advantage",
 		"allying",
-		"gliching",
+		"glitching",
 		"hostage",
 		"exploitation",
 		"abuse",
@@ -265,6 +265,8 @@ func parseBanReason(r banReason) (string, time.Duration) {
 		return "Evasion", time.Hour * 24 * 120
 	case "advertisement":
 		return "Advertisement", time.Hour * 24 * 6
+	case "glitching":
+		return "Glitching", time.Hour
 	}
 	return "Unknown", time.Hour * 24
 }
