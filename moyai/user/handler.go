@@ -488,13 +488,6 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			cd.Set(15 * time.Second)
 			h.lastPearlPos = h.p.Position()
 		}
-	case item.GoldenApple:
-		if cd := h.goldenApple; cd.Active() {
-			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
-			ctx.Cancel()
-		} else {
-			cd.Set(time.Second * 30)
-		}
 	}
 
 	switch h.class.Load().(type) {
@@ -606,8 +599,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 			nb := NearbyCombat(h.p, 10)
 			for _, e := range nb {
+				if e.p == h.p {
+					continue
+				}
 				e.p.World().AddEntity(entity.NewLightning(e.p.Position()))
-				e.p.Hurt(8, NoArmourAttackEntitySource{})
+				e.p.Hurt(4, NoArmourAttackEntitySource{})
 				e.p.AddEffect(effect.New(effect.Poison{}, 1, time.Second*3))
 				e.p.AddEffect(effect.New(effect.Blindness{}, 2, time.Second*7))
 				e.p.AddEffect(effect.New(effect.Nausea{}, 2, time.Second*7))
@@ -1221,6 +1217,18 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 	}
 }
 
+func (h *Handler) HandleItemConsume(ctx *event.Context, i item.Stack) {
+	switch i.Item().(type) {
+	case item.GoldenApple:
+		if cd := h.goldenApple; cd.Active() {
+			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
+			ctx.Cancel()
+		} else {
+			cd.Set(time.Second * 30)
+		}
+	}
+}
+
 func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cube.Face, clickPos mgl64.Vec3) {
 	w := h.p.World()
 
@@ -1269,13 +1277,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				h.p.SetHeldItems(h.SubtractItem(i, 1), left)
 				ctx.Cancel()
 			}
-		}
-	case item.GoldenApple:
-		if cd := h.goldenApple; cd.Active() {
-			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
-			ctx.Cancel()
-		} else {
-			cd.Set(time.Second * 30)
 		}
 	case item.Hoe:
 		ctx.Cancel()
