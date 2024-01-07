@@ -17,7 +17,7 @@ func (TimeWarpType) Item() world.Item {
 }
 
 func (TimeWarpType) Lore() []string {
-	return []string{text.Colourf("<grey>Teleport back to your last threw your pearl.</grey>")}
+	return []string{text.Colourf("<grey>Teleport back to where you last threw your pearl.</grey>")}
 }
 
 func (TimeWarpType) Key() string {

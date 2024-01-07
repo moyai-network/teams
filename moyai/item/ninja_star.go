@@ -17,7 +17,7 @@ func (NinjaStarType) Item() world.Item {
 }
 
 func (NinjaStarType) Lore() []string {
-	return []string{text.Colourf("<grey>Right click to teleport to the last player that it you.</grey>")}
+	return []string{text.Colourf("<grey>Right click to teleport to the last player that hit you.</grey>")}
 }
 
 func (NinjaStarType) Key() string {
