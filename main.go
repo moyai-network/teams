@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/png"
 	"io/ioutil"
 	"math"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,6 +64,9 @@ var playerProvider *playerdb.Provider
 var worldProvider *mcdb.DB
 
 func main() {
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 	lang.Register(language.English)
 
 	log := logrus.New()
@@ -106,7 +112,7 @@ func main() {
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	if config.Oomph.Enabled {
-		o := oomph.New(log, ":19134")
+		o := oomph.New(log, ":19132")
 		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, config.Proxy.Enabled)
 		go func() {
 			for {
@@ -126,7 +132,7 @@ func main() {
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19134", []minecraft.Protocol{})
+		pk.Listen(&c, ":19132", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()

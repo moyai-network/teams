@@ -50,14 +50,20 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 
 	switch r {
 	case role.Default{}:
-		items = append(items, it.NewPartnerPackage(1))
+		items = append(items, it.NewPartnerPackage(3))
+		items = append(items, it.NewKey(it.KeyTypePartner, 3))
+		items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 2))
 		items = append(items, it.NewKey(it.KeyTypeRamses, 3))
 	case role.Trial{}:
-		items = append(items, it.NewPartnerPackage(2))
+		items = append(items, it.NewPartnerPackage(3))
+		items = append(items, it.NewKey(it.KeyTypePartner, 4))
 		items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
+		items = append(items, it.NewKey(it.KeyTypeMenes, 3))
+		items = append(items, it.NewKey(it.KeyTypeRamses, 4))
 		lives = 3
 	case role.Khufu{}:
-		items = append(items, it.NewPartnerPackage(3))
+		items = append(items, it.NewPartnerPackage(4))
 		items = append(items, it.NewKey(it.KeyTypeRamses, 10))
 		items = append(items, it.NewKey(it.KeyTypeMenes, 5))
 		items = append(items, it.NewKey(it.KeyTypePartner, 3))
