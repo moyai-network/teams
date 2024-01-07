@@ -200,7 +200,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (BanList) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
+	return allow(s, true, role.Mod{})
 }
 
 // Allow ...
@@ -225,7 +225,7 @@ func (BanOffline) Allow(s cmd.Source) bool {
 
 // Allow ...
 func (BanLiftOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
+	return allow(s, true, role.Mod{})
 }
 
 type banReason string
@@ -255,10 +255,6 @@ func parseBanReason(r banReason) (string, time.Duration) {
 	switch r {
 	case "advantage":
 		return "Unfair Advantage", time.Hour * 24 * 30
-	case "ranked_advantage":
-		return "Unfair Advantage in Ranked", time.Hour * 24 * 90
-	case "interference":
-		return "Interference", time.Hour * 12
 	case "exploitation":
 		return "Exploitation", time.Hour * 24 * 9
 	case "abuse":
@@ -270,5 +266,5 @@ func parseBanReason(r banReason) (string, time.Duration) {
 	case "advertisement":
 		return "Advertisement", time.Hour * 24 * 6
 	}
-	panic("should never happen")
+	return "Unknown", time.Hour * 24
 }

@@ -321,6 +321,7 @@ func (muteReason) Options(cmd.Source) []string {
 		"spam",
 		"toxic",
 		"advertising",
+		"threats",
 	}
 }
 
@@ -333,6 +334,8 @@ func parseMuteReason(r muteReason) (string, time.Duration) {
 		return "Toxicity", time.Hour * 9
 	case "advertising":
 		return "Advertising", time.Hour * 24 * 3
+	case "threats":
+		return "Threats", time.Hour * 24 * 5
 	}
 	panic("should never happen")
 }
