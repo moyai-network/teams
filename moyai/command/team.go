@@ -25,6 +25,8 @@ import (
 	"golang.org/x/text/language"
 )
 
+var kitmap = true
+
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
 
 // TeamCreate is the command used to create teams.
@@ -440,7 +442,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() {
+	if tm.Frozen() && !kitmap {
 		out.Error(lang.Translatef(p.Locale(), "command.team.dtr"))
 		return
 	}
@@ -488,6 +490,11 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	tm, ok := data.LoadTeam(string(t.Team))
 	if !ok {
 		// TODO: error message
+		return
+	}
+
+	if tm.Frozen() && !kitmap {
+		out.Error(lang.Translatef(p.Locale(), "command.team.dtr"))
 		return
 	}
 
@@ -571,7 +578,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.team.disband.must.leader"))
 		return
 	}
-	if tm.Frozen() {
+	if tm.Frozen() && !kitmap {
 		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
@@ -651,7 +658,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() {
+	if tm.Frozen() && !kitmap {
 		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
@@ -705,8 +712,8 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() {
-		o.Error(lang.Translatef(l, "command.team..dtr"))
+	if tm.Frozen() && !kitmap {
+		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/moyai-network/carrot/tebex"
+	"github.com/moyai-network/teams/moyai/koth"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -146,6 +148,24 @@ func main() {
 
 	srv := c.New()
 
+	clg := time.NewTicker(time.Minute * 5)
+	go func() {
+		for range clg.C {
+			var itemCount int64
+
+			for _, e := range srv.World().Entities() {
+				if _, ok := e.Type().(entity.ItemType); ok {
+					err := e.Close()
+					if err != nil {
+						continue
+					}
+					srv.World().RemoveEntity(e)
+					itemCount++
+				}
+			}
+		}
+	}()
+
 	t := time.NewTicker(time.Minute * 1)
 	go func() {
 		for range t.C {
@@ -239,18 +259,24 @@ func main() {
 		w.AddEntity(t)
 	}
 
+	koth.Broadcast = user.Broadcast
+
 	registerCommands(srv)
 	registerRecipes()
 	//registerSlappers(w)
 
 	srv.Listen()
-	for srv.Accept(acceptFunc(config.Proxy.Enabled)) {
+
+	store := loadStore(config.Moyai.Tebex, log)
+
+	for srv.Accept(acceptFunc(store, config.Proxy.Enabled)) {
 		// Do nothing.
 	}
 }
 
-func acceptFunc(proxy bool) func(*player.Player) {
+func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
+		store.ExecuteCommands(p)
 		if proxy {
 			info := moyai.SearchInfo(p.UUID())
 			p.Handle(user.NewHandler(p, info.XUID))
@@ -277,6 +303,17 @@ func acceptFunc(proxy bool) func(*player.Player) {
 		// u, _ := data.LoadUserOrCreate(p.Name())
 		// u.Roles.Add(role.Pharaoh{})
 	}
+
+} // loadStore initializes the Tebex store connection.
+func loadStore(key string, log *logrus.Logger) *tebex.Client {
+	store := tebex.NewClient(log, time.Second*5, key)
+	name, domain, err := store.Information()
+	if err != nil {
+		log.Fatalf("tebex: %v", err)
+		return nil
+	}
+	log.Infof("Connected to Tebex under %v (%v).", name, domain)
+	return store
 }
 
 func registerCommands(srv *server.Server) {
