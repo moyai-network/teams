@@ -276,6 +276,7 @@ func main() {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
+		store.ExecuteCommands(p)
 		if proxy {
 			info := moyai.SearchInfo(p.UUID())
 			p.Handle(user.NewHandler(p, info.XUID))
