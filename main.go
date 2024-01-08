@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/moyai-network/carrot/tebex"
-	"github.com/moyai-network/teams/moyai/koth"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -14,6 +12,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/moyai-network/carrot/tebex"
+	"github.com/moyai-network/teams/moyai/koth"
 
 	"github.com/moyai-network/moose/worlds"
 	"github.com/oomph-ac/oomph"
@@ -123,11 +124,8 @@ func main() {
 					return
 				}
 
-				p.ShouldHandleTransfer(false)
-				p.SetCombatMode(utils.ModeFullAuthoritative)
 				p.SetMovementMode(utils.ModeSemiAuthoritative)
-				p.SetCombatCutoff(5)
-				p.SetKnockbackCutoff(3)
+				p.SetCombatMode(utils.ModeSemiAuthoritative)
 
 				p.Handle(user.NewOomphHandler(p))
 			}
