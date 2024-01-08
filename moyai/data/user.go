@@ -284,10 +284,10 @@ func SaveUser(u User) error {
 	filter := bson.M{"name": bson.M{"$eq": u.Name}}
 	update := bson.M{"$set": u}
 
-	res, _ := teamCollection.UpdateOne(ctx(), filter, update)
+	res, _ := userCollection.UpdateOne(ctx(), filter, update)
 
 	if res.MatchedCount == 0 {
-		_, _ = teamCollection.InsertOne(ctx(), u)
+		_, _ = userCollection.InsertOne(ctx(), u)
 	}
 
 	return nil
