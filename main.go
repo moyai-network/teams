@@ -132,7 +132,7 @@ func main() {
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19132", []minecraft.Protocol{})
+		pk.Listen(&c, ":19134", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()

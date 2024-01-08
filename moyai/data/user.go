@@ -280,5 +280,15 @@ func SaveUser(u User) error {
 	usersMu.Lock()
 	users[u.Name] = u
 	usersMu.Unlock()
+
+	filter := bson.M{"name": bson.M{"$eq": u.Name}}
+	update := bson.M{"$set": u}
+
+	res, _ := teamCollection.UpdateOne(ctx(), filter, update)
+
+	if res.MatchedCount == 0 {
+		_, _ = teamCollection.InsertOne(ctx(), u)
+	}
+
 	return nil
 }
