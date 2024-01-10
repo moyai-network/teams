@@ -16,10 +16,10 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
@@ -464,11 +464,11 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if tg.Invitations.Active(tm.Name) {
+	if tg.GameMode.Teams.Invitations.Active(tm.Name) {
 		out.Error(lang.Translatef(p.Locale(), "team.invite.already", target.Name()))
 		return
 	}
-	tg.Invitations.Set(tm.Name, time.Minute*5)
+	tg.GameMode.Teams.Invitations.Set(tm.Name, time.Minute*5)
 
 	_ = data.SaveUser(tg)
 
@@ -1244,7 +1244,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithBalance(tm.Balance - amt)
-	u.Balance = u.Balance + amt
+	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + amt
 
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
@@ -1275,13 +1275,13 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if amt > u.Balance {
+	if amt > u.GameMode.Teams.Balance {
 		o.Errorf("You do not have a balance of $%.2f.", amt)
 		return
 	}
 
 	tm = tm.WithBalance(tm.Balance + amt)
-	u.Balance = u.Balance - amt
+	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - amt
 
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
@@ -1318,7 +1318,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithBalance(tm.Balance - amt)
-	u.Balance = u.Balance + amt
+	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + amt
 
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
@@ -1347,14 +1347,14 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	amt := u.Balance
+	amt := u.GameMode.Teams.Balance
 	if amt < 1 {
 		o.Error("Your balance is lower than $1.")
 		return
 	}
 
 	tm = tm.WithBalance(tm.Balance + amt)
-	u.Balance = u.Balance - amt
+	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - amt
 
 	data.SaveTeam(tm)
 	_ = data.SaveUser(u)
@@ -1583,7 +1583,7 @@ func (teamInvitation) Options(src cmd.Source) (options []string) {
 	if err != nil {
 		return
 	}
-	for t, i := range u.Invitations {
+	for t, i := range u.GameMode.Teams.Invitations {
 		if i.Active() {
 			options = append(options, t)
 		}

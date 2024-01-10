@@ -2,9 +2,9 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 )
 
 type WhiteListAdd struct {

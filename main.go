@@ -21,7 +21,7 @@ import (
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/kit"
@@ -66,6 +66,8 @@ var playerProvider *playerdb.Provider
 var worldProvider *mcdb.DB
 
 func main() {
+	data.LoadTeams()
+
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
@@ -375,7 +377,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("koth", text.Colourf("<aqua>Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
 		cmd.New("pp", text.Colourf("<aqua>Manage partner packages.</aqua>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 		cmd.New("ping", text.Colourf("<aqua>Check your ping.</aqua>"), nil, command.Ping{}),
-		cmd.New("data", text.Colourf("<aqua>Clear data.</aqua>"), nil, command.DataReset{}),
+		//cmd.New("data", text.Colourf("<aqua>Clear data.</aqua>"), nil, command.DataReset{}),
 		cmd.New("vanish", text.Colourf("<aqua>Vanish as staff.</aqua>"), []string{"v"}, command.Vanish{}),
 	} {
 		cmd.Register(c)
@@ -479,7 +481,7 @@ func registerSlappers(w *world.World) {
 		if err != nil {
 			return
 		}
-		cd := u.Kits.Key("diamond")
+		cd := u.GameMode.Teams.Kits.Key("diamond")
 		if cd.Active() {
 			p.Handler().(*user.Handler).Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 			return
@@ -545,7 +547,8 @@ func handleServerClose(srv *server.Server) {
 			}
 		}
 		time.Sleep(time.Millisecond * 500)
-		_ = data.Close()
+		_ = data.CloseUsers()
+		data.CloseTeams()
 		sotw.Save()
 		if err := srv.Close(); err != nil {
 			logrus.Fatalln("close server: %v", err)

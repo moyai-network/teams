@@ -65,10 +65,8 @@ github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872 h1:+gp5GG2Fqo
 github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872/go.mod h1:KBey9V3YSTMdg2Xlft3N/X91DoCw1WHakw9HgvpTKI4=
 github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381 h1:dt2d0Rj1+O6SNrIHybaZ5q2mUdwxJh6ldAgmXlQKnbo=
 github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381/go.mod h1:AkiKzAuAbSE5XPLPS0Y1PesLzilK4Jn2ssBo7ht4aOc=
-github.com/moyai-network/moose v0.0.0-20240103205015-3bcd3e52924a h1:z9A6mCGGIozswr1H8InrPN8w2kGXtGG8O7FlquNWHs0=
-github.com/moyai-network/moose v0.0.0-20240103205015-3bcd3e52924a/go.mod h1:ACagGSoFYUgQ9nThRyMInbxqWLUd2zDmNy2JGegEZdM=
-github.com/moyai-network/moose v0.0.0-20240106204508-83c95edd8b9b h1:lV3xS2XTqDdNK2pcBOlR21mIRY0JJNYQZK4GsC28h7g=
-github.com/moyai-network/moose v0.0.0-20240106204508-83c95edd8b9b/go.mod h1:ACagGSoFYUgQ9nThRyMInbxqWLUd2zDmNy2JGegEZdM=
+github.com/moyai-network/moose v0.0.0-20240110000543-9b26de3aeb44 h1:u8uvjgsk1oM9zwyEOY3I8tzVdUS7oQx+ZAdtfC4jAko=
+github.com/moyai-network/moose v0.0.0-20240110000543-9b26de3aeb44/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4 h1:shcx6aTtRNOIpwF83hdiUOp/HaU7UW+BcNUX9SLdQfE=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4/go.mod h1:xzstLrcan1t2l1C0fEUdmYmK2ieaV2ZmeE1sztuSu5w=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=
@@ -126,8 +124,8 @@ github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d/go.mod h1:rHwXgn7Jul
 github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a h1:fZHgsYlfvtyqToslyjUt3VOPF4J7aK/3MPcK7xp3PDk=
 github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a/go.mod h1:ul22v+Nro/R083muKhosV54bj5niojjWZvU8xrevuH4=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
-go.mongodb.org/mongo-driver v1.12.0 h1:aPx33jmn/rQuJXPQLZQ8NtfPQG8CaqgLThFtqRb0PiE=
-go.mongodb.org/mongo-driver v1.12.0/go.mod h1:AZkxhPnFJUoH7kZlFkVKucV20K387miPfm7oimrSmK0=
+go.mongodb.org/mongo-driver v1.13.1 h1:YIc7HTYsKndGK4RFzJ3covLz1byri52x0IoMB0Pt/vk=
+go.mongodb.org/mongo-driver v1.13.1/go.mod h1:wcDf1JBCXy2mOW0bWHwO/IOYqdca1MPCwDtFu/Z9+eo=
 go.uber.org/atomic v1.11.0 h1:ZvwS0R+56ePWxUNi+Atn9dWONBPp/AUETXlHW0DxSjE=
 go.uber.org/atomic v1.11.0/go.mod h1:LUxbIzbOniOlMKjJjyPfpl4v+PKK2cNJn91OQbhoJI0=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

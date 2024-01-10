@@ -8,9 +8,9 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"go.mongodb.org/mongo-driver/bson"
 )

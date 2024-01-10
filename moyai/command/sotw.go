@@ -3,8 +3,8 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -39,7 +39,7 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 		panic(err)
 	}
 	for _, u := range offline {
-		u.SOTW = true
+		u.GameMode.Teams.SOTW = true
 		_ = data.SaveUser(u)
 	}
 	user.Broadcast("sotw.commenced")
@@ -58,7 +58,7 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 		panic(err)
 	}
 	for _, u := range offline {
-		u.SOTW = false
+		u.GameMode.Teams.SOTW = false
 		err = data.SaveUser(u)
 		if err != nil {
 			panic(err)
@@ -77,13 +77,13 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
 	if err != nil {
 		return
 	}
-	if !u.SOTW {
+	if !u.GameMode.Teams.SOTW {
 		h.Message("sotw.disabled.already")
 		return
 	}
 	h.Message("sotw.disabled")
 
-	u.SOTW = false
+	u.GameMode.Teams.SOTW = false
 	_ = data.SaveUser(u)
 }
 

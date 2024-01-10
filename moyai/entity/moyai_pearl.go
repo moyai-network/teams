@@ -6,8 +6,8 @@ import (
 	"strings"
 	_ "unsafe"
 
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/paroxity/portal/session"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
@@ -67,7 +67,7 @@ func teleport(e *entity.Ent, target trace.Result) {
 				}
 
 				u, _ := data.LoadUserOrCreate(p.Name())
-				if u.PVP.Active() {
+				if u.GameMode.Teams.PVP.Active() {
 					for _, t := range data.Teams() {
 						a := t.Claim
 						if a.Vec3WithinOrEqualXZ(target.Position()) {

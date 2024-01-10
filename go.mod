@@ -13,7 +13,7 @@ require (
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/moyai-network/moose v0.0.0-20240106204508-83c95edd8b9b
+	github.com/moyai-network/moose v0.0.0-20240110000543-9b26de3aeb44
 	//github.com/oomph-ac/oomph v0.0.0-20231220234947-7be568992db9
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
@@ -21,7 +21,7 @@ require (
 	github.com/sandertv/gophertunnel v1.34.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
-	go.mongodb.org/mongo-driver v1.12.0
+	go.mongodb.org/mongo-driver v1.13.1
 	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
 	golang.org/x/text v0.14.0
 )

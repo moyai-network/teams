@@ -4,8 +4,8 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )

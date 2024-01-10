@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/user"
 
@@ -24,7 +24,7 @@ func NewKitForm(p *player.Player) form.Menu {
 		//if !u.Roles.Contains(role.Wraith{}) && k == (kit.Diamond{}) {
 		//	t = text.Colourf("<red>%s</red>", t)
 		//}
-		cd := u.Kits.Key(t)
+		cd := u.GameMode.Teams.Kits.Key(t)
 		if cd.Active() {
 			t += text.Colourf("\n<red>%s</red>", cd.Remaining().Round(time.Second))
 		}
@@ -48,7 +48,7 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	}*/
 
 	name := strings.Split(moose.StripMinecraftColour(pressed.Text), "\n")[0]
-	cd := u.Kits.Key(name)
+	cd := u.GameMode.Teams.Kits.Key(name)
 	if cd.Active() {
 		h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 		return

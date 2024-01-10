@@ -39,8 +39,8 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/class"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 )
 
@@ -180,12 +180,12 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	s := player_session(p)
 	u, _ := data.LoadUserOrCreate(p.Name())
 
-	if u.Dead {
+	if u.GameMode.Teams.Dead {
 		p.Armour().Clear()
 		p.Inventory().Clear()
 		p.Teleport(p.World().Spawn().Vec3Middle())
 		p.Heal(20, effect.InstantHealingSource{})
-		u.Dead = false
+		u.GameMode.Teams.Dead = false
 	}
 
 	if u.Frozen {
@@ -474,7 +474,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, left := h.p.HeldItems()
 	u, _ := data.LoadUserOrCreate(h.p.Name())
 	if v, ok := held.Value("MONEY_NOTE"); ok {
-		u.Balance = u.Balance + v.(float64)
+		u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + v.(float64)
 		h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 		h.p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
 		_ = data.SaveUser(u)
@@ -499,7 +499,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
-			if u.PVP.Active() || sotwRunning && u.SOTW {
+			if u.GameMode.Teams.PVP.Active() || sotwRunning && u.GameMode.Teams.SOTW {
 				return
 			}
 			if cd := h.bardItem.Key(held.Item()); cd.Active() {
@@ -535,7 +535,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Stray:
 		if e, ok := StrayEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
-			if u.PVP.Active() || sotwRunning && u.SOTW {
+			if u.GameMode.Teams.PVP.Active() || sotwRunning && u.GameMode.Teams.SOTW {
 				return
 			}
 
@@ -815,7 +815,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			if err != nil {
 				return
 			}
-			u.PVP.Set(time.Hour)
+			u.GameMode.Teams.PVP.Set(time.Hour)
 			_ = data.SaveUser(u)
 
 			DropContents(h.p)
@@ -843,11 +843,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			victim, ok := data.LoadUser(h.p.Name())
 			if ok {
-				victim.Stats.Deaths += 1
-				if victim.Stats.KillStreak > victim.Stats.BestKillStreak {
-					victim.Stats.BestKillStreak = victim.Stats.KillStreak
+				victim.GameMode.Teams.Stats.Deaths += 1
+				if victim.GameMode.Teams.Stats.KillStreak > victim.GameMode.Teams.Stats.BestKillStreak {
+					victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
 				}
-				victim.Stats.KillStreak = 0
+				victim.GameMode.Teams.Stats.KillStreak = 0
 				_ = data.SaveUser(victim)
 			}
 
@@ -857,7 +857,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				if err != nil {
 					return
 				}
-				k.Stats.Kills += 1
+				k.GameMode.Teams.Stats.Kills += 1
 
 				if tm, ok := k.Team(); ok {
 					tm = tm.WithPoints(tm.Points + 1)
@@ -877,10 +877,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 					heldName = "their fist"
 				}
 
-				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.Stats.Kills, killer.p.Name(), k.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.GameMode.Teams.Stats.Kills, killer.p.Name(), k.GameMode.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 				h.ResetLastAttacker()
 			} else {
-				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.Stats.Kills))
+				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.GameMode.Teams.Stats.Kills))
 			}
 			if h.logger {
 				h.death <- struct{}{}
@@ -894,7 +894,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	}
 
 	u, _ := data.LoadUserOrCreate(h.p.Name())
-	if u.PVP.Active() {
+	if u.GameMode.Teams.PVP.Active() {
 		ctx.Cancel()
 		return
 	}
@@ -913,7 +913,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	switch s := src.(type) {
 	case entity.FallDamageSource:
 		u, ok := data.LoadUser(h.p.Name())
-		if !ok || u.PVP.Active() {
+		if !ok || u.GameMode.Teams.PVP.Active() {
 			ctx.Cancel()
 			return
 		}
@@ -936,7 +936,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 		h.lastHitBy = attacker
 	case entity.VoidDamageSource:
-		if u.PVP.Active() {
+		if u.GameMode.Teams.PVP.Active() {
 			h.p.Teleport(mgl64.Vec3{0, 80, 0})
 		}
 	case entity.ProjectileDamageSource:
@@ -1057,7 +1057,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if err != nil {
 			return
 		}
-		u.PVP.Set(time.Hour)
+		u.GameMode.Teams.PVP.Set(time.Hour)
 		_ = data.SaveUser(u)
 
 		DropContents(h.p)
@@ -1085,11 +1085,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 		victim, ok := data.LoadUser(h.p.Name())
 		if ok {
-			victim.Stats.Deaths += 1
-			if victim.Stats.KillStreak > victim.Stats.BestKillStreak {
-				victim.Stats.BestKillStreak = victim.Stats.KillStreak
+			victim.GameMode.Teams.Stats.Deaths += 1
+			if victim.GameMode.Teams.Stats.KillStreak > victim.GameMode.Teams.Stats.BestKillStreak {
+				victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
 			}
-			victim.Stats.KillStreak = 0
+			victim.GameMode.Teams.Stats.KillStreak = 0
 			_ = data.SaveUser(victim)
 		}
 
@@ -1099,12 +1099,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			if err != nil {
 				return
 			}
-			k.Stats.Kills += 1
-			k.Stats.KillStreak += 1
+			k.GameMode.Teams.Stats.Kills += 1
+			k.GameMode.Teams.Stats.KillStreak += 1
 
-			if k.Stats.KillStreak%5 == 0 {
-				Broadcast("user.killstreak", killer.p.Name(), k.Stats.KillStreak)
-				killer.AddItemOrDrop(it.NewKey(it.KeyTypePartner, int(k.Stats.KillStreak)/2))
+			if k.GameMode.Teams.Stats.KillStreak%5 == 0 {
+				Broadcast("user.killstreak", killer.p.Name(), k.GameMode.Teams.Stats.KillStreak)
+				killer.AddItemOrDrop(it.NewKey(it.KeyTypePartner, int(k.GameMode.Teams.Stats.KillStreak)/2))
 			}
 
 			if tm, ok := k.Team(); ok {
@@ -1125,10 +1125,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				heldName = "their fist"
 			}
 
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.Stats.Kills, killer.p.Name(), k.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.GameMode.Teams.Stats.Kills, killer.p.Name(), k.GameMode.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 			h.ResetLastAttacker()
 		} else {
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.Stats.Kills))
+			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.GameMode.Teams.Stats.Kills))
 		}
 		if h.logger {
 			h.death <- struct{}{}
@@ -1457,7 +1457,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			switch choice {
 			case "buy":
-				if u.Balance < price {
+				if u.GameMode.Teams.Balance < price {
 					h.p.Message("shop.balance.insufficient")
 					return
 				}
@@ -1465,7 +1465,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					return
 				}
 				// restart: should we do this?
-				u.Balance = u.Balance - price
+				u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - price
 				_ = data.SaveUser(u)
 				h.AddItemOrDrop(item.NewStack(it, q))
 				h.Message("shop.buy.success", q, lines[1])
@@ -1485,7 +1485,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					}
 				}
 				if count >= q {
-					u.Balance = u.Balance + float64(count/q)*price
+					u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + float64(count/q)*price
 					_ = data.SaveUser(u)
 					h.Message("shop.sell.success", count, lines[1])
 				} else {
@@ -1515,7 +1515,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			if err != nil {
 				return
 			}
-			cd := u.Kits.Key(key)
+			cd := u.GameMode.Teams.Kits.Key(key)
 			if cd.Active() {
 				h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 				return
@@ -1736,7 +1736,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		return
 	}
 
-	if u.PVP.Active() {
+	if u.GameMode.Teams.PVP.Active() {
 		for _, a := range data.Teams() {
 			a := a.Claim
 			if a != (moose.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
@@ -1755,7 +1755,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
-	if _, ok := sotw.Running(); ok && u.SOTW {
+	if _, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
 		if newPos.Y() < 0 {
 			h.p.Teleport(mgl64.Vec3{0, 100, 0})
 		}
@@ -1789,7 +1789,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				}
 			}
 
-			if u.PVP.Active() {
+			if u.GameMode.Teams.PVP.Active() {
 				return
 			}
 			if k.StartCapturing(us) {
@@ -1861,7 +1861,7 @@ func (h *Handler) HandleQuit() {
 
 	tm, _ := u.Team()
 	_, sotwRunning := sotw.Running()
-	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.SOTW) || u.PVP.Active()) {
+	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.GameMode.Teams.SOTW) || u.GameMode.Teams.PVP.Active()) {
 		arm := h.p.Armour()
 		inv := h.p.Inventory()
 
@@ -1887,12 +1887,12 @@ func (h *Handler) HandleQuit() {
 				if !ok {
 					return
 				}
-				u.Dead = true
-				u.Stats.Deaths = 0
-				if u.Stats.KillStreak > u.Stats.BestKillStreak {
-					u.Stats.BestKillStreak = u.Stats.KillStreak
+				u.GameMode.Teams.Dead = true
+				u.GameMode.Teams.Stats.Deaths = 0
+				if u.GameMode.Teams.Stats.KillStreak > u.GameMode.Teams.Stats.BestKillStreak {
+					u.GameMode.Teams.Stats.BestKillStreak = u.GameMode.Teams.Stats.KillStreak
 				}
-				u.Stats.KillStreak = 0
+				u.GameMode.Teams.Stats.KillStreak = 0
 				if tm, ok := u.Team(); ok {
 					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 					data.SaveTeam(tm)

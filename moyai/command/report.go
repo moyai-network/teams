@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -37,11 +37,11 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.report.self"))
 		return
 	}
-	if u.Report.Active() {
-		o.Error(lang.Translatef(l, "command.report.cooldown", u.Report.Remaining().Round(time.Millisecond*10)))
+	if u.GameMode.Teams.Report.Active() {
+		o.Error(lang.Translatef(l, "command.report.cooldown", u.GameMode.Teams.Report.Remaining().Round(time.Millisecond*10)))
 		return
 	}
-	u.Report.Set(time.Minute)
+	u.GameMode.Teams.Report.Set(time.Minute)
 	_ = data.SaveUser(u)
 
 	o.Print(lang.Translatef(l, "command.report.success"))
