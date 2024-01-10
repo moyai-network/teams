@@ -238,10 +238,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		msg = formatRegex.ReplaceAllString(msg, "")
 
 		global := func() {
-			if !h.lastMessage.Load().After(time.Now().Add(time.Second)) {
-				h.p.Message(r.Chat(h.p.Name(), msg))
-				return
-			}
 			if tm, ok := u.Team(); ok {
 				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))

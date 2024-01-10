@@ -29,7 +29,7 @@ require (
 require (
 	github.com/df-mc/npc v1.0.4
 	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872
-	github.com/oomph-ac/oomph v0.0.0-20240104152942-db39bf5d9bdf
+	github.com/oomph-ac/oomph v0.0.0-20240108181853-ff91ea99b3ae
 )
 
 require (
