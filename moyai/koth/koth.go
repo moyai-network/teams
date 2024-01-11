@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	it "github.com/moyai-network/teams/moyai/item"
 
 	"github.com/df-mc/dragonfly/server/item"

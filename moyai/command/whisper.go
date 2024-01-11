@@ -6,9 +6,9 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -80,7 +80,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	t.LastMessageFrom = u.Name
+	t.GameMode.Teams.LastMessageFrom = u.Name
 	_ = data.SaveUser(t)
 
 	tP.PlaySound(sound.Experience{})

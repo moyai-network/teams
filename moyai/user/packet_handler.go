@@ -7,7 +7,7 @@ import (
 	"github.com/oomph-ac/oomph/check"
 	pl "github.com/oomph-ac/oomph/player"
 
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"
@@ -82,9 +82,9 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		}()
 
 		tg, _ := data.LoadUser(t.Name())
-		if tg.PVP.Active() {
+		if tg.GameMode.Teams.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
-		} else if _, ok := sotw.Running(); ok && u.SOTW {
+		} else if _, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
 		}
 

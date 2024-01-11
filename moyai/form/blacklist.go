@@ -8,7 +8,7 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/moyai-network/moose"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/df-mc/dragonfly/server/player"

@@ -21,7 +21,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/class"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 
 	"github.com/moyai-network/moose/lang"
 )
@@ -222,13 +222,13 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.Stats.Kills))
-			sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.Stats.Deaths))
-			sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.Stats.KillStreak))
+			sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.GameMode.Teams.Stats.Kills))
+			sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.GameMode.Teams.Stats.Deaths))
+			sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.GameMode.Teams.Stats.KillStreak))
 
 			_, _ = sb.WriteString("§2")
 
-			if d, ok := sotw.Running(); ok && u.SOTW {
+			if d, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
 			}
 
@@ -237,7 +237,7 @@ func startTicker(h *Handler) {
 				return
 			}
 
-			if d := u.PVP; d.Active() {
+			if d := u.GameMode.Teams.PVP; d.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
 			if lo := h.logout; !lo.Expired() && lo.Teleporting() {

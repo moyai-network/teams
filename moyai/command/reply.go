@@ -4,9 +4,9 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strings"
@@ -43,12 +43,12 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	target, ok := user.Lookup(u.LastMessageFrom)
+	target, ok := user.Lookup(u.GameMode.Teams.LastMessageFrom)
 	if !ok {
 		o.Error(lang.Translatef(l, "command.reply.none"))
 		return
 	}
-	t, err := data.LoadUserOrCreate(u.LastMessageFrom)
+	t, err := data.LoadUserOrCreate(u.GameMode.Teams.LastMessageFrom)
 	if err != nil {
 		return
 	}
@@ -68,7 +68,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		tColour = t.Roles.Highest().Colour(t.DisplayName)
 	}
 
-	t.LastMessageFrom = u.Name
+	t.GameMode.Teams.LastMessageFrom = u.Name
 	_ = data.SaveUser(t)
 
 	target.Player().PlaySound(sound.Experience{})

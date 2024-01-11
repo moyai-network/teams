@@ -1,12 +1,6 @@
 package command
 
-import (
-	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
-)
-
-type DataReset struct {
+/*type DataReset struct {
 	Kind dataKind `name:"kind"`
 }
 
@@ -34,4 +28,4 @@ func (dataKind) Type() string {
 // Options ...
 func (dataKind) Options(cmd.Source) []string {
 	return []string{"users", "teams"}
-}
+}*/

@@ -5,7 +5,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/moose/data"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -21,7 +21,7 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	p.Message(text.Colourf("<green>Your balance is $%2.f.</green>", u.Balance))
+	p.Message(text.Colourf("<green>Your balance is $%2.f.</green>", u.GameMode.Teams.Balance))
 }
 
 type BalancePayOnline struct {
@@ -59,13 +59,13 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 		out.Error("You cannot pay a negative amount.")
 		return
 	}
-	if u.Balance < b.Amount {
+	if u.GameMode.Teams.Balance < b.Amount {
 		out.Error("You do not have enough money.")
 		return
 	}
 
-	u.Balance -= b.Amount
-	target.Balance += b.Amount
+	u.GameMode.Teams.Balance -= b.Amount
+	target.GameMode.Teams.Balance += b.Amount
 
 	_ = data.SaveUser(u)
 	_ = data.SaveUser(target)
@@ -95,7 +95,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if u.Balance < b.Amount {
+	if u.GameMode.Teams.Balance < b.Amount {
 		out.Error("You do not have enough money.")
 		return
 	}
@@ -111,8 +111,8 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u.Balance -= b.Amount
-	t.Balance += b.Amount
+	u.GameMode.Teams.Balance -= b.Amount
+	t.GameMode.Teams.Balance += b.Amount
 
 	_ = data.SaveUser(u)
 	_ = data.SaveUser(t)

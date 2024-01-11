@@ -27,10 +27,10 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
 	"golang.org/x/exp/maps"
 )
 
@@ -469,7 +469,7 @@ func canAttack(pl, target *player.Player) bool {
 	t, _ := data.LoadUserOrCreate(target.Name())
 
 	_, sotwRunning := sotw.Running()
-	if (u.PVP.Active() || t.PVP.Active()) || (sotwRunning && (u.SOTW || t.SOTW)) {
+	if (u.GameMode.Teams.PVP.Active() || t.GameMode.Teams.PVP.Active()) || (sotwRunning && (u.GameMode.Teams.SOTW || t.GameMode.Teams.SOTW)) {
 		return false
 	}
 
@@ -541,7 +541,7 @@ func NearbyCombat(p *player.Player, dist float64) []*Handler {
 
 	for _, target := range Nearby(p, dist) {
 		t, _ := data.LoadUserOrCreate(target.p.Name())
-		if !t.PVP.Active() {
+		if !t.GameMode.Teams.PVP.Active() {
 			pl = append(pl, target)
 		}
 	}

@@ -7,8 +7,8 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/data"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -38,11 +38,11 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if u.Reclaimed {
+	if u.GameMode.Teams.Reclaimed {
 		h.Message("user.reclaimed")
 		return
 	}
-	u.Reclaimed = true
+	u.GameMode.Teams.Reclaimed = true
 
 	for _, r := range u.Roles.All() {
 		var items []item.Stack
@@ -102,7 +102,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			h.AddItemOrDrop(i)
 		}
 
-		u.Lives += lives
+		u.GameMode.Teams.Lives += lives
 
 		var itemNames []string
 		for _, i := range items {
@@ -122,7 +122,7 @@ func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
 			continue
 		}
 
-		u.Reclaimed = false
+		u.GameMode.Teams.Reclaimed = false
 		_ = data.SaveUser(u)
 	}
 }
