@@ -332,8 +332,14 @@ func parseDuration(d time.Duration) string {
 }
 
 var (
-	bardEffectDuration  = time.Second * 6
-	strayEffectDuration = time.Second * 3
+	archerRogueEffectDuration = time.Second * 6
+	bardEffectDuration        = time.Second * 6
+	strayEffectDuration       = time.Second * 3
+
+	archerRogueItemsUse = map[world.Item]effect.Effect{
+		item.Sugar{}:   effect.New(effect.Speed{}, 5, archerRogueEffectDuration),
+		item.Feather{}: effect.New(effect.JumpBoost{}, 5, archerRogueEffectDuration),
+	}
 
 	bardItemsUse = map[world.Item]effect.Effect{
 		item.BlazePowder{}: effect.New(effect.Strength{}, 2, bardEffectDuration),
@@ -363,6 +369,11 @@ var (
 		item.Sugar{}:       effect.New(effect.Speed{}, 4, strayEffectDuration),
 	}
 )
+
+func ArcherRogueEffectFromItem(i world.Item) (effect.Effect, bool) {
+	e, ok := archerRogueItemsUse[i]
+	return e, ok
+}
 
 func BardEffectFromItem(i world.Item) (effect.Effect, bool) {
 	e, ok := bardItemsUse[i]

@@ -77,9 +77,11 @@ type Handler struct {
 
 	factionCreate *moose.CoolDown
 
-	itemUse   moose.MappedCoolDown[world.Item]
-	bardItem  moose.MappedCoolDown[world.Item]
-	strayItem moose.MappedCoolDown[world.Item]
+	itemUse moose.MappedCoolDown[world.Item]
+
+	archerRogueItem moose.MappedCoolDown[world.Item]
+	bardItem        moose.MappedCoolDown[world.Item]
+	strayItem       moose.MappedCoolDown[world.Item]
 
 	ability   *moose.CoolDown
 	abilities moose.MappedCoolDown[it.SpecialItemType]
@@ -147,10 +149,11 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 		chatType: *atomic.NewValue(1),
 
-		itemUse:   moose.NewMappedCoolDown[world.Item](),
-		bardItem:  moose.NewMappedCoolDown[world.Item](),
-		strayItem: moose.NewMappedCoolDown[world.Item](),
-		abilities: moose.NewMappedCoolDown[it.SpecialItemType](),
+		itemUse:         moose.NewMappedCoolDown[world.Item](),
+		archerRogueItem: moose.NewMappedCoolDown[world.Item](),
+		bardItem:        moose.NewMappedCoolDown[world.Item](),
+		strayItem:       moose.NewMappedCoolDown[world.Item](),
+		abilities:       moose.NewMappedCoolDown[it.SpecialItemType](),
 
 		combat: moose.NewTag(nil, nil),
 		archer: moose.NewTag(nil, nil),
@@ -492,6 +495,25 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	}
 
 	switch h.class.Load().(type) {
+	case class.Archer, class.Rogue:
+		if e, ok := ArcherRogueEffectFromItem(held.Item()); ok {
+			if cd := h.archerRogueItem.Key(held.Item()); cd.Active() {
+				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				return
+			}
+			h.p.AddEffect(e)
+			go func() {
+				select {
+				case <-time.After(e.Duration()):
+					sortArmourEffects(h)
+					sortClassEffects(h)
+				case <-h.close:
+					return
+				}
+			}()
+			h.archerRogueItem.Key(held.Item()).Set(60 * time.Second)
+			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
+		}
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
