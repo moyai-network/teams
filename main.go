@@ -309,6 +309,16 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		if u.Language() == (language.Tag{}) {
 			p.SendForm(lang.NewPromptForm())
 		}
+
+		// This is here in case we have any chunk
+		// glitches with the proxy
+		p.SetImmobile()
+		p.SetAttackImmunity(time.Millisecond * 500)
+		time.AfterFunc(time.Millisecond*500, func() {
+			if p != nil {
+				p.SetMobile()
+			}
+		})
 		// u.Roles.Add(role.Pharaoh{})
 	}
 

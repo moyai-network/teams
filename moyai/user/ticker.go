@@ -2,9 +2,10 @@ package user
 
 import (
 	"fmt"
-	"github.com/moyai-network/moose"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/moose"
 
 	"github.com/moyai-network/teams/moyai/koth"
 	"golang.org/x/exp/slices"
@@ -139,7 +140,6 @@ func sortClassEffects(h *Handler) {
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
 	t := time.NewTicker(50 * time.Millisecond)
-	l := h.p.Locale()
 
 	for {
 		lastArmour := h.armour.Load()
@@ -209,6 +209,7 @@ func startTicker(h *Handler) {
 			sb.RemovePadding()
 
 			u, _ := data.LoadUserOrCreate(h.p.Name())
+			l := u.Language()
 			if tm, ok := u.Team(); ok {
 				focus := tm.Focus
 				if ft, ok := data.LoadTeam(focus.Value()); focus.Type() == data.FocusTypeTeam() && ok {
