@@ -67,6 +67,10 @@ github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381 h1:dt2d0
 github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381/go.mod h1:AkiKzAuAbSE5XPLPS0Y1PesLzilK4Jn2ssBo7ht4aOc=
 github.com/moyai-network/moose v0.0.0-20240111134540-149d7ca8ceb7 h1:MFGZTgnOXyT/kpcsWFEtTRQx23UY14s7YgV0Tvaaxf4=
 github.com/moyai-network/moose v0.0.0-20240111134540-149d7ca8ceb7/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
+github.com/moyai-network/moose v0.0.0-20240111135825-75968b4c17a0 h1:NNplWsnio0/Rlbgd/rvBHIWxwhvMQqNN9sSPNIGnmB0=
+github.com/moyai-network/moose v0.0.0-20240111135825-75968b4c17a0/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
+github.com/moyai-network/moose v0.0.0-20240111141035-047c1b22f940 h1:TCyF10VnvdLN0ejWsJZrv3idd68gGp9S44wwLrb4Tyo=
+github.com/moyai-network/moose v0.0.0-20240111141035-047c1b22f940/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4 h1:shcx6aTtRNOIpwF83hdiUOp/HaU7UW+BcNUX9SLdQfE=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4/go.mod h1:xzstLrcan1t2l1C0fEUdmYmK2ieaV2ZmeE1sztuSu5w=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=

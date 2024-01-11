@@ -306,7 +306,7 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		}
 
 		u, _ := data.LoadUserOrCreate(p.Name())
-		if u.Settings.Language == "" {
+		if u.Language() == (language.Tag{}) {
 			p.SendForm(lang.NewPromptForm())
 		}
 		// u.Roles.Add(role.Pharaoh{})
