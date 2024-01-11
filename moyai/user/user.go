@@ -92,7 +92,8 @@ func Alert(s cmd.Source, key string, args ...any) {
 // Broadcast broadcasts a message to every user using that user's locale.
 func Broadcast(key string, args ...any) {
 	for _, h := range All() {
-		h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
+		u, _ := data.LoadUser(h.p.Name())
+		h.p.Message(lang.Translatef(u.Language(), key, args...))
 	}
 }
 func (h *Handler) Player() *player.Player {

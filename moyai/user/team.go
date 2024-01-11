@@ -9,7 +9,8 @@ import (
 func BroadcastTeam(t data.Team, key string, args ...interface{}) {
 	for _, m := range t.Members {
 		if h, ok := Lookup(m.Name); ok {
-			h.Player().Message(lang.Translatef(h.Player().Locale(), key, args...))
+			u, _ := data.LoadUser(h.p.Name())
+			h.Player().Message(lang.Translatef(u.Language(), key, args...))
 		}
 	}
 }
