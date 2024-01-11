@@ -1,4 +1,8 @@
 {
+  "properties": {
+    "name": "English",
+    "image": "https://preview.redd.it/68cdrlhal0hz.png?auto=webp&s=a7e6c8f70065646b72d45fc6ba12c6bb9bf56923"
+  },
   "translations": {
     "area.enter": "<yellow>Now entering: %s</yellow>",
     "area.leave": "<yellow>Now leaving: %s</yellow>",

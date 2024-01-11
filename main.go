@@ -72,9 +72,10 @@ func main() {
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
+
 	lang.Register(language.English)
 	lang.Register(language.Spanish)
-	lang.Register(language.EuropeanSpanish)
+	//lang.Register(language.EuropeanSpanish)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
@@ -304,7 +305,10 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			}
 		}
 
-		// u, _ := data.LoadUserOrCreate(p.Name())
+		u, _ := data.LoadUserOrCreate(p.Name())
+		if u.Settings.Language == "" {
+			p.SendForm(lang.NewPromptForm())
+		}
 		// u.Roles.Add(role.Pharaoh{})
 	}
 

@@ -2,10 +2,10 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/moose"
 	"strings"
 	"time"
 
-	"github.com/moyai-network/carrot"
 	"github.com/moyai-network/teams/moyai/koth"
 	"golang.org/x/exp/slices"
 
@@ -204,7 +204,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(carrot.GlyphFont("Kitmap"))
+			sb := scoreboard.New(moose.GlyphFont("Kitmap"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 

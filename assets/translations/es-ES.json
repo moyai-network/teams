@@ -1,4 +1,5 @@
 {
+
    "translations": {
     "area.enter": "<yellow>Ahora entrando: %s</yellow>",
     "area.leave": "<yellow>Ahora se va: %s</yellow>",

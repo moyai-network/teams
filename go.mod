@@ -13,14 +13,13 @@ require (
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/moyai-network/moose v0.0.0-20240110000543-9b26de3aeb44
-	//github.com/oomph-ac/oomph v0.0.0-20231220234947-7be568992db9
+	github.com/moyai-network/moose v0.0.0-20240111134540-149d7ca8ceb7
 	github.com/paroxity/portal v1.0.8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.34.1
 	github.com/sirupsen/logrus v1.9.3
-	go.mongodb.org/mongo-driver v1.12.0
+	go.mongodb.org/mongo-driver v1.13.1
 	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
 	golang.org/x/text v0.14.0
 )
@@ -71,7 +70,7 @@ require (
 
 //replace github.com/oomph-ac/oomph => ./oomph
 
-replace github.com/flonja/multiversion => ./mv
+//replace github.com/flonja/multiversion => ./mv
 
 replace github.com/df-mc/dragonfly => github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381
 
