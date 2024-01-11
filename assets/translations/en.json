@@ -109,6 +109,13 @@
     "command.whisper.from": "<grey>[From</grey> %s<grey>]</grey> %s",
     "command.whisper.to": "<grey>[To</grey> %s<grey>]</grey> %s",
 
+    "command.balance.self": "<green>Your balance is $%2.f.</green>",
+    "command.pay.self": "<red>You cannot pay yourself.</red>",
+    "command.pay.negative": "<red>You cannot pay a negative amount.</red>",
+    "command.pay.insufficient": "<red>You do not have enough money.</red>",
+    "command.pay.receiver": "<green>%s has paid you $%2.f.</green>",
+    "command.pay.sender": "<green>You have paid %s $%2.f.</green>",
+
     "invalid.username": "<red>The provided user is invalid</red>",
 
     "target.data.load.error": "<red>There was an error loading the data for %s. Please notify staff.</red>",

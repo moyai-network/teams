@@ -1,12 +1,12 @@
 package command
 
 import (
+	"github.com/moyai-network/moose/lang"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/data"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 type Balance struct{}
@@ -21,7 +21,7 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	p.Message(text.Colourf("<green>Your balance is $%2.f.</green>", u.GameMode.Teams.Balance))
+	out.Print(lang.Translatef(u.Language(), "command.balance.self", u.GameMode.Teams.Balance))
 }
 
 type BalancePayOnline struct {
@@ -46,7 +46,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if t == p {
-		out.Error("You cannot pay yourself.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.self"))
 		return
 	}
 
@@ -56,11 +56,11 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		out.Error("You cannot pay a negative amount.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.negative"))
 		return
 	}
 	if u.GameMode.Teams.Balance < b.Amount {
-		out.Error("You do not have enough money.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.insufficient"))
 		return
 	}
 
@@ -70,8 +70,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	_ = data.SaveUser(u)
 	_ = data.SaveUser(target)
 
-	t.Message(text.Colourf("<green>%s has paid you $%2.f.</green>", u.Roles.Highest().Colour(p.Name()), 0))
-	p.Message(text.Colourf("<green>You have paid %s $%2.f.</green>", target.Roles.Highest().Colour(t.Name()), 0))
+	t.Message(lang.Translatef(target.Language(), "command.pay.receiver", u.Roles.Highest().Colour(p.Name()), 0))
+	out.Print(lang.Translatef(u.Language(), "command.pay.sender", target.Roles.Highest().Colour(t.Name()), 0))
 }
 
 type BalancePayOffline struct {
@@ -91,23 +91,23 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		out.Error("You cannot pay a negative amount.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.negative"))
 		return
 	}
 
 	if u.GameMode.Teams.Balance < b.Amount {
-		out.Error("You do not have enough money.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.insufficient"))
 		return
 	}
 
 	if strings.EqualFold(b.Target, p.Name()) {
-		out.Error("You cannot pay yourself.")
+		out.Print(lang.Translatef(u.Language(), "command.pay.self"))
 		return
 	}
 
 	t, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
-		out.Error("You cannot pay someone who has never joined the server.")
+		out.Error("Unexpected error occurred. Please contact an administrator.")
 		return
 	}
 
@@ -117,5 +117,5 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	_ = data.SaveUser(u)
 	_ = data.SaveUser(t)
 
-	p.Message(text.Colourf("<green>You have paid</green> %s <green>$%2.f.</green>", t.Roles.Highest().Colour(t.DisplayName), b.Amount))
+	out.Print(lang.Translatef(u.Language(), "command.pay.sender", t.Roles.Highest().Colour(t.DisplayName), b.Amount))
 }
