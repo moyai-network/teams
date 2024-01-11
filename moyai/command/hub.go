@@ -5,18 +5,11 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/teams/moyai/user"
-	"github.com/paroxity/portal/socket"
-	proxypacket "github.com/paroxity/portal/socket/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // Hub is a command that teleports the player to the hub.
 type Hub struct {
-	s *socket.Client
-}
-
-func NewHub(s *socket.Client) *Hub {
-	return &Hub{s: s}
 }
 
 // Run ...
@@ -32,10 +25,7 @@ func (h Hub) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	o.Print(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
-	_ = h.s.WritePacket(&proxypacket.TransferRequest{
-		PlayerUUID: p.UUID(),
-		Server:     "syn.lobby",
-	})
+	_ = p.Transfer("127.0.0.1:19132")
 }
 
 // Allow ...

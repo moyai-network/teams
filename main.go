@@ -398,9 +398,8 @@ func registerCommands(srv *server.Server) {
 	} {
 		cmd.Register(c)
 	}
-	if sock, ok := moyai.Socket(); ok {
-		cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.NewHub(sock)))
-	}
+
+	cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.Hub{}))
 }
 
 func registerRecipes() {
