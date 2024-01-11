@@ -107,7 +107,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 
 	t, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
-		out.Error("user has never joined the server")
+		out.Error("You cannot pay someone who has never joined the server.")
 		return
 	}
 

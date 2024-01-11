@@ -386,21 +386,21 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 
 	u, _ := data.LoadUserOrCreate(p.Name())
 	if _, ok = u.Team(); ok {
-		out.Error(lang.Translatef(p.Locale(), "team.create.already"))
+		out.Error(lang.Translatef(u.Language(), "team.create.already"))
 		return
 	}
 	t.Name = strings.TrimSpace(t.Name)
 
 	if !regex.MatchString(t.Name) {
-		out.Error(lang.Translatef(p.Locale(), "team.create.name.invalid"))
+		out.Error(lang.Translatef(u.Language(), "team.create.name.invalid"))
 		return
 	}
 	if len(t.Name) < 3 {
-		out.Error(lang.Translatef(p.Locale(), "team.create.name.short"))
+		out.Error(lang.Translatef(u.Language(), "team.create.name.short"))
 		return
 	}
 	if len(t.Name) > 15 {
-		out.Error(lang.Translatef(p.Locale(), "team.create.name.long"))
+		out.Error(lang.Translatef(u.Language(), "team.create.name.long"))
 		return
 	}
 
@@ -410,14 +410,14 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if _, ok := data.LoadTeam(t.Name); ok {
-		out.Error(lang.Translatef(p.Locale(), "team.create.exists"))
+		out.Error(lang.Translatef(u.Language(), "team.create.exists"))
 		return
 	}
 	tm := data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.Handler().(*user.Handler).XUID(), p.Name()).WithRank(3))
 	data.SaveTeam(tm)
 
 	p.Handler().(*user.Handler).FactionCreate().Set(time.Minute * 3)
-	out.Print(lang.Translatef(p.Locale(), "team.create.success", tm.DisplayName))
+	out.Print(lang.Translatef(u.Language(), "team.create.success", tm.DisplayName))
 	user.Broadcast("team.create.success.broadcast", p.Name(), tm.DisplayName)
 }
 
