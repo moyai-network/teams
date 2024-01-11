@@ -1,5 +1,11 @@
 .idea/
-assets/
+assets/hcfworld
+assets/kek
+assets/models
+assets/players
+assets/hcfworld.zip
+assets/level.dat
+assets/sotw.log
 oomph/
 *.exe*
 *.toml*

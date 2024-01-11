@@ -20,7 +20,6 @@ require (
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.34.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
 	go.mongodb.org/mongo-driver v1.12.0
 	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
 	golang.org/x/text v0.14.0

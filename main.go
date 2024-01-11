@@ -71,6 +71,8 @@ func main() {
 		fmt.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
 	lang.Register(language.English)
+	lang.Register(language.Spanish)
+	lang.Register(language.EuropeanSpanish)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
@@ -132,7 +134,7 @@ func main() {
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19134", []minecraft.Protocol{})
+		pk.Listen(&c, ":19136", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()
@@ -270,6 +272,7 @@ func main() {
 	for srv.Accept(acceptFunc(store, config.Proxy.Enabled)) {
 		// Do nothing.
 	}
+
 }
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
@@ -282,6 +285,7 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			p.Handle(user.NewHandler(p, p.XUID()))
 		}
 		p.SetGameMode(world.GameModeSurvival)
+		p.RemoveScoreboard()
 		for _, ef := range p.Effects() {
 			p.RemoveEffect(ef.Type())
 		}
