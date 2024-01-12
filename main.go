@@ -10,6 +10,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -280,6 +281,10 @@ func main() {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
+		if !strings.HasPrefix(p.Addr().String(), "127.0.0.1") {
+			p.Disconnect(text.Colourf("<red>Please connect via the main hub: moyai.pro:19132</red>"))
+			return
+		}
 		store.ExecuteCommands(p)
 		if proxy {
 			info := moyai.SearchInfo(p.UUID())
