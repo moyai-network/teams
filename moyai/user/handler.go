@@ -122,6 +122,8 @@ type Handler struct {
 
 	claimPos [2]mgl64.Vec2
 
+	l language.Tag
+
 	loggedOut bool
 	logger    bool
 	close     chan struct{}
@@ -182,6 +184,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	s := player_session(p)
 	u, _ := data.LoadUserOrCreate(p.Name())
+
+	ha.l = u.Language()
 
 	if u.GameMode.Teams.Dead {
 		p.Armour().Clear()

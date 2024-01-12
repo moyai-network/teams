@@ -10,7 +10,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -281,10 +280,6 @@ func main() {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
-		if !strings.HasPrefix(p.Addr().String(), "127.0.0.1") {
-			p.Disconnect(text.Colourf("<red>Please connect via the main hub: moyai.pro:19132</red>"))
-			return
-		}
 		store.ExecuteCommands(p)
 		if proxy {
 			info := moyai.SearchInfo(p.UUID())
@@ -300,7 +295,8 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		p.ShowCoordinates()
 		p.SetFood(20)
 
-		p.Message(text.Colourf("<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>"))
+		u, _ := data.LoadUserOrCreate(p.Name())
+		p.Message(lang.Translatef(u.Language(), "discord.message"))
 		inv := p.Inventory()
 		for slot, i := range inv.Slots() {
 			for _, sp := range it.SpecialItems() {
@@ -310,7 +306,6 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			}
 		}
 
-		u, _ := data.LoadUserOrCreate(p.Name())
 		if u.Language() == (language.Tag{}) {
 			p.SendForm(lang.NewPromptForm())
 		}

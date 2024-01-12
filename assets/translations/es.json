@@ -4,6 +4,8 @@
    "image": "https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Flag_of_Spain.svg/1200px-Flag_of_Spain.svg.png"
    },
    "translations": {
+    "discord.message": "<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>",
+
     "area.enter": "<yellow>Ahora entrando: %s</yellow>",
     "area.leave": "<yellow>Ahora se va: %s</yellow>",
  

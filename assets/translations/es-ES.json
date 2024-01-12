@@ -1,6 +1,8 @@
 {
 
    "translations": {
+    "discord.message": "<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>",
+
     "area.enter": "<yellow>Ahora entrando: %s</yellow>",
     "area.leave": "<yellow>Ahora se va: %s</yellow>",
  

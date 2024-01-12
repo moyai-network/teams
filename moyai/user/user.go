@@ -84,7 +84,7 @@ func Alert(s cmd.Source, key string, args ...any) {
 	for _, h := range All() {
 
 		if u, _ := data.LoadUserOrCreate(h.p.Name()); role.Staff(u.Roles.Highest()) {
-			h.p.Message(lang.Translatef(h.p.Locale(), "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.p.Locale(), key), args...)))
+			h.p.Message(lang.Translatef(h.l, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.l, key), args...)))
 		}
 	}
 }
@@ -92,8 +92,7 @@ func Alert(s cmd.Source, key string, args ...any) {
 // Broadcast broadcasts a message to every user using that user's locale.
 func Broadcast(key string, args ...any) {
 	for _, h := range All() {
-		u, _ := data.LoadUser(h.p.Name())
-		h.p.Message(lang.Translatef(u.Language(), key, args...))
+		h.p.Message(lang.Translatef(h.l, key, args...))
 	}
 }
 func (h *Handler) Player() *player.Player {
@@ -105,7 +104,7 @@ func (h *Handler) XUID() string {
 }
 
 func (h *Handler) Message(key string, args ...interface{}) {
-	h.p.Message(lang.Translatef(h.p.Locale(), key, args...))
+	h.p.Message(lang.Translatef(h.l, key, args...))
 }
 
 func (h *Handler) Logout() *moose.Teleportation {
