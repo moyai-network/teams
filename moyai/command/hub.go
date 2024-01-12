@@ -27,7 +27,7 @@ func (h Hub) Run(s cmd.Source, o *cmd.Output) {
 	o.Print(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
 
 	// jk this doesn't work
-	//_ = p.Transfer("127.0.0.1:19132")
+	_ = p.Transfer("127.0.0.1:19133")
 }
 
 // Allow ...

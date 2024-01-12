@@ -1,8 +1,9 @@
 package command
 
 import (
-	"github.com/moyai-network/moose/data"
 	"time"
+
+	"github.com/moyai-network/moose/data"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
