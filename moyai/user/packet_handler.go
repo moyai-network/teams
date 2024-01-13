@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"strings"
 	_ "unsafe"
 
@@ -42,6 +43,17 @@ func NewOomphHandler(p *pl.Player) *PacketHandler {
 	}
 }
 
+func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
+	switch pkt := pk.(type) {
+	case *packet.ScriptMessage:
+		if pkt.Identifier == "oomph:flagged" {
+			var data map[string]any
+			json.Unmarshal(pkt.Data, &data)
+			Broadcast("oomph.staff.alert", data["player"], data["check_main"], data["check_sub"], "", data["violations"])
+		}
+	}
+}
+
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	var name string
 	if h.oomph {
@@ -57,6 +69,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	u, _ := data.LoadUser(p.Name())
 
 	switch pkt := pk.(type) {
+
 	case *packet.SetActorData:
 		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
