@@ -843,10 +843,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			DropContents(h.p)
 			p.SetHeldItems(item.Stack{}, item.Stack{})
 
-			// u.EnableDeathban()
-			// u.SubtractLife()
-			// deathban.Deathban().AddPlayer(p)
-
 			p.ResetFallDistance()
 			p.Heal(20, effect.InstantHealingSource{})
 			p.Extinguish()
@@ -1085,9 +1081,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		DropContents(h.p)
 		p.SetHeldItems(item.Stack{}, item.Stack{})
 
-		// u.EnableDeathban()
+		//h.EnableDeathban()
 		// u.SubtractLife()
-		// deathban.Deathban().AddPlayer(p)
+		//deathban.Deathban().AddPlayer(p)
 
 		p.ResetFallDistance()
 		p.Heal(20, effect.InstantHealingSource{})

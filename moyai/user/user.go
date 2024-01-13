@@ -183,9 +183,9 @@ func (h *Handler) LastHitBy() *player.Player {
 func (h *Handler) DropItem(it item.Stack) {
 	p := h.p
 	w, pos := p.World(), p.Position()
-	ent := entity.NewItem(it, pos)
-	ent.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
-	w.AddEntity(ent)
+	et := entity.NewItem(it, pos)
+	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
+	w.AddEntity(et)
 }
 
 // Boned returns whether the user has been boned.
@@ -272,6 +272,29 @@ func (h *Handler) SetLastAttacker(t *Handler) {
 func (h *Handler) ResetLastAttacker() {
 	h.lastAttackerName.Store("")
 	h.lastAttackTime.Store(time.Time{})
+}
+
+// DeathbanEnabled returns whether the user has timer enabled.
+func (h *Handler) DeathbanEnabled() (time.Duration, bool) {
+	u, _ := data.LoadUserOrCreate(h.p.Name())
+	db := u.GameMode.Teams.DeathBan
+	return db.Remaining(), db.Active()
+}
+
+// DisableTimer disables the timer of the user.
+func (h *Handler) DisableDeathban() {
+	u, _ := data.LoadUserOrCreate(h.p.Name())
+	db := u.GameMode.Teams.DeathBan
+	db.Reset()
+	data.SaveUser(u)
+}
+
+// SetTimer sets the timer of the player
+func (h *Handler) EnableDeathban() {
+	u, _ := data.LoadUserOrCreate(h.p.Name())
+	db := u.GameMode.Teams.DeathBan
+	db.Set(time.Minute * 2)
+	data.SaveUser(u)
 }
 
 // UpdateChatType updates the chat type for the user.

@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/moyai-network/carrot/tebex"
+	"github.com/moyai-network/teams/moyai/deathban"
 	"github.com/moyai-network/teams/moyai/koth"
 
 	"github.com/moyai-network/moose/worlds"
@@ -137,7 +138,7 @@ func main() {
 		}()
 	} else {
 		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19136", []minecraft.Protocol{})
+		pk.Listen(&c, ":19133", []minecraft.Protocol{})
 		go func() {
 			for {
 				p, err := pk.Accept()
@@ -173,6 +174,9 @@ func main() {
 	go func() {
 		for range t.C {
 			for _, u := range user.All() {
+				if u.Player().World() == deathban.Deathban().World() {
+					continue
+				}
 				_ = playerProvider.Save(u.Player().UUID(), u.Player().Data())
 				_ = worldProvider.SavePlayerSpawnPosition(u.Player().UUID(), cube.PosFromVec3(u.Player().Position()))
 				d, ok := data.LoadUser(u.Player().Name())

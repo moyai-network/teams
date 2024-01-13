@@ -210,9 +210,15 @@ func startTicker(h *Handler) {
 
 			u, _ := data.LoadUserOrCreate(h.p.Name())
 			l := u.Language()
+			db := u.GameMode.Teams.DeathBan
+
+			if db.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.deathban", parseDuration(db.Remaining())))
+			}
+
 			if tm, ok := u.Team(); ok {
 				focus := tm.Focus
-				if ft, ok := data.LoadTeam(focus.Value()); focus.Type() == data.FocusTypeTeam() && ok {
+				if ft, ok := data.LoadTeam(focus.Value()); focus.Type() == data.FocusTypeTeam() && ok && !db.Active() {
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
@@ -223,9 +229,11 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.GameMode.Teams.Stats.Kills))
-			sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.GameMode.Teams.Stats.Deaths))
-			sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.GameMode.Teams.Stats.KillStreak))
+			if !db.Active() {
+				sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.GameMode.Teams.Stats.Kills))
+				sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.GameMode.Teams.Stats.Deaths))
+				sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.GameMode.Teams.Stats.KillStreak))
+			}
 
 			_, _ = sb.WriteString("§2")
 
@@ -238,7 +246,7 @@ func startTicker(h *Handler) {
 				return
 			}
 
-			if d := u.GameMode.Teams.PVP; d.Active() {
+			if d := u.GameMode.Teams.PVP; d.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
 			if lo := h.logout; !lo.Expired() && lo.Teleporting() {
@@ -247,7 +255,7 @@ func startTicker(h *Handler) {
 			if lo := h.stuck; !lo.Expired() && lo.Teleporting() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.stuck", time.Until(lo.Expiration()).Seconds()))
 			}
-			if tg := h.combat; tg.Active() {
+			if tg := h.combat; tg.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
 			if h := h.home; !h.Expired() && h.Teleporting() {
@@ -274,7 +282,7 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.stray.energy", h.energy.Load()))
 			}
 
-			if k, ok := koth.Running(); ok {
+			if k, ok := koth.Running(); ok && !db.Active() {
 				t := time.Until(k.Time())
 				if _, ok := k.Capturing(); !ok {
 					t = time.Minute * 5

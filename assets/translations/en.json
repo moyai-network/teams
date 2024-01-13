@@ -133,6 +133,7 @@
     "scoreboard.kills": "<red>Kills: <grey>%d</grey></red>",
     "scoreboard.deaths": "<red>Deaths: <grey>%d</grey></red>",
     "scoreboard.killstreak": "<red>Killstreak: <grey>%d</grey></red>",
+    "scoreboard.deathban": "<red>Deathban: %s</red>",
     "scoreboard.koth.running": "<dark-red>%s<grey>:</grey> %s</dark-red>",
     "scoreboard.logout": "<red>Logout<grey>:</grey> %.1fs</red>",
     "scoreboard.timer.sotw": "<green>SOTW<grey>:</grey> %s</green>",
