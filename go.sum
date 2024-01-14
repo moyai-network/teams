@@ -69,6 +69,8 @@ github.com/moyai-network/moose v0.0.0-20240111141640-abb2257b6826 h1:xgxm8i/bZvn
 github.com/moyai-network/moose v0.0.0-20240111141640-abb2257b6826/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
 github.com/moyai-network/moose v0.0.0-20240112181219-9cf61f7caf22 h1:HGFFiVZLBE401ejnumsPyXaUEe4vTMTKHmarQv8TVkA=
 github.com/moyai-network/moose v0.0.0-20240112181219-9cf61f7caf22/go.mod h1:ZXC+md5p/Wpth826MKNu+6ihJJ1xre04R6ctDTTW4jY=
+github.com/moyai-network/moose v0.0.0-20240114145951-a6a71e579b7d h1:EPzQ84gLqct3SjUh8+gtbGUbF9n7nVkM0LR9SYBCpBI=
+github.com/moyai-network/moose v0.0.0-20240114145951-a6a71e579b7d/go.mod h1:i933rLRhisPlDKOtjAZQSrIDw+Z8+PB1ukoIs007w7U=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4 h1:shcx6aTtRNOIpwF83hdiUOp/HaU7UW+BcNUX9SLdQfE=
 github.com/moyai-network/portal v1.0.9-0.20230709183621-3de536ec80d4/go.mod h1:xzstLrcan1t2l1C0fEUdmYmK2ieaV2ZmeE1sztuSu5w=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=
