@@ -9,7 +9,6 @@ import (
 	"github.com/moyai-network/moose/lang"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"golang.org/x/text/language"
 )
 
 type Allower struct {
@@ -26,13 +25,13 @@ func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData)
 	u, err := data.LoadUserOrCreate(d.DisplayName)
 	if err != nil {
 		fmt.Println(err)
-		return lang.Translatef(language.English, "user.data.load.error"), false
+		return lang.Translatef(u.Language(), "user.data.load.error"), false
 	}
 	if !strings.HasPrefix(addr.String(), "127.0.0.1") {
 		return text.Colourf("<red>Please connect via the main hub: moyai.pro:19132</red>"), false
 	}
 	if a.whitelisted && !u.Whitelisted {
-		return lang.Translatef(language.English, "moyai.whitelisted"), false
+		return lang.Translatef(u.Language(), "moyai.whitelisted"), false
 	}
 	return "", true
 }
