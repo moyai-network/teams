@@ -5,7 +5,6 @@ import (
 	"strings"
 	_ "unsafe"
 
-	"github.com/oomph-ac/oomph/check"
 	pl "github.com/oomph-ac/oomph/player"
 
 	"github.com/moyai-network/moose/data"
@@ -23,7 +22,6 @@ import (
 )
 
 type PacketHandler struct {
-	pl.NopHandler
 	c *packethandler.Conn
 
 	oomph bool
@@ -134,28 +132,30 @@ func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
 	}
 }
 
-func (h *PacketHandler) HandleFlag(ctx *event.Context, ch check.Check, params map[string]any, _ *bool) {
-	//Broadcast("oomph.staff.alert", "wallah")
-	// name, variant := ch.Name()
-	// Broadcast("oomph.staff.alert",
-	// 	h.p.Name(),
-	// 	name,
-	// 	variant,
-	// 	utils.PrettyParameters(params, true),
-	// 	mgl64.Round(ch.Violations(), 2),
-	// )
-}
+// func (h *PacketHandler) HandleFlag(ctx *event.Context, ch check.Check, params map[string]any, l *bool) {
+// 	*l = true
+// 	ctx.Cancel()
+// 	//Broadcast("oomph.staff.alert", "wallah")
+// 	// name, variant := ch.Name()
+// 	// Broadcast("oomph.staff.alert",
+// 	// 	h.p.Name(),
+// 	// 	name,
+// 	// 	variant,
+// 	// 	utils.PrettyParameters(params, true),
+// 	// 	mgl64.Round(ch.Violations(), 2),
+// 	// )
+// }
 
-func (h *PacketHandler) HandlePunishment(ctx *event.Context, ch check.Check, msg *string) {
-	//ctx.Cancel()
-	h.p.Disconnect("Wallah")
-	// n, v := ch.Name()
-	// l := h.p.Locale()
-	// h.p.Disconnect(strutils.CenterLine(strings.Join([]string{
-	// 	lang.Translatef(l, "user.kick.header.oomph"),
-	// 	lang.Translatef(l, "user.kick.description", n+v),
-	// }, "\n")))
-}
+// func (h *PacketHandler) HandlePunishment(ctx *event.Context, ch check.Check, msg *string) {
+// 	//ctx.Cancel()
+// 	h.p.Disconnect("Wallah")
+// 	// n, v := ch.Name()
+// 	// l := h.p.Locale()
+// 	// h.p.Disconnect(strutils.CenterLine(strings.Join([]string{
+// 	// 	lang.Translatef(l, "user.kick.header.oomph"),
+// 	// 	lang.Translatef(l, "user.kick.description", n+v),
+// 	// }, "\n")))
+// }
 
 // noinspection ALL
 //

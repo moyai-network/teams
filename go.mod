@@ -20,12 +20,14 @@ require (
 	github.com/sandertv/gophertunnel v1.34.1
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.13.1
-	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
+	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
 	golang.org/x/text v0.14.0
 )
 
 require (
+	github.com/df-mc/goleveldb v1.1.9
 	github.com/df-mc/npc v1.0.4
+	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/moyai-network/carrot v0.0.0-20230826174553-2583f153c872
 	github.com/oomph-ac/oomph v0.0.0-20240108181853-ff91ea99b3ae
 )
@@ -34,7 +36,6 @@ require (
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
-	github.com/df-mc/goleveldb v1.1.9 // indirect
 	github.com/df-mc/worldupgrader v1.0.11 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
 	github.com/getsentry/sentry-go v0.25.0 // indirect
@@ -56,22 +57,22 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/image v0.14.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/oauth2 v0.15.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/image v0.15.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-//replace github.com/oomph-ac/oomph => ./oomph
+replace github.com/oomph-ac/oomph => ./oomph
 
 //replace github.com/flonja/multiversion => ./mv
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/dragonfly v0.9.8-0.20240106195241-162629e75381
+replace github.com/df-mc/dragonfly => github.com/moyai-network/dragonfly v0.9.8-0.20240118171912-c5edb5a66894
 
 replace github.com/sandertv/gophertunnel v1.34.1 => github.com/ethaniccc/gophertunnel v0.0.0-20231208222323-ba8e5fbfee89

@@ -10,7 +10,7 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = ""
+Folder = "assetas/new"
 
 [Players]
 MaxCount = 0
@@ -34,4 +34,4 @@ End = 'Edit this!'
 Enabled = false
 
 [Oomph]
-Enabled = false
+Enabled = true

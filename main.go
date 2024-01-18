@@ -13,13 +13,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/elliotchance/orderedmap/v2"
 	"github.com/moyai-network/carrot/tebex"
 	"github.com/moyai-network/teams/moyai/deathban"
 	"github.com/moyai-network/teams/moyai/koth"
 
 	"github.com/moyai-network/moose/worlds"
 	"github.com/oomph-ac/oomph"
-	"github.com/oomph-ac/oomph/utils"
 
 	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
@@ -29,6 +29,8 @@ import (
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/sotw"
 
+	"github.com/df-mc/dragonfly/server/event"
+	pl "github.com/oomph-ac/oomph/player"
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
@@ -109,7 +111,7 @@ func main() {
 
 	wProv, err := mcdb.Config{
 		Log: log,
-	}.Open("assets/hcfworld")
+	}.Open("assets/world")
 	if err != nil {
 		panic(err)
 	}
@@ -121,8 +123,11 @@ func main() {
 	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
 
 	if config.Oomph.Enabled {
-		o := oomph.New(log, ":19132")
-		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, config.Proxy.Enabled)
+		o := oomph.New(log, oomph.OomphSettings{
+			RemoteAddress: "127.0.0.1:19133",
+			Authentication: true,
+		})
+		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, false)
 		go func() {
 			for {
 				p, err := o.Accept()
@@ -130,10 +135,9 @@ func main() {
 					return
 				}
 
-				p.SetMovementMode(utils.ModeSemiAuthoritative)
-				p.SetCombatMode(utils.ModeSemiAuthoritative)
-
-				p.Handle(user.NewOomphHandler(p))
+				p.MovementMode = 1
+				
+				p.HandleEvents(&eventHandler{})
 			}
 		}()
 	} else {
@@ -584,4 +588,18 @@ func readConfig() (moyai.Config, error) {
 		err = g.SetConf(c)
 	}
 	return c, err
+}
+
+// NopEventHandler is an event handler that does nothing.
+type eventHandler struct {
+	pl.NopEventHandler
+}
+
+func (eventHandler) OnPunishment(ctx *event.Context, p *pl.Player, message *string) {
+	p.Message("LOL?")
+}
+
+func (eventHandler) OnFlagged(ctx *event.Context, p *pl.Player, detection pl.Handler, data *orderedmap.OrderedMap[string, any]) {
+	p.Message("LOL?")
+
 }
