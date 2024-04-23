@@ -1,14 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/item/inventory"
+	"github.com/df-mc/dragonfly/server/player/chat"
+	"github.com/moyai-network/moose/worlds"
 	cr "github.com/moyai-network/teams/internal/crate"
 	kit2 "github.com/moyai-network/teams/internal/kit"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
+	"github.com/restartfu/gophig"
 	"image"
 	"image/png"
 	"io/ioutil"
 	"math"
-	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -19,31 +23,21 @@ import (
 	"github.com/moyai-network/teams/moyai/deathban"
 	"github.com/moyai-network/teams/moyai/koth"
 
-	"github.com/moyai-network/moose/worlds"
-	"github.com/oomph-ac/oomph"
-
-	"github.com/bedrock-gophers/packethandler"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/data"
-	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/sotw"
 
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
-	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/chat"
-	"github.com/df-mc/dragonfly/server/player/playerdb"
 	"github.com/df-mc/dragonfly/server/player/skin"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/df-mc/dragonfly/server/world/mcdb"
 	"github.com/df-mc/npc"
 	_ "github.com/moyai-network/moose/console"
 	"github.com/moyai-network/moose/lang"
@@ -52,102 +46,27 @@ import (
 	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/moyai-network/moose/crate"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
-
-	"github.com/restartfu/gophig"
-	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
 
-var playerProvider *playerdb.Provider
-var worldProvider *mcdb.DB
-
 func main() {
+	chat.Global.Subscribe(chat.StdoutSubscriber{})
 	data.LoadTeams()
-
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
 	lang.Register(language.English)
-	lang.Register(language.Spanish)
-	//lang.Register(language.EuropeanSpanish)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
 	log.Level = logrus.InfoLevel
 
-	config, err := readConfig()
+	conf, err := readConfig()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if config.Proxy.Enabled {
-		moyai.NewProxySocket()
-	}
-
-	chat.Global.Subscribe(chat.StdoutSubscriber{})
-
-	c, err := config.Config(log)
-	if err != nil {
-		//panic(err)
-	}
-
-	c.Entities = ent.Registry
-
-	pProv, err := playerdb.NewProvider("assets/players")
-	if err != nil {
-		panic(err)
-	}
-	playerProvider = pProv
-	c.PlayerProvider = playerProvider
-
-	wProv, err := mcdb.Config{
-		Log: log,
-	}.Open("assets/world")
-	if err != nil {
-		panic(err)
-	}
-	worldProvider = wProv
-	c.WorldProvider = worldProvider
-
-	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
-	c.Generator = func(dim world.Dimension) world.Generator { return nil }
-	c.Allower = moyai.NewAllower(config.Moyai.Whitelisted)
-
-	if config.Oomph.Enabled {
-		o := oomph.New(log, oomph.OomphSettings{
-			RemoteAddress:  "127.0.0.1:19133",
-			Authentication: true,
-		})
-		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, false)
-		go func() {
-			for {
-				p, err := o.Accept()
-				if err != nil {
-					return
-				}
-				_ = p
-			}
-		}()
-	} else {
-		pk := packethandler.NewPacketListener()
-		pk.Listen(&c, ":19133", []minecraft.Protocol{})
-		go func() {
-			for {
-				p, err := pk.Accept()
-				if err != nil {
-					return
-				}
-				p.Handle(user.NewPacketHandler(p))
-			}
-		}()
-	}
-
-	srv := c.New()
+	srv := moyai.NewServer(conf, log)
 
 	clg := time.NewTicker(time.Minute * 5)
 	go func() {
@@ -174,8 +93,6 @@ func main() {
 				if u.Player().World() == deathban.Deathban().World() {
 					continue
 				}
-				_ = playerProvider.Save(u.Player().UUID(), u.Player().Data())
-				_ = worldProvider.SavePlayerSpawnPosition(u.Player().UUID(), cube.PosFromVec3(u.Player().Position()))
 				d, ok := data.LoadUser(u.Player().Name())
 				if ok {
 					_ = data.SaveUser(d)
@@ -188,25 +105,42 @@ func main() {
 			log.Println("Saving all team/data.")
 		}
 	}()
-
 	handleServerClose(srv)
 
 	w := srv.World()
-	w.Handle(&worlds.Handler{})
-	w.StopWeatherCycle()
-	w.SetDefaultGameMode(world.GameModeSurvival)
-	w.SetTime(6000)
-	w.StopTime()
-	w.SetTickRange(0)
-	w.StopThundering()
-	w.StopRaining()
-	w.SetSpawn(cube.Pos{0, 80, 0})
+	configureWorld(w)
+	clearEntities(w)
+	placeCrates(w)
 
-	l := world.NewLoader(8, w, world.NopViewer{})
-	l.Move(w.Spawn().Vec3Middle())
-	l.Load(math.MaxInt)
+	koth.Broadcast = user.Broadcast
 
-	// Doing this twice so that w.Entities isn't empty, even when it shouldn't be
+	registerCommands(srv)
+	registerRecipes()
+	//registerSlappers(w)
+
+	srv.Listen()
+
+	store := loadStore(conf.Moyai.Tebex, log)
+
+	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled)) {
+		// Do nothing.
+	}
+
+}
+
+func clearEntities(w *world.World) {
+	for _, e := range w.Entities() {
+		if _, ok := e.Type().(entity.TextType); ok {
+			w.RemoveEntity(e)
+		}
+
+		if _, ok := e.Type().(entity.ItemType); ok {
+			w.RemoveEntity(e)
+		}
+	}
+}
+
+func placeCrates(w *world.World) {
 	for _, c := range crate.All() {
 		b := block.NewChest()
 		b.CustomName = text.Colourf("%s <grey>Crate</grey>", c.Name())
@@ -235,38 +169,25 @@ func main() {
 		b.Inventory().Handle(cr.Handler{})
 
 		w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
-
-	}
-
-	for _, e := range w.Entities() {
-		if _, ok := e.Type().(entity.TextType); ok {
-			w.RemoveEntity(e)
-		}
-
-		if _, ok := e.Type().(entity.ItemType); ok {
-			w.RemoveEntity(e)
-		}
-	}
-
-	for _, c := range crate.All() {
 		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
 		w.AddEntity(t)
 	}
+}
 
-	koth.Broadcast = user.Broadcast
+func configureWorld(w *world.World) {
+	w.Handle(&worlds.Handler{})
+	w.StopWeatherCycle()
+	w.SetDefaultGameMode(world.GameModeSurvival)
+	w.SetTime(6000)
+	w.StopTime()
+	w.SetTickRange(0)
+	w.StopThundering()
+	w.StopRaining()
+	w.SetSpawn(cube.Pos{0, 80, 0})
 
-	registerCommands(srv)
-	registerRecipes()
-	//registerSlappers(w)
-
-	srv.Listen()
-
-	store := loadStore(config.Moyai.Tebex, log)
-
-	for srv.Accept(acceptFunc(store, config.Proxy.Enabled)) {
-		// Do nothing.
-	}
-
+	l := world.NewLoader(8, w, world.NopViewer{})
+	l.Move(w.Spawn().Vec3Middle())
+	l.Load(math.MaxInt)
 }
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
