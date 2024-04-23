@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	cr "github.com/moyai-network/teams/internal/crate"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -51,7 +52,6 @@ import (
 	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/moyai-network/moose/crate"
-	cr "github.com/moyai-network/teams/moyai/crate"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 
 	"github.com/restartfu/gophig"
