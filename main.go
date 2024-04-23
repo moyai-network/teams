@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/elliotchance/orderedmap/v2"
 	"github.com/moyai-network/carrot/tebex"
 	"github.com/moyai-network/teams/moyai/deathban"
 	"github.com/moyai-network/teams/moyai/koth"
@@ -29,8 +28,6 @@ import (
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/sotw"
 
-	"github.com/df-mc/dragonfly/server/event"
-	pl "github.com/oomph-ac/oomph/player"
 	proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
@@ -40,7 +37,6 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/inventory"
-	"github.com/df-mc/dragonfly/server/item/recipe"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/playerdb"
@@ -124,7 +120,7 @@ func main() {
 
 	if config.Oomph.Enabled {
 		o := oomph.New(log, oomph.OomphSettings{
-			RemoteAddress: "127.0.0.1:19133",
+			RemoteAddress:  "127.0.0.1:19133",
 			Authentication: true,
 		})
 		o.Listen(&c, text.Colourf("<red>Moyai</red>"), []minecraft.Protocol{}, true, false)
@@ -134,10 +130,7 @@ func main() {
 				if err != nil {
 					return
 				}
-
-				p.MovementMode = 1
-				
-				p.HandleEvents(&eventHandler{})
+				_ = p
 			}
 		}()
 	} else {
@@ -212,16 +205,6 @@ func main() {
 	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
-
-	// LOL
-	for x := -50; x < -30; x++ {
-		for z := 190; z < 210; z++ {
-			b := w.Block(cube.Pos{x, 28, z})
-			if _, ok := b.(block.Hopper); ok {
-				w.SetBlock(cube.Pos{x, 28, z}, block.Air{}, nil)
-			}
-		}
-	}
 
 	// Doing this twice so that w.Entities isn't empty, even when it shouldn't be
 	for _, c := range crate.All() {
@@ -411,7 +394,7 @@ func registerCommands(srv *server.Server) {
 }
 
 func registerRecipes() {
-	recipe.Register(recipe.NewShapeless([]item.Stack{
+	/*recipe.Register(recipe.NewShapeless([]item.Stack{
 		item.NewStack(block.Wood{}, 1),
 	}, item.NewStack(block.Planks{}, 4), "crafting_table"))
 
@@ -479,7 +462,7 @@ func registerRecipes() {
 		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
 	}, item.NewStack(block.WoodFence{
 		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
+	}, 3), recipe.NewShape(3, 3), "crafting_table"))*/
 }
 
 func registerSlappers(w *world.World) {
@@ -588,18 +571,4 @@ func readConfig() (moyai.Config, error) {
 		err = g.SetConf(c)
 	}
 	return c, err
-}
-
-// NopEventHandler is an event handler that does nothing.
-type eventHandler struct {
-	pl.NopEventHandler
-}
-
-func (eventHandler) OnPunishment(ctx *event.Context, p *pl.Player, message *string) {
-	p.Message("LOL?")
-}
-
-func (eventHandler) OnFlagged(ctx *event.Context, p *pl.Player, detection pl.Handler, data *orderedmap.OrderedMap[string, any]) {
-	p.Message("LOL?")
-
 }
