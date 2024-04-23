@@ -16,7 +16,6 @@ func Spawn(w *world.World) moose.NamedArea {
 	default:
 		return Overworld.Spawn()
 	}
-	return moose.NamedArea{}
 }
 
 func WarZone(w *world.World) moose.NamedArea {
