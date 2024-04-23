@@ -2,6 +2,8 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/area"
+	kit2 "github.com/moyai-network/teams/internal/kit"
 	"math"
 	"math/rand"
 	"regexp"
@@ -10,8 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/moyai-network/teams/moyai/kit"
-
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity/effect"
@@ -19,7 +19,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/moyai-network/moose/crate"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/sotw"
@@ -1542,19 +1541,19 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
 			case "diamond":
-				kit.Apply(kit.Diamond{}, h.p)
+				kit2.Apply(kit2.Diamond{}, h.p)
 			case "archer":
-				kit.Apply(kit.Archer{}, h.p)
+				kit2.Apply(kit2.Archer{}, h.p)
 			case "bard":
-				kit.Apply(kit.Bard{}, h.p)
+				kit2.Apply(kit2.Bard{}, h.p)
 			case "rogue":
-				kit.Apply(kit.Rogue{}, h.p)
+				kit2.Apply(kit2.Rogue{}, h.p)
 			case "stray":
-				kit.Apply(kit.Stray{}, h.p)
+				kit2.Apply(kit2.Stray{}, h.p)
 			case "miner":
-				kit.Apply(kit.Miner{}, h.p)
+				kit2.Apply(kit2.Miner{}, h.p)
 			case "builder":
-				kit.Apply(kit.Builder{}, h.p)
+				kit2.Apply(kit2.Builder{}, h.p)
 			}
 		}
 	}
