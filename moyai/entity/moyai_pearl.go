@@ -2,12 +2,12 @@ package entity
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/area"
 	"math"
 	"strings"
 	_ "unsafe"
 
 	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/paroxity/portal/session"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"

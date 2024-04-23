@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/area"
 	"regexp"
 	"slices"
 	"sort"
@@ -19,7 +20,6 @@ import (
 	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"

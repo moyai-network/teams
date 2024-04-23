@@ -1,12 +1,12 @@
 package form
 
 import (
+	kit2 "github.com/moyai-network/teams/internal/kit"
 	"strings"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/df-mc/dragonfly/server/player/form"
@@ -19,7 +19,7 @@ type Kits struct{}
 func NewKitForm(p *player.Player) form.Menu {
 	f := form.NewMenu(Kits{}, "Kits")
 	u, _ := data.LoadUserOrCreate(p.Name())
-	for _, k := range kit.All() {
+	for _, k := range kit2.All() {
 		t := k.Name()
 		//if !u.Roles.Contains(role.Wraith{}) && k == (kit.Diamond{}) {
 		//	t = text.Colourf("<red>%s</red>", t)
@@ -57,7 +57,7 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	}
 	switch name {
 	case "Archer":
-		kit.Apply(kit.Archer{}, p)
+		kit2.Apply(kit2.Archer{}, p)
 	/*case "Master":
 	if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
 		p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
@@ -65,18 +65,18 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	}
 	kit.Apply(kit.Master{}, p)*/
 	case "Bard":
-		kit.Apply(kit.Bard{}, p)
+		kit2.Apply(kit2.Bard{}, p)
 	case "Rogue":
-		kit.Apply(kit.Rogue{}, p)
+		kit2.Apply(kit2.Rogue{}, p)
 	case "Builder":
-		kit.Apply(kit.Builder{}, p)
+		kit2.Apply(kit2.Builder{}, p)
 	case "Diamond":
-		kit.Apply(kit.Diamond{}, p)
+		kit2.Apply(kit2.Diamond{}, p)
 	case "Miner":
-		kit.Apply(kit.Miner{}, p)
+		kit2.Apply(kit2.Miner{}, p)
 	case "Stray":
-		kit.Apply(kit.Stray{}, p)
+		kit2.Apply(kit2.Stray{}, p)
 	case "Refill":
-		kit.Apply(kit.Refill{}, p)
+		kit2.Apply(kit2.Refill{}, p)
 	}
 }

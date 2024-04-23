@@ -1,6 +1,7 @@
 package deathban
 
 import (
+	kit2 "github.com/moyai-network/teams/internal/kit"
 	"sync"
 
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -11,7 +12,6 @@ import (
 	"github.com/df-mc/goleveldb/leveldb/opt"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/moose/sets"
-	"github.com/moyai-network/teams/moyai/kit"
 )
 
 func init() {
@@ -75,7 +75,7 @@ func new(w *world.World) *Provider {
 func (s *Provider) AddPlayer(p *player.Player) {
 	deathbans.Store(p, s)
 
-	kit.Apply(kit.Diamond{}, p)
+	kit2.Apply(kit2.Diamond{}, p)
 
 	s.playerMu.Lock()
 	s.players.Add(p)

@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/area"
 	"math"
 	"math/rand"
 	"strings"
@@ -30,7 +31,6 @@ import (
 	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/area"
 	"golang.org/x/exp/maps"
 )
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	cr "github.com/moyai-network/teams/internal/crate"
+	kit2 "github.com/moyai-network/teams/internal/kit"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -26,7 +27,6 @@ import (
 	"github.com/moyai-network/moose/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/sotw"
 
 	proxypacket "github.com/paroxity/portal/socket/packet"
@@ -494,7 +494,7 @@ func registerSlappers(w *world.World) {
 		} else {
 			cd.Set(5 * time.Minute)
 		}
-		kit.Apply(kit.Diamond{}, p)
+		kit2.Apply(kit2.Diamond{}, p)
 	})
 }
 
