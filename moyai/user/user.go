@@ -155,13 +155,13 @@ func (h *Handler) FactionCreate() *moose.CoolDown {
 }
 
 // Vanished returns whether the user is vanished or not.
-func (u *Handler) Vanished() bool {
-	return u.vanished.Load()
+func (h *Handler) Vanished() bool {
+	return h.vanished.Load()
 }
 
 // ToggleVanish toggles the user's vanish state.
-func (u *Handler) ToggleVanish() {
-	u.vanished.Toggle()
+func (h *Handler) ToggleVanish() {
+	h.vanished.Toggle()
 }
 
 func (h *Handler) SetLastPearlPos(pos mgl64.Vec3) {
