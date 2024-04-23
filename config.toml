@@ -10,7 +10,7 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = "assetas/new"
+Folder = "assets/new"
 
 [Players]
 MaxCount = 0
