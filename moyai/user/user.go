@@ -1,12 +1,16 @@
 package user
 
 import (
-	"fmt"
 	"github.com/moyai-network/teams/internal/area"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/process"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/pkg/cooldown"
+	"github.com/moyai-network/teams/pkg/lang"
+	"golang.org/x/text/language"
 	"math"
 	"math/rand"
 	"strings"
-	"sync"
 	"time"
 	"unicode"
 	_ "unsafe"
@@ -21,37 +25,12 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose"
 	"github.com/moyai-network/teams/moyai/sotw"
 
-	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
-	"golang.org/x/exp/maps"
 )
-
-var (
-	playersMu sync.Mutex
-	players   = map[string]*Handler{}
-)
-
-// All returns a slice of all the users.
-func All() []*Handler {
-	playersMu.Lock()
-	defer playersMu.Unlock()
-	return maps.Values(players)
-}
-
-// Count returns the total user count.
-func Count() int {
-	playersMu.Lock()
-	defer playersMu.Unlock()
-	return len(players)
-}
 
 // LookupRuntimeID ...
 func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
@@ -59,9 +38,9 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	if !ok {
 		return nil, false
 	}
-	for _, t := range All() {
-		if session_entityRuntimeID(h.s, t.p) == rid {
-			return t.p, true
+	for _, t := range moyai.Server().Players() {
+		if session_entityRuntimeID(h.s, t) == rid {
+			return t, true
 		}
 	}
 	return nil, false
@@ -69,53 +48,41 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 
 // Lookup looks up the Handler of a name passed.
 func Lookup(name string) (*Handler, bool) {
-	playersMu.Lock()
-	defer playersMu.Unlock()
-	ha, ok := players[strings.ToLower(name)]
-	return ha, ok
-}
-
-// Alert alerts all staff users with an action performed by a cmd.Source.
-func Alert(s cmd.Source, key string, args ...any) {
-	p, ok := s.(*player.Player)
-	if !ok {
-		return
-	}
-	for _, h := range All() {
-
-		if u, _ := data.LoadUserOrCreate(h.p.Name()); role.Staff(u.Roles.Highest()) {
-			h.p.Message(lang.Translatef(h.l, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(h.l, key), args...)))
+	for _, t := range moyai.Server().Players() {
+		if strings.EqualFold(name, t.Name()) {
+			return t.Handler().(*Handler), true
 		}
 	}
+	return nil, false
 }
 
 // Broadcast broadcasts a message to every user using that user's locale.
 func Broadcast(key string, args ...any) {
-	for _, h := range All() {
-		h.p.Message(lang.Translatef(h.l, key, args...))
+	for _, p := range moyai.Server().Players() {
+		p.Message(lang.Translatef(data.Language{Tag: language.English}, key, args...))
 	}
 }
 func (h *Handler) Player() *player.Player {
 	return h.p
 }
 
-func (h *Handler) XUID() string {
-	return h.xuid
-}
-
 func (h *Handler) Message(key string, args ...interface{}) {
-	h.p.Message(lang.Translatef(h.l, key, args...))
+	u, err := data.LoadUserFromXUID(h.p.XUID())
+	if err != nil {
+		return
+	}
+	h.p.Message(lang.Translatef(u.Language, key, args...))
 }
 
-func (h *Handler) Logout() *moose.Teleportation {
+func (h *Handler) Logout() *process.Process {
 	return h.logout
 }
 
-func (h *Handler) Stuck() *moose.Teleportation {
+func (h *Handler) Stuck() *process.Process {
 	return h.stuck
 }
 
-func (h *Handler) Home() *moose.Teleportation {
+func (h *Handler) Home() *process.Process {
 	return h.home
 }
 
@@ -142,15 +109,15 @@ func (h *Handler) SubtractItem(s item.Stack, d int) item.Stack {
 	return s
 }
 
-func (h *Handler) Combat() *moose.Tag {
+func (h *Handler) Combat() *cooldown.CoolDown {
 	return h.combat
 }
 
-func (h *Handler) Pearl() *moose.CoolDown {
+func (h *Handler) Pearl() *cooldown.CoolDown {
 	return h.pearl
 }
 
-func (h *Handler) FactionCreate() *moose.CoolDown {
+func (h *Handler) FactionCreate() *cooldown.CoolDown {
 	return h.factionCreate
 }
 
@@ -274,29 +241,6 @@ func (h *Handler) ResetLastAttacker() {
 	h.lastAttackTime.Store(time.Time{})
 }
 
-// DeathbanEnabled returns whether the user has timer enabled.
-func (h *Handler) DeathbanEnabled() (time.Duration, bool) {
-	u, _ := data.LoadUserOrCreate(h.p.Name())
-	db := u.GameMode.Teams.DeathBan
-	return db.Remaining(), db.Active()
-}
-
-// DisableTimer disables the timer of the user.
-func (h *Handler) DisableDeathban() {
-	u, _ := data.LoadUserOrCreate(h.p.Name())
-	db := u.GameMode.Teams.DeathBan
-	db.Reset()
-	data.SaveUser(u)
-}
-
-// SetTimer sets the timer of the player
-func (h *Handler) EnableDeathban() {
-	u, _ := data.LoadUserOrCreate(h.p.Name())
-	db := u.GameMode.Teams.DeathBan
-	db.Set(time.Minute * 2)
-	data.SaveUser(u)
-}
-
 // UpdateChatType updates the chat type for the user.
 // 1 is global, 2 is team, 3 is staff
 func (h *Handler) UpdateChatType(t int) {
@@ -335,25 +279,24 @@ func (h *Handler) ShowArmor(visible bool) {
 		boots = p.Armour().Boots()
 	}
 
-	for _, pl := range players {
-		u, _ := data.LoadUser(p.Name())
-
-		if t, ok := u.Team(); ok {
+	for _, pl := range moyai.Server().Players() {
+		if t, err := data.LoadTeamFromName(p.Name()); err == nil {
 			// maybe add an option eventually, so we can use this for staff mode and other stuff IDK?
-			if !t.Member(pl.Player().Name()) {
-				session_writePacket(pl.s, &packet.MobArmourEquipment{
-					EntityRuntimeID: session_entityRuntimeID(pl.s, p),
-					Helmet:          instanceFromItem(pl.s, helmet),
-					Chestplate:      instanceFromItem(pl.s, chestplate),
-					Leggings:        instanceFromItem(pl.s, leggings),
-					Boots:           instanceFromItem(pl.s, boots),
+			if !t.Member(pl.Name()) {
+				s := player_session(pl)
+				session_writePacket(s, &packet.MobArmourEquipment{
+					EntityRuntimeID: session_entityRuntimeID(s, p),
+					Helmet:          instanceFromItem(s, helmet),
+					Chestplate:      instanceFromItem(s, chestplate),
+					Leggings:        instanceFromItem(s, leggings),
+					Boots:           instanceFromItem(s, boots),
 				})
 			}
 		}
 	}
 }
 
-func (h *Handler) sendWall(newPos cube.Pos, z moose.Area, color item.Colour) {
+func (h *Handler) sendWall(newPos cube.Pos, z area.Area, color item.Colour) {
 	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
 	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
 	wallBlock := block.StainedGlass{Colour: color}
@@ -488,16 +431,16 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	u, _ := data.LoadUserOrCreate(pl.Name())
-	t, _ := data.LoadUserOrCreate(target.Name())
+	u, _ := data.LoadUserFromName(pl.Name())
+	t, _ := data.LoadUserFromName(target.Name())
 
 	_, sotwRunning := sotw.Running()
-	if (u.GameMode.Teams.PVP.Active() || t.GameMode.Teams.PVP.Active()) || (sotwRunning && (u.GameMode.Teams.SOTW || t.GameMode.Teams.SOTW)) {
+	if (u.Teams.PVP.Active() || t.Teams.PVP.Active()) || (sotwRunning && (u.Teams.SOTW || t.Teams.SOTW)) {
 		return false
 	}
 
-	tm, ok := u.Team()
-	if !ok {
+	tm, err := data.LoadTeamFromMemberName(pl.Name())
+	if err != nil {
 		return true
 	}
 
@@ -524,9 +467,8 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 // NearbyEnemies returns the nearby enemies of a certain distance from the user
 func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
-	u, _ := data.LoadUserOrCreate(p.Name())
-	tm, ok := u.Team()
-	if !ok {
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
 		return Nearby(p, dist)
 	}
 
@@ -542,9 +484,8 @@ func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 // NearbyAllies returns the nearby allies of a certain distance from the user
 func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	pl := []*Handler{p.Handler().(*Handler)}
-	u, _ := data.LoadUserOrCreate(p.Name())
-	tm, ok := u.Team()
-	if !ok {
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
 		return pl
 	}
 
@@ -563,8 +504,8 @@ func NearbyCombat(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 
 	for _, target := range Nearby(p, dist) {
-		t, _ := data.LoadUserOrCreate(target.p.Name())
-		if !t.GameMode.Teams.PVP.Active() {
+		t, _ := data.LoadUserFromName(target.p.Name())
+		if !t.Teams.PVP.Active() {
 			pl = append(pl, target)
 		}
 	}

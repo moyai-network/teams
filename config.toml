@@ -1,5 +1,5 @@
 [Network]
-Address = ':50001'
+Address = ':19132'
 
 [Server]
 Name = ''
@@ -16,7 +16,7 @@ Folder = "assets/new"
 MaxCount = 0
 MaximumChunkRadius = 16
 SaveData = true
-Folder = ""
+Folder = "assets/players"
 
 [Resources]
 AutoBuildPack = true

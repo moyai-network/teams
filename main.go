@@ -1,17 +1,19 @@
 package main
 
 import (
+	"github.com/bedrock-gophers/console/console"
+	"github.com/bedrock-gophers/intercept"
+	"github.com/bedrock-gophers/tebex/tebex"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player/chat"
-	"github.com/moyai-network/moose/worlds"
 	cr "github.com/moyai-network/teams/internal/crate"
-	kit2 "github.com/moyai-network/teams/internal/kit"
+	"github.com/moyai-network/teams/internal/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
+	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/restartfu/gophig"
+	"github.com/sandertv/gophertunnel/minecraft"
 	"image"
-	"image/png"
-	"io/ioutil"
 	"math"
 	_ "net/http/pprof"
 	"os"
@@ -19,16 +21,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/moyai-network/carrot/tebex"
-	"github.com/moyai-network/teams/moyai/deathban"
-	"github.com/moyai-network/teams/moyai/koth"
-
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose/data"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/sotw"
 
-	proxypacket "github.com/paroxity/portal/socket/packet"
+	//proxypacket "github.com/paroxity/portal/socket/packet"
 
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -36,16 +33,13 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/skin"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/df-mc/npc"
-	_ "github.com/moyai-network/moose/console"
-	"github.com/moyai-network/moose/lang"
+	"github.com/moyai-network/teams/internal/command"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/command"
 	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/pkg/lang"
 
-	"github.com/moyai-network/moose/crate"
+	"github.com/moyai-network/teams/internal/crate"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 
 	"github.com/sirupsen/logrus"
@@ -54,57 +48,21 @@ import (
 
 func main() {
 	chat.Global.Subscribe(chat.StdoutSubscriber{})
-	data.LoadTeams()
 	lang.Register(language.English)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
 	log.Level = logrus.InfoLevel
 
+	console.Enable(log)
 	conf, err := readConfig()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	srv := moyai.NewServer(conf, log)
+	config := configure(conf, log)
+	srv := moyai.NewServer(config)
 
-	clg := time.NewTicker(time.Minute * 5)
-	go func() {
-		for range clg.C {
-			var itemCount int64
-
-			for _, e := range srv.World().Entities() {
-				if _, ok := e.Type().(entity.ItemType); ok {
-					err := e.Close()
-					if err != nil {
-						continue
-					}
-					srv.World().RemoveEntity(e)
-					itemCount++
-				}
-			}
-		}
-	}()
-
-	t := time.NewTicker(time.Minute * 1)
-	go func() {
-		for range t.C {
-			for _, u := range user.All() {
-				if u.Player().World() == deathban.Deathban().World() {
-					continue
-				}
-				d, ok := data.LoadUser(u.Player().Name())
-				if ok {
-					_ = data.SaveUser(d)
-				}
-			}
-			log.Println("Saving all users/world data.")
-			for _, t := range data.Teams() {
-				data.SaveTeam(t)
-			}
-			log.Println("Saving all team/data.")
-		}
-	}()
 	handleServerClose(srv)
 
 	w := srv.World()
@@ -112,12 +70,19 @@ func main() {
 	clearEntities(w)
 	placeCrates(w)
 
-	koth.Broadcast = user.Broadcast
-
 	registerCommands(srv)
-	registerRecipes()
-	//registerSlappers(w)
 
+	pk := intercept.NewPacketListener()
+	pk.Listen(&config, ":19133", []minecraft.Protocol{})
+	go func() {
+		for {
+			p, err := pk.Accept()
+			if err != nil {
+				return
+			}
+			p.Handle(user.NewPacketHandler(p))
+		}
+	}()
 	srv.Listen()
 
 	store := loadStore(conf.Moyai.Tebex, log)
@@ -149,7 +114,7 @@ func placeCrates(w *world.World) {
 
 		var items [27]item.Stack
 		for i, r := range c.Rewards() {
-			if r == nil {
+			if r.Stack().Empty() {
 				continue // Ignore this, ill fix it later
 			}
 			st := ench.AddEnchantmentLore(r.Stack())
@@ -174,8 +139,20 @@ func placeCrates(w *world.World) {
 	}
 }
 
+func configure(conf moyai.Config, log *logrus.Logger) server.Config {
+	c, err := conf.Config(log)
+	if err != nil {
+		panic(err)
+	}
+
+	c.Entities = ent.Registry
+
+	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
+	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
+	return c
+}
+
 func configureWorld(w *world.World) {
-	w.Handle(&worlds.Handler{})
 	w.StopWeatherCycle()
 	w.SetDefaultGameMode(world.GameModeSurvival)
 	w.SetTime(6000)
@@ -194,8 +171,8 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
 		store.ExecuteCommands(p)
 		if proxy {
-			info := moyai.SearchInfo(p.UUID())
-			p.Handle(user.NewHandler(p, info.XUID))
+			//info := moyai.SearchInfo(p.UUID())
+			//p.Handle(user.NewHandler(p, info.XUID))
 		} else {
 			p.Handle(user.NewHandler(p, p.XUID()))
 		}
@@ -207,8 +184,8 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		p.ShowCoordinates()
 		p.SetFood(20)
 
-		u, _ := data.LoadUserOrCreate(p.Name())
-		p.Message(lang.Translatef(u.Language(), "discord.message"))
+		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
+		p.Message(lang.Translatef(u.Language, "discord.message"))
 		inv := p.Inventory()
 		for slot, i := range inv.Slots() {
 			for _, sp := range it.SpecialItems() {
@@ -216,10 +193,6 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 					_ = inv.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
 				}
 			}
-		}
-
-		if u.Language() == (language.Tag{}) {
-			p.SendForm(lang.NewPromptForm())
 		}
 
 		// This is here in case we have any chunk
@@ -291,8 +264,8 @@ func registerCommands(srv *server.Server) {
 		cmd.New("teleport", text.Colourf("<aqua>Teleport yourself or another player to a position.</aqua>"), []string{"tp"}, command.TeleportToPos{}, command.TeleportTargetsToPos{}, command.TeleportTargetsToTarget{}, command.TeleportToTarget{}),
 		cmd.New("reclaim", text.Colourf("<aqua>Manage a reclaim.</aqua>"), nil, command.Reclaim{}, command.ReclaimReset{}),
 		cmd.New("kit", text.Colourf("<aqua>Choose a kit.</aqua>"), nil, command.Kit{}),
-		cmd.New("ban", text.Colourf("<aqua>Unleash the ban hammer.</aqua>"), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{}, command.BanInfoOffline{}, command.BanForm{}),
-		cmd.New("blacklist", text.Colourf("<aqua>Blacklist little evaders.</aqua>"), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
+		//cmd.New("ban", text.Colourf("<aqua>Unleash the ban hammer.</aqua>"), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{}, command.BanInfoOffline{}, command.BanForm{}),
+		//cmd.New("blacklist", text.Colourf("<aqua>Blacklist little evaders.</aqua>"), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
 		cmd.New("kick", text.Colourf("<aqua>Kick a user.</aqua>"), nil, command.Kick{}),
 		cmd.New("mute", text.Colourf("<aqua>Mute a user.</aqua>"), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
 		cmd.New("whisper", text.Colourf("<aqua>Send a private message to a player.</aqua>"), []string{"w", "tell", "msg"}, command.Whisper{}),
@@ -314,136 +287,6 @@ func registerCommands(srv *server.Server) {
 	cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.Hub{}))
 }
 
-func registerRecipes() {
-	/*recipe.Register(recipe.NewShapeless([]item.Stack{
-		item.NewStack(block.Wood{}, 1),
-	}, item.NewStack(block.Planks{}, 4), "crafting_table"))
-
-	recipe.Register(recipe.NewShapeless([]item.Stack{
-		item.NewStack(block.Log{}, 1),
-	}, item.NewStack(block.Planks{}, 4), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
-	}, item.NewStack(item.Stick{}, 4), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-	}, item.NewStack(block.Slab{
-		Block: block.Planks{},
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Air{}, 0),
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-	}, item.NewStack(block.Stairs{
-		Block: block.Planks{},
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(item.Stick{}, 1), item.NewStack(block.Air{}, 0),
-	}, item.NewStack(block.Sign{
-		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-	}, item.NewStack(block.WoodDoor{
-		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-	}, item.NewStack(block.WoodTrapdoor{
-		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1),
-		item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-	}, item.NewStack(block.WoodFenceGate{
-		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))
-
-	recipe.Register(recipe.NewShaped([]item.Stack{
-		item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Planks{}, 1), item.NewStack(item.Stick{}, 1), item.NewStack(block.Planks{}, 1),
-		item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0), item.NewStack(block.Air{}, 0),
-	}, item.NewStack(block.WoodFence{
-		Wood: block.OakWood(),
-	}, 3), recipe.NewShape(3, 3), "crafting_table"))*/
-}
-
-func registerSlappers(w *world.World) {
-	s, err := decodeSkin("./assets/models/steve.png", "geometry.humanoid.custom", "")
-
-	if err != nil {
-		panic(err)
-	}
-	npc.Create(npc.Settings{
-		Name:       text.Colourf("<aqua>Diamond</aqua>"),
-		Position:   mgl64.Vec3{9, 80, 21},
-		Skin:       s,
-		Immobile:   true,
-		Vulnerable: false,
-		Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1),
-		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1),
-		Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1),
-		Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1),
-		MainHand:   item.NewStack(item.Sword{item.ToolTierDiamond}, 1),
-	}, w, func(p *player.Player) {
-		u, err := data.LoadUserOrCreate(p.Name())
-		if err != nil {
-			return
-		}
-		cd := u.GameMode.Teams.Kits.Key("diamond")
-		if cd.Active() {
-			p.Handler().(*user.Handler).Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
-			return
-		} else {
-			cd.Set(5 * time.Minute)
-		}
-		kit2.Apply(kit2.Diamond{}, p)
-	})
-}
-
-func decodeSkin(path, geometry, geometryPath string) (skin.Skin, error) {
-	var f *os.File
-	var err error
-
-	if f, err = os.OpenFile(path, os.O_RDWR, 0777); os.IsNotExist(err) {
-		return skin.Skin{}, err
-	}
-
-	img, err := png.Decode(f)
-	if err != nil {
-		return skin.Skin{}, err
-	}
-	s := skin.New(img.Bounds().Max.X, img.Bounds().Max.Y)
-	s.Pix = pix(img)
-	s.ModelConfig = skin.ModelConfig{Default: geometry}
-	if geometryPath != "" {
-		b, err := ioutil.ReadFile(geometryPath)
-		if err != nil {
-			panic(err)
-		}
-		s.Model = b
-	}
-	return s, nil
-}
-
 // pix converts an image.Image into a []uint8.
 func pix(i image.Image) (p []uint8) {
 	for y := 0; y <= i.Bounds().Max.Y-1; y++ {
@@ -463,7 +306,7 @@ func handleServerClose(srv *server.Server) {
 		<-ch
 		for _, p := range srv.Players() {
 			p.Message(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))
-			sock, ok := moyai.Socket()
+			/*sock, ok := moyai.Socket()
 			if ok {
 				go func() {
 					_ = sock.WritePacket(&proxypacket.TransferRequest{
@@ -471,11 +314,11 @@ func handleServerClose(srv *server.Server) {
 						Server:     "syn.lobby",
 					})
 				}()
-			}
+			}*/
 		}
 		time.Sleep(time.Millisecond * 500)
-		_ = data.CloseUsers()
-		data.CloseTeams()
+		data.FlushCache()
+
 		sotw.Save()
 		if err := srv.Close(); err != nil {
 			logrus.Fatalln("close server: %v", err)

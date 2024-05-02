@@ -2,14 +2,12 @@ package user
 
 import (
 	"encoding/json"
+	"github.com/bedrock-gophers/intercept"
 	"strings"
 	_ "unsafe"
 
-	pl "github.com/oomph-ac/oomph/player"
-
 	"github.com/moyai-network/moose/data"
 
-	"github.com/bedrock-gophers/packethandler"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
@@ -22,24 +20,24 @@ import (
 )
 
 type PacketHandler struct {
-	c *packethandler.Conn
+	c *intercept.Conn
 
 	oomph bool
-	p     *pl.Player
+	//p     *pl.Player
 }
 
-func NewPacketHandler(c *packethandler.Conn) *PacketHandler {
+func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 	return &PacketHandler{
 		c: c,
 	}
 }
 
-func NewOomphHandler(p *pl.Player) *PacketHandler {
+/*func NewOomphHandler(p *pl.Player) *PacketHandler {
 	return &PacketHandler{
 		p:     p,
 		oomph: true,
 	}
-}
+}*/
 
 func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
 	switch pkt := pk.(type) {
@@ -55,7 +53,7 @@ func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	var name string
 	if h.oomph {
-		name = h.p.IdentityData().DisplayName
+		//name = h.p.IdentityData().DisplayName
 	} else {
 		name = h.c.IdentityData().DisplayName
 	}

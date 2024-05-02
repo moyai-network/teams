@@ -3,7 +3,17 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/area"
+	"github.com/moyai-network/teams/internal/class"
+	"github.com/moyai-network/teams/internal/crate"
+	"github.com/moyai-network/teams/internal/data"
 	kit2 "github.com/moyai-network/teams/internal/kit"
+	"github.com/moyai-network/teams/internal/koth"
+	"github.com/moyai-network/teams/internal/process"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/unsafe"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/pkg/cooldown"
+	"github.com/moyai-network/teams/pkg/lang"
 	"math"
 	"math/rand"
 	"regexp"
@@ -17,10 +27,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
-	"github.com/moyai-network/moose/crate"
-	"github.com/moyai-network/moose/role"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -36,10 +43,6 @@ import (
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/class"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 )
 
@@ -63,39 +66,38 @@ type Handler struct {
 	s *session.Session
 	p *player.Player
 
-	xuid    string
 	logTime time.Time
 
 	vanished atomic.Bool
 
 	sign cube.Pos
 
-	pearl       *moose.CoolDown
-	rogue       *moose.CoolDown
-	goldenApple *moose.CoolDown
+	pearl       *cooldown.CoolDown
+	rogue       *cooldown.CoolDown
+	goldenApple *cooldown.CoolDown
 
-	factionCreate *moose.CoolDown
+	factionCreate *cooldown.CoolDown
 
-	itemUse moose.MappedCoolDown[world.Item]
+	itemUse cooldown.MappedCoolDown[world.Item]
 
-	archerRogueItem moose.MappedCoolDown[world.Item]
-	bardItem        moose.MappedCoolDown[world.Item]
-	strayItem       moose.MappedCoolDown[world.Item]
+	archerRogueItem cooldown.MappedCoolDown[world.Item]
+	bardItem        cooldown.MappedCoolDown[world.Item]
+	strayItem       cooldown.MappedCoolDown[world.Item]
 
-	ability   *moose.CoolDown
-	abilities moose.MappedCoolDown[it.SpecialItemType]
+	ability   *cooldown.CoolDown
+	abilities cooldown.MappedCoolDown[it.SpecialItemType]
 
 	waypoint *WayPoint
 
 	armour atomic.Value[[4]item.Stack]
-	class  atomic.Value[moose.Class]
+	class  atomic.Value[class.Class]
 	energy atomic.Value[float64]
 
-	combat *moose.Tag
-	archer *moose.Tag
+	combat *cooldown.CoolDown
+	archer *cooldown.CoolDown
 
 	boneHits map[string]int
-	bone     *moose.CoolDown
+	bone     *cooldown.CoolDown
 
 	scramblerHits map[string]int
 	pearlDisabled bool
@@ -103,12 +105,12 @@ type Handler struct {
 	lastPearlPos mgl64.Vec3
 	lastHitBy    *player.Player
 
-	logout *moose.Teleportation
-	stuck  *moose.Teleportation
-	home   *moose.Teleportation
+	logout *process.Process
+	stuck  *process.Process
+	home   *process.Process
 
 	lastScoreBoard atomic.Value[*scoreboard.Scoreboard]
-	area           atomic.Value[moose.NamedArea]
+	area           atomic.Value[area.NamedArea]
 
 	lastAttackerName atomic.Value[string]
 	lastAttackTime   atomic.Value[time.Time]
@@ -131,17 +133,16 @@ type Handler struct {
 
 func NewHandler(p *player.Player, xuid string) *Handler {
 	ha := &Handler{
-		p:    p,
-		xuid: xuid,
+		p: p,
 
-		pearl:       moose.NewCoolDown(),
-		rogue:       moose.NewCoolDown(),
-		goldenApple: moose.NewCoolDown(),
-		ability:     moose.NewCoolDown(),
+		pearl:       cooldown.NewCoolDown(nil, nil),
+		rogue:       cooldown.NewCoolDown(nil, nil),
+		goldenApple: cooldown.NewCoolDown(nil, nil),
+		ability:     cooldown.NewCoolDown(nil, nil),
 
-		factionCreate: moose.NewCoolDown(),
+		factionCreate: cooldown.NewCoolDown(nil, nil),
 
-		bone:     moose.NewCoolDown(),
+		bone:     cooldown.NewCoolDown(nil, nil),
 		boneHits: map[string]int{},
 
 		scramblerHits: map[string]int{},
@@ -150,26 +151,26 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 		chatType: *atomic.NewValue(1),
 
-		itemUse:         moose.NewMappedCoolDown[world.Item](),
-		archerRogueItem: moose.NewMappedCoolDown[world.Item](),
-		bardItem:        moose.NewMappedCoolDown[world.Item](),
-		strayItem:       moose.NewMappedCoolDown[world.Item](),
-		abilities:       moose.NewMappedCoolDown[it.SpecialItemType](),
+		itemUse:         cooldown.NewMappedCoolDown[world.Item](),
+		archerRogueItem: cooldown.NewMappedCoolDown[world.Item](),
+		bardItem:        cooldown.NewMappedCoolDown[world.Item](),
+		strayItem:       cooldown.NewMappedCoolDown[world.Item](),
+		abilities:       cooldown.NewMappedCoolDown[it.SpecialItemType](),
 
-		combat: moose.NewTag(nil, nil),
-		archer: moose.NewTag(nil, nil),
+		combat: cooldown.NewCoolDown(nil, nil),
+		archer: cooldown.NewCoolDown(nil, nil),
 
-		home: moose.NewTeleportation(func(t *moose.Teleportation) {
+		home: process.NewProcess(func(t *process.Process) {
 			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
 		}),
-		stuck: moose.NewTeleportation(func(t *moose.Teleportation) {
+		stuck: process.NewProcess(func(t *process.Process) {
 			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
 		}),
 
 		close: make(chan struct{}),
 		death: make(chan struct{}),
 	}
-	ha.logout = moose.NewTeleportation(func(t *moose.Teleportation) {
+	ha.logout = process.NewProcess(func(t *process.Process) {
 		ha.loggedOut = true
 		p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
 	})
@@ -182,21 +183,19 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	}
 
 	s := player_session(p)
-	u, _ := data.LoadUserOrCreate(p.Name())
+	u, _ := data.LoadUserFromName(p.Name())
 
-	ha.l = u.Language()
-
-	if u.GameMode.Teams.Dead {
+	if u.Teams.Dead {
 		p.Armour().Clear()
 		p.Inventory().Clear()
 		p.Teleport(p.World().Spawn().Vec3Middle())
 		p.Heal(20, effect.InstantHealingSource{})
-		u.GameMode.Teams.Dead = false
+		u.Teams.Dead = false
 	}
 
-	if u.Frozen {
+	/*if u.Frozen {
 		p.SetImmobile()
-	}
+	}*/
 
 	u.DisplayName = p.Name()
 	u.Name = strings.ToLower(p.Name())
@@ -204,16 +203,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
-	if err := data.SaveUser(u); err != nil {
-		panic(err)
-	}
+	data.SaveUser(u)
 
 	ha.s = s
 	ha.logTime = time.Now()
-
-	playersMu.Lock()
-	players[strings.ToLower(p.Name())] = ha
-	playersMu.Unlock()
 
 	ha.UpdateState()
 	go startTicker(ha)
@@ -226,32 +219,32 @@ var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	ctx.Cancel()
-	u, err := data.LoadUserOrCreate(h.p.Name())
+	u, err := data.LoadUserFromName(h.p.Name())
 	if err != nil {
 		return
 	}
 
 	*message = emojis.Replace(*message)
-	l := h.p.Locale()
 	r := u.Roles.Highest()
 
-	if !u.Mute.Expired() {
+	/*if !u.Mute.Expired() {
 		h.p.Message(lang.Translatef(l, "user.message.mute"))
 		return
-	}
+	}*/
+	tm, teamErr := data.LoadTeamFromMemberName(h.p.Name())
 
 	if msg := strings.TrimSpace(*message); len(msg) > 0 {
 		msg = formatRegex.ReplaceAllString(msg, "")
 
 		global := func() {
-			if tm, ok := u.Team(); ok {
+			if teamErr == nil {
 				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
 				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
-				for _, t := range All() {
-					if tm.Member(t.p.Name()) {
-						t.p.Message(formatTeam)
+				for _, t := range moyai.Server().Players() {
+					if tm.Member(t.Name()) {
+						t.Message(formatTeam)
 					} else {
-						t.p.Message(formatEnemy)
+						t.Message(formatEnemy)
 					}
 				}
 				chat.StdoutSubscriber{}.Message(formatEnemy)
@@ -260,33 +253,29 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 			}
 		}
 
-		staff := func() {
-			for _, s := range All() {
-				if us, err := data.LoadUserOrCreate(s.p.Name()); err != nil && role.Staff(us.Roles.Highest()) {
+		/*staff := func() {
+			for _, s := range moyai.Server().Players() {
+				if us, err := data.LoadUserOrCreate(s.Name()); err != nil && role.Staff(us.Roles.Highest()) {
 					s.Message("staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 				}
 			}
-		}
+		}*/
 
 		h.lastMessage.Store(time.Now())
 		switch h.ChatType() {
 		case 1:
-			if msg[0] == '!' && role.Staff(r) {
+			/*if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
-			}
+			}*/
 			global()
 		case 2:
-			if msg[0] == '!' && role.Staff(r) {
+			/*if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
-			}
-			u, err := data.LoadUserOrCreate(h.p.Name())
-			if err != nil {
-				return
-			}
-			tm, ok := u.Team()
-			if !ok {
+			}*/
+
+			if teamErr != nil {
 				h.UpdateChatType(1)
 				global()
 				return
@@ -301,7 +290,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				global()
 				return
 			}
-			staff()
+			//staff()
 		}
 	}
 
@@ -313,6 +302,10 @@ func (h *Handler) HandleFoodLoss(ctx *event.Context, _ int, _ *int) {
 
 func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 	p := h.Player()
+	u, err := data.LoadUserFromXUID(h.p.XUID())
+	if err != nil {
+		return
+	}
 
 	w := p.World()
 	b := w.Block(pos)
@@ -321,15 +314,15 @@ func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 	typ, ok := it.SpecialItem(held)
 	if ok {
 		if cd := h.ability; cd.Active() {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
 			ctx.Cancel()
 			return
 		}
 		if spi := h.abilities; spi.Active(typ) {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
 			ctx.Cancel()
 		} else {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.ready.partner_item.item", typ.Name()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.ready.partner_item.item", typ.Name()))
 			ctx.Cancel()
 		}
 	}
@@ -344,20 +337,24 @@ func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 
 func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	p := h.Player()
+	u, err := data.LoadUserFromXUID(h.p.XUID())
+	if err != nil {
+		return
+	}
 
 	held, _ := p.HeldItems()
 	typ, ok := it.SpecialItem(held)
 	if ok {
 		if cd := h.ability; cd.Active() {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
 			ctx.Cancel()
 			return
 		}
 		if spi := h.abilities; spi.Active(typ) {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
 			ctx.Cancel()
 		} else {
-			p.SendJukeboxPopup(lang.Translatef(p.Locale(), "popup.ready.partner_item.item", typ.Name()))
+			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.ready.partner_item.item", typ.Name()))
 			ctx.Cancel()
 		}
 	}
@@ -376,16 +373,15 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		return
 	}
 
-	u, _ := data.LoadUserOrCreate(h.p.Name())
-	t, ok := u.Team()
-	if !ok {
+	t, err := data.LoadTeamFromMemberName(h.p.Name())
+	if err != nil {
 		return
 	}
 	if !t.Leader(u.Name) {
 		h.Message("team.not-leader")
 		return
 	}
-	if t.Claim != (moose.Area{}) {
+	if t.Claim != (area.Area{}) {
 		h.Message("team.has-claim")
 		return
 	}
@@ -395,7 +391,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		h.Message("team.area.too-close")
 		return
 	}
-	claim := moose.NewArea(pos[0], pos[1])
+	claim := area.NewArea(pos[0], pos[1])
 	var blocksPos []cube.Pos
 	min := claim.Min()
 	max := claim.Max()
@@ -425,9 +421,13 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		}
 	}
 
-	for _, tm := range data.Teams() {
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		return
+	}
+	for _, tm := range teams {
 		c := tm.Claim
-		if c == (moose.Area{}) {
+		if c == (area.Area{}) {
 			continue
 		}
 		for _, b := range blocksPos {
@@ -474,18 +474,21 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 // HandleItemUse ...
 func (h *Handler) HandleItemUse(ctx *event.Context) {
 	held, left := h.p.HeldItems()
-	u, _ := data.LoadUserOrCreate(h.p.Name())
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return
+	}
 	if v, ok := held.Value("MONEY_NOTE"); ok {
-		u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + v.(float64)
+		u.Teams.Balance = u.Teams.Balance + v.(float64)
 		h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 		h.p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
-		_ = data.SaveUser(u)
+		data.SaveUser(u)
 		return
 	}
 	switch held.Item().(type) {
 	case item.EnderPearl:
 		if cd := h.pearl; cd.Active() {
-			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Ender Pearl", cd.Remaining().Seconds()))
+			Messagef(h.p, "user.cool-down", "Ender Pearl", cd.Remaining().Seconds())
 			ctx.Cancel()
 		} else if h.pearlDisabled {
 			h.p.Message(text.Colourf("<red>Pearl Disabled! Pearl was refunded!</red>"))
@@ -520,7 +523,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Bard:
 		if e, ok := BardEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
-			if u.GameMode.Teams.PVP.Active() || sotwRunning && u.GameMode.Teams.SOTW {
+			if u.Teams.PVP.Active() || sotwRunning && u.Teams.SOTW {
 				return
 			}
 			if cd := h.bardItem.Key(held.Item()); cd.Active() {
@@ -556,7 +559,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Stray:
 		if e, ok := StrayEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
-			if u.GameMode.Teams.PVP.Active() || sotwRunning && u.GameMode.Teams.SOTW {
+			if u.Teams.PVP.Active() || sotwRunning && u.Teams.SOTW {
 				return
 			}
 
@@ -681,11 +684,11 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		return
 	}
 
-	u, err := data.LoadUserOrCreate(h.p.Name())
+	u, err := data.LoadUserFromName(h.p.Name())
 	if err != nil {
-		ctx.Cancel()
 		return
 	}
+
 	for _, a := range area.Protected(h.p.World()) {
 		if a.Vec3WithinOrEqualXZ(h.p.Position()) {
 			if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
@@ -832,12 +835,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			h.pearl.Reset()
 			h.archer.Reset()
 
-			u, err := data.LoadUserOrCreate(h.p.Name())
+			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
 				return
 			}
-			u.GameMode.Teams.PVP.Set(time.Hour)
-			_ = data.SaveUser(u)
+			u.Teams.PVP.Set(time.Hour)
+			data.SaveUser(u)
 
 			DropContents(h.p)
 			p.SetHeldItems(item.Stack{}, item.Stack{})
@@ -865,7 +868,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 					victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
 				}
 				victim.GameMode.Teams.Stats.KillStreak = 0
-				_ = data.SaveUser(victim)
+				data.SaveUser(victim)
 			}
 
 			killer, ok := h.LastAttacker()
@@ -881,7 +884,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 					data.SaveTeam(tm)
 				}
 
-				_ = data.SaveUser(k)
+				data.SaveUser(k)
 
 				held, _ := killer.p.HeldItems()
 				heldName := held.CustomName()
@@ -1075,7 +1078,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			return
 		}
 		u.GameMode.Teams.PVP.Set(time.Hour)
-		_ = data.SaveUser(u)
+		data.SaveUser(u)
 
 		DropContents(h.p)
 		p.SetHeldItems(item.Stack{}, item.Stack{})
@@ -1107,7 +1110,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
 			}
 			victim.GameMode.Teams.Stats.KillStreak = 0
-			_ = data.SaveUser(victim)
+			data.SaveUser(victim)
 		}
 
 		killer, ok := h.LastAttacker()
@@ -1129,7 +1132,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				data.SaveTeam(tm)
 			}
 
-			_ = data.SaveUser(k)
+			data.SaveUser(k)
 
 			held, _ := killer.p.HeldItems()
 			heldName := held.CustomName()
@@ -1327,7 +1330,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				return
 			}
 
-			if t.Claim != (moose.Area{}) {
+			if t.Claim != (Area{}) {
 				h.Message("team.has-claim")
 				break
 			}
@@ -1344,7 +1347,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			for _, tm := range data.Teams() {
 				c := tm.Claim
-				if c != (moose.Area{}) {
+				if c != (Area{}) {
 					continue
 				}
 				if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
@@ -1483,7 +1486,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 				// restart: should we do this?
 				u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - price
-				_ = data.SaveUser(u)
+				data.SaveUser(u)
 				h.AddItemOrDrop(item.NewStack(it, q))
 				h.Message("shop.buy.success", q, lines[1])
 			case "sell":
@@ -1503,7 +1506,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 				if count >= q {
 					u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + float64(count/q)*price
-					_ = data.SaveUser(u)
+					data.SaveUser(u)
 					h.Message("shop.sell.success", count, lines[1])
 				} else {
 					h.Message("shop.sell.fail")
@@ -1756,7 +1759,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if u.GameMode.Teams.PVP.Active() {
 		for _, a := range data.Teams() {
 			a := a.Claim
-			if a != (moose.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
+			if a != (Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
 				ctx.Cancel()
 				return
 			}
@@ -1819,7 +1822,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
-	var areas []moose.NamedArea
+	var areas []NamedArea
 
 	for _, tm := range data.Teams() {
 		a := tm.Claim
@@ -1835,7 +1838,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	for _, a := range append(area.Protected(w), areas...) {
 		if a.Vec3WithinOrEqualFloorXZ(newPos) {
 			if ar != a {
-				if ar != (moose.NamedArea{}) {
+				if ar != (NamedArea{}) {
 					h.Message("area.leave", ar.Name())
 				}
 				h.area.Store(a)
@@ -1848,7 +1851,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 
 	if ar != area.Wilderness(w) {
-		if ar != (moose.NamedArea{}) {
+		if ar != (NamedArea{}) {
 			h.Message("area.leave", ar.Name())
 
 		}
@@ -1874,7 +1877,7 @@ func (h *Handler) HandleQuit() {
 
 	u, _ := data.LoadUserOrCreate(p.Name())
 	u.PlayTime += time.Since(h.logTime)
-	_ = data.SaveUser(u)
+	data.SaveUser(u)
 
 	tm, _ := u.Team()
 	_, sotwRunning := sotw.Running()
@@ -1915,20 +1918,49 @@ func (h *Handler) HandleQuit() {
 					data.SaveTeam(tm)
 				}
 				DropContents(h.p)
-				_ = data.SaveUser(u)
+				data.SaveUser(u)
 			}
-			playersMu.Lock()
-			delete(players, h.p.Name())
-			playersMu.Unlock()
 			_ = h.p.Close()
 		}()
 		h.logger = true
 		h.UpdateState()
 		return
 	}
-	playersMu.Lock()
-	delete(players, h.p.Name())
-	playersMu.Unlock()
+}
+
+func Online(p *player.Player) bool {
+	return unsafe.Session(p) != session.Nop
+}
+
+func OnlineFromName(name string) (*Handler, bool) {
+	for _, p := range moyai.Server().Players() {
+		if strings.EqualFold(name, p.Name()) {
+			h, ok := p.Handler().(*Handler)
+			return h, ok && Online(p)
+		}
+	}
+	return nil, false
+}
+
+func Broadcastf(key string, a ...interface{}) {
+	for _, p := range moyai.Server().Players() {
+		Messagef(p, key, a...)
+	}
+}
+
+func Messagef(p *player.Player, key string, a ...interface{}) {
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		p.Message("An error occurred while loading your user data.")
+		return
+	}
+	p.Message(lang.Translatef(u.Language, key, a...))
+}
+
+func UpdateState(p *player.Player) {
+	for _, v := range p.World().Viewers(p.Position()) {
+		v.ViewEntityState(p)
+	}
 }
 
 type npcHandler struct {

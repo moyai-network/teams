@@ -2,12 +2,12 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/koth"
 	"strings"
 	"time"
 
 	"github.com/moyai-network/moose"
 
-	"github.com/moyai-network/teams/moyai/koth"
 	"golang.org/x/exp/slices"
 
 	ench "github.com/moyai-network/teams/moyai/enchantment"

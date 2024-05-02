@@ -1,6 +1,7 @@
 package form
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"math/rand"
 	"sort"
 	"strings"
@@ -33,8 +34,8 @@ type mute struct {
 // NewMute creates a new form to issue a mute.
 func NewMute(p *player.Player) form.Form {
 	online := make(map[string]string)
-	for _, u := range user.All() {
-		online[u.Player().Name()] = u.Player().Name()
+	for _, u := range moyai.Server().Players() {
+		online[u.Name()] = u.Name()
 	}
 	names := [...]string{"Steve Harvey", "Elon Musk", "Bill Gates", "Mark Zuckerberg", "Jeff Bezos", "Warren Buffet", "Larry Page", "Sergey Brin", "Larry Ellison", "Tim Cook", "Steve Ballmer", "Daniel Larson", "Steve"}
 	list := maps.Keys(online)
@@ -105,7 +106,7 @@ func (m mute) Submit(s form.Submitter) {
 			return
 		}
 		t.Mute = mu
-		_ = data.SaveUser(t)
+		data.SaveUser(t)
 
 		user.Alert(m.p, "staff.alert.mute", t.DisplayName, reason)
 		//webhook.SendPunishment(m.p.Name(), t.DisplayName(), reason, "Mute")
@@ -126,7 +127,7 @@ func (m mute) Submit(s form.Submitter) {
 		return
 	}
 	t.Mute = mu
-	_ = data.SaveUser(t) // Save in case of a server crash or anything that may cause the data to not get saved.
+	data.SaveUser(t) // Save in case of a server crash or anything that may cause the data to not get saved.
 
 	user.Alert(m.p, "staff.alert.mute", t.Name, reason)
 	//webhook.SendPunishment(m.p.Name(), t.Player().Name(), reason, "Mute")

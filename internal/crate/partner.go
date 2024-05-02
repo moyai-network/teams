@@ -5,8 +5,6 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/crate"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -27,15 +25,15 @@ var partnerEnchantments = []item.Enchantment{
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),
 }
 
-func (partner) Rewards() []moose.Reward {
-	return []moose.Reward{
-		2:  crate.NewReward(it.NewSpecialItem(it.NinjaStarType{}, 1), 5),
-		3:  crate.NewReward(it.NewSpecialItem(it.PearlDisablerType{}, 1), 10),
-		4:  crate.NewReward(it.NewSpecialItem(it.SigilType{}, 1), 10),
-		5:  crate.NewReward(it.NewSpecialItem(it.FullInvisibilityType{}, 1), 10),
-		6:  crate.NewReward(it.NewSpecialItem(it.TimeWarpType{}, 1), 10),
-		12: crate.NewReward(it.NewSpecialItem(it.ExoticBoneType{}, 1), 20),
-		13: crate.NewReward(it.NewSpecialItem(it.ScramblerType{}, 1), 20),
-		14: crate.NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
+func (partner) Rewards() []Reward {
+	return []Reward{
+		2:  NewReward(it.NewSpecialItem(it.NinjaStarType{}, 1), 5),
+		3:  NewReward(it.NewSpecialItem(it.PearlDisablerType{}, 1), 10),
+		4:  NewReward(it.NewSpecialItem(it.SigilType{}, 1), 10),
+		5:  NewReward(it.NewSpecialItem(it.FullInvisibilityType{}, 1), 10),
+		6:  NewReward(it.NewSpecialItem(it.TimeWarpType{}, 1), 10),
+		12: NewReward(it.NewSpecialItem(it.ExoticBoneType{}, 1), 20),
+		13: NewReward(it.NewSpecialItem(it.ScramblerType{}, 1), 20),
+		14: NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
 	}
 }

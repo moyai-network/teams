@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/teams/internal/area"
 	"math"
 	"strings"
@@ -9,7 +10,7 @@ import (
 
 	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/teams/moyai/user"
-	"github.com/paroxity/portal/session"
+	//"github.com/paroxity/portal/session"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 
 	"github.com/df-mc/dragonfly/server/block"
