@@ -1,15 +1,15 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/pkg/lang"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -26,7 +26,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
@@ -36,20 +36,20 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	}*/
 	msg := strings.TrimSpace(string(w.Message))
 	if len(msg) <= 0 {
-		o.Error(lang.Translatef(l, "message.empty"))
+		user.Messagef(p, "message.empty")
 		return
 	}
 	if len(w.Target) > 1 {
-		o.Error(lang.Translatef(l, "command.targets.exceed"))
+		user.Messagef(p, "command.targets.exceed")
 		return
 	}
 
 	tP, ok := w.Target[0].(*player.Player)
 	if !ok {
-		o.Error(lang.Translatef(l, "command.target.unknown"))
+		user.Messagef(p, "command.target.unknown")
 		return
 	}
-	t, err := data.LoadUserOrCreate(tP.Name())
+	t, err := data.LoadUserFromName(tP.Name())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -62,12 +62,12 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	uTag, uMsg := text.Colourf("<white>%s</white>", u.DisplayName), text.Colourf("<white>%s</white>", msg)
 	tTag, tMsg := text.Colourf("<white>%s</white>", t.DisplayName), text.Colourf("<white>%s</white>", msg)
 	if _, ok := u.Roles.Highest().(role.Default); !ok {
-		uMsg = t.Roles.Highest().Colour(msg)
-		uTag = u.Roles.Highest().Colour(u.DisplayName)
+		uMsg = t.Roles.Highest().Color(msg)
+		uTag = u.Roles.Highest().Color(u.DisplayName)
 	}
 	if _, ok := t.Roles.Highest().(role.Default); !ok {
-		tMsg = u.Roles.Highest().Colour(msg)
-		tTag = t.Roles.Highest().Colour(t.DisplayName)
+		tMsg = u.Roles.Highest().Color(msg)
+		tTag = t.Roles.Highest().Color(t.DisplayName)
 	}
 
 	uH, ok := user.Lookup(u.Name)
@@ -80,7 +80,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	t.GameMode.Teams.LastMessageFrom = u.Name
+	t.LastMessageFrom = u.Name
 	data.SaveUser(t)
 
 	tP.PlaySound(sound.Experience{})

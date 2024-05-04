@@ -49,8 +49,8 @@ func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3)
 	}()
 }
 
-// Teleporting returns true if the player is currently ongoing.
-func (pr *Process) Teleporting() bool {
+// Ongoing returns true if the process is currently ongoing.
+func (pr *Process) Ongoing() bool {
 	return pr.ongoing
 }
 

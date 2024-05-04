@@ -5,7 +5,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 )
 
 type Logout struct{}
@@ -16,12 +16,12 @@ func (l Logout) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	h, ok := user.Lookup(p.Name())
+	h, ok := p.Handler().(*user.Handler)
 	if !ok {
 		return
 	}
 
-	if h.Logout().Teleporting() {
+	if h.Logout().Ongoing() {
 		o.Error("You are already logging out.")
 		return
 	}

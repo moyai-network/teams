@@ -1,6 +1,10 @@
 package form
 
-import (
+func init() {
+	panic("USE INV MENUS")
+}
+
+/*import (
 	"github.com/moyai-network/teams/moyai"
 	"math/rand"
 	"sort"
@@ -133,3 +137,4 @@ func (m mute) Submit(s form.Submitter) {
 	//webhook.SendPunishment(m.p.Name(), t.Player().Name(), reason, "Mute")
 	h.Message("command.mute.success", t.Name, reason)
 }
+*/

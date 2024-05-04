@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/area"
 	"github.com/moyai-network/teams/internal/class"
+	"github.com/moyai-network/teams/internal/colour"
 	"github.com/moyai-network/teams/internal/crate"
 	"github.com/moyai-network/teams/internal/data"
 	kit2 "github.com/moyai-network/teams/internal/kit"
@@ -13,6 +14,7 @@ import (
 	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/pkg/cooldown"
+	"github.com/moyai-network/teams/pkg/effectutil"
 	"github.com/moyai-network/teams/pkg/lang"
 	"math"
 	"math/rand"
@@ -27,8 +29,8 @@ import (
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
-	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/sotw"
+	it "github.com/moyai-network/teams/internal/item"
+	"github.com/moyai-network/teams/internal/sotw"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
@@ -43,7 +45,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/go-gl/mathgl/mgl64"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
+	ench "github.com/moyai-network/teams/internal/enchantment"
 )
 
 var (
@@ -177,10 +179,12 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
 
-	if h, ok := Lookup(p.Name()); ok {
-		p.Teleport(h.p.Position())
+	// FIX LOGGER
+	/*if p, ok := Lookup(p.Name()); ok {
+		p.Teleport(p.Position())
+		if h, ok :=
 		close(h.close)
-	}
+	}*/
 
 	s := player_session(p)
 	u, _ := data.LoadUserFromName(p.Name())
@@ -280,9 +284,9 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				global()
 				return
 			}
-			for _, u := range tm.Members {
-				if m, ok := Lookup(u.Name); ok {
-					m.p.Message(text.Colourf("<dark-aqua>[<yellow>T</yellow>] %s: %s</dark-aqua>", h.p.Name(), msg))
+			for _, member := range tm.Members {
+				if m, ok := Lookup(member.Name); ok {
+					m.Message(text.Colourf("<dark-aqua>[<yellow>T</yellow>] %s: %s</dark-aqua>", h.p.Name(), msg))
 				}
 			}
 		case 3:
@@ -552,7 +556,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			h.Message("class.ability.use", moose.EffectName(e), lvl, len(teammates))
+			h.Message("class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.bardItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -589,7 +593,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			h.Message("class.ability.use", moose.EffectName(e), lvl, len(teammates))
+			h.Message("class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.strayItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -612,7 +616,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.p.Message(text.Colourf("<red>You are on timewarp cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			h.p.Message(text.Colourf("<green>Teleporting in 2 seconds...</green>"))
+			h.p.Message(text.Colourf("<green>Ongoing in 2 seconds...</green>"))
 			h.ability.Set(time.Second * 10)
 			h.abilities.Set(kind, time.Minute*1)
 			time.AfterFunc(time.Second*2, func() {
@@ -665,7 +669,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.p.Message(text.Colourf("<red>You are on Ninja Star cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			h.p.Message(text.Colourf("<green>Teleporting to %s in 5 seconds...</red>", h.lastHitBy.Name()))
+			h.p.Message(text.Colourf("<green>Ongoing to %s in 5 seconds...</red>", h.lastHitBy.Name()))
 			h.lastHitBy.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
 			h.ability.Set(time.Second * 10)
 			h.abilities.Set(kind, time.Minute*2)
@@ -856,51 +860,50 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			h.p.Teleport(mgl64.Vec3{0, 100, 0})
 			//h.p.SetMobile()
 
-			if tm, ok := u.Team(); ok {
+			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 				data.SaveTeam(tm)
 			}
 
-			victim, ok := data.LoadUser(h.p.Name())
-			if ok {
-				victim.GameMode.Teams.Stats.Deaths += 1
-				if victim.GameMode.Teams.Stats.KillStreak > victim.GameMode.Teams.Stats.BestKillStreak {
-					victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
+			victim, err := data.LoadUserFromName(h.p.Name())
+			if err == nil {
+				victim.Teams.Stats.Deaths += 1
+				if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
+					victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
 				}
-				victim.GameMode.Teams.Stats.KillStreak = 0
+				victim.Teams.Stats.KillStreak = 0
 				data.SaveUser(victim)
 			}
 
 			killer, ok := h.LastAttacker()
 			if ok {
-				k, err := data.LoadUserOrCreate(killer.p.Name())
+				k, err := data.LoadUserFromName(killer.Name())
 				if err != nil {
 					return
 				}
-				k.GameMode.Teams.Stats.Kills += 1
+				k.Teams.Stats.Kills += 1
 
-				if tm, ok := k.Team(); ok {
+				if tm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
 					tm = tm.WithPoints(tm.Points + 1)
 					data.SaveTeam(tm)
 				}
-
 				data.SaveUser(k)
 
-				held, _ := killer.p.HeldItems()
+				held, _ := killer.HeldItems()
 				heldName := held.CustomName()
 
 				if len(heldName) <= 0 {
-					heldName = moose.ItemName(held.Item())
+					heldName = item.DisplayName(held.Item(), language.English)
 				}
 
 				if held.Empty() || len(heldName) <= 0 {
 					heldName = "their fist"
 				}
 
-				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.GameMode.Teams.Stats.Kills, killer.p.Name(), k.GameMode.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 				h.ResetLastAttacker()
 			} else {
-				_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.GameMode.Teams.Stats.Kills))
+				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
 			}
 			if h.logger {
 				h.death <- struct{}{}
@@ -913,8 +916,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		return
 	}
 
-	u, _ := data.LoadUserOrCreate(h.p.Name())
-	if u.GameMode.Teams.PVP.Active() {
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil || u.Teams.PVP.Active() {
 		ctx.Cancel()
 		return
 	}
@@ -932,8 +935,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	var attacker *player.Player
 	switch s := src.(type) {
 	case entity.FallDamageSource:
-		u, ok := data.LoadUser(h.p.Name())
-		if !ok || u.GameMode.Teams.PVP.Active() {
+		u, err := data.LoadUserFromName(h.p.Name())
+		if err != nil || u.Teams.PVP.Active() {
 			ctx.Cancel()
 			return
 		}
@@ -956,7 +959,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 		h.lastHitBy = attacker
 	case entity.VoidDamageSource:
-		if u.GameMode.Teams.PVP.Active() {
+		if u.Teams.PVP.Active() {
 			h.p.Teleport(mgl64.Vec3{0, 80, 0})
 		}
 	case entity.ProjectileDamageSource:
@@ -971,7 +974,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
 			if k, ok := koth.Running(); ok {
-				if pl, ok := k.Capturing(); ok && pl.Player() == h.p {
+				if pl, ok := k.Capturing(); ok && pl == h.p {
 					attacker.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
 					break
 				}
@@ -1012,7 +1015,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				})
 				h.p.KnockBack(attacker.Position(), 0.394, 0.394)
 
-				attacker.Message(lang.Translatef(h.p.Locale(), "archer.tag", math.Round(dist), damage/2))
+				attacker.Message(lang.Translatef(data.Language{}, "archer.tag", math.Round(dist), damage/2))
 			}
 
 		}
@@ -1073,12 +1076,17 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.pearl.Reset()
 		h.archer.Reset()
 
-		u, err := data.LoadUserOrCreate(h.p.Name())
+		victim, err := data.LoadUserFromName(h.p.Name())
 		if err != nil {
 			return
 		}
-		u.GameMode.Teams.PVP.Set(time.Hour)
-		data.SaveUser(u)
+		victim.Teams.PVP.Set(time.Hour)
+		victim.Teams.Stats.Deaths += 1
+		if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
+			victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
+		}
+		victim.Teams.Stats.KillStreak = 0
+		data.SaveUser(victim)
 
 		DropContents(h.p)
 		p.SetHeldItems(item.Stack{}, item.Stack{})
@@ -1098,57 +1106,46 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.p.Teleport(mgl64.Vec3{0, 100, 0})
 		//h.p.SetMobile()
 
-		if tm, ok := u.Team(); ok {
+		if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 			data.SaveTeam(tm)
 		}
 
-		victim, ok := data.LoadUser(h.p.Name())
-		if ok {
-			victim.GameMode.Teams.Stats.Deaths += 1
-			if victim.GameMode.Teams.Stats.KillStreak > victim.GameMode.Teams.Stats.BestKillStreak {
-				victim.GameMode.Teams.Stats.BestKillStreak = victim.GameMode.Teams.Stats.KillStreak
-			}
-			victim.GameMode.Teams.Stats.KillStreak = 0
-			data.SaveUser(victim)
-		}
-
 		killer, ok := h.LastAttacker()
 		if ok {
-			k, err := data.LoadUserOrCreate(killer.p.Name())
+			k, err := data.LoadUserFromName(killer.Name())
 			if err != nil {
 				return
 			}
-			k.GameMode.Teams.Stats.Kills += 1
-			k.GameMode.Teams.Stats.KillStreak += 1
+			k.Teams.Stats.Kills += 1
+			k.Teams.Stats.KillStreak += 1
 
-			if k.GameMode.Teams.Stats.KillStreak%5 == 0 {
-				Broadcast("user.killstreak", killer.p.Name(), k.GameMode.Teams.Stats.KillStreak)
-				killer.AddItemOrDrop(it.NewKey(it.KeyTypePartner, int(k.GameMode.Teams.Stats.KillStreak)/2))
+			if k.Teams.Stats.KillStreak%5 == 0 {
+				Broadcast("user.killstreak", killer.Name(), k.Teams.Stats.KillStreak)
+				it.AddOrDrop(killer, it.NewKey(it.KeyTypePartner, int(k.Teams.Stats.KillStreak)/2))
 			}
 
-			if tm, ok := k.Team(); ok {
+			if tm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
 				tm = tm.WithPoints(tm.Points + 1)
 				data.SaveTeam(tm)
 			}
-
 			data.SaveUser(k)
 
-			held, _ := killer.p.HeldItems()
+			held, _ := killer.HeldItems()
 			heldName := held.CustomName()
 
 			if len(heldName) <= 0 {
-				heldName = moose.ItemName(held.Item())
+				heldName = item.DisplayName(held.Item(), language.English)
 			}
 
 			if held.Empty() || len(heldName) <= 0 {
 				heldName = "their fist"
 			}
 
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.kill", p.Name(), u.GameMode.Teams.Stats.Kills, killer.p.Name(), k.GameMode.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 			h.ResetLastAttacker()
 		} else {
-			_, _ = chat.Global.WriteString(lang.Translatef(language.English, "user.suicide", p.Name(), u.GameMode.Teams.Stats.Kills))
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
 		}
 		if h.logger {
 			h.death <- struct{}{}
@@ -1193,7 +1190,7 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 				{
 					Shape:   item.FireworkShapeStar(),
 					Trail:   true,
-					Colour:  moose.RandomColour(),
+					Colour:  colour.RandomColour(),
 					Twinkle: true,
 				},
 			},
@@ -1201,14 +1198,15 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 		return
 	}
 
-	for _, t := range data.Teams() {
+	teams, _ := data.LoadAllTeams()
+	for _, t := range teams {
 		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
 		}
-		u, _ := data.LoadUserOrCreate(h.p.Name())
+		u, _ := data.LoadUserFromName(h.p.Name())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
@@ -1232,7 +1230,8 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 		}
 	}
 
-	for _, t := range data.Teams() {
+	teams, _ := data.LoadAllTeams()
+	for _, t := range teams {
 		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
@@ -1262,8 +1261,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 
 	for _, c := range crate.All() {
 		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
-			if _, ok := i.Value("crate-key_" + moose.StripMinecraftColour(c.Name())); !ok {
-				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", moose.StripMinecraftColour(c.Name())))
+			if _, ok := i.Value("crate-key_" + colour.StripMinecraftColour(c.Name())); !ok {
+				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", colour.StripMinecraftColour(c.Name())))
 				break
 			}
 			h.AddItemOrDrop(ench.AddEnchantmentLore(crate.SelectReward(c)))
@@ -1276,7 +1275,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					{
 						Shape:   item.FireworkShapeStar(),
 						Trail:   true,
-						Colour:  moose.RandomColour(),
+						Colour:  colour.RandomColour(),
 						Twinkle: true,
 					},
 				},
@@ -1316,21 +1315,17 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			if !ok {
 				return
 			}
-			u, err := data.LoadUserOrCreate(h.p.Name())
+			tm, err := data.LoadTeamFromMemberName(h.p.Name())
 			if err != nil {
 				return
 			}
-			t, ok := u.Team()
-			if !ok {
-				return
-			}
 
-			if !t.Leader(h.p.Name()) {
+			if !tm.Leader(h.p.Name()) {
 				h.Message("team.not-leader")
 				return
 			}
 
-			if t.Claim != (Area{}) {
+			if tm.Claim != (area.Area{}) {
 				h.Message("team.has-claim")
 				break
 			}
@@ -1345,9 +1340,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					return
 				}
 			}
-			for _, tm := range data.Teams() {
-				c := tm.Claim
-				if c != (Area{}) {
+
+			teams, _ := data.LoadAllTeams()
+			for _, t := range teams {
+				c := t.Claim
+				if c != (area.Area{}) {
 					continue
 				}
 				if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
@@ -1363,7 +1360,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			pn := 1
 			if h.p.Sneaking() {
 				pn = 2
-				ar := moose.NewArea(h.claimPos[0], mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+				ar := area.NewArea(h.claimPos[0], mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
 				x := ar.Max().X() - ar.Min().X()
 				y := ar.Max().Y() - ar.Min().Y()
 				a := x * y
@@ -1381,7 +1378,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 
 	switch b.(type) {
 	case block.WoodFenceGate, block.Chest:
-		for _, t := range data.Teams() {
+		teams, _ := data.LoadAllTeams()
+		for _, t := range teams {
 			c := t.Claim
 			if !t.Member(h.p.Name()) {
 				if t.DTR > 0 && c.Vec3WithinOrEqualXZ(pos.Vec3()) {
@@ -1448,7 +1446,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 		}
 
-		title := strings.ToLower(moose.StripMinecraftColour(lines[0]))
+		title := strings.ToLower(colour.StripMinecraftColour(lines[0]))
 		if strings.Contains(title, "[buy]") ||
 			strings.Contains(title, "[sell]") &&
 				(area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position())) {
@@ -1471,13 +1469,13 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			choice = strings.ReplaceAll(choice, "[", "")
 			choice = strings.ReplaceAll(choice, "]", "")
 
-			u, err := data.LoadUserOrCreate(h.p.Name())
+			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
 				return
 			}
 			switch choice {
 			case "buy":
-				if u.GameMode.Teams.Balance < price {
+				if u.Teams.Balance < price {
 					h.p.Message("shop.balance.insufficient")
 					return
 				}
@@ -1485,7 +1483,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					return
 				}
 				// restart: should we do this?
-				u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - price
+				u.Teams.Balance = u.Teams.Balance - price
 				data.SaveUser(u)
 				h.AddItemOrDrop(item.NewStack(it, q))
 				h.Message("shop.buy.success", q, lines[1])
@@ -1505,7 +1503,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					}
 				}
 				if count >= q {
-					u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + float64(count/q)*price
+					u.Teams.Balance = u.Teams.Balance + float64(count/q)*price
 					data.SaveUser(u)
 					h.Message("shop.sell.success", count, lines[1])
 				} else {
@@ -1530,19 +1528,19 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 			}
 		} else if title == "[kit]" {
-			key := moose.StripMinecraftColour(lines[1])
-			u, err := data.LoadUserOrCreate(h.p.Name())
+			key := colour.StripMinecraftColour(lines[1])
+			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
 				return
 			}
-			cd := u.GameMode.Teams.Kits.Key(key)
+			cd := u.Teams.Kits.Key(key)
 			if cd.Active() {
 				h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
 				return
 			} else {
 				cd.Set(time.Minute)
 			}
-			switch strings.ToLower(moose.StripMinecraftColour(lines[1])) {
+			switch strings.ToLower(colour.StripMinecraftColour(lines[1])) {
 			case "diamond":
 				kit2.Apply(kit2.Diamond{}, h.p)
 			case "archer":
@@ -1601,7 +1599,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		cd := h.rogue
 		w := h.p.World()
 		if cd.Active() {
-			h.p.Message(lang.Translatef(h.p.Locale(), "user.cool-down", "Rogue", cd.Remaining().Seconds()))
+			h.p.Message(lang.Translatef(data.Language{}, "user.cool-down", "Rogue", cd.Remaining().Seconds()))
 		} else {
 			ctx.Cancel()
 			for i := 1; i <= 3; i++ {
@@ -1629,6 +1627,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 
 	//u, err := data.LoadUserOrCreate(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	target, ok := Lookup(t.Name())
+	targetHandler, ok := t.Handler().(*Handler)
+	if !ok {
+		return
+	}
 	typ, ok2 := it.SpecialItem(held)
 	if ok && ok2 {
 		if cd := h.ability; cd.Active() {
@@ -1641,24 +1643,24 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 				h.p.Message(text.Colourf("<red>You are on bone cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			target.AddBoneHit(t)
-			if target.Boned() {
-				target.Player().Message(text.Colourf("<red>You have been boned by %s</red>", h.p.Name()))
+			targetHandler.AddBoneHit(t)
+			if targetHandler.Boned() {
+				target.Message(text.Colourf("<red>You have been boned by %s</red>", h.p.Name()))
 				h.p.Message(text.Colourf("<green>You have boned %s</green>", t.Name()))
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute)
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
-				target.ResetBoneHits(h.p)
+				targetHandler.ResetBoneHits(h.p)
 			} else {
-				h.p.Message(text.Colourf("<green>You have hit %s with a bone %d times</green>", t.Name(), target.BoneHits(h.p)))
+				h.p.Message(text.Colourf("<green>You have hit %s with a bone %d times</green>", t.Name(), targetHandler.BoneHits(h.p)))
 			}
 		case it.ScramblerType:
 			if cd := h.abilities.Key(kind); cd.Active() {
 				h.p.Message(text.Colourf("<red>You are on scrambler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			target.AddScramblerHit(h.p)
-			if target.ScramblerHits(h.p) >= 3 {
+			targetHandler.AddScramblerHit(h.p)
+			if targetHandler.ScramblerHits(h.p) >= 3 {
 				var used []int
 				for i := 0; i <= 7; i++ {
 					j := rand.Intn(8)
@@ -1672,16 +1674,16 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 						continue
 					}
 					used = append(used, j)
-					it1, _ := target.Player().Inventory().Item(i)
-					it2, _ := target.Player().Inventory().Item(j)
-					target.Player().Inventory().SetItem(j, it1)
-					target.Player().Inventory().SetItem(i, it2)
+					it1, _ := target.Inventory().Item(i)
+					it2, _ := target.Inventory().Item(j)
+					target.Inventory().SetItem(j, it1)
+					target.Inventory().SetItem(i, it2)
 				}
-				target.Player().Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
+				target.Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
 				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute*2)
-				target.ResetScramblerHits(h.p)
+				targetHandler.ResetScramblerHits(h.p)
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 			}
 		case it.PearlDisablerType:
@@ -1689,10 +1691,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 				h.p.Message(text.Colourf("<red>You are on pearl disabler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			if !target.PearlDisabled() {
-				target.Player().Message(text.Colourf("<red>You have been pearl disabled by %s</red>", h.p.Name()))
-				target.pearl.Set(time.Second * 15)
-				target.TogglePearlDisable()
+			if !targetHandler.PearlDisabled() {
+				target.Message(text.Colourf("<red>You have been pearl disabled by %s</red>", h.p.Name()))
+				targetHandler.pearl.Set(time.Second * 15)
+				targetHandler.TogglePearlDisable()
 
 				h.p.Message(text.Colourf("<green>You have pearl disabled %s</green>", t.Name()))
 				h.ability.Set(time.Second * 10)
@@ -1726,7 +1728,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if h.logger {
 		return
 	}
-	u, _ := data.LoadUserOrCreate(h.p.Name())
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return
+	}
+
 	p := h.p
 	w := p.World()
 
@@ -1745,7 +1751,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	if h.combat.Active() {
 		a := area.Spawn(w)
-		mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+		mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
 		if mul.Vec3WithinOrEqualFloorXZ(p.Position()) {
 			h.sendWall(cubePos, area.Overworld.Spawn().Area, item.ColourRed())
 		}
@@ -1756,15 +1762,16 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		return
 	}
 
-	if u.GameMode.Teams.PVP.Active() {
-		for _, a := range data.Teams() {
+	if u.Teams.PVP.Active() {
+		teams, _ := data.LoadAllTeams()
+		for _, a := range teams {
 			a := a.Claim
-			if a != (Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
+			if a != (area.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
 				ctx.Cancel()
 				return
 			}
 
-			mul := moose.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+			mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
 			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(newPos) {
 				h.sendWall(cubePos, a, item.ColourBlue())
 			}
@@ -1775,7 +1782,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
-	if _, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
+	if _, ok := sotw.Running(); ok && u.Teams.SOTW {
 		if newPos.Y() < 0 {
 			h.p.Teleport(mgl64.Vec3{0, 100, 0})
 		}
@@ -1809,11 +1816,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				}
 			}
 
-			if u.GameMode.Teams.PVP.Active() {
+			if u.Teams.PVP.Active() {
 				return
 			}
 			if k.StartCapturing(us) {
-				Broadcast("koth.capturing", k.Name(), r.Colour(u.DisplayName))
+				Broadcast("koth.capturing", k.Name(), r.Color(u.DisplayName))
 			}
 		} else {
 			if k.StopCapturing(us) {
@@ -1822,23 +1829,24 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 	}
 
-	var areas []NamedArea
+	var areas []area.NamedArea
 
-	for _, tm := range data.Teams() {
+	teams, _ := data.LoadAllTeams()
+	for _, tm := range teams {
 		a := tm.Claim
 
 		name := text.Colourf("<red>%s</red>", tm.DisplayName)
-		if t, ok := u.Team(); ok && strings.EqualFold(t.Name, tm.Name) {
+		if t, err := data.LoadUserFromName(h.p.Name()); err == nil && strings.EqualFold(t.Name, tm.Name) {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
-		areas = append(areas, moose.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
+		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
 	}
 
 	ar := h.area.Load()
 	for _, a := range append(area.Protected(w), areas...) {
 		if a.Vec3WithinOrEqualFloorXZ(newPos) {
 			if ar != a {
-				if ar != (NamedArea{}) {
+				if ar != (area.NamedArea{}) {
 					h.Message("area.leave", ar.Name())
 				}
 				h.area.Store(a)
@@ -1851,7 +1859,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 
 	if ar != area.Wilderness(w) {
-		if ar != (NamedArea{}) {
+		if ar != (area.NamedArea{}) {
 			h.Message("area.leave", ar.Name())
 
 		}
@@ -1875,13 +1883,13 @@ func (h *Handler) HandleQuit() {
 	h.close <- struct{}{}
 	p := h.p
 
-	u, _ := data.LoadUserOrCreate(p.Name())
-	u.PlayTime += time.Since(h.logTime)
+	u, _ := data.LoadUserFromName(p.Name())
+	//u.PlayTime += time.Since(h.logTime)
 	data.SaveUser(u)
 
-	tm, _ := u.Team()
+	tm, _ := data.LoadTeamFromMemberName(p.Name())
 	_, sotwRunning := sotw.Running()
-	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.GameMode.Teams.SOTW) || u.GameMode.Teams.PVP.Active()) {
+	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
 		arm := h.p.Armour()
 		inv := h.p.Inventory()
 
@@ -1903,17 +1911,17 @@ func (h *Handler) HandleQuit() {
 			case <-time.After(time.Second * 30):
 			case <-h.close:
 			case <-h.death:
-				u, ok := data.LoadUser(h.p.Name())
-				if !ok {
+				u, err := data.LoadUserFromName(h.p.Name())
+				if err != nil {
 					return
 				}
-				u.GameMode.Teams.Dead = true
-				u.GameMode.Teams.Stats.Deaths = 0
-				if u.GameMode.Teams.Stats.KillStreak > u.GameMode.Teams.Stats.BestKillStreak {
-					u.GameMode.Teams.Stats.BestKillStreak = u.GameMode.Teams.Stats.KillStreak
+				u.Teams.Dead = true
+				u.Teams.Stats.Deaths = 0
+				if u.Teams.Stats.KillStreak > u.Teams.Stats.BestKillStreak {
+					u.Teams.Stats.BestKillStreak = u.Teams.Stats.KillStreak
 				}
-				u.GameMode.Teams.Stats.KillStreak = 0
-				if tm, ok := u.Team(); ok {
+				u.Teams.Stats.KillStreak = 0
+				if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
 					data.SaveTeam(tm)
 				}
@@ -1930,16 +1938,6 @@ func (h *Handler) HandleQuit() {
 
 func Online(p *player.Player) bool {
 	return unsafe.Session(p) != session.Nop
-}
-
-func OnlineFromName(name string) (*Handler, bool) {
-	for _, p := range moyai.Server().Players() {
-		if strings.EqualFold(name, p.Name()) {
-			h, ok := p.Handler().(*Handler)
-			return h, ok && Online(p)
-		}
-	}
-	return nil, false
 }
 
 func Broadcastf(key string, a ...interface{}) {

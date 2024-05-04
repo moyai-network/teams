@@ -3,9 +3,10 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/pkg/lang"
+	"golang.org/x/text/language"
 )
 
 // Kick is a command that disconnects another player from the server.
@@ -18,7 +19,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	l, single := locale(s), true
 	if len(k.Targets) > 1 {
 		if p, ok := s.(*player.Player); ok {
-			if u, err := data.LoadUserOrCreate(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
+			if u, err := data.LoadUserFromName(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
 				o.Error(lang.Translatef(l, "command.targets.exceed"))
 				return
 			}
@@ -29,12 +30,12 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	var kicked int
 	for _, p := range k.Targets {
 		if p, ok := p.(*player.Player); ok {
-			u, err := data.LoadUserOrCreate(p.Name())
+			u, err := data.LoadUserFromName(p.Name())
 			if err != nil || u.Roles.Contains(role.Operator{}) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue
 			}
-			p.Disconnect(lang.Translatef(p.Locale(), "command.kick.reason"))
+			p.Disconnect(lang.Translatef(data.Language{Tag: language.English}, "command.kick.reason"))
 			if single {
 				//webhook.SendPunishment(s.Name(), p.Name(), "", "Kick")
 				o.Print(lang.Translatef(l, "command.kick.success", p.Name()))

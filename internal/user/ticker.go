@@ -2,16 +2,18 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/class"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/glyph"
 	"github.com/moyai-network/teams/internal/koth"
+	"github.com/moyai-network/teams/pkg/lang"
 	"strings"
 	"time"
 
-	"github.com/moyai-network/moose"
-
 	"golang.org/x/exp/slices"
 
-	ench "github.com/moyai-network/teams/moyai/enchantment"
-	"github.com/moyai-network/teams/moyai/sotw"
+	ench "github.com/moyai-network/teams/internal/enchantment"
+	"github.com/moyai-network/teams/internal/sotw"
 
 	_ "unsafe"
 
@@ -21,10 +23,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose/class"
-	"github.com/moyai-network/moose/data"
-
-	"github.com/moyai-network/moose/lang"
 )
 
 func armourStacks(arm *inventory.Armour) [4]item.Stack {
@@ -204,24 +202,25 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(moose.GlyphFont("Kitmap"))
+			sb := scoreboard.New(glyph.Parse("Kitmap"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
-			u, _ := data.LoadUserOrCreate(h.p.Name())
-			l := u.Language()
-			db := u.GameMode.Teams.DeathBan
+			u, _ := data.LoadUserFromName(h.p.Name())
+			l := u.Language
+			db := u.Teams.DeathBan
 
 			if db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.deathban", parseDuration(db.Remaining())))
 			}
 
-			if tm, ok := u.Team(); ok {
+			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
-				if ft, ok := data.LoadTeam(focus.Value()); focus.Type() == data.FocusTypeTeam() && ok && !db.Active() {
+				if ft, err := data.LoadTeamFromName(focus.Value()); focus.Type() == data.FocusTypeTeam() && err == nil && !db.Active() {
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", TeamOnlineCount(ft), len(tm.Members)))
+					// CHANGE COUNT FIX IMPORT CYCLE
+					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", 0, len(tm.Members)))
 					if hm := ft.Home; hm != (mgl64.Vec3{}) {
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
 					}
@@ -230,35 +229,35 @@ func startTicker(h *Handler) {
 			}
 
 			if !db.Active() {
-				sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.GameMode.Teams.Stats.Kills))
-				sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.GameMode.Teams.Stats.Deaths))
-				sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.GameMode.Teams.Stats.KillStreak))
+				sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.Teams.Stats.Kills))
+				sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.Teams.Stats.Deaths))
+				sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.Teams.Stats.KillStreak))
 			}
 
 			_, _ = sb.WriteString("§2")
 
-			if d, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
+			if d, ok := sotw.Running(); ok && u.Teams.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
 			}
 
-			u, err := data.LoadUserOrCreate(h.p.Name())
+			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
 				return
 			}
 
-			if d := u.GameMode.Teams.PVP; d.Active() && !db.Active() {
+			if d := u.Teams.PVP; d.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
-			if lo := h.logout; !lo.Expired() && lo.Teleporting() {
+			if lo := h.logout; !lo.Expired() && lo.Ongoing() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.logout", time.Until(lo.Expiration()).Seconds()))
 			}
-			if lo := h.stuck; !lo.Expired() && lo.Teleporting() {
+			if lo := h.stuck; !lo.Expired() && lo.Ongoing() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.stuck", time.Until(lo.Expiration()).Seconds()))
 			}
 			if tg := h.combat; tg.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
-			if h := h.home; !h.Expired() && h.Teleporting() {
+			if h := h.home; !h.Expired() && h.Ongoing() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.home", time.Until(h.Expiration()).Seconds()))
 			}
 			if tg := h.archer; tg.Active() {

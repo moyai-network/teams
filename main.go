@@ -9,8 +9,8 @@ import (
 	"github.com/df-mc/dragonfly/server/player/chat"
 	cr "github.com/moyai-network/teams/internal/crate"
 	"github.com/moyai-network/teams/internal/data"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
-	ent "github.com/moyai-network/teams/moyai/entity"
+	ench "github.com/moyai-network/teams/internal/enchantment"
+	ent "github.com/moyai-network/teams/internal/entity"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"image"
@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/go-gl/mathgl/mgl64"
-	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/sotw"
+	it "github.com/moyai-network/teams/internal/item"
+	"github.com/moyai-network/teams/internal/sotw"
 
 	//proxypacket "github.com/paroxity/portal/socket/packet"
 
@@ -35,8 +35,8 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/command"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/moyai-network/teams/pkg/lang"
 
 	"github.com/moyai-network/teams/internal/crate"

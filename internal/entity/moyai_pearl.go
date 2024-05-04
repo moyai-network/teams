@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/moyai-network/teams/internal/area"
+	"github.com/moyai-network/teams/internal/data"
 	"math"
 	"strings"
 	_ "unsafe"
 
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 	//"github.com/paroxity/portal/session"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 
@@ -59,26 +59,28 @@ type teleporter interface {
 
 // teleport teleports the owner of an Ent to a trace.Result's position.
 func teleport(e *entity.Ent, target trace.Result) {
-	if u, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
-		if p, ok := u.(*player.Player); ok {
-			if usr, ok := user.Lookup(p.Name()); ok {
-				if usr.Combat().Active() && area.Spawn(u.World()).Vec3WithinOrEqualXZ(target.Position()) {
-					usr.Pearl().Reset()
-					return
-				}
+	if tlp, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
+		if p, ok := tlp.(*player.Player); ok {
+			h, ok := p.Handler().(*user.Handler)
+			if !ok {
+				return
+			}
+			if h.Combat().Active() && area.Spawn(tlp.World()).Vec3WithinOrEqualXZ(target.Position()) {
+				h.Pearl().Reset()
+				return
+			}
 
-				u, _ := data.LoadUserOrCreate(p.Name())
-				if u.GameMode.Teams.PVP.Active() {
-					for _, t := range data.Teams() {
-						a := t.Claim
-						if a.Vec3WithinOrEqualXZ(target.Position()) {
-							usr.Pearl().Reset()
-							return
-						}
+			u, _ := data.LoadUserFromName(p.Name())
+			teams, _ := data.LoadAllTeams()
+			if u.Teams.PVP.Active() {
+				for _, t := range teams {
+					a := t.Claim
+					if a.Vec3WithinOrEqualXZ(target.Position()) {
+						h.Pearl().Reset()
+						return
 					}
 				}
 			}
-
 		}
 
 		b := e.World().Block(cube.PosFromVec3(target.Position()))
@@ -112,9 +114,9 @@ func teleport(e *entity.Ent, target trace.Result) {
 			v.ViewEntityMovement(p, e.Position(), rot, onGround)
 		}
 
-		e.World().PlaySound(u.Position(), sound.Teleport{})
-		u.Teleport(target.Position())
-		u.Hurt(5, entity.FallDamageSource{})
+		e.World().PlaySound(tlp.Position(), sound.Teleport{})
+		tlp.Teleport(target.Position())
+		tlp.Hurt(5, entity.FallDamageSource{})
 	}
 	// p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
 	// usr, ok2 := user.Lookup(p.Name())

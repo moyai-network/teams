@@ -3,10 +3,9 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/teams/moyai/user"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/team"
+	"github.com/moyai-network/teams/internal/user"
 )
 
 // TL is a command that allows players to see the coordinates of their team members.
@@ -18,19 +17,18 @@ func (TL) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		o.Error(lang.Translate(locale(s), "user.data.load.error"))
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		p.Message(text.Colourf("<red>%s</red>", "You are not in a team."))
-		return
-	}
-	for _, t := range tm.Members {
-		if uTarget, ok := user.Lookup(t.Name); ok {
-			uTarget.Player().Message(text.Colourf("<green>%s</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z())))
-		}
+
+	//for _, t := range tm.Members {
+	//	if uTarget, ok := user.Lookup(t.Name); ok {
+	//		uTarget.Player().Message(text.Colourf("<green>%s</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z())))
+	//	}
+	//}
+	for _, m := range team.OnlineMembers(tm) {
+		panic("implement translation")
+		user.Messagef(m, "command.tl", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
 	}
 }

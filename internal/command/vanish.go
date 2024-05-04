@@ -4,10 +4,9 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // vanishGameMode is the game mode used by vanished players.
@@ -26,28 +25,33 @@ type Vanish struct{}
 
 // Run ...
 func (Vanish) Run(s cmd.Source, o *cmd.Output) {
-	u, ok := user.Lookup(s.(*player.Player).Name())
+	p, ok := s.(*player.Player)
 	if !ok {
-		// The user somehow left in the middle of this, so just stop in our tracks.
 		return
 	}
-	if u.Vanished() {
-		user.Alert(s, "staff.alert.vanish.off")
-		u.Player().SetGameMode(world.GameModeSurvival)
-		o.Print(lang.Translatef(u.Player().Locale(), "command.vanish.disabled"))
+
+	h, ok := p.Handler().(*user.Handler)
+	if !ok {
+		return
+	}
+
+	if h.Vanished() {
+		//user.Alert(s, "staff.alert.vanish.off")
+		p.SetGameMode(world.GameModeSurvival)
+		user.Messagef(p, "command.vanish.disabled")
 	} else {
-		user.Alert(s, "staff.alert.vanish.on")
-		u.Player().SetGameMode(world.GameModeSpectator)
-		o.Print(lang.Translatef(u.Player().Locale(), "command.vanish.enabled"))
+		//user.Alert(s, "staff.alert.vanish.on")
+		p.SetGameMode(world.GameModeSpectator)
+		user.Messagef(p, "command.vanish.enabled")
 	}
 	for _, t := range moyai.Server().Players() {
-		if !u.Vanished() {
-			t.HideEntity(u.Player())
+		if !h.Vanished() {
+			t.HideEntity(p)
 			continue
 		}
-		t.ShowEntity(u.Player())
+		t.ShowEntity(p)
 	}
-	u.ToggleVanish()
+	h.ToggleVanish()
 }
 
 // Allow ...

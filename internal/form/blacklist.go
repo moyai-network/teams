@@ -1,28 +1,28 @@
 package form
 
-import (
+/*import (
 	"github.com/moyai-network/teams/moyai"
 	"math/rand"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/hako/durafmt"
 	"github.com/moyai-network/moose"
 	"github.com/moyai-network/moose/data"
 	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/form"
-	"github.com/hako/durafmt"
 	"github.com/moyai-network/moose/lang"
 	"github.com/moyai-network/moose/role"
 	"golang.org/x/exp/maps"
 )
 
-// ban is a form that allows a user to issue a ban.
-type ban struct {
-	// Reason is a dropdown that allows a user to select a ban reason.
-	Reason form.Dropdown
+// blacklist is a form that allows a user to issue a blacklist.
+type blacklist struct {
+	// Reason is a dropdown that allows a user to select a blacklist reason.
+	Reason form.Input
 	// OnlinePlayer is a dropdown that allows a user to select an online player.
 	OnlinePlayer form.Dropdown
 	// OfflinePlayer is an input field that allows a user to enter an offline player.
@@ -31,8 +31,8 @@ type ban struct {
 	online map[string]string
 }
 
-// NewBan creates a new form to issue a ban.
-func NewBan() form.Form {
+// NewBlacklist creates a new form to issue a blacklist.
+func NewBlacklist() form.Form {
 	online := make(map[string]string)
 	for _, u := range moyai.Server().Players() {
 		online[u.Name()] = u.Name()
@@ -40,16 +40,16 @@ func NewBan() form.Form {
 	names := [...]string{"Steve Harvey", "Elon Musk", "Bill Gates", "Mark Zuckerberg", "Jeff Bezos", "Warren Buffet", "Larry Page", "Sergey Brin", "Larry Ellison", "Tim Cook", "Steve Ballmer", "Daniel Larson", "Steve"}
 	list := maps.Keys(online)
 	sort.Strings(list)
-	return form.New(ban{
-		Reason:        form.NewDropdown("Reason", []string{"Unfair Advantage", "Unfair Advantage in Ranked", "Interference", "Exploitation", "Permission Abuse", "Invalid Skin", "Evasion", "Advertising"}, 0),
+	return form.New(blacklist{
+		Reason:        form.NewInput("Reason", "", "Enter a reason for the blacklist."),
 		OnlinePlayer:  form.NewDropdown("Online Player", list, 0),
 		OfflinePlayer: form.NewInput("Offline Player", "", names[rand.Intn(len(names)-1)]),
 		online:        online,
-	}, "Ban")
+	}, "Blacklist")
 }
 
 // Submit ...
-func (b ban) Submit(s form.Submitter) {
+func (b blacklist) Submit(s form.Submitter) {
 	p := s.(*player.Player)
 	u, err := data.LoadUserOrCreate(p.Name())
 	if err != nil {
@@ -68,36 +68,18 @@ func (b ban) Submit(s form.Submitter) {
 		return
 	}
 	var length time.Duration
-	reason := b.Reason.Options[b.Reason.Value()]
-	switch reason {
-	case "Unfair Advantage":
-		length = time.Hour * 24 * 30
-	case "Unfair Advantage in Ranked":
-		length = time.Hour * 24 * 90
-	case "Interference":
-		length = time.Hour * 12
-	case "Exploitation":
-		length = time.Hour * 24 * 9
-	case "Permission Abuse":
-		length = time.Hour * 24 * 30
-	case "Invalid Skin":
-		length = time.Hour * 24 * 3
-	case "Evasion":
-		length = time.Hour * 24 * 120
-	case "Advertising":
-		length = time.Hour * 24 * 6
-	}
+	reason := b.Reason.Value()
 
 	punishment := moose.Punishment{
 		Staff:      p.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
-		Expiration: time.Now().Add(length),
+		Permanent:  true,
 	}
 	var name string
 	if offlineName := strings.TrimSpace(b.OfflinePlayer.Value()); offlineName != "" {
 		if strings.EqualFold(offlineName, p.Name()) {
-			h.Message("command.ban.self")
+			h.Message("command.blacklist.self")
 			return
 		}
 		t, err := data.LoadUserOrCreate(offlineName)
@@ -106,11 +88,11 @@ func (b ban) Submit(s form.Submitter) {
 			return
 		}
 		if t.Roles.Contains(role.Operator{}) {
-			h.Message("command.ban.operator")
+			h.Message("command.blacklist.operator")
 			return
 		}
 		if !t.Ban.Expired() {
-			h.Message("command.ban.already")
+			h.Message("command.blacklist.already")
 			return
 		}
 		t.Ban = punishment
@@ -124,7 +106,7 @@ func (b ban) Submit(s form.Submitter) {
 			return
 		}
 		if t.Roles.Contains(role.Operator{}) {
-			h.Message("command.ban.operator`")
+			h.Message("command.blacklist.operator`")
 			return
 		}
 
@@ -133,8 +115,8 @@ func (b ban) Submit(s form.Submitter) {
 
 		if ok {
 			tH.Player().Disconnect(strings.Join([]string{
-				lang.Translatef(tH.Player().Locale(), "user.ban.header"),
-				lang.Translatef(tH.Player().Locale(), "user.ban.description", reason, durafmt.ParseShort(length)),
+				lang.Translatef(tH.Player().Locale(), "user.blacklist.header"),
+				lang.Translatef(tH.Player().Locale(), "user.blacklist.description", reason, durafmt.ParseShort(length)),
 			}, "\n"))
 		}
 		name = t.DisplayName
@@ -144,8 +126,9 @@ func (b ban) Submit(s form.Submitter) {
 
 	data.SaveUser(u) // Save in case of a server crash or anything that may cause the data to not get saved.
 
-	user.Alert(p, "staff.alert.ban", name, reason)
-	user.Broadcast("command.ban.broadcast", p.Name(), name, reason)
+	user.Alert(p, "staff.alert.blacklist", name, reason)
+	user.Broadcast("command.blacklist.broadcast", p.Name(), name, reason)
 	//webhook.SendPunishment(p.Name(), name, reason, "Ban")
-	h.Message("command.ban.success", name, reason)
+	h.Message("command.blacklist.success", name, reason)
 }
+*/

@@ -3,20 +3,16 @@ package user
 import (
 	"encoding/json"
 	"github.com/bedrock-gophers/intercept"
-	"strings"
+	"github.com/moyai-network/teams/internal/data"
 	_ "unsafe"
 
-	"github.com/moyai-network/moose/data"
-
 	"github.com/df-mc/dragonfly/server/event"
-	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/moyai-network/teams/internal/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"golang.org/x/exp/slices"
 )
 
 type PacketHandler struct {
@@ -57,12 +53,11 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	} else {
 		name = h.c.IdentityData().DisplayName
 	}
-	ph, ok := Lookup(name)
+	p, ok := Lookup(name)
 	if !ok {
 		return
 	}
-	p := ph.p
-	u, _ := data.LoadUser(p.Name())
+	u, _ := data.LoadUserFromName(p.Name())
 
 	switch pkt := pk.(type) {
 
@@ -90,26 +85,28 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			pkt.EntityMetadata = meta
 		}()
 
-		tg, _ := data.LoadUser(t.Name())
-		if tg.GameMode.Teams.PVP.Active() {
+		tg, _ := data.LoadUserFromName(t.Name())
+		if tg.Teams.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
-		} else if _, ok := sotw.Running(); ok && u.GameMode.Teams.SOTW {
+		} else if _, ok := sotw.Running(); ok && u.Teams.SOTW {
 			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
 		}
 
-		tm, ok := u.Team()
-		if !ok {
+		tm, err := data.LoadTeamFromMemberName(t.Name())
+		if err != nil {
 			return
 		}
+
 		if tm.Member(t.Name()) {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
 			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
-		} else if slices.ContainsFunc(FocusingPlayers(tm), func(p *player.Player) bool {
-			return strings.EqualFold(p.Name(), t.Name())
-		}) {
-			meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
+			panic("fix else if cycle")
+			//} else if slices.ContainsFunc(team.FocusedOnlinePlayers(tm), func(p *player.Player) bool {
+			//	return strings.EqualFold(p.Name(), t.Name())
+			//}) {
+			//	meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
 		}
 
 		if target.logger {

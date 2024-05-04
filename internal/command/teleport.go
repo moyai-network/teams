@@ -2,13 +2,14 @@ package command
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/user"
+	"github.com/moyai-network/teams/pkg/lang"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
 )
 
 // TeleportToPos is a command that teleports the user to a position.
@@ -35,25 +36,27 @@ type TeleportTargetsToPos struct {
 
 // Run ...
 func (t TeleportToPos) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	s.(*player.Player).Teleport(t.Position)
-	o.Print(lang.Translatef(l, "command.teleport.self", t.Position))
+	p := s.(*player.Player)
+	p.Teleport(t.Position)
+	user.Messagef(p, "command.teleport.self", t.Position)
 }
 
 // Run ...
 func (tp TeleportToTarget) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	t, ok := tp.Targets[0].(*player.Player)
+	p, ok := s.(*player.Player)
 	if !ok {
-		o.Print(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	p := s.(*player.Player)
+	t, ok := tp.Targets[0].(*player.Player)
+	if !ok {
+		user.Messagef(p, "command.target.unknown")
+		return
+	}
 	if p.World() != t.World() {
 		p.World().AddEntity(t)
 	}
 	p.Teleport(t.Position())
-	o.Print(lang.Translatef(l, "command.teleport.self", t.Name()))
+	user.Messagef(p, "command.teleport.self", t.Name())
 }
 
 // Run ...
@@ -64,13 +67,13 @@ func (tp TeleportTargetsToTarget) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return
 	}
 
-	if len(tp.Targets) > 1 && ok && !u.Roles.Contains(role.Operator{}) {
+	if len(tp.Targets) > 1 && !u.Roles.Contains(role.Operator{}) {
 		o.Print(lang.Translatef(l, "command.teleport.operator"))
 		return
 	}
@@ -95,13 +98,13 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		// Somehow left midway through the process, so just return.
 		return
 	}
 
-	if len(t.Targets) > 1 && ok && !u.Roles.Contains(role.Operator{}) {
+	if len(t.Targets) > 1 && !u.Roles.Contains(role.Operator{}) {
 		o.Print(lang.Translatef(l, "command.teleport.operator"))
 		return
 	}

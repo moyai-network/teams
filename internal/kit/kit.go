@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
+	ench "github.com/moyai-network/teams/internal/enchantment"
 	"math/rand"
 	_ "unsafe"
 )

@@ -4,8 +4,8 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/user"
 )
 
 // Fly is a command that allows the player to fly in spawn.
@@ -15,11 +15,11 @@ type Fly struct{}
 func (Fly) Run(s cmd.Source, o *cmd.Output) {
 	p := s.(*player.Player)
 	if f, ok := p.GameMode().(flyGameMode); ok {
-		o.Print(lang.Translatef(p.Locale(), "command.fly.disabled"))
+		user.Messagef(p, "command.fly.disabled")
 		p.SetGameMode(f.GameMode)
 		return
 	}
-	o.Print(lang.Translatef(p.Locale(), "command.fly.enabled"))
+	user.Messagef(p, "command.fly.enabled")
 	p.SetGameMode(flyGameMode{GameMode: p.GameMode()})
 }
 

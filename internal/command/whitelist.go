@@ -2,9 +2,11 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/user"
+	"github.com/moyai-network/teams/pkg/lang"
 )
 
 type WhiteListAdd struct {
@@ -13,25 +15,28 @@ type WhiteListAdd struct {
 }
 
 func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output) {
-	l := locale(src)
-	if len(w.Target) <= 0 {
-		out.Error(lang.Translatef(l, "invalid.username"))
+	p, ok := src.(*player.Player)
+	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(w.Target)
+	if len(w.Target) <= 0 {
+		user.Messagef(p, "invalid.username")
+		return
+	}
+	u, err := data.LoadUserFromName(w.Target)
 	if err != nil {
-		out.Error(lang.Translatef(l, "target.data.load.error", w.Target))
+		user.Messagef(p, "target.data.load.error", w.Target)
 		return
 	}
 	if u.Whitelisted {
-		out.Error(lang.Translatef(l, "whitelist.already", u.DisplayName))
+		user.Messagef(p, "whitelist.already", u.DisplayName)
 		return
 	}
 
 	u.Whitelisted = true
 	data.SaveUser(u)
 
-	out.Print(lang.Translatef(l, "whitelist.add", u.DisplayName))
+	user.Messagef(p, "whitelist.add", u.DisplayName)
 }
 
 type WhiteListRemove struct {
@@ -45,7 +50,7 @@ func (w WhiteListRemove) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "invalid.username"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(w.Target)
+	u, err := data.LoadUserFromName(w.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "target.data.load.error", w.Target))
 		return

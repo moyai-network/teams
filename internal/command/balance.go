@@ -1,12 +1,12 @@
 package command
 
 import (
-	"github.com/moyai-network/moose/lang"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/user"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
 )
 
 type Balance struct{}
@@ -16,12 +16,12 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
 
-	out.Print(lang.Translatef(u.Language(), "command.balance.self", u.GameMode.Teams.Balance))
+	user.Messagef(p, "command.balance.self", u.Teams.Balance)
 }
 
 type BalancePayOnline struct {
@@ -35,7 +35,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
@@ -46,32 +46,32 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if t == p {
-		out.Print(lang.Translatef(u.Language(), "command.pay.self"))
+		user.Messagef(p, "command.pay.self")
 		return
 	}
 
-	target, err := data.LoadUserOrCreate(t.Name())
+	target, err := data.LoadUserFromName(t.Name())
 	if err != nil {
 		return
 	}
 
 	if b.Amount < 0 {
-		out.Print(lang.Translatef(u.Language(), "command.pay.negative"))
+		user.Messagef(p, "command.pay.negative")
 		return
 	}
-	if u.GameMode.Teams.Balance < b.Amount {
-		out.Print(lang.Translatef(u.Language(), "command.pay.insufficient"))
+	if u.Teams.Balance < b.Amount {
+		user.Messagef(p, "command.pay.insufficient")
 		return
 	}
 
-	u.GameMode.Teams.Balance -= b.Amount
-	target.GameMode.Teams.Balance += b.Amount
+	u.Teams.Balance -= b.Amount
+	target.Teams.Balance += b.Amount
 
 	data.SaveUser(u)
 	data.SaveUser(target)
 
-	t.Message(lang.Translatef(target.Language(), "command.pay.receiver", u.Roles.Highest().Colour(p.Name()), 0))
-	out.Print(lang.Translatef(u.Language(), "command.pay.sender", target.Roles.Highest().Colour(t.Name()), 0))
+	user.Messagef(t, "command.pay.receiver", u.Roles.Highest().Color(p.Name()), 0)
+	user.Messagef(p, "command.pay.sender", target.Roles.Highest().Color(t.Name()), 0)
 }
 
 type BalancePayOffline struct {
@@ -85,37 +85,37 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
 
 	if b.Amount < 0 {
-		out.Print(lang.Translatef(u.Language(), "command.pay.negative"))
+		user.Messagef(p, "command.pay.negative")
 		return
 	}
 
-	if u.GameMode.Teams.Balance < b.Amount {
-		out.Print(lang.Translatef(u.Language(), "command.pay.insufficient"))
+	if u.Teams.Balance < b.Amount {
+		user.Messagef(p, "command.pay.insufficient")
 		return
 	}
 
 	if strings.EqualFold(b.Target, p.Name()) {
-		out.Print(lang.Translatef(u.Language(), "command.pay.self"))
+		user.Messagef(p, "command.pay.self")
 		return
 	}
 
-	t, err := data.LoadUserOrCreate(p.Name())
+	t, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		out.Error("Unexpected error occurred. Please contact an administrator.")
 		return
 	}
 
-	u.GameMode.Teams.Balance -= b.Amount
-	t.GameMode.Teams.Balance += b.Amount
+	u.Teams.Balance -= b.Amount
+	t.Teams.Balance += b.Amount
 
 	data.SaveUser(u)
 	data.SaveUser(t)
 
-	out.Print(lang.Translatef(u.Language(), "command.pay.sender", t.Roles.Highest().Colour(t.DisplayName), b.Amount))
+	user.Messagef(p, "command.pay.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
 }

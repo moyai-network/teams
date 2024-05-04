@@ -45,9 +45,11 @@ func saveUserData(u User) error {
 }
 
 type Stats struct {
-	Kills   int `bson:"kills"`
-	Deaths  int `bson:"deaths"`
-	Assists int `bson:"Assists"`
+	Kills          int `bson:"kills"`
+	Deaths         int `bson:"deaths"`
+	Assists        int `bson:"Assists"`
+	KillStreak     int `bson:"streak"`
+	BestKillStreak int `bson:"best_streak"`
 }
 
 type User struct {
@@ -56,16 +58,21 @@ type User struct {
 	DisplayName string `bson:"display_name"`
 	Whitelisted bool   `bson:"whitelisted"`
 
-	DeviceID     string
-	SelfSignedID string
+	Address      string `bson:"address"`
+	DeviceID     string `bson:"device_id"`
+	SelfSignedID string `bson:"self_signed_id"`
 
 	Roles    *role.Roles `bson:"roles"`
 	Tags     *tag.Tags   `bson:"tags"`
 	Language Language    `bson:"language"`
 
+	Frozen bool `bson:"frozen"`
+	// LastMessageFrom is the name of the player that sent the user a message.
+	LastMessageFrom string
+
 	Teams struct {
-		// LastMessageFrom is the name of the player that sent the user a message.
-		LastMessageFrom string
+		// ChatType is the type of chat the user is in.
+		ChatType int
 		// Balance is the balance in the user's bank.
 		Balance float64
 		// Invitations is a map of the teams that invited the user, with the invitation's expiry.
@@ -139,8 +146,31 @@ func LoadUserFromName(name string) (User, error) {
 	return decodeSingleUserFromFilter(bson.M{"name": bson.M{"$eq": name}})
 }
 
+func LoadAllUsers() ([]User, error) {
+	return loadUsersFromFilter(bson.M{})
+}
+
+func LoadUsersFromAddress(address string) ([]User, error) {
+	filter := bson.M{"address": bson.M{"$eq": address}}
+	return loadUsersFromFilter(filter)
+}
+
+func LoadUsersFromDeviceID(did string) ([]User, error) {
+	filter := bson.M{"device_id": bson.M{"$eq": did}}
+	return loadUsersFromFilter(filter)
+}
+
+func LoadUsersFromSelfSignedID(ssid string) ([]User, error) {
+	filter := bson.M{"self_signed_id": bson.M{"$eq": ssid}}
+	return loadUsersFromFilter(filter)
+}
+
 func LoadUsersFromRole(r role.Role) ([]User, error) {
 	filter := bson.M{"roles": bson.M{"$elemMatch": bson.M{"$eq": r.Name()}}}
+	return loadUsersFromFilter(filter)
+}
+
+func loadUsersFromFilter(filter any) ([]User, error) {
 	cursor, err := userCollection.Find(ctx(), filter)
 	if err != nil {
 		return nil, err

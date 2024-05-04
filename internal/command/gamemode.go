@@ -1,14 +1,13 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/internal/role"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 )
 
 // GameMode is a command for a player to change their own game mode or another player's.
@@ -19,6 +18,11 @@ type GameMode struct {
 
 // Run ...
 func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
 	var name string
 	var mode world.GameMode
 	switch strings.ToLower(string(g.GameMode)) {
@@ -32,33 +36,32 @@ func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
 		name, mode = "spectator", world.GameModeSpectator
 	}
 
-	l := locale(s)
 	targets := g.Targets.LoadOr(nil)
 	if len(targets) > 1 {
-		o.Error(lang.Translatef(l, "command.targets.exceed"))
+		user.Messagef(p, "command.targets.exceed")
 		return
 	}
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			o.Error(lang.Translatef(l, "command.target.unknown"))
+			user.Messagef(p, "command.target.unknown")
 			return
 		}
 
-		user.Alert(s, "staff.alert.gamemode.change.other", target.Name(), name)
+		//	user.Alert(s, "staff.alert.gamemode.change.other", target.Name(), name)
 
 		target.SetGameMode(mode)
-		o.Printf(lang.Translatef(l, "command.gamemode.update.other", target.Name(), name))
+		user.Messagef(p, "command.gamemode.update.other", target.Name(), name)
 		return
 	}
 	if p, ok := s.(*player.Player); ok {
-		user.Alert(s, "staff.alert.gamemode.change", name)
+		//user.Alert(s, "staff.alert.gamemode.change", name)
 
 		p.SetGameMode(mode)
-		o.Printf(lang.Translatef(l, "command.gamemode.update.self", name))
+		user.Messagef(p, "command.gamemode.update.self", name)
 		return
 	}
-	o.Error(lang.Translatef(l, "command.gamemode.console"))
+	user.Messagef(p, "command.gamemode.console")
 }
 
 // Allow ...

@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
+	"github.com/moyai-network/teams/internal/data"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -19,12 +19,12 @@ func (c PvpEnable) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	if u.GameMode.Teams.PVP.Active() {
-		u.GameMode.Teams.PVP.Reset()
+	if u.Teams.PVP.Active() {
+		u.Teams.PVP.Reset()
 		out.Print(text.Colourf("<green>You have enabled PVP!</green>"))
 	} else {
 		out.Error(text.Colourf("<red>You have already have enabled PVP</red>"))

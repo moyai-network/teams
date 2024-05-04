@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/internal/role"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )

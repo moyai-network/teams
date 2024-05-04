@@ -19,7 +19,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -225,7 +225,7 @@ func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 	data.DisbandTeam(tm)
 	o.Print("Disbanded faction.")
 	for _, m := range players {
-		if mem, ok := user.OnlineFromName(m.Name); ok {
+		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.disband.disbanded", "MANAGEMENT")
 		}
@@ -624,7 +624,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	data.DisbandTeam(tm)
 
 	for _, m := range players {
-		if mem, ok := user.OnlineFromName(m.Name); ok {
+		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.disband.disbanded")
 		}
@@ -657,7 +657,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 
 	tm = tm.WithoutMember(p.Name())
 	for _, m := range tm.Members {
-		if mem, ok := user.OnlineFromName(m.Name); ok {
+		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.leave.user.left")
 		}
@@ -703,14 +703,14 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	us, ok := user.OnlineFromName(string(t.Member))
+	us, ok := user.Lookup(string(t.Member))
 	if ok {
 		user.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
 	}
 	tm = tm.WithoutMember(string(t.Member))
 	tm = tm.WithDTR(tm.MaxDTR())
 	for _, m := range tm.Members {
-		if mem, ok := user.OnlineFromName(m.Name); ok {
+		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.kick.kicked")
 		}
@@ -922,39 +922,44 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	ph, ok := p.Handler().(*user.Handler)
+	h, ok := p.Handler().(*user.Handler)
 	if !ok {
 		panic("implement translation")
 		return
 	}
-	if ph.Combat().Active() {
+	if h.Combat().Active() {
 		o.Error("You cannot teleport while in combat.")
 		return
 	}
 
-	if us.Home().Teleporting() {
+	if h.Home().Ongoing() {
 		o.Error("You are already teleporting.")
 		return
 	}
 
-	h := tm.Home
-	if h == (mgl64.Vec3{}) {
+	hm := tm.Home
+	if hm == (mgl64.Vec3{}) {
 		o.Error("Your team does not have a home.")
 		return
 	}
 	if area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
-		p.Teleport(h)
+		p.Teleport(hm)
 		return
 	}
 
 	dur := time.Second * 10
-	for _, tm := range data.Teams() {
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		panic("implement translation")
+	}
+
+	for _, tm := range teams {
 		if tm.Claim.Vec3WithinOrEqualXZ(p.Position()) {
 			dur = time.Second * 20
 			break
 		}
 	}
-	us.Home().Teleport(p, dur, h)
+	h.Home().Teleport(p, dur, hm)
 }
 
 // Run ...
@@ -963,17 +968,14 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+
+	teams, err := data.LoadAllTeams()
 	if err != nil {
-		return
+		panic("implement translation")
 	}
-	teams := data.Teams()
-	if len(teams) == 0 {
-		o.Error("There are no teams.")
-		return
-	}
+
 	sort.Slice(teams, func(i, j int) bool {
-		return user.TeamOnlineCount(teams[i]) > user.TeamOnlineCount(teams[j])
+		return len(team.OnlineMembers(teams[i])) > len(team.OnlineMembers(teams[j]))
 	})
 	sort.Slice(teams, func(i, j int) bool {
 		return teams[i].DTR < teams[j].DTR
@@ -988,18 +990,19 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 	var list string
 	list += text.Colourf("        <yellow>Team List</yellow>\n")
 	list += "\uE000\n"
-	userTeam, ok := u.Team()
+	userTeam, err := data.LoadTeamFromMemberName(p.Name())
 
 	for i, tm := range teams {
 		if i > 9 {
 			break
 		}
 
+		onlineCount := len(team.OnlineMembers(tm))
 		dtr := tm.DTRString()
-		if ok && userTeam.Name == tm.Name {
-			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, user.TeamOnlineCount(tm), len(tm.Members), dtr)
+		if err == nil && userTeam.Name == tm.Name {
+			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
 		} else {
-			list += text.Colourf(" <grey>%d. <red>%s</red> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, user.TeamOnlineCount(tm), len(tm.Members), dtr)
+			list += text.Colourf(" <grey>%d. <red>%s</red> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
 		}
 	}
 	list += "\uE000"
@@ -1012,17 +1015,13 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
+		panic("implement translation")
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error("You are not in a team.")
-		return
-	}
-	targetTeam, ok := data.LoadTeam(strings.ToLower(string(t.Name)))
-	if !ok {
+	targetTeam, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
+	if err != nil {
 		o.Error("That team does not exist.")
 		return
 	}
@@ -1034,15 +1033,11 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	tm = tm.WithTeamFocus(targetTeam)
 	data.SaveTeam(tm)
 
-	for _, m := range user.FocusingPlayers(tm) {
-		p, ok := user.Lookup(m.Name())
-		if !ok {
-			continue
-		}
-		p.UpdateState()
+	for _, m := range team.OnlineMembers(tm) {
+		user.UpdateState(m)
 	}
 
-	user.BroadcastTeam(tm, "command.team.focus", targetTeam.DisplayName)
+	team.Broadcastf(tm, "command.team.focus", targetTeam.DisplayName)
 }
 
 // Run ...
@@ -1051,20 +1046,12 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, ok := data.LoadUser(p.Name())
-	if !ok {
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		// you are not in a team
+		panic("implement translation")
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error("You are not in a team.")
-		return
-	}
-	if !ok {
-		o.Error("You are not in a team.")
-		return
-	}
-
 	focus := tm.Focus
 
 	if focus.Type() == data.FocusTypeNone() {
@@ -1072,19 +1059,14 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	members, _ := u.Focusing()
 	tm = tm.WithoutFocus()
 	data.SaveTeam(tm)
 
-	for _, m := range members {
-		p, ok := user.Lookup(m.Name)
-		if !ok {
-			continue
-		}
-		p.UpdateState()
+	for _, m := range team.OnlineMembers(tm) {
+		user.UpdateState(m)
 	}
 
-	user.BroadcastTeam(tm, "command.team.unfocus", focus.Value())
+	team.Broadcastf(tm, "command.team.unfocus", focus.Value())
 }
 
 // Run ...
@@ -1094,94 +1076,77 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, ok := data.LoadUser(p.Name())
-	if !ok {
-		return
-	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error("You are not in a team.")
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		// you are not in a team
+		panic("implement translation")
 		return
 	}
 	if len(t.Target) > 1 {
 		o.Error(lang.Translatef(l, "command.targets.exceed"))
 		return
 	}
-	trg := t.Target[0]
-	target, ok := trg.(*player.Player)
+	target, ok := t.Target[0].(*player.Player)
 	if !ok {
 		o.Error("You must target a player.")
 		return
 	}
-	targetUser, ok := user.Lookup(target.Name())
-	if !ok {
-		o.Error("That player is not online.")
-		return
-	}
 
-	if targetUser.Player().Name() == u.Name {
+	if strings.EqualFold(target.Name(), p.Name()) {
 		o.Error("You cannot focus yourself.")
 		return
 	}
 
-	if tm.Member(targetUser.Player().Name()) {
+	if tm.Member(target.Name()) {
 		o.Error("You cannot focus a member of your team.")
 		return
 	}
 
-	tm = tm.WithPlayerFocus(targetUser.Player().Name())
-	targetUser.UpdateState()
-	user.BroadcastTeam(tm, "command.team.focus", target.Name())
+	tm = tm.WithPlayerFocus(target.Name())
+	user.UpdateState(target)
+	team.Broadcastf(tm, "command.team.focus", target.Name())
 }
 
 // Run ...
 func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	_, ok = u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
-		return
-	}
 
-	us, ok := user.Lookup(p.Name())
-	if !ok {
-		return
-	}
-	switch us.ChatType() {
+	switch u.Teams.ChatType {
 	case 2:
-		us.UpdateChatType(1)
+		u.Teams.ChatType = 1
 		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
 	case 1:
-		us.UpdateChatType(2)
+		u.Teams.ChatType = 2
 		o.Print(text.Colourf("<green>Switched to faction chat.</green>"))
 	default:
-		us.UpdateChatType(1)
+		u.Teams.ChatType = 0
 		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
 	}
+	data.SaveUser(u)
 }
 
 // Run ...
 func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		// you are not in a team
+		panic("implement translation")
 		return
 	}
 
@@ -1202,7 +1167,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithBalance(tm.Balance - amt)
-	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + amt
+	u.Teams.Balance = u.Teams.Balance + amt
 
 	data.SaveTeam(tm)
 	data.SaveUser(u)
@@ -1212,18 +1177,19 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
 		return
 	}
 
@@ -1233,13 +1199,13 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if amt > u.GameMode.Teams.Balance {
+	if amt > u.Teams.Balance {
 		o.Errorf("You do not have a balance of $%.2f.", amt)
 		return
 	}
 
 	tm = tm.WithBalance(tm.Balance + amt)
-	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - amt
+	u.Teams.Balance = u.Teams.Balance - amt
 
 	data.SaveTeam(tm)
 	data.SaveUser(u)
@@ -1249,18 +1215,18 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
 		return
 	}
 
@@ -1276,7 +1242,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithBalance(tm.Balance - amt)
-	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance + amt
+	u.Teams.Balance = u.Teams.Balance + amt
 
 	data.SaveTeam(tm)
 	data.SaveUser(u)
@@ -1286,33 +1252,29 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
-		return
-	}
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
 		return
 	}
 
-	amt := u.GameMode.Teams.Balance
+	amt := u.Teams.Balance
 	if amt < 1 {
 		o.Error("Your balance is lower than $1.")
 		return
 	}
 
 	tm = tm.WithBalance(tm.Balance + amt)
-	u.GameMode.Teams.Balance = u.GameMode.Teams.Balance - amt
+	u.Teams.Balance = u.Teams.Balance - amt
 
 	data.SaveTeam(tm)
 	data.SaveUser(u)
@@ -1326,44 +1288,48 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
-	us, ok := user.Lookup(p.Name())
-	if err != nil || !ok {
-		return
-	}
-	pos := safePosition(p, u, 24)
+	pos := safePosition(p, 24)
 	if pos == (cube.Pos{}) {
-		us.Message("command.team.stuck.no-safe")
+		user.Messagef(p, "command.team.stuck.no-safe")
 		return
 	}
 
-	if us.Stuck().Teleporting() {
+	h, ok := p.Handler().(*user.Handler)
+	if !ok {
+		return
+	}
+
+	if h.Stuck().Ongoing() {
 		o.Error("You are already stucking, step-bro.")
 		return
 	}
 
-	us.Message("command.team.stuck.teleporting", pos.X(), pos.Y(), pos.Z(), 30)
-	us.Stuck().Teleport(p, time.Second*30, mgl64.Vec3{
+	user.Messagef(p, "command.team.stuck.teleporting", pos.X(), pos.Y(), pos.Z(), 30)
+	h.Stuck().Teleport(p, time.Second*30, mgl64.Vec3{
 		float64(pos.X()),
 		float64(pos.Y()),
 		float64(pos.Z()),
 	})
 }
 
-func safePosition(p *player.Player, u data.User, radius int) cube.Pos {
+func safePosition(p *player.Player, radius int) cube.Pos {
 	pos := cube.PosFromVec3(p.Position())
 	minX := pos.X() - radius
 	maxX := pos.X() + radius
 	minZ := pos.Z() - radius
 	maxZ := pos.Z() + radius
 
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		return cube.Pos{}
+	}
 	for x := minX; x < maxX; x++ {
 		for z := minZ; z < maxZ; z++ {
 			at := pos.Add(cube.Pos{x, 0, z})
-			for _, tm := range data.Teams() {
-				if tm.Claim != (Area{}) {
+			for _, tm := range teams {
+				if tm.Claim != (area.Area{}) {
 					if tm.Claim.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
-						if t, ok := u.Team(); ok && t.Name == tm.Name {
+						if t, err := data.LoadTeamFromMemberName(p.Name()); err == nil && t.Name == tm.Name {
 							y := p.World().Range().Max()
 							for y > pos.Y() {
 								y--
@@ -1537,11 +1503,11 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	for t, i := range u.GameMode.Teams.Invitations {
+	for t, i := range u.Teams.Invitations {
 		if i.Active() {
 			options = append(options, t)
 		}
@@ -1557,17 +1523,15 @@ func (member) Type() string {
 // Options ...
 func (member) Options(src cmd.Source) []string {
 	p := src.(*player.Player)
-	u, err := data.LoadUserOrCreate(p.Name())
+	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		return nil
 	}
 
 	var members []string
-	if t, ok := u.Team(); ok {
-		for _, m := range t.Members {
-			if !strings.EqualFold(m.Name, p.Name()) {
-				members = append(members, m.DisplayName)
-			}
+	for _, m := range tm.Members {
+		if !strings.EqualFold(m.Name, p.Name()) {
+			members = append(members, m.DisplayName)
 		}
 	}
 
@@ -1582,7 +1546,9 @@ func (teamName) Type() string {
 // Options ...
 func (teamName) Options(cmd.Source) []string {
 	var teams []string
-	for _, tm := range data.Teams() {
+	tms, _ := data.LoadAllTeams()
+
+	for _, tm := range tms {
 		teams = append(teams, tm.DisplayName)
 	}
 	return teams
@@ -1596,7 +1562,12 @@ func (teamMember) Type() string {
 // Options ...
 func (teamMember) Options(src cmd.Source) []string {
 	var members []string
-	for _, tm := range data.Teams() {
+	tms, err := data.LoadAllTeams()
+	if err != nil {
+		return members
+	}
+
+	for _, tm := range tms {
 		for _, m := range tm.Members {
 			members = append(members, m.DisplayName)
 		}

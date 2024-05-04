@@ -3,12 +3,11 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/sotw"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/sotw"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SOTWStart is a command to start SOTW.
@@ -34,12 +33,12 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 	sotw.Start()
 
-	offline, err := data.LoadUsersCond(bson.M{})
+	users, err := data.LoadAllUsers()
 	if err != nil {
 		panic(err)
 	}
-	for _, u := range offline {
-		u.GameMode.Teams.SOTW = true
+	for _, u := range users {
+		u.Teams.SOTW = true
 		data.SaveUser(u)
 	}
 	user.Broadcast("sotw.commenced")
@@ -53,12 +52,12 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 	}
 	sotw.End()
 
-	offline, err := data.LoadUsersCond(bson.M{})
+	users, err := data.LoadAllUsers()
 	if err != nil {
 		panic(err)
 	}
-	for _, u := range offline {
-		u.GameMode.Teams.SOTW = false
+	for _, u := range users {
+		u.Teams.SOTW = false
 		data.SaveUser(u)
 	}
 	user.Broadcast("sotw.ended")
@@ -66,21 +65,22 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
-	h, ok := user.Lookup(s.(*player.Player).Name())
+	p, ok := s.(*player.Player)
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserOrCreate(h.Player().Name())
+
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
-	if !u.GameMode.Teams.SOTW {
-		h.Message("sotw.disabled.already")
+	if !u.Teams.SOTW {
+		user.Messagef(p, "sotw.disabled.already")
 		return
 	}
-	h.Message("sotw.disabled")
+	user.Messagef(p, "sotw.disabled")
 
-	u.GameMode.Teams.SOTW = false
+	u.Teams.SOTW = false
 	data.SaveUser(u)
 }
 

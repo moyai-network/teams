@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/internal/colour"
 	"github.com/moyai-network/teams/internal/data"
 	"github.com/moyai-network/teams/internal/koth"
 	"github.com/moyai-network/teams/internal/role"
@@ -9,7 +10,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 

@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/df-mc/dragonfly/server/player"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
+	ench "github.com/moyai-network/teams/internal/enchantment"
 )
 
 // Miner represents the miner class.

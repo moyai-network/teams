@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/df-mc/dragonfly/server/item/potion"
 	"github.com/df-mc/dragonfly/server/player"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
+	ench "github.com/moyai-network/teams/internal/enchantment"
 )
 
 // Bard represents the bard class.

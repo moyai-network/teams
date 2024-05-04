@@ -1,20 +1,6 @@
 package form
 
-import (
-	kit2 "github.com/moyai-network/teams/internal/kit"
-	"strings"
-	"time"
-
-	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/teams/moyai/user"
-
-	"github.com/df-mc/dragonfly/server/player/form"
-	"github.com/moyai-network/moose"
-	"github.com/sandertv/gophertunnel/minecraft/text"
-)
-
-type Kits struct{}
+/*type Kits struct{}
 
 func NewKitForm(p *player.Player) form.Menu {
 	f := form.NewMenu(Kits{}, "Kits")
@@ -42,10 +28,10 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 
 	u, _ := data.LoadUserOrCreate(p.Name())
 
-	/*if h.Combat().Active() {
+	if h.Combat().Active() {
 		h.Message("command.kit.tagged")
 		return
-	}*/
+	}
 
 	name := strings.Split(moose.StripMinecraftColour(pressed.Text), "\n")[0]
 	cd := u.GameMode.Teams.Kits.Key(name)
@@ -58,12 +44,12 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 	switch name {
 	case "Archer":
 		kit2.Apply(kit2.Archer{}, p)
-	/*case "Master":
+	case "Master":
 	if !u.Roles.Contains(role.Wraith{}, role.Revenant{}) {
 		p.Message(text.Colourf("<red>You must be a Wraith to use this kit.</red>"))
 		return
 	}
-	kit.Apply(kit.Master{}, p)*/
+	kit.Apply(kit.Master{}, p)
 	case "Bard":
 		kit2.Apply(kit2.Bard{}, p)
 	case "Rogue":
@@ -80,3 +66,4 @@ func (k Kits) Submit(s form.Submitter, pressed form.Button) {
 		kit2.Apply(kit2.Refill{}, p)
 	}
 }
+*/

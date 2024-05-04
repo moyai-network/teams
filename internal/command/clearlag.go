@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/role"
+	"github.com/moyai-network/teams/internal/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 

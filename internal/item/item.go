@@ -2,10 +2,27 @@ package item
 
 import (
 	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/creative"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
+	"math/rand"
 )
+
+func AddOrDrop(p *player.Player, it item.Stack) {
+	if _, err := p.Inventory().AddItem(it); err != nil {
+		Drop(p, it)
+	}
+}
+
+func Drop(p *player.Player, it item.Stack) {
+	w, pos := p.World(), p.Position()
+	et := entity.NewItem(it, pos)
+	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
+	w.AddEntity(et)
+}
 
 type NopType struct{}
 

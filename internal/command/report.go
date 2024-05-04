@@ -1,14 +1,13 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/pkg/lang"
 	"time"
-
-	"github.com/moyai-network/moose/data"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 )
 
 // Report is a command used to report other players.
@@ -21,7 +20,7 @@ type Report struct {
 func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
 	p := s.(*player.Player)
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
@@ -38,15 +37,15 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.report.self"))
 		return
 	}
-	if u.GameMode.Teams.Report.Active() {
-		o.Error(lang.Translatef(l, "command.report.cooldown", u.GameMode.Teams.Report.Remaining().Round(time.Millisecond*10)))
+	if u.Teams.Report.Active() {
+		o.Error(lang.Translatef(l, "command.report.cooldown", u.Teams.Report.Remaining().Round(time.Millisecond*10)))
 		return
 	}
-	u.GameMode.Teams.Report.Set(time.Minute)
+	u.Teams.Report.Set(time.Minute)
 	data.SaveUser(u)
 
-	o.Print(lang.Translatef(l, "command.report.success"))
-	user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
+	user.Messagef(p, "command.report.success")
+	//user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
 	// webhook.Send(webhook.Report, hook.Webhook{
 	// 	Embeds: []hook.Embed{{
 	// 		Title: "Report (Practice)",

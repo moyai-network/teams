@@ -4,6 +4,7 @@ import (
 	"github.com/moyai-network/teams/internal/area"
 	"github.com/moyai-network/teams/internal/colour"
 	"github.com/moyai-network/teams/internal/data"
+	it "github.com/moyai-network/teams/internal/item"
 	"math/rand"
 	"strings"
 	"time"
@@ -151,7 +152,7 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 			}
 
 			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Color(u.DisplayName))
-			//p.AddItemOrDrop(it.NewKey(it.KeyTypeKOTH, 2))
+			it.AddOrDrop(p, it.NewKey(it.KeyTypeKOTH, 2))
 		case <-k.cancel:
 			k.capturing = nil
 			return

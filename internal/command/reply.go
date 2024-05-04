@@ -4,10 +4,10 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/data"
+	"github.com/moyai-network/teams/internal/role"
+	"github.com/moyai-network/teams/internal/user"
+	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strings"
 )
@@ -29,7 +29,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		// The user somehow left in the middle of this, so just stop in our tracks.
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
@@ -43,12 +43,12 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	target, ok := user.Lookup(u.GameMode.Teams.LastMessageFrom)
+	target, ok := user.Lookup(u.LastMessageFrom)
 	if !ok {
 		o.Error(lang.Translatef(l, "command.reply.none"))
 		return
 	}
-	t, err := data.LoadUserOrCreate(u.GameMode.Teams.LastMessageFrom)
+	t, err := data.LoadUserFromName(u.LastMessageFrom)
 	if err != nil {
 		return
 	}
@@ -60,15 +60,15 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 	uColour, uMsg := text.Colourf("<white>%s</white>", u.DisplayName), text.Colourf("<white>%s</white>", msg)
 	tColour, tMsg := text.Colourf("<white>%s</white>", t.DisplayName), text.Colourf("<white>%s</white>", msg)
 	if _, ok := u.Roles.Highest().(role.Default); !ok {
-		uMsg = t.Roles.Highest().Colour(msg)
-		uColour = u.Roles.Highest().Colour(u.DisplayName)
+		uMsg = t.Roles.Highest().Color(msg)
+		uColour = u.Roles.Highest().Color(u.DisplayName)
 	}
 	if _, ok := t.Roles.Highest().(role.Default); !ok {
-		tMsg = u.Roles.Highest().Colour(msg)
-		tColour = t.Roles.Highest().Colour(t.DisplayName)
+		tMsg = u.Roles.Highest().Color(msg)
+		tColour = t.Roles.Highest().Color(t.DisplayName)
 	}
 
-	t.GameMode.Teams.LastMessageFrom = u.Name
+	t.LastMessageFrom = u.Name
 	data.SaveUser(t)
 
 	target.Player().PlaySound(sound.Experience{})

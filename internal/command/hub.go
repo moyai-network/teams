@@ -3,8 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/internal/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -13,15 +12,18 @@ type Hub struct {
 }
 
 // Run ...
-func (h Hub) Run(s cmd.Source, o *cmd.Output) {
-	p := s.(*player.Player)
-	u, ok := user.Lookup(p.Name())
+func (Hub) Run(s cmd.Source, o *cmd.Output) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	h, ok := p.Handler().(*user.Handler)
 	if !ok {
 		return
 	}
 
-	if u.Combat().Active() {
-		o.Error(lang.Translate(p.Locale(), "command.error.combat-tagged"))
+	if h.Combat().Active() {
+		user.Messagef(p, "command.error.combat-tagged")
 	}
 
 	o.Print(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))

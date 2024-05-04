@@ -25,7 +25,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/moyai-network/teams/internal/sotw"
 
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
@@ -47,10 +47,10 @@ func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 }
 
 // Lookup looks up the Handler of a name passed.
-func Lookup(name string) (*Handler, bool) {
+func Lookup(name string) (*player.Player, bool) {
 	for _, t := range moyai.Server().Players() {
 		if strings.EqualFold(name, t.Name()) {
-			return t.Handler().(*Handler), true
+			return t, true
 		}
 	}
 	return nil, false
@@ -218,7 +218,7 @@ func (h *Handler) CanSendMessage() bool {
 }
 
 // LastAttacker returns the last attacker of the user.
-func (h *Handler) LastAttacker() (*Handler, bool) {
+func (h *Handler) LastAttacker() (*player.Player, bool) {
 	if time.Since(h.lastAttackTime.Load()) > 15*time.Second {
 		return nil, false
 	}
