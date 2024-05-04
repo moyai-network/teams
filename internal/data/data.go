@@ -38,4 +38,5 @@ func init() {
 	db = client.Database("teams")
 
 	userCollection = db.Collection("users")
+	teamCollection = db.Collection("teams")
 }

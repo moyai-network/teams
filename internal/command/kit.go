@@ -3,7 +3,6 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/form"
 )
 
 // Kit is a command that allows players to select a kit.
@@ -15,7 +14,9 @@ func (Kit) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	p.SendForm(form.NewKitForm(p))
+	_ = p
+	panic("inv menu")
+	//p.SendForm(form.NewKitForm(p))
 }
 
 // Allow ...

@@ -301,9 +301,12 @@ func LoadAllTeams() ([]Team, error) {
 	var tms []Team
 
 	result, err := teamCollection.Find(ctx(), bson.M{})
+	if err != nil {
+		return tms, err
+	}
 	err = result.Decode(&tms)
 	if err != nil {
-		return []Team{}, err
+		return tms, err
 	}
 	var mappedTeams map[string]Team
 
@@ -316,6 +319,10 @@ func LoadAllTeams() ([]Team, error) {
 			return t.Name == team.Name
 		}); ok {
 			mappedTeams[t.Name] = updatedRegeneration(tm)
+		} else {
+			teamMu.Lock()
+			teams[t.Name] = t
+			teamMu.Unlock()
 		}
 	}
 

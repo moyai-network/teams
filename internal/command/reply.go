@@ -71,7 +71,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 	t.LastMessageFrom = u.Name
 	data.SaveUser(t)
 
-	target.Player().PlaySound(sound.Experience{})
+	target.PlaySound(sound.Experience{})
 	h.Message("command.whisper.to", tColour, tMsg)
 	target.Message("command.whisper.from", uColour, uMsg)
 }

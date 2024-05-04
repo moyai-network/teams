@@ -102,7 +102,7 @@ type User struct {
 }
 
 func DefaultUser(name, xuid string) User {
-	return User{
+	u := User{
 		XUID:        xuid,
 		Name:        strings.ToLower(name),
 		DisplayName: name,
@@ -111,6 +111,15 @@ func DefaultUser(name, xuid string) User {
 		Roles: role.NewRoles([]role.Role{}, map[role.Role]time.Time{}),
 		Tags:  tag.NewTags([]tag.Tag{}),
 	}
+	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
+	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
+	u.Teams.DeathBan = cooldown.NewCoolDown(nil, nil)
+	u.Teams.Report = cooldown.NewCoolDown(nil, nil)
+	u.Teams.PVP = cooldown.NewCoolDown(nil, nil)
+	u.Teams.Create = cooldown.NewCoolDown(nil, nil)
+	u.Teams.Stats = Stats{}
+
+	return u
 }
 
 func LoadUserOrCreate(name, xuid string) (User, error) {

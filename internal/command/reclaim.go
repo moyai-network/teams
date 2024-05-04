@@ -100,7 +100,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 				lives = 85*/
 		}
 		for _, i := range items {
-			h.AddItemOrDrop(i)
+			it.AddOrDrop(h, i)
 		}
 
 		u.Teams.Lives += lives

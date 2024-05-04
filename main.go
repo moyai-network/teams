@@ -11,6 +11,7 @@ import (
 	"github.com/moyai-network/teams/internal/data"
 	ench "github.com/moyai-network/teams/internal/enchantment"
 	ent "github.com/moyai-network/teams/internal/entity"
+	"github.com/moyai-network/teams/internal/role"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"image"
@@ -185,6 +186,9 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		p.SetFood(20)
 
 		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
+		if !u.Roles.Contains(role.Default{}) {
+			u.Roles.Add(role.Default{})
+		}
 		p.Message(lang.Translatef(u.Language, "discord.message"))
 		inv := p.Inventory()
 		for slot, i := range inv.Slots() {
@@ -249,7 +253,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamStuck{},
 			command.TeamRally{},
 			command.TeamUnRally{},
-			command.TeamMap{},
+			//command.TeamMap{},
 			command.TeamSetDTR{},
 			command.TeamDelete{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
@@ -267,7 +271,7 @@ func registerCommands(srv *server.Server) {
 		//cmd.New("ban", text.Colourf("<aqua>Unleash the ban hammer.</aqua>"), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{}, command.BanInfoOffline{}, command.BanForm{}),
 		//cmd.New("blacklist", text.Colourf("<aqua>Blacklist little evaders.</aqua>"), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
 		cmd.New("kick", text.Colourf("<aqua>Kick a user.</aqua>"), nil, command.Kick{}),
-		cmd.New("mute", text.Colourf("<aqua>Mute a user.</aqua>"), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
+		//cmd.New("mute", text.Colourf("<aqua>Mute a user.</aqua>"), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
 		cmd.New("whisper", text.Colourf("<aqua>Send a private message to a player.</aqua>"), []string{"w", "tell", "msg"}, command.Whisper{}),
 		cmd.New("reply", text.Colourf("<aqua>Reply to the last whispered player.</aqua>"), []string{"r"}, command.Reply{}),
 		cmd.New("fly", text.Colourf("<aqua>Toggle flight.</aqua>"), nil, command.Fly{}),

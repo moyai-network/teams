@@ -38,7 +38,7 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(p, "command.target.unknown")
 		return
 	}
-	u, err := data.LoadUserFromName(t.Player().Name())
+	u, err := data.LoadUserFromName(t.Name())
 	if err != nil {
 		return
 	}
@@ -46,12 +46,12 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		//user.Alert(s, "staff.alert.unfreeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.unfreeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.unfrozen"))
-		t.Player().SetMobile()
+		t.SetMobile()
 	} else {
 		//user.Alert(s, "staff.alert.freeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.freeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.frozen"))
-		t.Player().Immobile()
+		t.Immobile()
 	}
 	u.Frozen = !u.Frozen
 	data.SaveUser(u)
