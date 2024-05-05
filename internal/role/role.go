@@ -1,11 +1,12 @@
 package role
 
 import (
-	"github.com/rcrowley/go-bson"
 	"slices"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/rcrowley/go-bson"
 )
 
 // Role is an interface that represents a role in the system.
@@ -52,6 +53,11 @@ func Tier(role Role) int {
 	return slices.IndexFunc(roles, func(other Role) bool {
 		return role == other
 	})
+}
+
+// Staff returns if the role is a staff role.
+func Staff(role Role) bool {
+	return role.Name() == "admin" || role.Name() == "manager" || role.Name() == "mod" || role.Name() == "operator" || role.Name() == "trial"
 }
 
 type Roles struct {

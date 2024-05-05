@@ -2,6 +2,14 @@ package user
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/moyai-network/teams/internal/area"
 	"github.com/moyai-network/teams/internal/class"
 	"github.com/moyai-network/teams/internal/colour"
@@ -16,13 +24,6 @@ import (
 	"github.com/moyai-network/teams/pkg/effectutil"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/moyai-network/teams/pkg/unsafe"
-	"math"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -179,12 +180,12 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
 
-	// FIX LOGGER
-	/*if p, ok := Lookup(p.Name()); ok {
-		p.Teleport(p.Position())
-		if h, ok :=
-		close(h.close)
-	}*/
+	// if p, ok := Lookup(p.Name()); ok {
+	// 	p.Teleport(p.Position())
+	// 	if h, ok := p.Handler().(*Handler); ok {
+	// 		close(h.close)
+	// 	}
+	// }
 
 	s := player_session(p)
 	u, _ := data.LoadUserFromName(p.Name())
@@ -257,27 +258,27 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 			}
 		}
 
-		/*staff := func() {
+		staff := func() {
 			for _, s := range moyai.Server().Players() {
-				if us, err := data.LoadUserOrCreate(s.Name()); err != nil && role.Staff(us.Roles.Highest()) {
-					s.Message("staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
+				if us, err := data.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && role.Staff(us.Roles.Highest()) {
+					Messagef(s, "staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 				}
 			}
-		}*/
+		}
 
 		h.lastMessage.Store(time.Now())
 		switch h.ChatType() {
 		case 1:
-			/*if msg[0] == '!' && role.Staff(r) {
+			if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
-			}*/
+			}
 			global()
 		case 2:
-			/*if msg[0] == '!' && role.Staff(r) {
+			if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
-			}*/
+			}
 
 			if teamErr != nil {
 				h.UpdateChatType(1)
@@ -294,7 +295,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				global()
 				return
 			}
-			//staff()
+			staff()
 		}
 	}
 
