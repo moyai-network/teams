@@ -19,16 +19,11 @@ func (TL) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
+		user.Messagef(p, "user.team-less")
 		return
 	}
 
-	//for _, t := range tm.Members {
-	//	if uTarget, ok := user.Lookup(t.Name); ok {
-	//		uTarget.Player().Message(text.Colourf("<green>%s</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z())))
-	//	}
-	//}
 	for _, m := range team.OnlineMembers(tm) {
-		panic("implement translation")
 		user.Messagef(m, "command.tl", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
 	}
 }

@@ -1,11 +1,16 @@
 package kit
 
 import (
+	"github.com/bedrock-gophers/nbtconv"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/session"
+	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	ench "github.com/moyai-network/teams/internal/enchantment"
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"math/rand"
 	_ "unsafe"
 )
@@ -83,4 +88,72 @@ func Apply(kit Kit, p *player.Player) {
 			}
 		}
 	}
+	if s := player_session(p); s != session.Nop {
+		_ = s.SetHeldSlot(0)
+		for i := 0; i < 36; i++ {
+			st, _ := inv.Item(i)
+			viewSlotChange(s, i, st, protocol.WindowIDInventory)
+		}
+
+		for i, st := range armour {
+			viewSlotChange(s, i, st, protocol.WindowIDArmour)
+		}
+	}
 }
+
+// viewSlotChange ...
+func viewSlotChange(s *session.Session, slot int, it item.Stack, windowID uint32) {
+	session_writePacket(s, &packet.InventorySlot{
+		WindowID: windowID,
+		Slot:     uint32(slot),
+		NewItem:  instanceFromItem(it),
+	})
+}
+
+// instanceFromItem converts an item.Stack to its network ItemInstance representation.
+func instanceFromItem(it item.Stack) protocol.ItemInstance {
+	return protocol.ItemInstance{
+		StackNetworkID: item_id(it),
+		Stack:          stackFromItem(it),
+	}
+}
+
+// stackFromItem converts an item.Stack to its network ItemStack representation.
+func stackFromItem(it item.Stack) protocol.ItemStack {
+	if it.Empty() {
+		return protocol.ItemStack{}
+	}
+
+	var blockRuntimeID uint32
+	if b, ok := it.Item().(world.Block); ok {
+		blockRuntimeID = world.BlockRuntimeID(b)
+	}
+
+	rid, meta, _ := world.ItemRuntimeID(it.Item())
+
+	return protocol.ItemStack{
+		ItemType: protocol.ItemType{
+			NetworkID:     rid,
+			MetadataValue: uint32(meta),
+		},
+		HasNetworkID:   true,
+		Count:          uint16(it.Count()),
+		BlockRuntimeID: int32(blockRuntimeID),
+		NBTData:        nbtconv.WriteItem(it, false),
+	}
+}
+
+// noinspection ALL
+//
+//go:linkname player_session github.com/df-mc/dragonfly/server/player.(*Player).session
+func player_session(*player.Player) *session.Session
+
+// noinspection ALL
+//
+//go:linkname item_id github.com/df-mc/dragonfly/server/item.id
+func item_id(s item.Stack) int32
+
+// noinspection ALL
+//
+//go:linkname session_writePacket github.com/df-mc/dragonfly/server/session.(*Session).writePacket
+func session_writePacket(*session.Session, packet.Packet)

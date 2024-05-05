@@ -1,8 +1,10 @@
 package command
 
 import (
+	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/menu"
 )
 
 // Kit is a command that allows players to select a kit.
@@ -14,8 +16,7 @@ func (Kit) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	_ = p
-	panic("inv menu")
+	inv.SendMenu(p, menu.NewKitsMenu())
 	//p.SendForm(form.NewKitForm(p))
 }
 

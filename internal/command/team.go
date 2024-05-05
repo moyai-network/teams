@@ -23,8 +23,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-var kitmap = true
-
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
 
 // TeamCreate is the command used to create teams.
@@ -446,7 +444,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() && !kitmap {
+	if tm.Frozen() {
 		user.Messagef(p, "command.team.dtr")
 		return
 	}
@@ -501,7 +499,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() && !kitmap {
+	if tm.Frozen() {
 		user.Messagef(p, "command.team.dtr")
 		return
 	}
@@ -615,7 +613,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() && !kitmap {
+	if tm.Frozen() {
 		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
@@ -650,7 +648,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() && !kitmap {
+	if tm.Frozen() {
 		o.Error(lang.Translatef(l, "command.team.dtr"))
 		return
 	}
@@ -698,7 +696,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if tm.Frozen() && !kitmap {
+	if tm.Frozen() {
 		user.Messagef(p, "command.team.dtr")
 		return
 	}

@@ -98,7 +98,6 @@ func teleport(e *entity.Ent, target trace.Result) {
 		}
 
 		if taliPos, ok := validTaliPearl(e, target, directions[p]); ok {
-			fmt.Println("Tali Pearl")
 			session_writePacket(player_session(p), &packet.MovePlayer{
 				EntityRuntimeID: 1,
 				Position:        mgl32.Vec3{float32(taliPos[0]), float32(taliPos[1] + 1.621), float32(taliPos[2])},
@@ -285,7 +284,6 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	}
 
 	if taliPos, ok := validTaliPearl(e, target, direction); ok {
-		fmt.Println("Tali Pearl")
 		return taliPos, true
 	}
 

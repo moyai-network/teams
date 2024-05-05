@@ -66,14 +66,6 @@ func (h *Handler) Player() *player.Player {
 	return h.p
 }
 
-func (h *Handler) Message(key string, args ...interface{}) {
-	u, err := data.LoadUserFromXUID(h.p.XUID())
-	if err != nil {
-		return
-	}
-	h.p.Message(lang.Translatef(u.Language, key, args...))
-}
-
 func (h *Handler) Logout() *process.Process {
 	return h.logout
 }
@@ -84,13 +76,6 @@ func (h *Handler) Stuck() *process.Process {
 
 func (h *Handler) Home() *process.Process {
 	return h.home
-}
-
-// UpdateState updates the user's state to its viewers.
-func (h *Handler) UpdateState() {
-	for _, v := range h.viewers() {
-		v.ViewEntityState(h.p)
-	}
 }
 
 // AddItemOrDrop adds an item to the user's inventory or drops it if the inventory is full.

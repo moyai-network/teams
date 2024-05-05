@@ -18,6 +18,17 @@ func FlushCache() {
 		}
 		delete(users, u.XUID)
 	}
+	teamMu.Lock()
+	defer teamMu.Unlock()
+	for _, t := range teams {
+		err := saveTeamData(t)
+		if err != nil {
+			log.Println("Error saving team data:", err)
+			return
+		}
+		delete(teams, t.Name)
+
+	}
 }
 
 // ctx returns a context.Context.
@@ -31,7 +42,7 @@ var db *mongo.Database
 // init creates the Upper database connection.
 func init() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb+srv://hi:iKrlmjwZ87eWrqZM@cluster0.dkysi.mongodb.net/?retryWrites=true&w=majority").SetServerAPIOptions(serverAPI))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017").SetServerAPIOptions(serverAPI))
 	if err != nil {
 		panic(err)
 	}

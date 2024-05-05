@@ -25,6 +25,7 @@ require (
 require (
 	github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5 // indirect
 	github.com/bedrock-gophers/intercept v0.1.1 // indirect
+	github.com/bedrock-gophers/inv v0.1.0 // indirect
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc // indirect
 	github.com/bedrock-gophers/tebex v0.1.0 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect

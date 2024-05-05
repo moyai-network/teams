@@ -219,3 +219,12 @@ func (r *Roles) checkExpiry() {
 		}
 	}
 }
+
+func init() {
+	Register(Operator{})
+	Register(Default{})
+	Register(Trial{})
+	Register(Mod{})
+	Register(Admin{})
+	Register(Manager{})
+}

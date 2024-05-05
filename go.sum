@@ -4,6 +4,8 @@ github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5 h1:Etg/VpP
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5/go.mod h1:nGvjhKkEoeo04nSPVvdlBK489C+33WOYx28nxZ/TDzE=
 github.com/bedrock-gophers/intercept v0.1.1 h1:hQ+nx45PPHWaKQ8oS+w+ILUPxN9Y/mfqHMdg1GTbNHg=
 github.com/bedrock-gophers/intercept v0.1.1/go.mod h1:muBHbh3LOLIxMciFlxGCPCmrAPxPTd1hki5xw+wBe5I=
+github.com/bedrock-gophers/inv v0.1.0 h1:R7qZ8PMShtfMvB6nKE4HhZUPkalV8pQjVlF9/6b2SXo=
+github.com/bedrock-gophers/inv v0.1.0/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc h1:wkXM0BAe3unwZYkdFaJIYCdmvlSLh1dLTtV9BlDsRaI=
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc/go.mod h1:vx6yUjOWw1zmbzBgrnR2tEK413VV9nAOB7PO4IeRxIM=
 github.com/bedrock-gophers/packethandler v0.0.0-20230714140442-368cd2e34db0 h1:J6TMtirgxkMc2mXxyJHO3t0UfgePQtCMyzMWVhUPzFo=

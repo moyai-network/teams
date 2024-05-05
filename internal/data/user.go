@@ -229,7 +229,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 }
 
 func init() {
-	t := time.NewTicker(5 * time.Minute)
+	t := time.NewTicker(60 * time.Minute)
 	go func() {
 		for range t.C {
 			FlushCache()

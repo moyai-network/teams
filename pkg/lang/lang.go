@@ -44,7 +44,7 @@ func Translatef(lang data.Language, key string, a ...interface{}) string {
 func Translate(lang data.Language, key string) string {
 	t, ok := translations[lang.Tag]
 	if !ok {
-		t = translations[language.French]
+		t = translations[language.English]
 	}
 	return t.Translations[key]
 }

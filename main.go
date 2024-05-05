@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
+	"github.com/bedrock-gophers/inv/inv"
 	"github.com/bedrock-gophers/tebex/tebex"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item/inventory"
@@ -70,6 +71,7 @@ func main() {
 	configureWorld(w)
 	clearEntities(w)
 	placeCrates(w)
+	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 
 	registerCommands(srv)
 
@@ -258,7 +260,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamDelete{},
 		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("tl", text.Colourf("<aqua>Send your location to teammates</aqua>"), nil, command.TL{}),
-		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}),
+		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}, command.BalanceAdd{}, command.BalanceAddOffline{}),
 		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
 		cmd.New("clear", text.Colourf("<aqua>Clear your Inventory.</aqua>"), nil, command.Clear{}),
 		cmd.New("clearlag", text.Colourf("<aqua>Clears all ground entitys.</aqua>"), nil, command.ClearLag{}),

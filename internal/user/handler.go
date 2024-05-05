@@ -212,7 +212,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	ha.s = s
 	ha.logTime = time.Now()
 
-	ha.UpdateState()
+	UpdateState(ha.p)
 	go startTicker(ha)
 	return ha
 }
@@ -382,17 +382,17 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		return
 	}
 	if !t.Leader(u.Name) {
-		h.Message("team.not-leader")
+		Messagef(h.p, "team.not-leader")
 		return
 	}
 	if t.Claim != (area.Area{}) {
-		h.Message("team.has-claim")
+		Messagef(h.p, "team.has-claim")
 		return
 	}
 
 	pos := h.claimPos
 	if pos[0] == (mgl64.Vec2{}) || pos[1] == (mgl64.Vec2{}) {
-		h.Message("team.area.too-close")
+		Messagef(h.p, "team.area.too-close")
 		return
 	}
 	claim := area.NewArea(pos[0], pos[1])
@@ -407,20 +407,20 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	for _, a := range area.Protected(w) {
 		for _, b := range blocksPos {
 			if a.Vec3WithinOrEqualXZ(b.Vec3()) {
-				h.Message("team.area.already-claimed")
+				Messagef(h.p, "team.area.already-claimed")
 				return
 			}
 			if a.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-				h.Message("team.area.too-close")
+				Messagef(h.p, "team.area.too-close")
 				return
 			}
 		}
 		if a.Vec2WithinOrEqual(pos[0]) || a.Vec2WithinOrEqual(pos[1]) {
-			h.Message("team.area.already-claimed")
+			Messagef(h.p, "team.area.already-claimed")
 			return
 		}
 		if a.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || a.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
-			h.Message("team.area.too-close")
+			Messagef(h.p, "team.area.too-close")
 			return
 		}
 	}
@@ -436,20 +436,20 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		}
 		for _, b := range blocksPos {
 			if c.Vec3WithinOrEqualXZ(b.Vec3()) {
-				h.Message("team.area.already-claimed")
+				Messagef(h.p, "team.area.already-claimed")
 				return
 			}
 			if c.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-				h.Message("team.area.too-close")
+				Messagef(h.p, "team.area.too-close")
 				return
 			}
 		}
 		if c.Vec2WithinOrEqual(pos[0]) || c.Vec2WithinOrEqual(pos[1]) {
-			h.Message("team.area.already-claimed")
+			Messagef(h.p, "team.area.already-claimed")
 			return
 		}
 		if c.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || c.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
-			h.Message("team.area.too-close")
+			Messagef(h.p, "team.area.too-close")
 			return
 		}
 	}
@@ -458,13 +458,13 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	y := claim.Max().Y() - claim.Min().Y()
 	ar := x * y
 	if ar > 75*75 {
-		h.Message("team.claim.too-big")
+		Messagef(h.p, "team.claim.too-big")
 		return
 	}
 	cost := ar * 5
 
 	if t.Balance < cost {
-		h.Message("team.claim.no-money")
+		Messagef(h.p, "team.claim.no-money")
 		return
 	}
 
@@ -472,7 +472,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	t = t.WithClaim(claim)
 	data.SaveTeam(t)
 
-	h.Message("command.claim.success", pos[0], pos[1], cost)
+	Messagef(h.p, "command.claim.success", pos[0], pos[1], cost)
 }
 
 // HandleItemUse ...
@@ -508,7 +508,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Archer, class.Rogue:
 		if e, ok := ArcherRogueEffectFromItem(held.Item()); ok {
 			if cd := h.archerRogueItem.Key(held.Item()); cd.Active() {
-				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			h.p.AddEffect(e)
@@ -531,11 +531,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				return
 			}
 			if cd := h.bardItem.Key(held.Item()); cd.Active() {
-				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				h.Message("class.energy.insufficient")
+				Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -556,7 +556,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			h.Message("class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
+			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.bardItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -568,11 +568,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			if cd := h.strayItem.Key(held.Item()); cd.Active() {
-				h.Message("class.ability.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				h.Message("class.energy.insufficient")
+				Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -593,7 +593,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			h.Message("class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
+			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.strayItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -854,7 +854,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			p.Extinguish()
 			p.SetFood(20)
 			h.class.Store(class.Resolve(p))
-			h.UpdateState()
+			UpdateState(h.p)
 
 			// TODO, add deathban later
 			h.p.Teleport(mgl64.Vec3{0, 100, 0})
@@ -1100,7 +1100,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		p.Extinguish()
 		p.SetFood(20)
 		h.class.Store(class.Resolve(p))
-		h.UpdateState()
+		UpdateState(h.p)
 
 		// TODO, add deathban later
 		h.p.Teleport(mgl64.Vec3{0, 100, 0})
@@ -1321,22 +1321,22 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 
 			if !tm.Leader(h.p.Name()) {
-				h.Message("team.not-leader")
+				Messagef(h.p, "team.not-leader")
 				return
 			}
 
 			if tm.Claim != (area.Area{}) {
-				h.Message("team.has-claim")
+				Messagef(h.p, "team.has-claim")
 				break
 			}
 
 			for _, a := range area.Protected(w) {
 				if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-					h.Message("team.area.already-claimed")
+					Messagef(h.p, "team.area.already-claimed")
 					return
 				}
 				if a.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-					h.Message("team.area.too-close")
+					Messagef(h.p, "team.area.too-close")
 					return
 				}
 			}
@@ -1348,11 +1348,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					continue
 				}
 				if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
-					h.Message("team.area.already-claimed")
+					Messagef(h.p, "team.area.already-claimed")
 					return
 				}
 				if c.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-					h.Message("team.area.too-close")
+					Messagef(h.p, "team.area.too-close")
 					return
 				}
 			}
@@ -1365,14 +1365,14 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				y := ar.Max().Y() - ar.Min().Y()
 				a := x * y
 				if a > 75*75 {
-					h.Message("team.claim.too-big")
+					Messagef(h.p, "team.claim.too-big")
 					return
 				}
 				cost := int(a * 5)
-				h.Message("team.claim.cost", cost)
+				Messagef(h.p, "team.claim.cost", cost)
 			}
 			h.claimPos[pn-1] = mgl64.Vec2{float64(pos.X()), float64(pos.Z())}
-			h.Message("team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+			Messagef(h.p, "team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
 		}
 	}
 
@@ -1486,7 +1486,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				u.Teams.Balance = u.Teams.Balance - price
 				data.SaveUser(u)
 				h.AddItemOrDrop(item.NewStack(it, q))
-				h.Message("shop.buy.success", q, lines[1])
+				Messagef(h.p, "shop.buy.success", q, lines[1])
 			case "sell":
 				inv := h.Player().Inventory()
 				count := 0
@@ -1505,9 +1505,9 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				if count >= q {
 					u.Teams.Balance = u.Teams.Balance + float64(count/q)*price
 					data.SaveUser(u)
-					h.Message("shop.sell.success", count, lines[1])
+					Messagef(h.p, "shop.sell.success", count, lines[1])
 				} else {
-					h.Message("shop.sell.fail")
+					Messagef(h.p, "shop.sell.fail")
 					return
 				}
 				for i, v := range items {
@@ -1535,7 +1535,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			cd := u.Teams.Kits.Key(key)
 			if cd.Active() {
-				h.Message("command.kit.cooldown", cd.Remaining().Round(time.Second))
+				Messagef(h.p, "command.kit.cooldown", cd.Remaining().Round(time.Second))
 				return
 			} else {
 				cd.Set(time.Minute)
@@ -1847,10 +1847,10 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		if a.Vec3WithinOrEqualFloorXZ(newPos) {
 			if ar != a {
 				if ar != (area.NamedArea{}) {
-					h.Message("area.leave", ar.Name())
+					Messagef(h.p, "area.leave", ar.Name())
 				}
 				h.area.Store(a)
-				h.Message("area.enter", a.Name())
+				Messagef(h.p, "area.enter", a.Name())
 				return
 			} else {
 				return
@@ -1860,11 +1860,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	if ar != area.Wilderness(w) {
 		if ar != (area.NamedArea{}) {
-			h.Message("area.leave", ar.Name())
+			Messagef(h.p, "area.leave", ar.Name())
 
 		}
 		h.area.Store(area.Wilderness(w))
-		h.Message("area.enter", area.Wilderness(w).Name())
+		Messagef(h.p, "area.enter", area.Wilderness(w).Name())
 	}
 }
 
@@ -1931,7 +1931,7 @@ func (h *Handler) HandleQuit() {
 			_ = h.p.Close()
 		}()
 		h.logger = true
-		h.UpdateState()
+		UpdateState(h.p)
 		return
 	}
 }

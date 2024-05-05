@@ -202,7 +202,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(glyph.Parse("Kitmap"))
+			sb := scoreboard.New(glyph.Parse("MOYAI"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
@@ -227,14 +227,6 @@ func startTicker(h *Handler) {
 					_, _ = sb.WriteString("§3")
 				}
 			}
-
-			if !db.Active() {
-				sb.WriteString(lang.Translatef(l, "scoreboard.kills", u.Teams.Stats.Kills))
-				sb.WriteString(lang.Translatef(l, "scoreboard.deaths", u.Teams.Stats.Deaths))
-				sb.WriteString(lang.Translatef(l, "scoreboard.killstreak", u.Teams.Stats.KillStreak))
-			}
-
-			_, _ = sb.WriteString("§2")
 
 			if d, ok := sotw.Running(); ok && u.Teams.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))

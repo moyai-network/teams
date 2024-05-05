@@ -31,15 +31,19 @@ func teamCached(f func(Team) bool) (Team, bool) {
 	return Team{}, false
 }
 
-func saveTeamData(t Team) {
+func saveTeamData(t Team) error {
 	filter := bson.M{"name": bson.M{"$eq": t.Name}}
 	update := bson.M{"$set": t}
 
-	res, _ := teamCollection.UpdateOne(ctx(), filter, update)
+	res, err := teamCollection.UpdateOne(ctx(), filter, update)
+	if err != nil {
+		return err
+	}
 
 	if res.MatchedCount == 0 {
 		_, _ = teamCollection.InsertOne(ctx(), t)
 	}
+	return nil
 }
 
 func SaveTeam(t Team) {
