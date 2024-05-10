@@ -59,6 +59,8 @@
     "whitelist.already": "<red>%s is already whitelisted</red>",
     "whitelist.already.not": "<red>%s is not whitelisted</red>",
 
+    "user.teleport.combat": "<red>You cannot teleport while in combat.</red>",
+    "user.already.teleporting": "<red>You are already teleporting.</red>",
     "user.team-less": "<red>You're not in a team.</red>",
     "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>",
     "user.data.load.error": "<red>There was an error loading your data. Please notify staff.</red>",
@@ -69,7 +71,6 @@
     "user.suicide": "<yellow>%s</yellow> <grey>[<red>%d</red>]</grey> <red>has killed himself</red>",
     "user.reclaim": "%s <green>claimed their</green> %s <green>reclaim and received</green> %s and <red>%dx lives</red>",
     "user.reclaimed": "<red>You have already claimed your reclaim this map.</red>",
-
 
     "user.ban.header": "<b><red>You are banned from Moyai</red></b>",
     "user.ban.header.oomph": "<b><red>You were banned from Moyai by Oomph</red></b>",
@@ -161,6 +162,7 @@
    "bard.ability.cooldown": "<red>You must wait %.1f seconds before using this ability again.</red>",
 
    "team.not-leader": "<red>You must be the leader of a team to use this.</red>",
+   "team.not-leader-or-captain": "<red>You must be the leader or captain of a team to use this.</red>",
    "team.has-claim": "<red>Your team already has a claim.</red>",
    "team.area.already-claimed": "<red>This area is already claimed.</red>",
    "team.area.too-close": "<red>You must claim at least one block away from other claims.</red>",
@@ -168,6 +170,8 @@
    "team.claim.cost": "<yellow>Cost of claim: <green>$%d</green></yellow>",
    "team.claim.no-money": "<red>You do not have enough money in the faction to purchase this claim.</red>",
    "team.claim.too-big": "<red>That claim is too big. Claims may only be up to 75x75 blocks.",
+   "team.claim.none": "<red>Your team does not have a claim.</red>",
+   "team.claim.not-within": "<red>You must be within your claim to use this.</red>",
 
    "user.message.cooldown": "<red>You're sending messages too fast</red>",
 
@@ -197,8 +201,13 @@
    "command.claim.success": "<green>You have successfully claimed from</green> <yellow>%.0f <green>to</green> %.0f</yellow> <green>($%.0f)</green>.",
    "command.unclaim.success": "<red>You have successfully removed your team's claim.</red>",
 
+   "command.team.create.cooldown": "<red>You must wait %v before creating another team.</red>",
+   "command.team.home.set": "<green>Your team's home has been set.</green>",
+   "command.team.home.none": "<red>Your team does not have a home set.</red>",
    "command.team.focus": "<green>Your team is now focusing <blue>%s</blue>.</green>",
    "command.team.unfocus": "<green>Your team is no longer focusing <blue>%s</blue>.</green>",
+   "command.team.focus.self": "<red>You cannot focus your own team.</red>",
+   "command.team.focus.none": "<red>Your team is not focusing anyone.</red>",
 
    "command.teleport.multiple": "<red>You cannot teleport to multiple destinations.</red>",
    "command.teleport.operator": "<red>You must be an operator to teleport multiple players at a time.</red>",
@@ -243,8 +252,9 @@
    "command.team.invite.sent": "<yellow>%s has been invited to the team.</yellow>",
    
    "command.team.dtr": "<red>You cannot do that while your DTR is regenerating.</red>",
+   "command.team.top.none": "<red>There are no teams to display.</red>",
 
-   "command.team.join.not.found": "<red>No team with the name %s found.</red>",
+   "command.team.not.found": "<red>No team with the name %s found.</red>",
    "command.team.join.not.invited": "<red>This team has not invited you!</red>",
    "command.team.join.joined": "<yellow>You have <green>joined</green> the team <blue>%s</blue>.</yellow>",
    "command.team.join.user.joined": "<yellow>%s has <green>joined</green> the team</yellow>",

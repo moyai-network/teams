@@ -37,3 +37,27 @@ func ParseDuration(str string) (time.Duration, error) {
 	}
 	return 0, fmt.Errorf("parse duration: invalid unit")
 }
+
+// FormatDuration formats a duration to a string.
+func FormatDuration(d time.Duration) string {
+	if d == 0 {
+		return "0s"
+	}
+	var str string
+	if d.Hours() >= 24 {
+		str += fmt.Sprintf("%dd", int(d.Hours()/24))
+		d -= time.Hour * 24 * time.Duration(int(d.Hours()/24))
+	}
+	if d.Hours() >= 1 {
+		str += fmt.Sprintf("%dh", int(d.Hours()))
+		d -= time.Hour * time.Duration(int(d.Hours()))
+	}
+	if d.Minutes() >= 1 {
+		str += fmt.Sprintf("%dm", int(d.Minutes()))
+		d -= time.Minute * time.Duration(int(d.Minutes()))
+	}
+	if d.Seconds() >= 1 {
+		str += fmt.Sprintf("%ds", int(d.Seconds()))
+	}
+	return str
+}

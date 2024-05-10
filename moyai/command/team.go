@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/internal/timeutil"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
@@ -405,7 +406,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if u.Teams.Create.Active() {
-		panic("implement translation")
+		user.Messagef(p, "command.team.create.cooldown", timeutil.FormatDuration(u.Teams.Create.Remaining()))
 		return
 	}
 
@@ -450,8 +451,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if len(tm.Members) == 6 {
-		panic("implement translation")
-		out.Error(text.Colourf("<red>Team is full!</red>"))
+		user.Messagef(p, "command.team.join.full")
 		return
 	}
 
@@ -495,7 +495,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 
 	tm, err := data.LoadTeamFromName(string(t.Team))
 	if err != nil {
-		panic("implement translation")
+		user.Messagef(p, "command.team.not.found")
 		return
 	}
 
@@ -505,8 +505,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if len(tm.Members) == 6 {
-		panic("implement translation")
-		out.Error(text.Colourf("<red>Team is full!</red>"))
+		user.Messagef(p, "command.team.join.full")
 		return
 	}
 
@@ -809,11 +808,11 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 	}
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		panic("implement translation")
+		o.Error("Failed to load teams. Contact an administrator.")
 	}
 
 	if len(teams) == 0 {
-		o.Error("There are no teams.")
+		user.Messagef(p, "command.team.top.none")
 		return
 	}
 
@@ -851,7 +850,7 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if cl := tm.Claim; cl != (area.Area{}) {
-		o.Error("Your team already has a claim.")
+		user.Messagef(p, "team.has-claim")
 		return
 	}
 	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true))
@@ -869,8 +868,7 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if !tm.Leader(p.Name()) {
-		panic("implement translation")
-		o.Error("You are not the team leader.")
+		user.Messagef(p, "team.not-leader")
 		return
 	}
 	tm = tm.WithClaim(area.Area{}).WithHome(mgl64.Vec3{})
@@ -891,20 +889,20 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 	}
 	cl := tm.Claim
 	if cl == (area.Area{}) {
-		o.Error("Your team does not have a claim.")
+		user.Messagef(p, "team.claim.none")
 		return
 	}
 	if !cl.Vec3WithinOrEqualXZ(p.Position()) {
-		o.Error("You are not within your team's claim.")
+		user.Messagef(p, "team.claim.not-within")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		o.Error("You are not the team leader or captain.")
+		user.Messagef(p, "team.not-leader-or-captain")
 		return
 	}
 	tm = tm.WithHome(p.Position())
 	data.SaveTeam(tm)
-	o.Print("Your team's home has been set.")
+	user.Messagef(p, "command.team.home.set")
 }
 
 // Run ...
@@ -922,22 +920,22 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 
 	h, ok := p.Handler().(*user.Handler)
 	if !ok {
-		panic("implement translation")
+		o.Error("Failed to load user handler. Contact an administrator.")
 		return
 	}
 	if h.Combat().Active() {
-		o.Error("You cannot teleport while in combat.")
+		user.Messagef(p, "user.teleport.combat")
 		return
 	}
 
 	if h.Home().Ongoing() {
-		o.Error("You are already teleporting.")
+		user.Messagef(p, "user.already.teleporting")
 		return
 	}
 
 	hm := tm.Home
 	if hm == (mgl64.Vec3{}) {
-		o.Error("Your team does not have a home.")
+		user.Messagef(p, "command.team.home.none")
 		return
 	}
 	if area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
@@ -948,7 +946,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	dur := time.Second * 10
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		panic("implement translation")
+		o.Error("Failed to load teams. Contact an administrator.")
 	}
 
 	for _, tm := range teams {
@@ -969,7 +967,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		panic("implement translation")
+		o.Error("Failed to load teams. Contact an administrator.")
 	}
 
 	sort.Slice(teams, func(i, j int) bool {
@@ -1015,17 +1013,17 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		panic("implement translation")
+		user.Messagef(p, "user.team-less")
 		return
 	}
 	targetTeam, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
-		o.Error("That team does not exist.")
+		user.Messagef(p, "command.team.not.found", string(t.Name))
 		return
 	}
 
 	if tm.Name == targetTeam.Name {
-		o.Error("You cannot focus your own team.")
+		user.Messagef(p, "command.team.focus.self")
 		return
 	}
 	tm = tm.WithTeamFocus(targetTeam)
@@ -1046,14 +1044,13 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		// you are not in a team
-		panic("implement translation")
+		user.Messagef(p, "user.team-less")
 		return
 	}
 	focus := tm.Focus
 
 	if focus.Type() == data.FocusTypeNone() {
-		o.Error("Your team is not focusing anyone.")
+		user.Messagef(p, "command.team.focus.none")
 		return
 	}
 
@@ -1076,8 +1073,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		// you are not in a team
-		panic("implement translation")
+		user.Messagef(p, "user.team-less")
 		return
 	}
 	if len(t.Target) > 1 {
@@ -1143,8 +1139,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		// you are not in a team
-		panic("implement translation")
+		user.Messagef(p, "user.team-less")
 		return
 	}
 
