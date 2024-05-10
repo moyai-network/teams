@@ -9,6 +9,9 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"math/rand"
+	"reflect"
+	"strings"
+	"unicode"
 )
 
 func AddOrDrop(p *player.Player, it item.Stack) {
@@ -87,4 +90,75 @@ func init() {
 	RegisterSpecialItem(SigilType{})
 	RegisterSpecialItem(TimeWarpType{})
 	creative.RegisterItem(NewPartnerPackage(1))
+}
+
+// DisplayName returns the name of the item.
+func DisplayName(i world.Item) string {
+	var s strings.Builder
+
+	if it, ok := i.(item.Sword); ok {
+		s.WriteString(toolTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Pickaxe); ok {
+		s.WriteString(toolTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Axe); ok {
+		s.WriteString(toolTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Shovel); ok {
+		s.WriteString(toolTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Hoe); ok {
+		s.WriteString(toolTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Helmet); ok {
+		s.WriteString(armourTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Chestplate); ok {
+		s.WriteString(armourTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Leggings); ok {
+		s.WriteString(armourTierName(it.Tier) + " ")
+	} else if it, ok := i.(item.Boots); ok {
+		s.WriteString(armourTierName(it.Tier) + " ")
+	}
+
+	t := reflect.TypeOf(i)
+	if t == nil {
+		return ""
+	}
+	name := t.Name()
+
+	for _, r := range name {
+		if unicode.IsUpper(r) && !strings.HasPrefix(name, string(r)) {
+			s.WriteRune(' ')
+		}
+		s.WriteRune(r)
+	}
+	return s.String()
+}
+
+func toolTierName(t item.ToolTier) string {
+	switch t {
+	case item.ToolTierDiamond:
+		return "Diamond"
+	case item.ToolTierGold:
+		return "Golden"
+	case item.ToolTierIron:
+		return "Iron"
+	case item.ToolTierStone:
+		return "Stone"
+	case item.ToolTierWood:
+		return "Wooden"
+	}
+	return ""
+}
+
+func armourTierName(t item.ArmourTier) string {
+	switch t.(type) {
+	case item.ArmourTierDiamond:
+		return "Diamond"
+	case item.ArmourTierGold:
+		return "Golden"
+	case item.ArmourTierIron:
+		return "Iron"
+	case item.ArmourTierChain:
+		return "Chainmail"
+	case item.ArmourTierLeather:
+		return "Leather"
+	}
+	return ""
 }

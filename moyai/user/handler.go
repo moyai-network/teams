@@ -898,7 +898,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				heldName := held.CustomName()
 
 				if len(heldName) <= 0 {
-					heldName = item.DisplayName(held.Item(), language.BritishEnglish)
+					heldName = it.DisplayName(held.Item())
 				}
 
 				if held.Empty() || len(heldName) <= 0 {
@@ -1140,7 +1140,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			heldName := held.CustomName()
 
 			if len(heldName) <= 0 {
-				heldName = item.DisplayName(held.Item(), language.BritishEnglish)
+				heldName = it.DisplayName(held.Item())
 			}
 
 			if held.Empty() || len(heldName) <= 0 {
