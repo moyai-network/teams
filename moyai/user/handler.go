@@ -800,6 +800,9 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	*dmg = *dmg / 1.25
+	if h.archer.Active() {
+		*dmg = *dmg + *dmg*0.15
+	}
 	if h.logger {
 		p := h.p
 		if (p.Health()-p.FinalDamageFrom(*dmg, src) <= 0 || (src == entity.VoidDamageSource{})) && !ctx.Cancelled() {
@@ -895,7 +898,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				heldName := held.CustomName()
 
 				if len(heldName) <= 0 {
-					heldName = item.DisplayName(held.Item(), language.English)
+					heldName = item.DisplayName(held.Item(), language.BritishEnglish)
 				}
 
 				if held.Empty() || len(heldName) <= 0 {
@@ -1137,7 +1140,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			heldName := held.CustomName()
 
 			if len(heldName) <= 0 {
-				heldName = item.DisplayName(held.Item(), language.English)
+				heldName = item.DisplayName(held.Item(), language.BritishEnglish)
 			}
 
 			if held.Empty() || len(heldName) <= 0 {

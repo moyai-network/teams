@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/bedrock-gophers/intercept"
 	"github.com/moyai-network/teams/moyai/data"
 	_ "unsafe"
@@ -55,26 +56,30 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	}
 	p, ok := Lookup(name)
 	if !ok {
+		fmt.Println("player not found")
 		return
 	}
 	u, _ := data.LoadUserFromName(p.Name())
 
 	switch pkt := pk.(type) {
-
 	case *packet.SetActorData:
 		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
+			fmt.Println("target rid not found")
 			break
 		}
 		target, ok := t.Handler().(*Handler)
 		if !ok {
+			fmt.Println("wrong handler")
 			return
 		}
 
 		meta := protocol.EntityMetadata(pkt.EntityMetadata)
 		meta[protocol.EntityDataKeyName] = text.Colourf("<red>%s</red>", t.Name())
 
+		fmt.Println("herte")
 		if target.archer.Active() {
+			fmt.Println("active")
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
@@ -102,7 +107,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
 			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
-			panic("fix else if cycle")
+			//panic("fix else if cycle")
 			//} else if slices.ContainsFunc(team.FocusedOnlinePlayers(tm), func(p *player.Player) bool {
 			//	return strings.EqualFold(p.Name(), t.Name())
 			//}) {
