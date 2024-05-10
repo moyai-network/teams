@@ -308,11 +308,11 @@ func LoadAllTeams() ([]Team, error) {
 	if err != nil {
 		return tms, err
 	}
-	err = result.Decode(&tms)
+	err = result.All(ctx(), &tms)
 	if err != nil {
 		return tms, err
 	}
-	var mappedTeams map[string]Team
+	var mappedTeams = map[string]Team{}
 
 	for _, t := range tms {
 		mappedTeams[t.Name] = updatedRegeneration(t)

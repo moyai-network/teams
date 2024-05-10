@@ -393,15 +393,15 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 
 	pos := h.claimPos
 	if pos[0] == (mgl64.Vec2{}) || pos[1] == (mgl64.Vec2{}) {
-		Messagef(h.p, "team.area.too-close")
+		Messagef(h.p, "team.claim.select-before")
 		return
 	}
 	claim := area.NewArea(pos[0], pos[1])
 	var blocksPos []cube.Pos
-	min := claim.Min()
-	max := claim.Max()
-	for x := min[0]; x <= max[0]; x++ {
-		for y := min[1]; y <= max[1]; y++ {
+	mn := claim.Min()
+	mx := claim.Max()
+	for x := mn[0]; x <= mx[0]; x++ {
+		for y := mn[1]; y <= mx[1]; y++ {
 			blocksPos = append(blocksPos, cube.PosFromVec3(mgl64.Vec3{x, 0, y}))
 		}
 	}
@@ -428,6 +428,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 
 	teams, err := data.LoadAllTeams()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	for _, tm := range teams {
@@ -1832,12 +1833,15 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	var areas []area.NamedArea
 
-	teams, _ := data.LoadAllTeams()
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		fmt.Println(err)
+	}
 	for _, tm := range teams {
 		a := tm.Claim
 
 		name := text.Colourf("<red>%s</red>", tm.DisplayName)
-		if t, err := data.LoadUserFromName(h.p.Name()); err == nil && strings.EqualFold(t.Name, tm.Name) {
+		if t, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil && t.Name == tm.Name {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
 		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))

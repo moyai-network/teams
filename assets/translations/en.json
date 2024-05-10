@@ -164,6 +164,7 @@
    "team.not-leader": "<red>You must be the leader of a team to use this.</red>",
    "team.not-leader-or-captain": "<red>You must be the leader or captain of a team to use this.</red>",
    "team.has-claim": "<red>Your team already has a claim.</red>",
+   "team.claim.select-before": "<red>You must select the positions before claiming an area.</red>",
    "team.area.already-claimed": "<red>This area is already claimed.</red>",
    "team.area.too-close": "<red>You must claim at least one block away from other claims.</red>",
    "team.claim.set-position": "<green>You have set claim position %d at %v</green>",
