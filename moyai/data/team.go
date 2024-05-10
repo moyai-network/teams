@@ -283,7 +283,7 @@ func (m Member) WithRank(n int) Member {
 }
 
 func decodeSingleTeamFromFilter(filter any) (Team, error) {
-	return decodeSingleTeamResult(userCollection.FindOne(ctx(), filter))
+	return decodeSingleTeamResult(teamCollection.FindOne(ctx(), filter))
 }
 
 func decodeSingleTeamResult(result *mongo.SingleResult) (Team, error) {
@@ -348,9 +348,10 @@ func LoadTeamFromName(name string) (Team, error) {
 
 // LoadTeamFromMemberName loads a team using the given member name.
 func LoadTeamFromMemberName(name string) (Team, error) {
+	name = strings.ToLower(name)
 	if t, ok := teamCached(func(t Team) bool {
 		for _, m := range t.Members {
-			if strings.EqualFold(m.Name, name) {
+			if name == m.Name {
 				return true
 			}
 		}
@@ -358,7 +359,6 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 	}); ok {
 		return updatedRegeneration(t), nil
 	}
-
 	return decodeSingleTeamFromFilter(bson.M{"members.name": bson.M{"$eq": name}})
 }
 

@@ -216,15 +216,17 @@ func startTicker(h *Handler) {
 
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
-				if ft, err := data.LoadTeamFromName(focus.Value()); focus.Type() == data.FocusTypeTeam() && err == nil && !db.Active() {
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-					// CHANGE COUNT FIX IMPORT CYCLE
-					_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", 0, len(tm.Members)))
-					if hm := ft.Home; hm != (mgl64.Vec3{}) {
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
+				if focus.Type() == data.FocusTypeTeam() {
+					if ft, err := data.LoadTeamFromName(focus.Value()); err == nil && !db.Active() {
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
+						// CHANGE COUNT FIX IMPORT CYCLE
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", 0, len(tm.Members)))
+						if hm := ft.Home; hm != (mgl64.Vec3{}) {
+							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
+						}
+						_, _ = sb.WriteString("§3")
 					}
-					_, _ = sb.WriteString("§3")
 				}
 			}
 
