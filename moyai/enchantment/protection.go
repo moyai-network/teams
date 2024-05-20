@@ -45,6 +45,5 @@ func (Protection) CompatibleWithEnchantment(t item.EnchantmentType) bool {
 
 // CompatibleWithItem ...
 func (Protection) CompatibleWithItem(i world.Item) bool {
-	_, ok := i.(item.Armour)
-	return ok
+	return true
 }

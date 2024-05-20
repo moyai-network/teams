@@ -206,20 +206,17 @@ func Protected(w *world.World) []NamedArea {
 
 var (
 	Overworld = Areas{
-		spawn:      NewNamedArea(mgl64.Vec2{51, 51}, mgl64.Vec2{-51, -51}, text.Colourf("<green>Spawn</green>")),
+		spawn:      NewNamedArea(mgl64.Vec2{60, 65}, mgl64.Vec2{-65, -60}, text.Colourf("<green>Spawn</green>")),
 		warZone:    NewNamedArea(mgl64.Vec2{221, 192}, mgl64.Vec2{-221, -192}, text.Colourf("<red>WarZone</red>")),
 		wilderness: NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []NamedArea{
-			NewNamedArea(mgl64.Vec2{20, 51}, mgl64.Vec2{-20, 3000}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{-52, 20}, mgl64.Vec2{-3000, -20}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{-20, -52}, mgl64.Vec2{20, -3000}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{51, -20}, mgl64.Vec2{3000, 20}, text.Colourf("<red>Road</red>")),
+			NewNamedArea(mgl64.Vec2{-66, -7}, mgl64.Vec2{-2540, 7}, text.Colourf("<red>Road</red>")),
+			NewNamedArea(mgl64.Vec2{61, 7}, mgl64.Vec2{2540, -7}, text.Colourf("<red>Road</red>")),
+			NewNamedArea(mgl64.Vec2{6, -61}, mgl64.Vec2{-8, -2540}, text.Colourf("<red>Road</red>")),
+			NewNamedArea(mgl64.Vec2{-8, 66}, mgl64.Vec2{7, 2540}, text.Colourf("<red>Road</red>")),
 		},
 		koths: []NamedArea{
-			NewNamedArea(mgl64.Vec2{147, 86}, mgl64.Vec2{177, 116}, text.Colourf("<red>Spiral</red>")),
-			NewNamedArea(mgl64.Vec2{63, 124}, mgl64.Vec2{57, 118}, text.Colourf("<amethyst>Dragon</amethyst>")),
-			NewNamedArea(mgl64.Vec2{-88, 114}, mgl64.Vec2{-118, 85}, text.Colourf("<dark-green>Circle<dark-green>")),
-			NewNamedArea(mgl64.Vec2{0, 182}, mgl64.Vec2{-4, 178}, text.Colourf("<aqua>Stairs</aqua>")),
+			NewNamedArea(mgl64.Vec2{574, 426}, mgl64.Vec2{426, 574}, text.Colourf("<amethyst>Cosmic</amethyst>")),
 		},
 	}
 	Nether = Areas{

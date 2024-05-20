@@ -1,26 +1,22 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/bedrock-gophers/intercept"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/sotw"
 	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 type PacketHandler struct {
+	intercept.NopHandler
 	c *intercept.Conn
-
-	oomph bool
-	//p     *pl.Player
 }
 
 func NewPacketHandler(c *intercept.Conn) *PacketHandler {
@@ -29,34 +25,11 @@ func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 	}
 }
 
-/*func NewOomphHandler(p *pl.Player) *PacketHandler {
-	return &PacketHandler{
-		p:     p,
-		oomph: true,
-	}
-}*/
-
-func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
-	switch pkt := pk.(type) {
-	case *packet.ScriptMessage:
-		if pkt.Identifier == "oomph:flagged" {
-			var data map[string]any
-			json.Unmarshal(pkt.Data, &data)
-			Broadcast("oomph.staff.alert", data["player"], data["check_main"], data["check_sub"], "", data["violations"])
-		}
-	}
-}
-
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
-	var name string
-	if h.oomph {
-		//name = h.p.IdentityData().DisplayName
-	} else {
-		name = h.c.IdentityData().DisplayName
-	}
+	name := h.c.IdentityData().DisplayName
+
 	p, ok := Lookup(name)
 	if !ok {
-		fmt.Println("player not found")
 		return
 	}
 	u, _ := data.LoadUserFromName(p.Name())
@@ -65,60 +38,57 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	case *packet.SetActorData:
 		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
-			fmt.Println("target rid not found")
 			break
 		}
 		target, ok := t.Handler().(*Handler)
 		if !ok {
-			fmt.Println("wrong handler")
 			return
 		}
+
+		targetTeam, _ := data.LoadTeamFromMemberName(t.Name())
+		userTeam, _ := data.LoadTeamFromMemberName(u.Name)
 
 		meta := protocol.EntityMetadata(pkt.EntityMetadata)
-		meta[protocol.EntityDataKeyName] = text.Colourf("<red>%s</red>", t.Name())
-
-		fmt.Println("herte")
-		if target.archer.Active() {
-			fmt.Println("active")
+		var colour = "red"
+		if compareTeams(targetTeam, userTeam) {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
-			meta[protocol.EntityDataKeyName] = text.Colourf("<yellow>%s</yellow>", t.Name())
+			colour = "green"
 		}
 
-		defer func() {
-			pkt.EntityMetadata = meta
-		}()
+		if target.archer.Active() {
+			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
+				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
+			}
+			colour = "yellow"
+		}
 
 		tg, _ := data.LoadUserFromName(t.Name())
-		if tg.Teams.PVP.Active() {
-			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
-		} else if _, ok := sotw.Running(); ok && u.Teams.SOTW {
-			meta[protocol.EntityDataKeyName] = text.Colourf("<grey>%s</grey>", t.Name())
+		if _, ok := sotw.Running(); ok && u.Teams.SOTW || tg.Teams.PVP.Active() {
+			colour = "grey"
 		}
 
-		tm, err := data.LoadTeamFromMemberName(t.Name())
-		if err != nil {
-			return
-		}
-
-		if tm.Member(t.Name()) {
-			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
-				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
-			}
-			meta[protocol.EntityDataKeyName] = text.Colourf("<green>%s</green>", t.Name())
-			//panic("fix else if cycle")
-			//} else if slices.ContainsFunc(team.FocusedOnlinePlayers(tm), func(p *player.Player) bool {
-			//	return strings.EqualFold(p.Name(), t.Name())
-			//}) {
-			//	meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple>", t.Name())
-		}
-
+		meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, colour)
 		if target.logger {
 			tag := meta[protocol.EntityDataKeyName]
 			meta[protocol.EntityDataKeyName] = text.Colourf("%s <grey>(LOGGER)</grey>", tag)
 		}
+		pkt.EntityMetadata = meta
 	}
+}
+
+func compareTeams(a data.Team, b data.Team) bool {
+	return a.Name == b.Name
+}
+
+func formatNameTag(name string, t data.Team, col string) string {
+	if len(t.Name) == 0 {
+		return text.Colourf("<%s>%s</%s>", col, name, col)
+	}
+	dtr := t.DTRString()
+
+	return text.Colourf("<%s>%s</%s>\n<gold>[</gold><%s>%s</%s> <grey>|</grey> %s<gold>]</gold>", col, name, col, col, t.DisplayName, col, dtr)
 }
 
 // removeFlag removes a flag from the entity data.

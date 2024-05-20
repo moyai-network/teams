@@ -20,7 +20,6 @@ import (
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
-	kit2 "github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/process"
 	"github.com/moyai-network/teams/moyai/role"
@@ -62,6 +61,8 @@ var (
 		":100:", "\uE10B",
 		":heart:", "\uE10C",
 	)
+
+	loggers = map[string]*Handler{}
 )
 
 type Handler struct {
@@ -119,7 +120,6 @@ type Handler struct {
 	lastAttackTime   atomic.Value[time.Time]
 
 	lastMessage atomic.Value[time.Time]
-	chatType    atomic.Value[int]
 
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
@@ -135,6 +135,11 @@ type Handler struct {
 }
 
 func NewHandler(p *player.Player, xuid string) *Handler {
+	h, ok := loggers[p.XUID()]
+	if ok {
+		_ = h.p.Close()
+		h.logger = false
+	}
 	ha := &Handler{
 		p: p,
 
@@ -151,8 +156,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		scramblerHits: map[string]int{},
 
 		wallBlocks: map[cube.Pos]float64{},
-
-		chatType: *atomic.NewValue(1),
 
 		itemUse:         cooldown.NewMappedCoolDown[world.Item](),
 		archerRogueItem: cooldown.NewMappedCoolDown[world.Item](),
@@ -179,6 +182,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	})
 
 	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
+	UpdateState(p)
 
 	// if p, ok := Lookup(p.Name()); ok {
 	// 	p.Teleport(p.Position())
@@ -265,23 +269,24 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				}
 			}
 		}
-
+		fmt.Println(u.Teams.ChatType)
 		h.lastMessage.Store(time.Now())
-		switch h.ChatType() {
-		case 1:
+		switch u.Teams.ChatType {
+		case 0:
 			if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
 			}
 			global()
-		case 2:
+		case 1:
 			if msg[0] == '!' && role.Staff(r) {
 				staff()
 				return
 			}
 
 			if teamErr != nil {
-				h.UpdateChatType(1)
+				u.Teams.ChatType = 1
+				data.SaveUser(u)
 				global()
 				return
 			}
@@ -290,7 +295,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 					m.Message(text.Colourf("<dark-aqua>[<yellow>T</yellow>] %s: %s</dark-aqua>", h.p.Name(), msg))
 				}
 			}
-		case 3:
+		case 2:
 			if msg[0] == '!' {
 				global()
 				return
@@ -1214,7 +1219,7 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 		u, _ := data.LoadUserFromName(h.p.Name())
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-				if !u.Roles.Contains(role.Admin{}) || h.p.GameMode() != world.GameModeCreative {
+				if !u.Roles.Contains(role.Operator{}) || h.p.GameMode() != world.GameModeCreative {
 					ctx.Cancel()
 					return
 				}
@@ -1226,9 +1231,10 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]item.Stack, xp *int) {
 	w := h.p.World()
 
+	u, _ := data.LoadUserFromName(h.p.Name())
 	for _, a := range area.Protected(w) {
 		if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-			if h.p.GameMode() != world.GameModeCreative {
+			if !u.Roles.Contains(role.Operator{}) || h.p.GameMode() != world.GameModeCreative {
 				ctx.Cancel()
 				return
 			}
@@ -1532,7 +1538,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					}
 				}
 			}
-		} else if title == "[kit]" {
+		} /*else if title == "[kit]" {
 			key := colour.StripMinecraftColour(lines[1])
 			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
@@ -1547,7 +1553,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			switch strings.ToLower(colour.StripMinecraftColour(lines[1])) {
 			case "diamond":
-				kit2.Apply(kit2.Diamond{}, h.p)
+				kit2.Apply(kit2.Master{}, h.p)
 			case "archer":
 				kit2.Apply(kit2.Archer{}, h.p)
 			case "bard":
@@ -1561,7 +1567,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			case "builder":
 				kit2.Apply(kit2.Builder{}, h.p)
 			}
-		}
+		}*/
 	}
 }
 
@@ -1806,17 +1812,14 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if ok {
 		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+
 			// Need to handle for Y-axis cases because some koths are irregular
-			if k == koth.Spiral {
-				if newPos.Y() < 120 {
-					return
-				}
-			} else if k == koth.Dragon {
-				if newPos.Y() < 109 {
-					return
-				}
-			} else if k == koth.Stairs {
-				if newPos.Y() < 150 {
+			switch k {
+			case koth.Cosmic:
+				if newPos.Y() < 78 || newPos.Y() > 85 {
+					if k.StopCapturing(us) {
+						Broadcast("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+					}
 					return
 				}
 			}
@@ -1829,7 +1832,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			}
 		} else {
 			if k.StopCapturing(us) {
-				Broadcast("koth.not.capturing", k.Name())
+				Broadcast("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 			}
 		}
 	}
@@ -1940,6 +1943,8 @@ func (h *Handler) HandleQuit() {
 		}()
 		h.logger = true
 		UpdateState(h.p)
+
+		loggers[p.XUID()] = h
 		return
 	}
 }

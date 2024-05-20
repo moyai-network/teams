@@ -8,6 +8,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -61,7 +62,8 @@ func SpecialItems() []SpecialItemType {
 }
 
 func NewSpecialItem(typ SpecialItemType, n int) item.Stack {
-	return item.NewStack(typ.Item(), n).WithValue(typ.Key(), true).WithCustomName(typ.Name()).WithLore(typ.Lore()...)
+	unbreaking := item.NewEnchantment(ench.Protection{}, 1)
+	return item.NewStack(typ.Item(), n).WithValue(typ.Key(), true).WithCustomName(typ.Name()).WithLore(typ.Lore()...).WithEnchantments(unbreaking)
 }
 
 func SpecialItem(i item.Stack) (SpecialItemType, bool) {

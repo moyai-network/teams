@@ -226,18 +226,6 @@ func (h *Handler) ResetLastAttacker() {
 	h.lastAttackTime.Store(time.Time{})
 }
 
-// UpdateChatType updates the chat type for the user.
-// 1 is global, 2 is team, 3 is staff
-func (h *Handler) UpdateChatType(t int) {
-	h.chatType.Store(t)
-}
-
-// ChatType returns the chat type the user is currently using.
-// 1 is global, 2 is team, 3 is staff
-func (h *Handler) ChatType() int {
-	return h.chatType.Load()
-}
-
 // ShowArmor displays or removes players armor visibility from other players.
 func (h *Handler) ShowArmor(visible bool) {
 	p := h.Player()

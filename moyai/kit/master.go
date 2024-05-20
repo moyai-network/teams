@@ -9,20 +9,20 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-// Diamond represents the Diamond kit.
-type Diamond struct{}
+// Master represents the Master kit.
+type Master struct{}
 
 // Name ...
-func (Diamond) Name() string {
-	return "Diamond"
+func (Master) Name() string {
+	return "Master"
 }
 
-func (Diamond) Texture() string {
+func (Master) Texture() string {
 	return "textures/items/diamond_helmet"
 }
 
 // Items ...
-func (Diamond) Items(*player.Player) [36]item.Stack {
+func (Master) Items(*player.Player) [36]item.Stack {
 	items := [36]item.Stack{
 		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
 		item.NewStack(item.EnderPearl{}, 16),
@@ -31,21 +31,24 @@ func (Diamond) Items(*player.Player) [36]item.Stack {
 		items[i] = item.NewStack(item.SplashPotion{Type: potion.StrongHealing()}, 1)
 	}
 
-	items[8] = item.NewStack(item.GoldenApple{}, 32)
 	return items
 }
 
 // Armour ...
-func (Diamond) Armour(*player.Player) [4]item.Stack {
+func (Master) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, 2)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 	featherFalling := item.NewEnchantment(enchantment.FeatherFalling{}, 4)
+
+	invis := item.NewEnchantment(ench.Invisibility{}, 1)
+	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
+	recovery := item.NewEnchantment(ench.Recovery{}, 1)
 	speed := item.NewEnchantment(ench.Speed{}, 2)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Helmet</purple>")),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Chestplate</purple>")),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking).WithCustomName(text.Colourf("§r<purple>Diamond Leggings</purple>")),
-		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Diamond Boots</purple>")),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, invis).WithCustomName(text.Colourf("§r<purple>Master Helmet</purple>")),
+		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, fireRes).WithCustomName(text.Colourf("§r<purple>Master Chestplate</purple>")),
+		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, recovery).WithCustomName(text.Colourf("§r<purple>Master Leggings</purple>")),
+		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Master Boots</purple>")),
 	}
 }

@@ -46,6 +46,10 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	u.Teams.Reclaimed = true
 
 	for _, r := range u.Roles.All() {
+		if r == (role.Operator{}) {
+			continue
+		}
+
 		var items []item.Stack
 		var lives int
 

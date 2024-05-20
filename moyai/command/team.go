@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -53,22 +52,12 @@ type TeamJoin struct {
 type TeamInformation struct {
 	Sub  cmd.SubCommand         `cmd:"info"`
 	Name cmd.Optional[teamName] `optional:"" cmd:"name"`
-	srv  *server.Server
-}
-
-func NewTeamInformation(srv *server.Server) TeamInformation {
-	return TeamInformation{srv: srv}
 }
 
 // TeamWho is a command used to get information about a team.
 type TeamWho struct {
 	Sub  cmd.SubCommand           `cmd:"who"`
 	Name cmd.Optional[teamMember] `optional:"" cmd:"name"`
-	srv  *server.Server
-}
-
-func NewTeamWho(srv *server.Server) TeamWho {
-	return TeamWho{srv: srv}
 }
 
 // TeamLeave is a command used to leave a team.
@@ -174,21 +163,6 @@ type TeamDepositAll struct {
 type TeamStuck struct {
 	Sub cmd.SubCommand `cmd:"stuck"`
 }
-
-// TeamRally is a command that enables waypoint to rally.
-type TeamRally struct {
-	Sub cmd.SubCommand `cmd:"rally"`
-}
-
-// TeamUnRally is a command that disable waypoint to rally.
-type TeamUnRally struct {
-	Sub cmd.SubCommand `cmd:"unrally"`
-}
-
-/*// TeamMap displays the claims and areas
-type TeamMap struct {
-	Sub cmd.SubCommand `cmd:"map"`
-}*/
 
 type TeamDelete struct {
 	Sub  cmd.SubCommand `cmd:"delete"`
@@ -327,52 +301,6 @@ func displayMap(myMap [][]rune, size, centerX, centerZ int) {
 		fmt.Println()
 	}
 }*/
-
-func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
-	panic("TODO: fix command")
-
-	/*l := locale(s)
-	p, ok := s.(*player.Player)
-	if !ok {
-		return
-	}
-
-	tm, err := data.LoadTeamFromMemberName(p.Name())
-	if err != nil {
-		o.Error(lang.Translatef(l, "user.team-less"))
-		return
-	}
-	online := team.OnlineMembers(tm)
-	for _, o := range online {
-		pos := p.Position()
-		o.SetWayPoint(user.NewWayPoint("Rally", pos))
-		o.Message(text.Colourf("<green>%s rallying at</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z())))
-	}*/
-}
-
-func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
-	panic("TODO: fix command")
-
-	/*l := locale(s)
-	p, ok := s.(*player.Player)
-	if !ok {
-		return
-	}
-
-	u, err := data.LoadUserOrCreate(p.Name())
-	if err != nil {
-		return
-	}
-	tm, ok := u.Team()
-	if !ok {
-		o.Error(lang.Translatef(l, "user.team-less"))
-		return
-	}
-	online := user.TeamOnline(tm)
-	for _, o := range online {
-		o.RemoveWaypoint()
-	}*/
-}
 
 // Run ...
 func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
@@ -531,20 +459,20 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 			user.Messagef(p, "user.team-less")
 			return
 		}
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		return
 	}
 	var anyFound bool
 
 	tm, err := data.LoadTeamFromName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
 	tm, err = data.LoadTeamFromMemberName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
@@ -569,20 +497,20 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 			user.Messagef(p, "user.team-less")
 			return
 		}
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		return
 	}
 	var anyFound bool
 
 	tm, err := data.LoadTeamFromName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
 	tm, err = data.LoadTeamFromMemberName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm, t.srv))
+		o.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
@@ -1113,15 +1041,12 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	switch u.Teams.ChatType {
-	case 2:
-		u.Teams.ChatType = 1
-		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
 	case 1:
-		u.Teams.ChatType = 2
-		o.Print(text.Colourf("<green>Switched to faction chat.</green>"))
-	default:
 		u.Teams.ChatType = 0
 		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
+	case 0:
+		u.Teams.ChatType = 1
+		o.Print(text.Colourf("<green>Switched to faction chat.</green>"))
 	}
 	data.SaveUser(u)
 }
@@ -1570,7 +1495,7 @@ func (teamMember) Options(src cmd.Source) []string {
 }
 
 // teamInformationFormat returns a formatted string containing the information of the faction.
-func teamInformationFormat(t data.Team, srv *server.Server) string {
+func teamInformationFormat(t data.Team) string {
 	var formattedRegenerationTime string
 	var formattedDtr string
 	var formattedLeader string
@@ -1582,26 +1507,22 @@ func teamInformationFormat(t data.Team, srv *server.Server) string {
 	formattedDtr = t.DTRString()
 	var onlineCount int
 	for _, p := range t.Members {
-		_, ok := srv.PlayerByName(p.DisplayName)
+		u, _ := data.LoadUserFromXUID(p.XUID)
+		_, ok := user.Lookup(p.DisplayName)
 		if ok {
-			if t.Leader(p.Name) {
-				formattedLeader = text.Colourf("<green>%s</green>", p.DisplayName)
-			} else if t.Captain(p.Name) {
-				formattedCaptains = append(formattedCaptains, text.Colourf("<green>%s</green>", p.DisplayName))
-			} else {
-				formattedMembers = append(formattedMembers, text.Colourf("<green>%s</green>", p.DisplayName))
-			}
 			onlineCount++
+		}
+		format := formatMember(p.DisplayName, u.Teams.Stats.Kills, ok)
+
+		if t.Leader(p.Name) {
+			formattedLeader = format
+		} else if t.Captain(p.Name) {
+			formattedCaptains = append(formattedCaptains, format)
 		} else {
-			if t.Leader(p.Name) {
-				formattedLeader = text.Colourf("<grey>%s</grey>", p.DisplayName)
-			} else if t.Captain(p.Name) {
-				formattedCaptains = append(formattedCaptains, text.Colourf("<grey>%s</grey>", p.DisplayName))
-			} else {
-				formattedMembers = append(formattedMembers, text.Colourf("<grey>%s</grey>", p.DisplayName))
-			}
+			formattedMembers = append(formattedMembers, format)
 		}
 	}
+
 	if len(formattedCaptains) == 0 {
 		formattedCaptains = []string{"None"}
 	}
@@ -1623,4 +1544,11 @@ func teamInformationFormat(t data.Team, srv *server.Server) string {
 			"<yellow>Balance: </yellow><blue>$%2.f</blue>\n "+
 			"<yellow>Points: </yellow><blue>%d</blue>\n "+
 			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, formattedDtr, formattedRegenerationTime)
+}
+
+func formatMember(name string, kills int, online bool) string {
+	if online {
+		return text.Colourf("<green>%s</green><dark-red>[%d]</dark-red>", name, kills)
+	}
+	return text.Colourf("<grey>%s</grey><dark-red>[%d]</dark-red>", name, kills)
 }

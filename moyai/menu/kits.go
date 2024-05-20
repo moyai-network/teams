@@ -13,9 +13,9 @@ import (
 type Kits struct{}
 
 func NewKitsMenu() inv.Menu {
-	m := inv.NewMenu(Kits{}, "", inv.ContainerChest{})
-	stacks := glassFilledStack()
-	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Diamond</aqua>"))
+	m := inv.NewMenu(Kits{}, "", inv.ContainerChest{DoubleChest: true})
+	stacks := glassFilledStack(54)
+	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Master</aqua>"))
 	stacks[11] = item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithCustomName(text.Colourf("<aqua>Archer</aqua>"))
 	stacks[12] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>"))
 	stacks[13] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Stray</aqua>"))
@@ -27,8 +27,8 @@ func NewKitsMenu() inv.Menu {
 
 func (Kits) Submit(p *player.Player, it item.Stack) {
 	switch colour.StripMinecraftColour(it.CustomName()) {
-	case "Diamond":
-		kit.Apply(kit.Diamond{}, p)
+	case "Master":
+		kit.Apply(kit.Master{}, p)
 	case "Archer":
 		kit.Apply(kit.Archer{}, p)
 	case "Bard":

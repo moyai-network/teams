@@ -348,7 +348,7 @@
    "koth.start": "%s <green>has started a</green> %s <green>KOTH event at <yellow>%0.f, %0.f</yellow></green>",
    "koth.stop": "%s <red>has stopped the</red> %s <red>KOTH event</red>",
    "koth.capturing": "%s <green>is being captured by</green> %s",
-   "koth.not.capturing": "%s <red>is no longer being captured</red>",
+   "koth.not.capturing": "%s <red>was knocked from </red>%s <red>KOTH</red>",
    "koth.captured": "%s <green>has been captured by</green> %s",
 
    "cheat.aim.assist": "Aim Assist",

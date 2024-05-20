@@ -5,8 +5,8 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/glyph"
 	"github.com/moyai-network/teams/moyai/koth"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strings"
 	"time"
 
@@ -202,7 +202,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(glyph.Parse("MOYAI"))
+			sb := scoreboard.New(text.Colourf("<red><b>HCF</b></red> <grey>- Map I</grey>"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
@@ -282,6 +282,7 @@ func startTicker(h *Handler) {
 				}
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
 			}
+			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.area.Load().Name()))
 
 			_, _ = sb.WriteString("\uE000")
 			_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.footer"))

@@ -36,35 +36,17 @@ func init() {
 
 var (
 	Broadcast = func(format string, a ...interface{}) {}
-	Spiral    = &KOTH{
-		name:        text.Colourf("<gold>Spiral</gold>"),
-		area:        area.NewArea(mgl64.Vec2{159, 98}, mgl64.Vec2{165, 104}),
-		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{162, 101},
-	}
-	Circle = &KOTH{
-		name:        text.Colourf("<dark-green>Circle</dark-green>"),
-		area:        area.NewArea(mgl64.Vec2{-100, 97}, mgl64.Vec2{-106, 103}),
-		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{-103, 100},
-	}
-	Dragon = &KOTH{
-		name:        text.Colourf("<amethyst>Dragon</amethyst>"),
-		area:        area.NewArea(mgl64.Vec2{63, 124}, mgl64.Vec2{57, 118}),
-		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{60, 121},
-	}
-	Stairs = &KOTH{
-		name:        text.Colourf("<aqua>Stairs</aqua>"),
-		area:        area.NewArea(mgl64.Vec2{0, 182}, mgl64.Vec2{-4, 178}),
-		cancel:      make(chan struct{}, 0),
-		coordinates: mgl64.Vec2{-2, -180},
+	Cosmic    = &KOTH{
+		name:        text.Colourf("<amethyst>Cosmic</amethyst>"),
+		area:        area.NewArea(mgl64.Vec2{497, 503}, mgl64.Vec2{503, 497}),
+		cancel:      make(chan struct{}),
+		coordinates: mgl64.Vec2{500, 500},
 	}
 )
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Spiral, Circle, Dragon, Stairs}
+	return []*KOTH{Cosmic}
 }
 
 // Running returns true if the KOTH passed is currently running.

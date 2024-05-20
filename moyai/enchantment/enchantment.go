@@ -1,6 +1,7 @@
 package enchantment
 
 import (
+	"fmt"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/world"
@@ -30,9 +31,12 @@ func AddEnchantmentLore(i item.Stack) item.Stack {
 		if e.Level() > 1 {
 			lvl, _ = roman.Itor(e.Level())
 		}
+
 		switch typ.(type) {
-		case EffectEnchantment, Recovery:
+		case EffectEnchantment, AttackEnchantment:
+			fmt.Println("EffectEnchantment or AttackEnchantment")
 			lores = append(lores, text.Colourf("<red>%s %s</red>", typ.Name(), lvl))
+			fmt.Println("lores:", lores)
 		}
 	}
 	i = i.WithLore(lores...)

@@ -9,7 +9,9 @@ import (
 )
 
 // Archer represents the archer class.
-type Archer struct{}
+type Archer struct {
+	free bool
+}
 
 // Name ...
 func (Archer) Name() string {
@@ -22,9 +24,14 @@ func (Archer) Texture() string {
 }
 
 // Items ...
-func (Archer) Items(*player.Player) [36]item.Stack {
+func (a Archer) Items(*player.Player) [36]item.Stack {
+	var lvl = 2
+	if a.free {
+		lvl = 1
+	}
+
 	items := [36]item.Stack{
-		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
+		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, lvl)),
 		item.NewStack(item.EnderPearl{}, 16),
 	}
 	for i := 2; i < 36; i++ {
@@ -40,8 +47,13 @@ func (Archer) Items(*player.Player) [36]item.Stack {
 }
 
 // Armour ...
-func (Archer) Armour(*player.Player) [4]item.Stack {
-	protection := item.NewEnchantment(ench.Protection{}, 2)
+func (a Archer) Armour(*player.Player) [4]item.Stack {
+	var lvl = 2
+	if a.free {
+		lvl = 1
+	}
+
+	protection := item.NewEnchantment(ench.Protection{}, lvl)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)

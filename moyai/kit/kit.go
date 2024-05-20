@@ -30,14 +30,13 @@ type Kit interface {
 
 func All() []Kit {
 	return []Kit{
-		//Refill{},
 		Miner{},
 		Builder{},
 		Archer{},
 		Bard{},
 		Stray{},
 		Rogue{},
-		Diamond{},
+		Master{},
 	}
 }
 
@@ -89,13 +88,12 @@ func Apply(kit Kit, p *player.Player) {
 		}
 	}
 	if s := player_session(p); s != session.Nop {
-		_ = s.SetHeldSlot(0)
 		for i := 0; i < 36; i++ {
 			st, _ := inv.Item(i)
 			viewSlotChange(s, i, st, protocol.WindowIDInventory)
 		}
 
-		for i, st := range armour {
+		for i, st := range arm.Slots() {
 			viewSlotChange(s, i, st, protocol.WindowIDArmour)
 		}
 	}

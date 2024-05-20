@@ -54,7 +54,7 @@ func main() {
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
-	log.Level = logrus.InfoLevel
+	log.Level = logrus.DebugLevel
 
 	console.Enable(log)
 	conf, err := readConfig()
@@ -63,6 +63,18 @@ func main() {
 	}
 
 	config := configure(conf, log)
+	pk := intercept.NewPacketListener()
+	pk.Listen(&config, ":19132", []minecraft.Protocol{})
+	go func() {
+		for {
+			p, err := pk.Accept()
+			if err != nil {
+				return
+			}
+			p.Handle(user.NewPacketHandler(p))
+		}
+	}()
+
 	srv := moyai.NewServer(config)
 
 	handleServerClose(srv)
@@ -75,17 +87,6 @@ func main() {
 
 	registerCommands(srv)
 
-	pk := intercept.NewPacketListener()
-	pk.Listen(&config, ":19133", []minecraft.Protocol{})
-	go func() {
-		for {
-			p, err := pk.Accept()
-			if err != nil {
-				return
-			}
-			p.Handle(user.NewPacketHandler(p))
-		}
-	}()
 	srv.Listen()
 
 	store := loadStore(conf.Moyai.Tebex, log)
@@ -227,13 +228,13 @@ func loadStore(key string, log *logrus.Logger) *tebex.Client {
 
 func registerCommands(srv *server.Server) {
 	for _, c := range []cmd.Command{
-		cmd.New("t", text.Colourf("<aqua>The main team management command.</aqua>"), []string{"f"},
+		cmd.New("t", text.Colourf("<dark-red>The main team management command.</dark-red>"), []string{"f"},
 			command.TeamCreate{},
-			command.NewTeamInformation(srv),
+			command.TeamInformation{},
 			command.TeamDisband{},
 			command.TeamInvite{},
 			command.TeamJoin{},
-			command.NewTeamWho(srv),
+			command.TeamWho{},
 			command.TeamLeave{},
 			command.TeamKick{},
 			command.TeamPromote{},
@@ -253,44 +254,44 @@ func registerCommands(srv *server.Server) {
 			command.TeamWithdrawAll{},
 			command.TeamDepositAll{},
 			command.TeamStuck{},
-			command.TeamRally{},
-			command.TeamUnRally{},
+			//command.TeamRally{},
+			//command.TeamUnRally{},
 			//command.TeamMap{},
 			command.TeamSetDTR{},
 			command.TeamDelete{},
-		), cmd.New("whitelist", text.Colourf("<aqua>Whitelist commands.</aqua>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
-		cmd.New("tl", text.Colourf("<aqua>Send your location to teammates</aqua>"), nil, command.TL{}),
-		cmd.New("balance", text.Colourf("<aqua>Manage your balance.</aqua>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}, command.BalanceAdd{}, command.BalanceAddOffline{}),
-		cmd.New("colour", text.Colourf("<aqua>Customize the colour of your archer.</aqua>"), nil, command.Colour{}),
-		cmd.New("clear", text.Colourf("<aqua>Clear your Inventory.</aqua>"), nil, command.Clear{}),
-		cmd.New("clearlag", text.Colourf("<aqua>Clears all ground entitys.</aqua>"), nil, command.ClearLag{}),
-		cmd.New("logout", text.Colourf("<aqua>Safely logout of PVP.</aqua>"), nil, command.Logout{}),
-		cmd.New("pvp", text.Colourf("<aqua>Manage PVP timer.</aqua>"), nil, command.PvpEnable{}),
-		cmd.New("role", text.Colourf("<aqua>Manage user roles.</aqua>"), nil, command.RoleAdd{}, command.RoleRemove{}, command.RoleAddOffline{}, command.RoleRemoveOffline{}, command.RoleList{}),
-		cmd.New("teleport", text.Colourf("<aqua>Teleport yourself or another player to a position.</aqua>"), []string{"tp"}, command.TeleportToPos{}, command.TeleportTargetsToPos{}, command.TeleportTargetsToTarget{}, command.TeleportToTarget{}),
-		cmd.New("reclaim", text.Colourf("<aqua>Manage a reclaim.</aqua>"), nil, command.Reclaim{}, command.ReclaimReset{}),
-		cmd.New("kit", text.Colourf("<aqua>Choose a kit.</aqua>"), nil, command.Kit{}),
-		//cmd.New("ban", text.Colourf("<aqua>Unleash the ban hammer.</aqua>"), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{}, command.BanInfoOffline{}, command.BanForm{}),
-		//cmd.New("blacklist", text.Colourf("<aqua>Blacklist little evaders.</aqua>"), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
-		cmd.New("kick", text.Colourf("<aqua>Kick a user.</aqua>"), nil, command.Kick{}),
-		//cmd.New("mute", text.Colourf("<aqua>Mute a user.</aqua>"), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
-		cmd.New("whisper", text.Colourf("<aqua>Send a private message to a player.</aqua>"), []string{"w", "tell", "msg"}, command.Whisper{}),
-		cmd.New("reply", text.Colourf("<aqua>Reply to the last whispered player.</aqua>"), []string{"r"}, command.Reply{}),
-		cmd.New("fly", text.Colourf("<aqua>Toggle flight.</aqua>"), nil, command.Fly{}),
-		cmd.New("sotw", text.Colourf("<aqua>SOTW management commands.</aqua>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
-		cmd.New("freeze", text.Colourf("<aqua>Freeze possible cheaters.</aqua>"), nil, command.Freeze{}),
-		cmd.New("gamemode", text.Colourf("<aqua>Manage gamemodes.</aqua>"), []string{"gm"}, command.GameMode{}),
-		cmd.New("key", text.Colourf("<aqua>Manage keys</aqua>"), nil, command.Key{}, command.KeyAll{}),
-		cmd.New("koth", text.Colourf("<aqua>Manage KOTHs.</aqua>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
-		cmd.New("pp", text.Colourf("<aqua>Manage partner packages.</aqua>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
-		cmd.New("ping", text.Colourf("<aqua>Check your ping.</aqua>"), nil, command.Ping{}),
-		//cmd.New("data", text.Colourf("<aqua>Clear data.</aqua>"), nil, command.DataReset{}),
-		cmd.New("vanish", text.Colourf("<aqua>Vanish as staff.</aqua>"), []string{"v"}, command.Vanish{}),
+		), cmd.New("whitelist", text.Colourf("<dark-red>Whitelist commands.</dark-red>"), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
+		cmd.New("tl", text.Colourf("<dark-red>Send your location to teammates</dark-red>"), nil, command.TL{}),
+		cmd.New("balance", text.Colourf("<dark-red>Manage your balance.</dark-red>"), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}, command.BalanceAdd{}, command.BalanceAddOffline{}),
+		cmd.New("colour", text.Colourf("<dark-red>Customize the colour of your archer.</dark-red>"), nil, command.Colour{}),
+		cmd.New("clear", text.Colourf("<dark-red>Clear your Inventory.</dark-red>"), nil, command.Clear{}),
+		cmd.New("clearlag", text.Colourf("<dark-red>Clears all ground entitys.</dark-red>"), nil, command.ClearLag{}),
+		cmd.New("logout", text.Colourf("<dark-red>Safely logout of PVP.</dark-red>"), nil, command.Logout{}),
+		cmd.New("pvp", text.Colourf("<dark-red>Manage PVP timer.</dark-red>"), nil, command.PvpEnable{}),
+		cmd.New("role", text.Colourf("<dark-red>Manage user roles.</dark-red>"), nil, command.RoleAdd{}, command.RoleRemove{}, command.RoleAddOffline{}, command.RoleRemoveOffline{}, command.RoleList{}),
+		cmd.New("teleport", text.Colourf("<dark-red>Teleport yourself or another player to a position.</dark-red>"), []string{"tp"}, command.TeleportToPos{}, command.TeleportTargetsToPos{}, command.TeleportTargetsToTarget{}, command.TeleportToTarget{}),
+		cmd.New("reclaim", text.Colourf("<dark-red>Manage a reclaim.</dark-red>"), nil, command.Reclaim{}, command.ReclaimReset{}),
+		cmd.New("kit", text.Colourf("<dark-red>Choose a kit.</dark-red>"), nil, command.Kit{}),
+		//cmd.New("ban", text.Colourf("<dark-red>Unleash the ban hammer.</dark-red>"), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{}, command.BanInfoOffline{}, command.BanForm{}),
+		//cmd.New("blacklist", text.Colourf("<dark-red>Blacklist little evaders.</dark-red>"), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
+		cmd.New("kick", text.Colourf("<dark-red>Kick a user.</dark-red>"), nil, command.Kick{}),
+		//cmd.New("mute", text.Colourf("<dark-red>Mute a user.</dark-red>"), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
+		cmd.New("whisper", text.Colourf("<dark-red>Send a private message to a player.</dark-red>"), []string{"w", "tell", "msg"}, command.Whisper{}),
+		cmd.New("reply", text.Colourf("<dark-red>Reply to the last whispered player.</dark-red>"), []string{"r"}, command.Reply{}),
+		cmd.New("fly", text.Colourf("<dark-red>Toggle flight.</dark-red>"), nil, command.Fly{}),
+		cmd.New("sotw", text.Colourf("<dark-red>SOTW management commands.</dark-red>"), nil, command.SOTWStart{}, command.SOTWEnd{}, command.SOTWDisable{}),
+		cmd.New("freeze", text.Colourf("<dark-red>Freeze possible cheaters.</dark-red>"), nil, command.Freeze{}),
+		cmd.New("gamemode", text.Colourf("<dark-red>Manage gamemodes.</dark-red>"), []string{"gm"}, command.GameMode{}),
+		cmd.New("key", text.Colourf("<dark-red>Manage keys</dark-red>"), nil, command.Key{}, command.KeyAll{}),
+		cmd.New("koth", text.Colourf("<dark-red>Manage KOTHs.</dark-red>"), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
+		cmd.New("pp", text.Colourf("<dark-red>Manage partner packages.</dark-red>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
+		cmd.New("ping", text.Colourf("<dark-red>Check your ping.</dark-red>"), nil, command.Ping{}),
+		//cmd.New("data", text.Colourf("<dark-red>Clear data.</dark-red>"), nil, command.DataReset{}),
+		cmd.New("vanish", text.Colourf("<dark-red>Vanish as staff.</dark-red>"), []string{"v"}, command.Vanish{}),
 	} {
 		cmd.Register(c)
 	}
 
-	cmd.Register(cmd.New("hub", text.Colourf("<aqua>Return to the Moyai Hub.</aqua>"), []string{"lobby"}, command.Hub{}))
+	//cmd.Register(cmd.New("hub", text.Colourf("<dark-red>Return to the Moyai Hub.</dark-red>"), []string{"lobby"}, command.Hub{}))
 }
 
 // pix converts an image.Image into a []uint8.
