@@ -30,7 +30,7 @@ func (m MappedCoolDown[T]) Set(key T, d time.Duration) {
 func (m MappedCoolDown[T]) Key(key T) *CoolDown {
 	coolDown, ok := m[key]
 	if !ok {
-		newCD := NewCoolDown(nil, nil)
+		newCD := NewCoolDown()
 		m[key] = newCD
 		return newCD
 	}

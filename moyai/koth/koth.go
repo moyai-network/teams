@@ -1,6 +1,7 @@
 package koth
 
 import (
+	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
@@ -35,8 +36,7 @@ func init() {
 }
 
 var (
-	Broadcast = func(format string, a ...interface{}) {}
-	Cosmic    = &KOTH{
+	Cosmic = &KOTH{
 		name:        text.Colourf("<amethyst>Cosmic</amethyst>"),
 		area:        area.NewArea(mgl64.Vec2{497, 503}, mgl64.Vec2{503, 497}),
 		cancel:      make(chan struct{}),
@@ -127,13 +127,16 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 				k.StopCapturing(p)
 				return
 			}
-			_, err = data.LoadTeamFromMemberName(u.Name)
+			tm, err := data.LoadTeamFromMemberName(u.Name)
 			if err != nil {
 				k.StopCapturing(p)
 				return
 			}
+			tm.Points += 10
+			tm.KOTHWins++
+			data.SaveTeam(tm)
 
-			Broadcast("koth.captured", k.Name(), u.Roles.Highest().Color(u.DisplayName))
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Color(u.DisplayName)))
 			it.AddOrDrop(p, it.NewKey(it.KeyTypeKOTH, 2))
 		case <-k.cancel:
 			k.capturing = nil

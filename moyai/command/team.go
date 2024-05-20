@@ -408,7 +408,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(targetUser)
 
 	team.Broadcastf(tm, "team.invite.success.broadcast", target.Name())
-	user.Messagef(p, "team.invite.target", tm.DisplayName)
+	user.Messagef(target, "team.invite.target", tm.DisplayName)
 }
 
 // Run ...
@@ -416,7 +416,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	p := src.(*player.Player)
 
 	_, err := data.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	if err == nil {
 		user.Messagef(p, "team.join.error")
 		return
 	}
@@ -877,8 +877,8 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 		o.Error("Failed to load teams. Contact an administrator.")
 	}
 
-	for _, tm := range teams {
-		if tm.Claim.Vec3WithinOrEqualXZ(p.Position()) {
+	for _, t := range teams {
+		if t.Claim.Vec3WithinOrEqualXZ(p.Position()) && t.Name != tm.Name {
 			dur = time.Second * 20
 			break
 		}
@@ -1542,8 +1542,9 @@ func teamInformationFormat(t data.Team) string {
 			"<yellow>Captains: </yellow>%s\n "+
 			"<yellow>Members: </yellow>%s\n "+
 			"<yellow>Balance: </yellow><blue>$%2.f</blue>\n "+
-			"<yellow>Points: </yellow><blue>%d</blue>\n "+
-			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, formattedDtr, formattedRegenerationTime)
+			"<yellow>Points: </yellow><red>%d</red>\n "+
+			"<yellow>Koth Captures: <red>%d</red>\n "+
+			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, t.KOTHWins, formattedDtr, formattedRegenerationTime)
 }
 
 func formatMember(name string, kills int, online bool) string {

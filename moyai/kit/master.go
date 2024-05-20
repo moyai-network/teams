@@ -41,12 +41,13 @@ func (Master) Armour(*player.Player) [4]item.Stack {
 	featherFalling := item.NewEnchantment(enchantment.FeatherFalling{}, 4)
 
 	invis := item.NewEnchantment(ench.Invisibility{}, 1)
+	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
 	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)
 	speed := item.NewEnchantment(ench.Speed{}, 2)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, invis).WithCustomName(text.Colourf("§r<purple>Master Helmet</purple>")),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, invis, nightVision).WithCustomName(text.Colourf("§r<purple>Master Helmet</purple>")),
 		item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, fireRes).WithCustomName(text.Colourf("§r<purple>Master Chestplate</purple>")),
 		item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, recovery).WithCustomName(text.Colourf("§r<purple>Master Leggings</purple>")),
 		item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(protection, unbreaking, featherFalling, speed).WithCustomName(text.Colourf("§r<purple>Master Boots</purple>")),

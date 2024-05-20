@@ -56,20 +56,20 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 			}
 			colour = "green"
 		}
+		meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, colour, colour)
 
 		if target.archer.Active() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
-			colour = "yellow"
+			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "yellow", colour)
 		}
 
 		tg, _ := data.LoadUserFromName(t.Name())
 		if _, ok := sotw.Running(); ok && u.Teams.SOTW || tg.Teams.PVP.Active() {
-			colour = "grey"
+			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "grey", colour)
 		}
 
-		meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, colour)
 		if target.logger {
 			tag := meta[protocol.EntityDataKeyName]
 			meta[protocol.EntityDataKeyName] = text.Colourf("%s <grey>(LOGGER)</grey>", tag)
@@ -82,13 +82,13 @@ func compareTeams(a data.Team, b data.Team) bool {
 	return a.Name == b.Name
 }
 
-func formatNameTag(name string, t data.Team, col string) string {
+func formatNameTag(name string, t data.Team, col1, col2 string) string {
 	if len(t.Name) == 0 {
-		return text.Colourf("<%s>%s</%s>", col, name, col)
+		return text.Colourf("<%s>%s</%s>", col1, name, col1)
 	}
 	dtr := t.DTRString()
 
-	return text.Colourf("<%s>%s</%s>\n<gold>[</gold><%s>%s</%s> <grey>|</grey> %s<gold>]</gold>", col, name, col, col, t.DisplayName, col, dtr)
+	return text.Colourf("<%s>%s</%s>\n<gold>[</gold><%s>%s</%s> <grey>|</grey> %s<gold>]</gold>", col1, name, col1, col2, t.DisplayName, col2, dtr)
 }
 
 // removeFlag removes a flag from the entity data.

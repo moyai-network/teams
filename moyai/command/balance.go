@@ -71,8 +71,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(target)
 
-	user.Messagef(t, "command.pay.receiver", u.Roles.Highest().Color(p.Name()), 0)
-	user.Messagef(p, "command.pay.sender", target.Roles.Highest().Color(t.Name()), 0)
+	user.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), 0)
+	user.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), 0)
 }
 
 type BalancePayOffline struct {
@@ -118,7 +118,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(t)
 
-	user.Messagef(p, "command.pay.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
+	user.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
 }
 
 type BalanceAdd struct {

@@ -26,8 +26,6 @@ func FlushCache() {
 			log.Println("Error saving team data:", err)
 			return
 		}
-		delete(teams, t.Name)
-
 	}
 }
 

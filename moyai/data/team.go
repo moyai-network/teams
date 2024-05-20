@@ -6,6 +6,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"math"
 	"strings"
@@ -19,6 +20,24 @@ var (
 	teamMu sync.Mutex
 	teams  = map[string]Team{}
 )
+
+func init() {
+	var tms []Team
+
+	result, err := teamCollection.Find(ctx(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
+	err = result.All(ctx(), &tms)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, t := range tms {
+		teams[t.Name] = updatedRegeneration(t)
+	}
+
+}
 
 func teamCached(f func(Team) bool) (Team, bool) {
 	teamMu.Lock()
@@ -67,6 +86,8 @@ type Team struct {
 	RegenerationTime time.Time
 	// Points is the amount of points the team has.
 	Points int
+	// KOTHWins is the amount of KOTH wins the team has.
+	KOTHWins int
 	// Balance is the amount of money the team has.
 	Balance float64
 	// Claim is the claim area of the team.
@@ -302,35 +323,7 @@ func decodeSingleTeamResult(result *mongo.SingleResult) (Team, error) {
 }
 
 func LoadAllTeams() ([]Team, error) {
-	var tms []Team
-
-	result, err := teamCollection.Find(ctx(), bson.M{})
-	if err != nil {
-		return tms, err
-	}
-	err = result.All(ctx(), &tms)
-	if err != nil {
-		return tms, err
-	}
-	var mappedTeams = map[string]Team{}
-
-	for _, t := range tms {
-		mappedTeams[t.Name] = updatedRegeneration(t)
-	}
-
-	for _, t := range mappedTeams {
-		if tm, ok := teamCached(func(team Team) bool {
-			return t.Name == team.Name
-		}); ok {
-			mappedTeams[t.Name] = updatedRegeneration(tm)
-		} else {
-			teamMu.Lock()
-			teams[t.Name] = t
-			teamMu.Unlock()
-		}
-	}
-
-	return tms, nil
+	return maps.Values(teams), nil
 }
 
 // LoadTeamFromName loads a team using the given name.

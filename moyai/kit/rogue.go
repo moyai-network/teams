@@ -45,12 +45,15 @@ func (Rogue) Items(*player.Player) [36]item.Stack {
 func (Rogue) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, 2)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 10)
+
+	invis := item.NewEnchantment(ench.Invisibility{}, 1)
 	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
+	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, nightVision),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invis),
+		item.NewStack(item.Chestplate{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, fireRes),
 		item.NewStack(item.Leggings{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, recovery),
 		item.NewStack(item.Boots{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, item.NewEnchantment(enchantment.FeatherFalling{}, 4)),
 	}

@@ -214,6 +214,15 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.deathban", parseDuration(db.Remaining())))
 			}
 
+			if k, ok := koth.Running(); ok && !db.Active() {
+				t := time.Until(k.Time())
+				if _, ok := k.Capturing(); !ok {
+					t = time.Minute * 5
+				}
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
+			}
+			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.area.Load().Name()))
+
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
 				if focus.Type() == data.FocusTypeTeam() {
@@ -274,15 +283,6 @@ func startTicker(h *Handler) {
 			} else if class.Compare(h.class.Load(), class.Stray{}) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.stray.energy", h.energy.Load()))
 			}
-
-			if k, ok := koth.Running(); ok && !db.Active() {
-				t := time.Until(k.Time())
-				if _, ok := k.Capturing(); !ok {
-					t = time.Minute * 5
-				}
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
-			}
-			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.area.Load().Name()))
 
 			_, _ = sb.WriteString("\uE000")
 			_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.footer"))

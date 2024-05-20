@@ -143,14 +143,14 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	ha := &Handler{
 		p: p,
 
-		pearl:       cooldown.NewCoolDown(nil, nil),
-		rogue:       cooldown.NewCoolDown(nil, nil),
-		goldenApple: cooldown.NewCoolDown(nil, nil),
-		ability:     cooldown.NewCoolDown(nil, nil),
+		pearl:       cooldown.NewCoolDown(),
+		rogue:       cooldown.NewCoolDown(),
+		goldenApple: cooldown.NewCoolDown(),
+		ability:     cooldown.NewCoolDown(),
 
-		factionCreate: cooldown.NewCoolDown(nil, nil),
+		factionCreate: cooldown.NewCoolDown(),
 
-		bone:     cooldown.NewCoolDown(nil, nil),
+		bone:     cooldown.NewCoolDown(),
 		boneHits: map[string]int{},
 
 		scramblerHits: map[string]int{},
@@ -163,8 +163,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		strayItem:       cooldown.NewMappedCoolDown[world.Item](),
 		abilities:       cooldown.NewMappedCoolDown[it.SpecialItemType](),
 
-		combat: cooldown.NewCoolDown(nil, nil),
-		archer: cooldown.NewCoolDown(nil, nil),
+		combat: cooldown.NewCoolDown(),
+		archer: cooldown.NewCoolDown(),
 
 		home: process.NewProcess(func(t *process.Process) {
 			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
@@ -411,13 +411,22 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		}
 	}
 	for _, a := range area.Protected(w) {
+		var threshold float64 = 1
+		message := "team.area.too-close"
+		for _, k := range area.KOTHs(h.p.World()) {
+			if a.Area == k.Area {
+				threshold = 25
+				message = "team.area.too-close.koth"
+			}
+		}
+
 		for _, b := range blocksPos {
 			if a.Vec3WithinOrEqualXZ(b.Vec3()) {
 				Messagef(h.p, "team.area.already-claimed")
 				return
 			}
-			if a.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-				Messagef(h.p, "team.area.too-close")
+			if areaTooClose(a.Area, vec3ToVec2(b.Vec3()), threshold) {
+				Messagef(h.p, message)
 				return
 			}
 		}
@@ -425,8 +434,8 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 			Messagef(h.p, "team.area.already-claimed")
 			return
 		}
-		if a.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || a.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
-			Messagef(h.p, "team.area.too-close")
+		if areaTooClose(a.Area, pos[0], threshold) || areaTooClose(a.Area, pos[1], threshold) {
+			Messagef(h.p, message)
 			return
 		}
 	}
@@ -446,7 +455,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 				Messagef(h.p, "team.area.already-claimed")
 				return
 			}
-			if c.Vec3WithinOrEqualXZ(b.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+			if areaTooClose(c, vec3ToVec2(b.Vec3()), 1) {
 				Messagef(h.p, "team.area.too-close")
 				return
 			}
@@ -455,7 +464,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 			Messagef(h.p, "team.area.already-claimed")
 			return
 		}
-		if c.Vec2WithinOrEqual(pos[0].Add(mgl64.Vec2{-1, -1})) || c.Vec2WithinOrEqual(pos[1].Add(mgl64.Vec2{-1, -1})) {
+		if areaTooClose(c, pos[0], 1) || areaTooClose(c, pos[1], 1) {
 			Messagef(h.p, "team.area.too-close")
 			return
 		}
@@ -480,6 +489,26 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	data.SaveTeam(t)
 
 	Messagef(h.p, "command.claim.success", pos[0], pos[1], cost)
+}
+
+func vec3ToVec2(v mgl64.Vec3) mgl64.Vec2 {
+	return mgl64.Vec2{v.X(), v.Z()}
+}
+
+func areaTooClose(area area.Area, pos mgl64.Vec2, threshold float64) bool {
+	var vectors []mgl64.Vec2
+	for x := -threshold; x <= threshold; x++ {
+		for y := -threshold; y <= threshold; y++ {
+			vectors = append(vectors, mgl64.Vec2{pos.X() + x, pos.Y() + y})
+		}
+	}
+
+	for _, v := range vectors {
+		if area.Vec2WithinOrEqual(v) {
+			return true
+		}
+	}
+	return false
 }
 
 // HandleItemUse ...
@@ -1032,14 +1061,23 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	}
 
 	if attacker != nil {
-		if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
-			for _, i := range h.Player().Armour().Inventory().Items() {
-				if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
-					h.Player().RemoveEffect(effect.Invisibility{})
-				}
-			}
+		//if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
+		//for _, i := range h.Player().Armour().Inventory().Items() {
+		//if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
+		//	h.Player().RemoveEffect(effect.Invisibility{})
+		//}
+		//}
 
-			h.ShowArmor(true)
+		//h.ShowArmor(true)
+		//}
+		percent := 0.90
+		e, ok := attacker.Effect(effect.Strength{})
+		if e.Level() > 1 {
+			percent = 0.85
+		}
+
+		if ok {
+			*dmg = *dmg * percent
 		}
 	}
 
@@ -1342,12 +1380,21 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 
 			for _, a := range area.Protected(w) {
+				var threshold float64 = 1
+				message := "team.area.too-close"
+				for _, k := range area.KOTHs(h.p.World()) {
+					if a.Area == k.Area {
+						threshold = 25
+						message = "team.area.too-close.koth"
+					}
+				}
+
 				if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
 					Messagef(h.p, "team.area.already-claimed")
 					return
 				}
-				if a.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
-					Messagef(h.p, "team.area.too-close")
+				if areaTooClose(a.Area, vec3ToVec2(pos.Vec3()), threshold) {
+					Messagef(h.p, message)
 					return
 				}
 			}
@@ -1362,7 +1409,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					Messagef(h.p, "team.area.already-claimed")
 					return
 				}
-				if c.Vec3WithinOrEqualXZ(pos.Vec3().Add(mgl64.Vec3{-1, 0, -1})) {
+				if areaTooClose(c, vec3ToVec2(pos.Vec3()), 1) {
 					Messagef(h.p, "team.area.too-close")
 					return
 				}
@@ -1747,7 +1794,9 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	p := h.p
 	w := p.World()
 
-	if !newPos.ApproxEqual(p.Position()) {
+	if !newPos.ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
+		return math.Abs(f-f2) < 0.03
+	}) {
 		h.home.Cancel()
 		h.logout.Cancel()
 		h.stuck.Cancel()
@@ -1816,7 +1865,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			// Need to handle for Y-axis cases because some koths are irregular
 			switch k {
 			case koth.Cosmic:
-				if newPos.Y() < 78 || newPos.Y() > 85 {
+				if newPos.Y() < 77 || newPos.Y() > 85 {
 					if k.StopCapturing(us) {
 						Broadcast("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}

@@ -17,7 +17,7 @@ func (partner) Name() string {
 }
 
 func (partner) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{-37, 73, 0}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{0, 77, 27}).Vec3Middle()
 }
 
 var partnerEnchantments = []item.Enchantment{

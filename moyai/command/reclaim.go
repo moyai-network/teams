@@ -40,7 +40,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if u.Teams.Reclaimed {
-		h.Message("user.reclaimed")
+		user.Messagef(p, "user.reclaimed")
 		return
 	}
 	u.Teams.Reclaimed = true

@@ -107,16 +107,15 @@ func DefaultUser(name, xuid string) User {
 		Name:        strings.ToLower(name),
 		DisplayName: name,
 		Whitelisted: false,
-
-		Roles: role.NewRoles([]role.Role{}, map[role.Role]time.Time{}),
-		Tags:  tag.NewTags([]tag.Tag{}),
 	}
+	u.Roles = role.NewRoles([]role.Role{}, map[role.Role]time.Time{})
+	u.Tags = tag.NewTags([]tag.Tag{})
 	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
-	u.Teams.DeathBan = cooldown.NewCoolDown(nil, nil)
-	u.Teams.Report = cooldown.NewCoolDown(nil, nil)
-	u.Teams.PVP = cooldown.NewCoolDown(nil, nil)
-	u.Teams.Create = cooldown.NewCoolDown(nil, nil)
+	u.Teams.DeathBan = cooldown.NewCoolDown()
+	u.Teams.Report = cooldown.NewCoolDown()
+	u.Teams.PVP = cooldown.NewCoolDown()
+	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 
 	return u
@@ -215,6 +214,15 @@ func decodeSingleUserFromFilter(filter any) (User, error) {
 
 func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	var u User
+	u.Roles = role.NewRoles([]role.Role{}, map[role.Role]time.Time{})
+	u.Tags = tag.NewTags([]tag.Tag{})
+	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
+	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
+	u.Teams.DeathBan = cooldown.NewCoolDown()
+	u.Teams.Report = cooldown.NewCoolDown()
+	u.Teams.PVP = cooldown.NewCoolDown()
+	u.Teams.Create = cooldown.NewCoolDown()
+	u.Teams.Stats = Stats{}
 
 	err := result.Decode(&u)
 	if err != nil {

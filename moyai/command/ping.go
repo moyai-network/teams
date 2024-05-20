@@ -20,6 +20,6 @@ func (p Ping) Run(src cmd.Source, out *cmd.Output) {
 		t = p.Target.LoadOr(t)
 	}
 	if pl, ok := t[0].(*player.Player); ok {
-		out.Print(text.Colourf("<green>%s's Ping: %dms</green>", pl.Name(), (pl.Latency() * 2).Milliseconds()))
+		out.Print(text.Colourf("<green>%s's ping: %dms</green>", pl.Name(), (pl.Latency() * 2).Milliseconds()))
 	}
 }
