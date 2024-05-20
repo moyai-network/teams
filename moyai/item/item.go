@@ -8,6 +8,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/moyai/area"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"math/rand"
 	"reflect"
@@ -26,6 +27,14 @@ func Drop(p *player.Player, it item.Stack) {
 	et := entity.NewItem(it, pos)
 	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
 	w.AddEntity(et)
+
+	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(pos) {
+		for _, e := range w.Entities() {
+			if p, ok := e.(*player.Player); ok {
+				p.HideEntity(et)
+			}
+		}
+	}
 }
 
 type NopType struct{}
@@ -91,6 +100,7 @@ func init() {
 	RegisterSpecialItem(FullInvisibilityType{})
 	RegisterSpecialItem(SigilType{})
 	RegisterSpecialItem(TimeWarpType{})
+	RegisterSpecialItem(StormBreakerType{})
 	creative.RegisterItem(NewPartnerPackage(1))
 }
 

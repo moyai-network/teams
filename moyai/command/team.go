@@ -437,6 +437,13 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
+	u.Teams.Invitations.Reset(tm.Name)
+	data.SaveUser(u)
+
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
 	tm = tm.WithDTR(tm.DTR + 1)
 	data.SaveTeam(tm)

@@ -140,19 +140,8 @@ func startTicker(h *Handler) {
 	t := time.NewTicker(50 * time.Millisecond)
 
 	for {
-		lastArmour := h.armour.Load()
-		arm := armourStacks(h.p.Armour())
-
-		if !compareArmours(arm, lastArmour) {
-			sortArmourEffects(h)
-		}
-
-		lastClass := h.class.Load()
-		cl := class.Resolve(h.p)
-
-		if lastClass != cl {
-			sortClassEffects(h)
-		}
+		sortClassEffects(h)
+		sortArmourEffects(h)
 
 		select {
 		case <-t.C:

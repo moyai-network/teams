@@ -9,6 +9,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/area"
 	cr "github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
@@ -173,12 +174,14 @@ func configureWorld(w *world.World) {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
+		inv.RedirectPlayerPackets(p)
 		store.ExecuteCommands(p)
 		if proxy {
 			//info := moyai.SearchInfo(p.UUID())
 			//p.Handle(user.NewHandler(p, info.XUID))
 		} else {
 			p.Handle(user.NewHandler(p, p.XUID()))
+			p.Armour().Handle(user.NewArmourHandler(p))
 		}
 		p.SetGameMode(world.GameModeSurvival)
 		p.RemoveScoreboard()
@@ -211,6 +214,21 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 				p.SetMobile()
 			}
 		})
+
+		w := p.World()
+		for _, e := range w.Entities() {
+			if !area.Spawn(w).Vec3WithinOrEqualFloorXZ(e.Position()) {
+				continue
+			}
+			if _, ok := e.(*player.Player); ok {
+				continue
+			}
+			if e.Type() == (entity.TextType{}) {
+				continue
+			}
+
+			p.HideEntity(e)
+		}
 		// u.Roles.Add(role.Pharaoh{})
 	}
 

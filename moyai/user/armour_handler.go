@@ -1,0 +1,65 @@
+package user
+
+import (
+	"github.com/df-mc/atomic"
+	"github.com/df-mc/dragonfly/server/event"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/player"
+	"time"
+)
+
+type ArmourHandler struct {
+	stormBreakerHelmet item.Stack
+	stormBreakerStatus atomic.Bool
+	stormBreakerCancel chan struct{}
+	p                  *player.Player
+}
+
+func NewArmourHandler(p *player.Player) *ArmourHandler {
+	return &ArmourHandler{p: p}
+}
+
+func (a *ArmourHandler) HandleTake(ctx *event.Context, slot int, itm item.Stack) {
+	_, ok := itm.Value("storm_breaker")
+	if ok {
+		ctx.Cancel()
+	}
+
+}
+func (a *ArmourHandler) HandlePlace(ctx *event.Context, slot int, itm item.Stack) {
+	_, ok := itm.Value("storm_breaker")
+	if ok {
+		ctx.Cancel()
+	}
+}
+func (a *ArmourHandler) HandleDrop(ctx *event.Context, slot int, itm item.Stack) {
+	_, ok := itm.Value("storm_breaker")
+	if ok {
+		ctx.Cancel()
+	}
+}
+
+func (a *ArmourHandler) stormBreak() {
+	if a.stormBreakerStatus.Load() {
+		a.stormBreakerCancel <- struct{}{}
+		a.handleStormBreakProcess()
+		return
+	}
+	a.stormBreakerStatus.Store(true)
+	a.stormBreakerHelmet = a.p.Armour().Helmet()
+	a.p.Armour().SetHelmet(item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithValue("storm_breaker", true))
+	a.handleStormBreakProcess()
+}
+
+func (a *ArmourHandler) handleStormBreakProcess() {
+	go func() {
+		a.stormBreakerCancel = make(chan struct{})
+		select {
+		case <-time.After(time.Second * 5):
+			a.stormBreakerStatus.Store(false)
+			a.p.Armour().SetHelmet(a.stormBreakerHelmet)
+		case <-a.stormBreakerCancel:
+			return
+		}
+	}()
+}

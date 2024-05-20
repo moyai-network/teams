@@ -1230,7 +1230,7 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 
 		h.p.SetHeldItems(held.Grow(-1), left)
 
-		h.AddItemOrDrop(i)
+		it.AddOrDrop(h.p, i)
 
 		w.AddEntity(entity.NewFirework(pos.Vec3(), cube.Rotation{90, 90}, item.Firework{
 			Duration: 0,
@@ -1314,7 +1314,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", colour.StripMinecraftColour(c.Name())))
 				break
 			}
-			h.AddItemOrDrop(ench.AddEnchantmentLore(crate.SelectReward(c)))
+			it.AddOrDrop(h.p, ench.AddEnchantmentLore(crate.SelectReward(c)))
 
 			h.p.SetHeldItems(h.SubtractItem(i, 1), left)
 
@@ -1508,7 +1508,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		if strings.Contains(title, "[buy]") ||
 			strings.Contains(title, "[sell]") &&
 				(area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position())) {
-			it, ok := world.ItemByName("minecraft:"+strings.ReplaceAll(strings.ToLower(lines[1]), " ", "_"), 0)
+			itm, ok := world.ItemByName("minecraft:"+strings.ReplaceAll(strings.ToLower(lines[1]), " ", "_"), 0)
 			if !ok {
 				return
 			}
@@ -1543,14 +1543,14 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				// restart: should we do this?
 				u.Teams.Balance = u.Teams.Balance - price
 				data.SaveUser(u)
-				h.AddItemOrDrop(item.NewStack(it, q))
+				it.AddOrDrop(h.p, item.NewStack(itm, q))
 				Messagef(h.p, "shop.buy.success", q, lines[1])
 			case "sell":
 				inv := h.Player().Inventory()
 				count := 0
 				var items []item.Stack
 				for _, slotItem := range inv.Slots() {
-					n1, _ := it.EncodeItem()
+					n1, _ := itm.EncodeItem()
 					if slotItem.Empty() {
 						continue
 					}
@@ -1696,6 +1696,23 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			return
 		}
 		switch kind := typ.(type) {
+		case it.StormBreakerType:
+			if cd := h.abilities.Key(it.StormBreakerType{}); cd.Active() {
+				h.p.Message(text.Colourf("<red>You are on storm breaker cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				break
+			}
+			h.p.World().PlaySound(h.p.Position(), sound.ItemBreak{})
+			h.p.World().AddEntity(entity.NewLightning(h.p.Position()))
+			h.abilities.Set(it.StormBreakerType{}, time.Minute*2)
+			h.ability.Set(time.Second * 10)
+
+			targetArmourHandler, ok := target.Armour().Inventory().Handler().(*ArmourHandler)
+			if !ok {
+				break
+			}
+
+			h.p.SetHeldItems(item.Stack{}, left)
+			targetArmourHandler.stormBreak()
 		case it.ExoticBoneType:
 			if cd := h.abilities.Key(kind); cd.Active() {
 				h.p.Message(text.Colourf("<red>You are on bone cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
@@ -1925,6 +1942,17 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		}
 		h.area.Store(area.Wilderness(w))
 		Messagef(h.p, "area.enter", area.Wilderness(w).Name())
+	}
+}
+
+func (h *Handler) HandleItemDrop(ctx *event.Context, e world.Entity) {
+	w := h.p.World()
+	if h.area.Load() == area.Spawn(w) {
+		for _, ent := range w.Entities() {
+			if p, ok := ent.(*player.Player); ok {
+				p.HideEntity(e)
+			}
+		}
 	}
 }
 

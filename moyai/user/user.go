@@ -78,13 +78,6 @@ func (h *Handler) Home() *process.Process {
 	return h.home
 }
 
-// AddItemOrDrop adds an item to the user's inventory or drops it if the inventory is full.
-func (h *Handler) AddItemOrDrop(it item.Stack) {
-	if _, err := h.p.Inventory().AddItem(it); err != nil {
-		h.DropItem(it)
-	}
-}
-
 // SubtractItem subtracts d from the count of the item stack passed and returns it, if the player is in
 // survival or adventure mode.
 func (h *Handler) SubtractItem(s item.Stack, d int) item.Stack {

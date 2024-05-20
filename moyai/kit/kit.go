@@ -2,16 +2,14 @@ package kit
 
 import (
 	"github.com/bedrock-gophers/nbtconv"
-	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
+	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"math/rand"
 	_ "unsafe"
 )
 
@@ -40,50 +38,43 @@ func All() []Kit {
 	}
 }
 
-func dropItem(p *player.Player, it item.Stack) {
-	w, pos := p.World(), p.Position()
-	ent := entity.NewItem(it, pos)
-	ent.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
-	w.AddEntity(ent)
-}
-
 // Apply ...
 func Apply(kit Kit, p *player.Player) {
 	inv := p.Inventory()
 	armour := kit.Armour(p)
-	for slot, it := range kit.Items(p) {
-		if it.Empty() {
+	for slot, itm := range kit.Items(p) {
+		if itm.Empty() {
 			continue
 		}
-		it = ench.AddEnchantmentLore(it)
+		itm = ench.AddEnchantmentLore(itm)
 		if inv.Slots()[slot].Item() != nil {
-			dropItem(p, it)
+			it.Drop(p, itm)
 		} else {
-			_ = inv.SetItem(slot, it)
+			_ = inv.SetItem(slot, itm)
 		}
 	}
 	arm := p.Armour()
-	for slot, it := range armour {
-		if it.Empty() {
+	for slot, itm := range armour {
+		if itm.Empty() {
 			continue
 		}
-		it = ench.AddEnchantmentLore(it)
+		itm = ench.AddEnchantmentLore(itm)
 		if arm.Slots()[slot].Item() != nil {
-			dropItem(p, it)
+			it.Drop(p, itm)
 		} else {
 			switch slot {
 			case 0:
-				arm.SetHelmet(it)
-				arm.Inventory().Handler().HandlePlace(nil, 0, it)
+				arm.SetHelmet(itm)
+				arm.Inventory().Handler().HandlePlace(nil, 0, itm)
 			case 1:
-				arm.SetChestplate(it)
-				arm.Inventory().Handler().HandlePlace(nil, 1, it)
+				arm.SetChestplate(itm)
+				arm.Inventory().Handler().HandlePlace(nil, 1, itm)
 			case 2:
-				arm.SetLeggings(it)
-				arm.Inventory().Handler().HandlePlace(nil, 2, it)
+				arm.SetLeggings(itm)
+				arm.Inventory().Handler().HandlePlace(nil, 2, itm)
 			case 3:
-				arm.SetBoots(it)
-				arm.Inventory().Handler().HandlePlace(nil, 3, it)
+				arm.SetBoots(itm)
+				arm.Inventory().Handler().HandlePlace(nil, 3, itm)
 			}
 		}
 	}

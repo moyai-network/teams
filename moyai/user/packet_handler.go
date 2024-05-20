@@ -79,6 +79,9 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 }
 
 func compareTeams(a data.Team, b data.Team) bool {
+	if len(a.Name) == 0 || len(b.Name) == 0 {
+		return false
+	}
 	return a.Name == b.Name
 }
 
