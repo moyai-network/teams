@@ -148,7 +148,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Teams.Mute = &punishment.Punishment{}
+	u.Teams.Mute = punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unmute", p.Name())
@@ -168,7 +168,7 @@ func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Teams.Mute = &punishment.Punishment{}
+	u.Teams.Mute = punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unmute", u.DisplayName)
@@ -213,7 +213,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 	}
 	sn := src.(cmd.NamedTarget)
 	reason, length := parseMuteReason(m.Reason)
-	u.Teams.Mute = &punishment.Punishment{
+	u.Teams.Mute = punishment.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -252,7 +252,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	reason, length := parseMuteReason(m.Reason)
-	u.Teams.Mute = &punishment.Punishment{
+	u.Teams.Mute = punishment.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),

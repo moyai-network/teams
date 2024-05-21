@@ -1,9 +1,10 @@
 package command
 
 import (
+	"time"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -45,7 +46,7 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveUser(u)
 
 	user.Messagef(p, "command.report.success")
-	//user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
+	user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
 	// webhook.Send(webhook.Report, hook.Webhook{
 	// 	Embeds: []hook.Embed{{
 	// 		Title: "Report (Practice)",

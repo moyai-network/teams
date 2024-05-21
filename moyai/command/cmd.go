@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )
 
@@ -45,13 +46,13 @@ func allow(src cmd.Source, console bool, roles ...role.Role) bool {
 func names(users []data.User, tag bool) (names []string) {
 	for _, u := range users {
 		_ = u
-		/*if u.Ban.Permanent {
+		if u.Teams.Ban.Permanent {
 			if tag {
 				names = append(names, text.Colourf("<dark-red>%s [BLACKLISTED]</dark-red>", u.DisplayName))
 			} else {
 				names = append(names, text.Colourf("<dark-red>%s</dark-red>", u.DisplayName))
 			}
-		} else if !u.Ban.Expired() {
+		} else if !u.Teams.Ban.Expired() {
 			if tag {
 				names = append(names, text.Colourf("<red>%s [BANNED]</red>", u.DisplayName))
 			} else {
@@ -59,7 +60,7 @@ func names(users []data.User, tag bool) (names []string) {
 			}
 		} else {
 			names = append(names, text.Colourf("<green>%s</green>", u.DisplayName))
-		}*/
+		}
 	}
 	return
 }

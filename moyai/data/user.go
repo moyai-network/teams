@@ -96,9 +96,9 @@ type User struct {
 		// Create is the team create cooldown of the user.
 		Create *cooldown.CoolDown
 		// Ban is the ban of the user.
-		Ban *punishment.Punishment
+		Ban punishment.Punishment
 		// Mute is the mute of the user.
-		Mute *punishment.Punishment
+		Mute punishment.Punishment
 		// Dead is the live status of the logger.
 		// If true, the user should be cleared.
 		Dead bool

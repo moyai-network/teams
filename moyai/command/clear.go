@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Clear clears your inventory
@@ -19,5 +19,5 @@ func (c Clear) Run(s cmd.Source, o *cmd.Output) {
 	p.Inventory().Clear()
 	p.Armour().Clear()
 
-	o.Print(text.Colourf("<green>You have successfully cleared your inventory."))
+	user.Messagef(p, "command.clear")
 }

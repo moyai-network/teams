@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Key is a command that allows admins to give players keys.
@@ -42,7 +42,7 @@ func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
 		t.Message("command.key.give.received", k.Count)
 	}
 
-	o.Print(text.Colourf("<green>Successfully gave partner packages to all online players.</green>"))
+	user.Alert(s, "command.key.all.success", k.Count)
 }
 
 // Allow ...

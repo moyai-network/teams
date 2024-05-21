@@ -22,7 +22,7 @@ func (l Logout) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if h.Logout().Ongoing() {
-		o.Error("You are already logging out.")
+		user.Messagef(p, "command.logout.logging-out")
 		return
 	}
 	h.Logout().Teleport(p, time.Second*30, p.Position())

@@ -17,7 +17,6 @@ func (Kit) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 	inv.SendMenu(p, menu.NewKitsMenu())
-	//p.SendForm(form.NewKitForm(p))
 }
 
 // Allow ...

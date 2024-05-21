@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/sotw"
@@ -47,7 +48,7 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 	if _, ok := sotw.Running(); !ok {
-		o.Print(text.Colourf("<red>SOTW is not running!</red>"))
+		o.Print(lang.Translatef(locale(s), "command.sotw.not.running"))
 		return
 	}
 	sotw.End()

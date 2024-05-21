@@ -91,7 +91,7 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.ban.not"))
 		return
 	}
-	u.Teams.Ban = &punishment.Punishment{}
+	u.Teams.Ban = punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unban", u.DisplayName)
@@ -131,7 +131,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		return
 	}
 	reason, length := parseBanReason(b.Reason)
-	u.Teams.Ban = &punishment.Punishment{
+	u.Teams.Ban = punishment.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -173,7 +173,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 	}
 
 	reason, length := parseBanReason(b.Reason)
-	u.Teams.Ban = &punishment.Punishment{
+	u.Teams.Ban = punishment.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),

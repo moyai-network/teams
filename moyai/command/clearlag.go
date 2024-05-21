@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/moyai-network/teams/moyai/user"
 )
 
 // ClearLag clears all entitys on the floor.
@@ -31,7 +31,7 @@ func (c ClearLag) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 
-	o.Print(text.Colourf("<green> You have successfully cleared (%d) entitys </green>", itemCount))
+	user.Messagef(p, "command.clearlag", itemCount)
 }
 
 // Allow ...

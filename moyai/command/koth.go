@@ -1,12 +1,13 @@
 package command
 
 import (
+	"strings"
+
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/role"
-	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -45,26 +46,27 @@ func (KothList) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
-	if p, ok := s.(*player.Player); ok {
+	p, ok := s.(*player.Player)
+	if ok {
 		if u, err := data.LoadUserFromName(p.Name()); err == nil {
 			r := u.Roles.Highest()
 			name = r.Color(p.Name())
 		}
 	}
 	if _, ok := koth.Running(); ok {
-		o.Print(text.Colourf("<red>A KOTH is already running.</red>"))
+		user.Messagef(p, "command.koth.running")
 		return
 	}
 	ko, ok := koth.Lookup(string(k.KOTH))
 	if !ok {
-		o.Print(text.Colourf("<red>Invalid KOTH.</red>"))
+		user.Messagef(p, "command.koth.invalid")
 		return
 	}
 	ko.Start()
 
 	for _, u := range moyai.Server().Players() {
 		if ko.Area().Vec3WithinOrEqualXZ(u.Position()) {
-			//ko.StartCapturing(u)
+			ko.StartCapturing(u)
 		}
 	}
 
@@ -75,14 +77,15 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (KothStop) Run(s cmd.Source, o *cmd.Output) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
-	if p, ok := s.(*player.Player); ok {
+	p, ok := s.(*player.Player)
+	if ok {
 		if u, err := data.LoadUserFromName(p.Name()); err == nil {
 			r := u.Roles.Highest()
 			name = r.Color(p.Name())
 		}
 	}
 	if k, ok := koth.Running(); !ok {
-		o.Print(text.Colourf("<red>No KOTH is running.</red>"))
+		user.Messagef(p, "command.koth.not.running")
 		return
 	} else {
 		k.Stop()
