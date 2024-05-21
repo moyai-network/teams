@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
 	"github.com/bedrock-gophers/inv/inv"
@@ -22,6 +23,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -174,6 +176,21 @@ func configureWorld(w *world.World) {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
+		go func() {
+			err := recover()
+			if err != nil {
+				time.Sleep(time.Millisecond * 500)
+				data.FlushCache()
+
+				sotw.Save()
+				_ = moyai.Server().Close()
+
+				fmt.Println(err)
+				fmt.Println(debug.Stack())
+				os.Exit(1)
+			}
+		}()
+
 		inv.RedirectPlayerPackets(p)
 		store.ExecuteCommands(p)
 		if proxy {

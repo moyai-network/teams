@@ -188,6 +188,7 @@ func startTicker(h *Handler) {
 				focus := tm.Focus
 				if focus.Kind == data.FocusTypeTeam {
 					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.Active() {
+						_, _ = sb.WriteString("§3§c")
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
