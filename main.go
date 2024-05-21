@@ -56,6 +56,7 @@ func main() {
 	chat.Global.Subscribe(chat.StdoutSubscriber{})
 	lang.Register(language.English)
 	lang.Register(language.Spanish)
+	lang.Register(language.French)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
