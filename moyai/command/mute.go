@@ -1,19 +1,18 @@
 package command
 
-/*import (
+import (
 	"strings"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
-	"github.com/moyai-network/moose"
-	"github.com/moyai-network/moose/data"
-	"github.com/moyai-network/moose/lang"
-	"github.com/moyai-network/moose/role"
-	"github.com/moyai-network/teams/moyai/form"
+
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/internal/punishment"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // MuteForm is a command that is used to mute an online player through a punishment form.
@@ -62,26 +61,26 @@ type MuteOffline struct {
 
 // Run ...
 func (MuteList) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	users, err := data.LoadUsersCond(
-		bson.M{
-			"$and": bson.A{
-				bson.M{
-					"punishments.mute.expiration": bson.M{"$ne": time.Time{}},
-				}, bson.M{
-					"punishments.mute.expiration": bson.M{"$gt": time.Now()},
-				},
-			},
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-	if len(users) == 0 {
-		o.Error(lang.Translatef(l, "command.mute.none"))
-		return
-	}
-	o.Print(lang.Translatef(l, "command.mute.list", len(users), strings.Join(names(users, true), ", ")))
+	// l := locale(s)
+	// users, err := data.LoadUsersCond(
+	// 	bson.M{
+	// 		"$and": bson.A{
+	// 			bson.M{
+	// 				"punishments.mute.expiration": bson.M{"$ne": time.Time{}},
+	// 			}, bson.M{
+	// 				"punishments.mute.expiration": bson.M{"$gt": time.Now()},
+	// 			},
+	// 		},
+	// 	},
+	// )
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// if len(users) == 0 {
+	// 	o.Error(lang.Translatef(l, "command.mute.none"))
+	// 	return
+	// }
+	// o.Print(lang.Translatef(l, "command.mute.list", len(users), strings.Join(names(users, true), ", ")))
 }
 
 // Run ...
@@ -92,16 +91,16 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Mute.Expired() {
+	if u.Teams.Mute.Expired() {
 		o.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	mute := u.Mute
+	mute := u.Teams.Mute
 	o.Print(lang.Translatef(l, "punishment.details",
 		p.Name(),
 		mute.Reason,
@@ -114,21 +113,21 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output) {
 // Run ...
 func (m MuteInfoOffline) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	u, err := data.LoadUserOrCreate(m.Target)
+	u, err := data.LoadUserFromName(m.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Mute.Expired() {
+	if u.Teams.Mute.Expired() {
 		o.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
 	o.Print(lang.Translatef(l, "punishment.details",
 		u.DisplayName,
-		u.Mute.Reason,
-		durafmt.Parse(u.Mute.Remaining()),
-		u.Mute.Staff,
-		u.Mute.Occurrence.Format("01/02/2006"),
+		u.Teams.Mute.Reason,
+		durafmt.Parse(u.Teams.Mute.Remaining()),
+		u.Teams.Mute.Staff,
+		u.Teams.Mute.Occurrence.Format("01/02/2006"),
 	))
 }
 
@@ -140,16 +139,16 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Mute.Expired() {
+	if u.Teams.Mute.Expired() {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Mute = moose.Punishment{}
+	u.Teams.Mute = &punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unmute", p.Name())
@@ -160,16 +159,16 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 // Run ...
 func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output) {
 	l := locale(src)
-	u, err := data.LoadUserOrCreate(m.Target)
+	u, err := data.LoadUserFromName(m.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Mute.Expired() {
+	if u.Teams.Mute.Expired() {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Mute = moose.Punishment{}
+	u.Teams.Mute = &punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unmute", u.DisplayName)
@@ -179,8 +178,8 @@ func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output) {
 
 // Run ...
 func (m MuteForm) Run(s cmd.Source, _ *cmd.Output) {
-	p := s.(*player.Player)
-	p.SendForm(form.NewMute(p))
+	// p := s.(*player.Player)
+	// p.SendForm(form.NewMute(p))
 }
 
 // Run ...
@@ -199,7 +198,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.self"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(t.Name())
+	u, err := data.LoadUserFromName(t.Name())
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -208,13 +207,13 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.operator"))
 		return
 	}
-	if !u.Mute.Expired() {
+	if !u.Teams.Mute.Expired() {
 		out.Error(lang.Translatef(l, "command.mute.already"))
 		return
 	}
 	sn := src.(cmd.NamedTarget)
 	reason, length := parseMuteReason(m.Reason)
-	u.Mute = moose.Punishment{
+	u.Teams.Mute = &punishment.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -232,7 +231,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 	l := locale(src)
 	sn := src.(cmd.NamedTarget)
 
-	u, err := data.LoadUserOrCreate(m.Target)
+	u, err := data.LoadUserFromName(m.Target)
 	if err != nil {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -247,13 +246,13 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.mute.operator"))
 		return
 	}
-	if !u.Mute.Expired() {
+	if !u.Teams.Mute.Expired() {
 		out.Error(lang.Translatef(l, "command.mute.already"))
 		return
 	}
 
 	reason, length := parseMuteReason(m.Reason)
-	u.Mute = moose.Punishment{
+	u.Teams.Mute = &punishment.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -339,4 +338,3 @@ func parseMuteReason(r muteReason) (string, time.Duration) {
 	}
 	panic("should never happen")
 }
-*/

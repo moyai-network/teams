@@ -27,6 +27,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
@@ -2013,6 +2014,18 @@ func (h *Handler) HandleQuit() {
 
 func Online(p *player.Player) bool {
 	return unsafe.Session(p) != session.Nop
+}
+
+func Alert(s cmd.Source, key string, args ...any) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	for _, t := range moyai.Server().Players() {
+		if u, _ := data.LoadUserFromName(t.Name()); role.Staff(u.Roles.Highest()) {
+			t.Message(lang.Translatef(u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(u.Language, key), args...)))
+		}
+	}
 }
 
 func Broadcastf(key string, a ...interface{}) {

@@ -1,18 +1,18 @@
 package command
 
-/*import (
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/internal/lang"
+import (
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/internal/punishment"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/role"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
-	"github.com/moyai-network/teams/moyai/form"
 	"github.com/moyai-network/teams/moyai/user"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // BanForm is a command that is used to ban a player through a punishment form.
@@ -49,58 +49,49 @@ type BanOffline struct {
 
 // Run ...
 func (BanList) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	users, err := data.LoadUsersCond(
-		bson.M{
-			"$and": bson.A{
-				bson.M{
-					"punishments.ban.expiration": bson.M{"$ne": time.Time{}},
-				}, bson.M{
-					"punishments.ban.expiration": bson.M{"$gt": time.Now()},
-				},
-			},
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-	if len(users) == 0 {
-		o.Error(lang.Translatef(l, "command.ban.none"))
-		return
-	}
-	o.Print(lang.Translatef(l, "command.ban.list", len(users), strings.Join(names(users, false), ", ")))
-}
-
-// Run ...
-func (b BanInfoOffline) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	u, _ := data.LoadUserOrCreate(b.Target)
-	if u.Ban.Expired() || u.Ban.Permanent {
-		o.Error(lang.Translatef(l, "command.ban.not"))
-		return
-	}
-	o.Print(lang.Translatef(l, "punishment.details",
-		u.DisplayName,
-		u.Ban.Reason,
-		durafmt.ParseShort(u.Ban.Remaining()),
-		u.Ban.Staff,
-		u.Ban.Occurrence.Format("01/02/2006"),
-	))
+	// l := locale(s)
+	// users, err := data.LoadUsersCond(
+	// 	bson.M{
+	// 		"$and": bson.A{
+	// 			bson.M{
+	// 				"punishments.ban.expiration": bson.M{"$ne": time.Time{}},
+	// 			}, bson.M{
+	// 				"punishments.ban.expiration": bson.M{"$gt": time.Now()},
+	// 			},
+	// 		},
+	// 	},
+	// )
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// if len(users) == 0 {
+	// 	o.Error(lang.Translatef(l, "command.ban.none"))
+	// 	return
+	// }
+	// o.Print(lang.Translatef(l, "command.ban.list", len(users), strings.Join(names(users, false), ", ")))
+	// }
+	// o.Print(lang.Translatef(l, "punishment.details",
+	// 	u.DisplayName,
+	// 	u.Ban.Reason,
+	// 	durafmt.ParseShort(u.Ban.Remaining()),
+	// 	u.Ban.Staff,
+	// 	u.Ban.Occurrence.Format("01/02/2006"),
+	// ))
 }
 
 // Run ...
 func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 	l := locale(src)
-	u, err := data.LoadUserOrCreate(b.Target)
+	u, err := data.LoadUserFromName(b.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Ban.Expired() || u.Ban.Permanent {
+	if u.Teams.Ban.Expired() || u.Teams.Ban.Permanent {
 		o.Error(lang.Translatef(l, "command.ban.not"))
 		return
 	}
-	u.Ban = moose.Punishment{}
+	u.Teams.Ban = &punishment.Punishment{}
 	data.SaveUser(u)
 
 	user.Alert(src, "staff.alert.unban", u.DisplayName)
@@ -110,8 +101,8 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (BanForm) Run(s cmd.Source, _ *cmd.Output) {
-	p := s.(*player.Player)
-	p.SendForm(form.NewBan())
+	//p := s.(*player.Player)
+	//p.SendForm(form.NewBan())
 }
 
 // Run ...
@@ -131,7 +122,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.ban.self"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(t.Name())
+	u, err := data.LoadUserFromName(t.Name())
 	if err != nil {
 		return
 	}
@@ -140,7 +131,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		return
 	}
 	reason, length := parseBanReason(b.Reason)
-	u.Ban = moose.Punishment{
+	u.Teams.Ban = &punishment.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -167,7 +158,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.ban.self"))
 		return
 	}
-	u, err := data.LoadUserOrCreate(b.Target)
+	u, err := data.LoadUserFromName(b.Target)
 	if err != nil {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
@@ -176,13 +167,13 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.ban.operator"))
 		return
 	}
-	if !u.Ban.Expired() {
+	if !u.Teams.Ban.Expired() {
 		o.Error(lang.Translatef(l, "command.ban.already"))
 		return
 	}
 
 	reason, length := parseBanReason(b.Reason)
-	u.Ban = moose.Punishment{
+	u.Teams.Ban = &punishment.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -268,4 +259,3 @@ func parseBanReason(r banReason) (string, time.Duration) {
 	}
 	return "Unknown", time.Hour * 24
 }
-*/
