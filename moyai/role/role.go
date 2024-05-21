@@ -233,4 +233,5 @@ func init() {
 	Register(Mod{})
 	Register(Admin{})
 	Register(Manager{})
+	Register(Owner{})
 }

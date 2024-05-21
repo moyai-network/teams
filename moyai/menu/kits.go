@@ -28,14 +28,14 @@ type Kits struct{}
 func NewKitsMenu() inv.Menu {
 	m := inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
 	stacks := glassFilledStack(54)
-	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Master</aqua>"))
-	stacks[11] = item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithCustomName(text.Colourf("<aqua>Archer</aqua>"))
-	stacks[20] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>"))
-	stacks[24] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Mage</aqua>"))
-	stacks[15] = item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithCustomName(text.Colourf("<aqua>Rogue</aqua>"))
-	stacks[13] = item.NewStack(fishingRod{}, 1).WithCustomName(text.Colourf("<aqua>Starter</aqua>"))
-	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>"))
-	stacks[16] = item.NewStack(item.Helmet{Tier: item.ArmourTierIron{}}, 1).WithCustomName(text.Colourf("<aqua>Miner</aqua>"))
+	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Master</aqua>")).WithLore(text.Colourf("<aqua>The top diamond kit on the server!</aqua>"))
+	stacks[11] = item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithCustomName(text.Colourf("<aqua>Archer</aqua>")).WithLore(text.Colourf("<aqua>Take aim with lethal archer tags!</aqua>"))
+	stacks[20] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>")).WithLore(text.Colourf("<aqua>Support fellow team members with effects!</aqua>"))
+	stacks[24] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Mage</aqua>")).WithLore(text.Colourf("<aqua>Unleash powerful debuffs on your enemies</aqua>"))
+	stacks[15] = item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithCustomName(text.Colourf("<aqua>Rogue</aqua>")).WithLore(text.Colourf("<aqua>Backstab enemies to lash out massive chunks of damage!</aqua>"))
+	stacks[13] = item.NewStack(fishingRod{}, 1).WithCustomName(text.Colourf("<aqua>Starter</aqua>")).WithLore(text.Colourf("<aqua>Get started with basic blocks and tools!</aqua>"))
+	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>")).WithLore(text.Colourf("<aqua>A collection of blocks and other tools to create your base!</aqua>"))
+	stacks[16] = item.NewStack(item.Helmet{Tier: item.ArmourTierIron{}}, 1).WithCustomName(text.Colourf("<aqua>Miner</aqua>")).WithLore(text.Colourf("<aqua>Dig and mine away with haste and quick tools!</aqua>"))
 	return m.WithStacks(stacks...)
 }
 

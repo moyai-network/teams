@@ -2,14 +2,16 @@ package data
 
 import (
 	"errors"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/moyai-network/teams/internal/cooldown"
+	"github.com/moyai-network/teams/internal/punishment"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/tag"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -93,6 +95,10 @@ type User struct {
 		PVP *cooldown.CoolDown
 		// Create is the team create cooldown of the user.
 		Create *cooldown.CoolDown
+		// Ban is the ban of the user.
+		Ban *punishment.Punishment
+		// Mute is the mute of the user.
+		Mute *punishment.Punishment
 		// Dead is the live status of the logger.
 		// If true, the user should be cleared.
 		Dead bool
