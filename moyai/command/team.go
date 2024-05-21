@@ -116,13 +116,13 @@ type TeamList struct {
 // TeamFocusTeam is a command used to focus on a team.
 type TeamFocusTeam struct {
 	Sub  cmd.SubCommand `cmd:"focus"`
-	Name teamName       `cmd:"name"`
+	Name teamName       `cmd:"team"`
 }
 
 // TeamFocusPlayer is a command used to focus on a player.
 type TeamFocusPlayer struct {
 	Sub    cmd.SubCommand `cmd:"focus"`
-	Target []cmd.Target   `cmd:"target"`
+	Target []cmd.Target   `cmd:"player"`
 }
 
 // TeamUnFocus is a command used to unfocus on a team.
@@ -1457,7 +1457,7 @@ func (member) Options(src cmd.Source) []string {
 	var members []string
 	for _, m := range tm.Members {
 		if !strings.EqualFold(m.Name, p.Name()) {
-			members = append(members, m.DisplayName)
+			members = append(members, m.Name)
 		}
 	}
 
@@ -1475,7 +1475,7 @@ func (teamName) Options(cmd.Source) []string {
 	tms, _ := data.LoadAllTeams()
 
 	for _, tm := range tms {
-		teams = append(teams, tm.DisplayName)
+		teams = append(teams, tm.Name)
 	}
 	return teams
 }
@@ -1495,7 +1495,7 @@ func (teamMember) Options(src cmd.Source) []string {
 
 	for _, tm := range tms {
 		for _, m := range tm.Members {
-			members = append(members, m.DisplayName)
+			members = append(members, m.Name)
 		}
 	}
 
