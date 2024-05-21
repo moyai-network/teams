@@ -261,7 +261,7 @@ func (t Team) Member(name string) bool {
 // WithTeamFocus returns the team with the given team as the focus.
 func (t Team) WithTeamFocus(tm Team) Team {
 	t.Focus.Kind = FocusTypeTeam
-	t.Focus.Value = tm.Name
+	t.Focus.Value = tm.DisplayName
 	return t
 }
 
