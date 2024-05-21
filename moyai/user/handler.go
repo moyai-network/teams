@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai"
 	"math"
 	"math/rand"
 	"regexp"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/moyai-network/teams/moyai"
 
 	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/effectutil"
@@ -247,8 +248,8 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 		global := func() {
 			if teamErr == nil {
-				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
-				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(h.p.Name(), msg))
+				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
+				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
 				for _, t := range moyai.Server().Players() {
 					if tm.Member(t.Name()) {
 						t.Message(formatTeam)
@@ -258,7 +259,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				}
 				chat.StdoutSubscriber{}.Message(formatEnemy)
 			} else {
-				_, _ = chat.Global.WriteString(r.Chat(h.p.Name(), msg))
+				_, _ = chat.Global.WriteString(r.Chat(u.DisplayName, msg))
 			}
 		}
 
@@ -269,7 +270,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				}
 			}
 		}
-		fmt.Println(u.Teams.ChatType)
 		h.lastMessage.Store(time.Now())
 		switch u.Teams.ChatType {
 		case 0:

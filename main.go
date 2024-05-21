@@ -2,6 +2,15 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"math"
+	_ "net/http/pprof"
+	"os"
+	"os/signal"
+	"runtime/debug"
+	"syscall"
+	"time"
+
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
 	"github.com/bedrock-gophers/inv/inv"
@@ -18,14 +27,6 @@ import (
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
-	"image"
-	"math"
-	_ "net/http/pprof"
-	"os"
-	"os/signal"
-	"runtime/debug"
-	"syscall"
-	"time"
 
 	"github.com/go-gl/mathgl/mgl64"
 	it "github.com/moyai-network/teams/moyai/item"
@@ -321,6 +322,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("pp", text.Colourf("<dark-red>Manage partner packages.</dark-red>"), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 		cmd.New("ping", text.Colourf("<dark-red>Check your ping.</dark-red>"), nil, command.Ping{}),
 		//cmd.New("data", text.Colourf("<dark-red>Clear data.</dark-red>"), nil, command.DataReset{}),
+		cmd.New("nick", text.Colourf("<dark-red>Change your nickname.</dark-red>"), nil, command.Nick{}, command.NickReset{}),
 		cmd.New("vanish", text.Colourf("<dark-red>Vanish as staff.</dark-red>"), []string{"v"}, command.Vanish{}),
 	} {
 		cmd.Register(c)

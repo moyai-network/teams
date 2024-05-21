@@ -2,14 +2,15 @@ package user
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"strings"
-	"time"
 
 	"golang.org/x/exp/slices"
 
@@ -136,7 +137,7 @@ func sortClassEffects(h *Handler) {
 
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
-	t := time.NewTicker(50 * time.Millisecond)
+	t := time.NewTicker(100 * time.Millisecond)
 
 	for {
 		select {
@@ -255,11 +256,9 @@ func startTicker(h *Handler) {
 			}
 
 			if len(sb.Lines()) > 3 {
-				if h.lastScoreBoard.Load() == nil || !compareLines(sb.Lines(), h.lastScoreBoard.Load().Lines()) {
 					h.lastScoreBoard.Store(sb)
 					h.p.RemoveScoreboard()
 					h.p.SendScoreboard(sb)
-				}
 			} else {
 				h.p.RemoveScoreboard()
 				h.lastScoreBoard.Store(nil)
