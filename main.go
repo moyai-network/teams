@@ -55,6 +55,7 @@ import (
 func main() {
 	chat.Global.Subscribe(chat.StdoutSubscriber{})
 	lang.Register(language.English)
+	lang.Register(language.Spanish)
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
@@ -324,6 +325,7 @@ func registerCommands(srv *server.Server) {
 		//cmd.New("data", text.Colourf("<dark-red>Clear data.</dark-red>"), nil, command.DataReset{}),
 		cmd.New("nick", text.Colourf("<dark-red>Change your nickname.</dark-red>"), nil, command.Nick{}, command.NickReset{}),
 		cmd.New("vanish", text.Colourf("<dark-red>Vanish as staff.</dark-red>"), []string{"v"}, command.Vanish{}),
+		cmd.New("lang", text.Colourf("<dark-red>Change your language.</dark-red>"), nil, lang.Lang{}),
 	} {
 		cmd.Register(c)
 	}

@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"

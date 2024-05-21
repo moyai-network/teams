@@ -2,12 +2,13 @@ package entity
 
 import (
 	"fmt"
-	"github.com/df-mc/dragonfly/server/session"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
 	"math"
 	"strings"
 	_ "unsafe"
+
+	"github.com/df-mc/dragonfly/server/session"
+	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
 
 	"github.com/moyai-network/teams/moyai/user"
 	//"github.com/paroxity/portal/session"
@@ -33,7 +34,7 @@ var yaws = map[world.Entity]float64{}
 // blue item used to teleport.
 func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Entity {
 	e := entity.Config{Behaviour: moyaiPearlConf.New(owner)}.New(entity.EnderPearlType{}, pos)
-	e.SetVelocity(vel)
+	e.SetVelocity(vel.Mul(1.25))
 
 	directions[owner] = owner.Rotation().Direction()
 	yaws[owner] = math.Round(owner.Rotation().Yaw())

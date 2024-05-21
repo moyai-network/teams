@@ -1,0 +1,31 @@
+{
+    "properties": {
+        "name": "Español",
+        "image": "https://preview.redd.it/68cdrlhal0hz.png?auto=webp&s=a7e6c8f70065646b72d45fc6ba12c6bb9bf56923"
+    },
+    "translations": {
+        "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
+        "scoreboard.kills": "<red>Muertes: <grey>%d</grey></red>",
+        "scoreboard.deaths": "<red>Muertes: <grey>%d</grey></red>",
+        "scoreboard.killstreak": "<red>Racha de Muertes: <grey>%d</grey></red>",
+        "scoreboard.deathban": "<red>Prohibición por Muerte: %s</red>",
+        "scoreboard.koth.running": "<dark-red>%s<grey>:</grey> %s</dark-red>",
+        "scoreboard.logout": "<red>Cerrar sesión<grey>:</grey> %.1fs</red>",
+        "scoreboard.timer.sotw": "<green>SOTW<grey>:</grey> %s</green>",
+        "scoreboard.timer.pvp": "<dark-green>Invencibilidad<grey>:</grey> %s</dark-green>",
+        "scoreboard.tag.spawn": "<red>Etiqueta de Spawn<grey>:</grey> %.1fs</red>",
+        "scoreboard.tag.archer": "<gold>Etiqueta de Arquero<grey>:</grey> %.1fs</gold>",
+        "scoreboard.focus.name": "<purple>[%s]</purple>",
+        "scoreboard.focus.dtr": "<dark-purple>▌</dark-purple> <purple>DTR</purple><grey>: %s</grey>",
+        "scoreboard.focus.online": "<dark-purple>▌</dark-purple> <purple>En Línea</purple><grey>: %d/%d</grey>",
+        "scoreboard.focus.home": "<dark-purple>▌</dark-purple> <purple>Hogar</purple><grey>: %.1f, %.1f</grey>",
+        "scoreboard.teleportation.stuck": "<black>Atascado<grey>:</grey> %.1fs</black>",
+        "scoreboard.teleportation.home": "<blue>Hogar<grey>:</grey> %.1fs</blue>",
+        "scoreboard.cooldown.pearl": "<purple>Perla de Ender<grey>:</grey> %.1fs</purple>",
+        "scoreboard.cooldown.abilities": "<amethyst>Ítems de Compañero<grey>:</grey> %.1fs</amethyst>",
+        "scoreboard.cooldown.golden.apple": "<gold>Manzana Dorada<grey>:</grey> %.1fs</gold>",
+        "scoreboard.bard.energy": "<green>Energía de Bardo<grey>:</grey> %.1f</green>",
+        "scoreboard.mage.energy": "<amethyst>Energía de Mago<grey>:</grey> %.1f</amethyst>",
+        "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>"
+    }
+}
