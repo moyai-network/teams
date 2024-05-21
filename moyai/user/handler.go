@@ -1416,7 +1416,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	}
 
 	switch b.(type) {
-	case block.WoodFenceGate, block.Chest:
+	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor:
 		teams, _ := data.LoadAllTeams()
 		for _, t := range teams {
 			c := t.Claim
