@@ -813,6 +813,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	if h.logger {
 		p := h.p
 		if (p.Health()-p.FinalDamageFrom(*dmg, src) <= 0 || (src == entity.VoidDamageSource{})) && !ctx.Cancelled() {
+			armourHandler, ok := p.Armour().Inventory().Handler().(*ArmourHandler)
+			if ok && armourHandler.stormBreakerStatus.Load() {
+				armourHandler.stormBreakerCancel <- struct{}{}
+				p.Armour().SetHelmet(armourHandler.stormBreakerHelmet)
+			}
+
 			ctx.Cancel()
 			p.World().PlaySound(p.Position(), sound.Explosion{})
 
