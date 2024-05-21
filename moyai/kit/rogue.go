@@ -32,6 +32,8 @@ func (Rogue) Items(*player.Player) [36]item.Stack {
 	}
 
 	items[2] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[7] = item.NewStack(item.Sugar{}, 16)
+	items[8] = item.NewStack(item.Feather{}, 16)
 	items[16] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
 	items[17] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
 	items[25] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)

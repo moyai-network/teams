@@ -8,21 +8,21 @@ import (
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 )
 
-// Stray represents the Stray class.
-type Stray struct{}
+// Mage represents the Mage class.
+type Mage struct{}
 
 // Name ...
-func (Stray) Name() string {
-	return "Stray"
+func (Mage) Name() string {
+	return "Mage"
 }
 
 // Texture ...
-func (Stray) Texture() string {
+func (Mage) Texture() string {
 	return "textures/items/iron_helmet"
 }
 
 // Items ...
-func (Stray) Items(*player.Player) [36]item.Stack {
+func (Mage) Items(*player.Player) [36]item.Stack {
 	items := [36]item.Stack{
 		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
 		item.NewStack(item.EnderPearl{}, 16),
@@ -31,14 +31,13 @@ func (Stray) Items(*player.Player) [36]item.Stack {
 		items[i] = item.NewStack(item.SplashPotion{Type: potion.StrongHealing()}, 1)
 	}
 
-	items[2] = item.NewStack(item.BlazePowder{}, 64)
-	items[3] = item.NewStack(item.Sugar{}, 64)
-	items[4] = item.NewStack(item.FermentedSpiderEye{}, 64)
+	items[2] = item.NewStack(item.Coal{}, 64)
+	items[3] = item.NewStack(item.RottenFlesh{}, 64)
 	return items
 }
 
 // Armour ...
-func (Stray) Armour(*player.Player) [4]item.Stack {
+func (Mage) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, 2)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 
@@ -48,9 +47,9 @@ func (Stray) Armour(*player.Player) [4]item.Stack {
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)
 
 	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invis),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierIron{}}, 1).WithEnchantments(protection, unbreaking, fireRes),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(protection, unbreaking, recovery),
-		item.NewStack(item.Boots{Tier: item.ArmourTierIron{}}, 1).WithEnchantments(protection, unbreaking, item.NewEnchantment(enchantment.FeatherFalling{}, 4)),
+		item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invis),
+		item.NewStack(item.Chestplate{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, fireRes),
+		item.NewStack(item.Leggings{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, recovery),
+		item.NewStack(item.Boots{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, item.NewEnchantment(enchantment.FeatherFalling{}, 4)),
 	}
 }

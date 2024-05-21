@@ -65,5 +65,5 @@ func init() {
 	Register(Bard{})
 	Register(Miner{})
 	Register(Rogue{})
-	Register(Stray{})
+	Register(Mage{})
 }

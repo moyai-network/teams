@@ -86,7 +86,7 @@ type Handler struct {
 
 	archerRogueItem cooldown.MappedCoolDown[world.Item]
 	bardItem        cooldown.MappedCoolDown[world.Item]
-	strayItem       cooldown.MappedCoolDown[world.Item]
+	mageItem        cooldown.MappedCoolDown[world.Item]
 
 	ability   *cooldown.CoolDown
 	abilities cooldown.MappedCoolDown[it.SpecialItemType]
@@ -160,7 +160,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		itemUse:         cooldown.NewMappedCoolDown[world.Item](),
 		archerRogueItem: cooldown.NewMappedCoolDown[world.Item](),
 		bardItem:        cooldown.NewMappedCoolDown[world.Item](),
-		strayItem:       cooldown.NewMappedCoolDown[world.Item](),
+		mageItem:        cooldown.NewMappedCoolDown[world.Item](),
 		abilities:       cooldown.NewMappedCoolDown[it.SpecialItemType](),
 
 		combat: cooldown.NewCoolDown(),
@@ -596,14 +596,14 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.bardItem.Key(held.Item()).Set(15 * time.Second)
 		}
-	case class.Stray:
-		if e, ok := StrayEffectFromItem(held.Item()); ok {
+	case class.Mage:
+		if e, ok := MageEffectFromItem(held.Item()); ok {
 			_, sotwRunning := sotw.Running()
 			if u.Teams.PVP.Active() || sotwRunning && u.Teams.SOTW {
 				return
 			}
 
-			if cd := h.strayItem.Key(held.Item()); cd.Active() {
+			if cd := h.mageItem.Key(held.Item()); cd.Active() {
 				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
@@ -614,8 +614,8 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.energy.Store(en - 30)
 			}
 
-			teammates := NearbyAllies(h.p, 25)
-			for _, m := range teammates {
+			enemies := NearbyEnemies(h.p, 25)
+			for _, m := range enemies {
 				m.p.AddEffect(e)
 				go func() {
 					select {
@@ -629,9 +629,9 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
+			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(enemies))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
-			h.strayItem.Key(held.Item()).Set(15 * time.Second)
+			h.mageItem.Key(held.Item()).Set(15 * time.Second)
 		}
 	}
 
@@ -1608,7 +1608,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			case "rogue":
 				kit2.Apply(kit2.Rogue{}, h.p)
 			case "stray":
-				kit2.Apply(kit2.Stray{}, h.p)
+				kit2.Apply(kit2.Mage{}, h.p)
 			case "miner":
 				kit2.Apply(kit2.Miner{}, h.p)
 			case "builder":

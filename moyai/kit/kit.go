@@ -32,7 +32,7 @@ func All() []Kit {
 		Builder{},
 		Archer{},
 		Bard{},
-		Stray{},
+		Mage{},
 		Rogue{},
 		Master{},
 	}

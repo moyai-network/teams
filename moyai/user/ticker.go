@@ -167,27 +167,9 @@ func startTicker(h *Handler) {
 						}()
 					}
 				}
-			case class.Stray:
+			case class.Mage:
 				if e := h.energy.Load(); e < 120-0.05 {
-					l := float64(len(NearbyCombat(h.p, 10)))
-					h.energy.Store(e + (l * 0.05))
-				}
-
-				i, _ := h.p.HeldItems()
-				if e, ok := StrayHoldEffectFromItem(i.Item()); ok {
-					mates := NearbyAllies(h.p, 25)
-					for _, m := range mates {
-						m.p.AddEffect(e)
-						go func() {
-							select {
-							case <-time.After(e.Duration()):
-								sortArmourEffects(h)
-								sortClassEffects(h)
-							case <-h.close:
-								return
-							}
-						}()
-					}
+					h.energy.Store(e + 0.05)
 				}
 			}
 
@@ -269,8 +251,8 @@ func startTicker(h *Handler) {
 
 			if class.Compare(h.class.Load(), class.Bard{}) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.bard.energy", h.energy.Load()))
-			} else if class.Compare(h.class.Load(), class.Stray{}) {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.stray.energy", h.energy.Load()))
+			} else if class.Compare(h.class.Load(), class.Mage{}) {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.mage.energy", h.energy.Load()))
 			}
 
 			_, _ = sb.WriteString("\uE000")
@@ -326,7 +308,7 @@ func parseDuration(d time.Duration) string {
 var (
 	archerRogueEffectDuration = time.Second * 6
 	bardEffectDuration        = time.Second * 6
-	strayEffectDuration       = time.Second * 3
+	mageEffectDuration        = time.Second * 3
 
 	archerRogueItemsUse = map[world.Item]effect.Effect{
 		item.Sugar{}:   effect.New(effect.Speed{}, 5, archerRogueEffectDuration),
@@ -352,13 +334,9 @@ var (
 		item.Feather{}:     effect.New(effect.JumpBoost{}, 2, bardEffectDuration),
 	}
 
-	strayItemsHold = map[world.Item]effect.Effect{
-		item.FermentedSpiderEye{}: effect.New(effect.Invisibility{}, 1, time.Minute*1),
-	}
-
-	strayItemsUse = map[world.Item]effect.Effect{
-		item.BlazePowder{}: effect.New(effect.Strength{}, 2, strayEffectDuration),
-		item.Sugar{}:       effect.New(effect.Speed{}, 4, strayEffectDuration),
+	mageItemsUse = map[world.Item]effect.Effect{
+		item.Coal{}:        effect.New(effect.Slowness{}, 2, mageEffectDuration),
+		item.RottenFlesh{}: effect.New(effect.Weakness{}, 2, mageEffectDuration),
 	}
 )
 
@@ -377,12 +355,7 @@ func BardHoldEffectFromItem(i world.Item) (effect.Effect, bool) {
 	return e, ok
 }
 
-func StrayEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := strayItemsUse[i]
-	return e, ok
-}
-
-func StrayHoldEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := strayItemsHold[i]
+func MageEffectFromItem(i world.Item) (effect.Effect, bool) {
+	e, ok := mageItemsUse[i]
 	return e, ok
 }

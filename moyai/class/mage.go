@@ -6,21 +6,21 @@ import (
 	"time"
 )
 
-type Stray struct{}
+type Mage struct{}
 
-func (Stray) Armour() [4]item.ArmourTier {
+func (Mage) Armour() [4]item.ArmourTier {
 	return [4]item.ArmourTier{
-		item.ArmourTierLeather{},
-		item.ArmourTierIron{},
-		item.ArmourTierLeather{},
-		item.ArmourTierIron{},
+		item.ArmourTierGold{},
+		item.ArmourTierChain{},
+		item.ArmourTierChain{},
+		item.ArmourTierGold{},
 	}
 }
 
-func (Stray) Effects() []effect.Effect {
+func (Mage) Effects() []effect.Effect {
 	return []effect.Effect{
 		effect.New(effect.Speed{}, 2, time.Hour*999),
-		effect.New(effect.JumpBoost{}, 2, time.Hour*999),
+		effect.New(effect.Regeneration{}, 1, time.Hour*999),
 		effect.New(effect.Resistance{}, 2, time.Hour*999),
 	}
 }
