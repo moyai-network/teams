@@ -664,6 +664,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.ability.Set(time.Second * 10)
 			h.abilities.Key(kind).Set(time.Second * 10)
 		case it.FullInvisibilityType:
+			break
 			h.ShowArmor(false)
 			h.Player().AddEffect(effect.New(effect.Invisibility{}, 1, time.Hour).WithoutParticles())
 			h.p.SetHeldItems(h.SubtractItem(held, 1), left)
@@ -1612,7 +1613,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 		}
 
-		h.ShowArmor(true)
+		// TEMP REMOVEAL
+		//h.ShowArmor(true)
 	}
 
 	if !canAttack(h.p, t) {
