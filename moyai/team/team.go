@@ -20,20 +20,3 @@ func Broadcastf(tm data.Team, key string, args ...interface{}) {
 		user.Messagef(p, key, args...)
 	}
 }
-
-func FocusedOnlinePlayers(t data.Team) (pl []*player.Player) {
-	switch t.Focus.Type() {
-	case data.FocusTypePlayer():
-		if p, ok := user.Lookup(t.Focus.Value()); ok {
-			pl = append(pl, p)
-			return
-		}
-	case data.FocusTypeTeam():
-		pl = append(pl, OnlineMembers(t)...)
-	case data.FocusTypeNone():
-		return
-	default:
-		panic("should never happen")
-	}
-	return
-}
