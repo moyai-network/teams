@@ -558,7 +558,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range players {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, "command.team.disband.disbanded")
+			user.Messagef(mem, "command.team.disband.disbanded", p.Name())
 		}
 	}
 }
