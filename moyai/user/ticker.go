@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
@@ -185,12 +186,11 @@ func startTicker(h *Handler) {
 
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
-				if focus.Type() == data.FocusTypeTeam() {
-					if ft, err := data.LoadTeamFromName(focus.Value()); err == nil && !db.Active() {
+				if focus.Kind == data.FocusTypeTeam {
+					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.Active() {
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-						// CHANGE COUNT FIX IMPORT CYCLE
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", 0, len(tm.Members)))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
 						if hm := ft.Home; hm != (mgl64.Vec3{}) {
 							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
 						}
@@ -268,6 +268,22 @@ func startTicker(h *Handler) {
 			return
 		}
 	}
+}
+
+func teamOnlineCount(t data.Team) int {
+	var onlineNames []string
+	for _, p := range moyai.Server().Players() {
+		onlineNames = append(onlineNames, p.Name())
+	}
+
+	var count int
+	for _, m := range t.Members {
+		if slices.Contains(onlineNames, m.Name) {
+			count++
+		}
+	}
+	return count
+
 }
 
 func compareLines(a, b []string) bool {

@@ -260,22 +260,22 @@ func (t Team) Member(name string) bool {
 
 // WithTeamFocus returns the team with the given team as the focus.
 func (t Team) WithTeamFocus(tm Team) Team {
-	t.Focus.focusType = FocusTypeTeam()
-	t.Focus.value = tm.Name
+	t.Focus.Kind = FocusTypeTeam
+	t.Focus.Value = tm.Name
 	return t
 }
 
 // WithPlayerFocus returns the team with the given player as the focus.
 func (t Team) WithPlayerFocus(name string) Team {
-	t.Focus.focusType = FocusTypePlayer()
-	t.Focus.value = name
+	t.Focus.Kind = FocusTypePlayer
+	t.Focus.Value = name
 	return t
 }
 
 // WithoutFocus returns the team without a focus.
 func (t Team) WithoutFocus() Team {
-	t.Focus.focusType = FocusTypeNone()
-	t.Focus.value = ""
+	t.Focus.Kind = FocusTypeNone
+	t.Focus.Value = ""
 	return t
 }
 
@@ -374,70 +374,15 @@ func DisbandTeam(t Team) {
 
 // Focus is the focus information for a team
 type Focus struct {
-	focusType FocusType // 0:Player ; 1: Team
-	value     string    // XUID: Player ; Name: Team
+	Kind  int    // 0:Player ; 1: Team
+	Value string // XUID: Player ; Name: Team
 }
 
-// FocusType is the type of focus.
-type FocusType struct {
-	n int
-}
-
-// FocusTypeNone is a type for when not focusing on anyone.
-func FocusTypeNone() FocusType {
-	return FocusType{0}
-}
-
-// FocusTypePlayer is a type for when focusing one specific player.
-func FocusTypePlayer() FocusType {
-	return FocusType{1}
-}
-
-// FocusTypeTeam is a type for when focusing another team.
-func FocusTypeTeam() FocusType {
-	return FocusType{2}
-}
-
-// Value returns the string value associated with the focus.
-func (f *Focus) Value() string {
-	return f.value
-}
-
-// Type returns the type of focus.
-func (f *Focus) Type() FocusType {
-	return f.focusType
-}
-
-// focusData is a struct used for encoding/decoding focus data.
-type focusData struct {
-	Kind  int
-	Value string
-}
-
-// UnmarshalBSON ...
-func (f *Focus) UnmarshalBSON(b []byte) error {
-	var d focusData
-	err := bson.Unmarshal(b, &d)
-	switch d.Kind {
-	case 0:
-		f.focusType = FocusTypeNone()
-	case 1:
-		f.focusType = FocusTypePlayer()
-	case 2:
-		f.focusType = FocusTypeTeam()
-	}
-	f.value = d.Value
-	return err
-}
-
-// MarshalBSON ...
-func (f *Focus) MarshalBSON() ([]byte, error) {
-	d := focusData{
-		Kind:  f.focusType.n,
-		Value: f.value,
-	}
-	return bson.Marshal(d)
-}
+var (
+	FocusTypeNone   = 0
+	FocusTypePlayer = 1
+	FocusTypeTeam   = 2
+)
 
 func eq(a, b float64) bool {
 	return math.Abs(a-b) <= 1e-5

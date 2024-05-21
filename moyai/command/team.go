@@ -985,7 +985,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	}
 	focus := tm.Focus
 
-	if focus.Type() == data.FocusTypeNone() {
+	if focus.Kind == data.FocusTypeNone {
 		user.Messagef(p, "command.team.focus.none")
 		return
 	}
@@ -997,7 +997,7 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		user.UpdateState(m)
 	}
 
-	team.Broadcastf(tm, "command.team.unfocus", focus.Value())
+	team.Broadcastf(tm, "command.team.unfocus", focus.Value)
 }
 
 // Run ...
