@@ -548,15 +548,6 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				return
 			}
 			h.p.AddEffect(e)
-			go func() {
-				select {
-				case <-time.After(e.Duration()):
-					sortArmourEffects(h)
-					sortClassEffects(h)
-				case <-h.close:
-					return
-				}
-			}()
 			h.archerRogueItem.Key(held.Item()).Set(60 * time.Second)
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 		}
@@ -580,19 +571,10 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			teammates := NearbyAllies(h.p, 25)
 			for _, m := range teammates {
 				m.p.AddEffect(e)
-				go func() {
-					select {
-					case <-time.After(e.Duration()):
-						sortArmourEffects(h)
-						sortClassEffects(h)
-					case <-h.close:
-						return
-					}
-				}()
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(teammates))
+			Messagef(h.p, "bard.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.bardItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -617,19 +599,10 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			enemies := NearbyEnemies(h.p, 25)
 			for _, m := range enemies {
 				m.p.AddEffect(e)
-				go func() {
-					select {
-					case <-time.After(e.Duration()):
-						sortArmourEffects(h)
-						sortClassEffects(h)
-					case <-h.close:
-						return
-					}
-				}()
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "class.ability.use", effectutil.EffectName(e), lvl, len(enemies))
+			Messagef(h.p, "mage.ability.use", effectutil.EffectName(e), lvl, len(enemies))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.mageItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -1956,7 +1929,13 @@ func (h *Handler) HandleItemDrop(ctx *event.Context, e world.Entity) {
 	}
 }
 
-func (*Handler) HandleItemPickup(ctx *event.Context, i *item.Stack) {
+func (h *Handler) HandleItemPickup(ctx *event.Context, i *item.Stack) {
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err == nil && u.Teams.PVP.Active() {
+		ctx.Cancel()
+		return
+	}
+
 	for _, sp := range it.SpecialItems() {
 		if _, ok := i.Value(sp.Key()); ok {
 			*i = it.NewSpecialItem(sp, i.Count())

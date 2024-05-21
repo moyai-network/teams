@@ -156,6 +156,7 @@
     "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
 
    "bard.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> teammates</yellow>",
+   "mage.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> enemies</yellow>",
    "bard.ability.receive": "<yellow>You have received <green>%s %v</green> from <blue>%v</blue> teammates</yellow>",
    "bard.ability.receive.self": "<yellow>You have received <green>%s %v</green> from yourself</yellow>",
    "bard.energy.insufficient": "<red>You don't have enough energy to use this ability.</red>",

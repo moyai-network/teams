@@ -110,10 +110,8 @@ func sortClassEffects(h *Handler) {
 		}
 		return
 	} else if cl == nil {
-		if lastClass != nil {
-			h.energy.Store(0)
-			removeEffects(h.p, lastClass.Effects()...)
-		}
+		h.energy.Store(0)
+		removeEffects(h.p, lastClass.Effects()...)
 		return
 	}
 
@@ -140,11 +138,11 @@ func startTicker(h *Handler) {
 	t := time.NewTicker(50 * time.Millisecond)
 
 	for {
-		sortClassEffects(h)
-		sortArmourEffects(h)
-
 		select {
 		case <-t.C:
+			sortClassEffects(h)
+			sortArmourEffects(h)
+
 			switch h.class.Load().(type) {
 			case class.Bard:
 				if e := h.energy.Load(); e < 100-0.05 {
@@ -156,15 +154,6 @@ func startTicker(h *Handler) {
 					mates := NearbyAllies(h.p, 25)
 					for _, m := range mates {
 						m.p.AddEffect(e)
-						go func() {
-							select {
-							case <-time.After(e.Duration()):
-								sortArmourEffects(h)
-								sortClassEffects(h)
-							case <-h.close:
-								return
-							}
-						}()
 					}
 				}
 			case class.Mage:

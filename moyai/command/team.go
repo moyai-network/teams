@@ -588,6 +588,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithoutMember(p.Name())
+	tm = tm.WithDTR(tm.DTR - 1.1)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
@@ -640,7 +641,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
 	}
 	tm = tm.WithoutMember(string(t.Member))
-	tm = tm.WithDTR(tm.MaxDTR())
+	tm = tm.WithDTR(tm.DTR - 1.1)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
