@@ -1,11 +1,12 @@
 package user
 
 import (
+	"strings"
+	_ "unsafe"
+
 	"github.com/bedrock-gophers/intercept"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
-	"strings"
-	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/session"
@@ -60,7 +61,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 		meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, colour, colour)
 
 		if userTeam.Focus.Kind == data.FocusTypeTeam && strings.EqualFold(targetTeam.Name, userTeam.Focus.Value) || userTeam.Focus.Kind == data.FocusTypePlayer && strings.EqualFold(t.Name(), userTeam.Focus.Value) {
-			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "pink", colour)
+			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "dark-purple", colour)
 		} else if target.archer.Active() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
