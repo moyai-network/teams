@@ -1,11 +1,12 @@
 package command
 
 import (
+	"strings"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
-	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
