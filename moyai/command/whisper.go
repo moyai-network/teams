@@ -70,22 +70,12 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		tTag = t.Roles.Highest().Color(t.DisplayName)
 	}
 
-	uH, ok := user.Lookup(u.Name)
-	if !ok {
-		return
-	}
-
-	tH, ok := user.Lookup(t.Name)
-	if !ok {
-		return
-	}
-
 	t.LastMessageFrom = u.Name
 	data.SaveUser(t)
 
 	tP.PlaySound(sound.Experience{})
-	uH.Message("command.whisper.to", tTag, tMsg)
-	tH.Message("command.whisper.from", uTag, uMsg)
+	user.Messagef(p, "command.whisper.to", tTag, tMsg)
+	user.Messagef(tP, "command.whisper.from", uTag, uMsg)
 }
 
 // Allow ...
