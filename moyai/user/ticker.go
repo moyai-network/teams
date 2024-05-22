@@ -137,7 +137,7 @@ func sortClassEffects(h *Handler) {
 
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
-	t := time.NewTicker(100 * time.Millisecond)
+	t := time.NewTicker(10 * time.Millisecond)
 
 	for {
 		select {
