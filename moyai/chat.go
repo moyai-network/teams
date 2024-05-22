@@ -6,7 +6,7 @@ var (
 	// globalChatEnabled is a boolean that determines whether the global chat is enabled.
 	globalChatEnabled = true
 	// globalChatCoolDown is an integer that determines the global chat cooldown.
-	globalChatCoolDown time.Duration = 3
+	globalChatCoolDown = 3 * time.Second
 )
 
 // ToggleGlobalChat toggles the global chat mute.

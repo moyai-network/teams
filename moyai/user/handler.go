@@ -252,11 +252,11 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				Messagef(h.p, "chat.global.muted")
 				return
 			}
-			h.lastMessage.Store(time.Now())
 			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() {
 				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load()).Seconds())
 				return
 			}
+			h.lastMessage.Store(time.Now())
 			if teamErr == nil {
 				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
 				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
