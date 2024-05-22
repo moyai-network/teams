@@ -245,9 +245,6 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	b := e.World().Block(pos)
 	name, properties := b.EncodeBlock()
 
-	fmt.Println(name)
-	fmt.Println(properties)
-
 	// if validBlock(b) && validBlock(e.World().Block(pos.Add(cube.Pos{0, 1, 0}))) {
 	// 	return pos.Vec3(), true
 	// }

@@ -1,7 +1,6 @@
 package moyai
 
 import (
-	"fmt"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
@@ -21,7 +20,6 @@ func NewAllower(whitelisted bool) *Allower {
 func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
 	u, err := data.LoadUserOrCreate(d.DisplayName, d.XUID)
 	if err != nil {
-		fmt.Println(err)
 		return lang.Translatef(u.Language, "user.data.load.error"), false
 	}
 	/*if !strings.HasPrefix(addr.String(), "127.0.0.1") {
