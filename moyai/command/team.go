@@ -181,6 +181,16 @@ type TeamMap struct {
 	Sub  cmd.SubCommand `cmd:"map"`
 }
 
+// TeamRally is a command that enables waypoint to rally.
+type TeamRally struct {
+	Sub cmd.SubCommand `cmd:"rally"`
+}
+
+// TeamRally is a command that disable waypoint to rally.
+type TeamUnRally struct {
+	Sub cmd.SubCommand `cmd:"unrally"`
+}
+
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
@@ -539,6 +549,48 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 }
+
+func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
+		return
+	}
+	online := team.OnlineMembers(tm)
+	for _, o := range online {
+		pos := p.Position()
+		if h, ok := o.Handler().(*user.Handler); ok {
+			h.SetWayPoint(user.NewWayPoint("Rally", pos))
+			user.Messagef(h.Player(), "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
+		}
+		
+	}
+}
+
+func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
+		return
+	}
+	online := team.OnlineMembers(tm)
+	for _, o := range online {
+		if h, ok := o.Handler().(*user.Handler); ok {
+			h.RemoveWaypoint()
+		}
+		
+	}
+} 
 
 // Run ...
 func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {

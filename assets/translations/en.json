@@ -18,7 +18,7 @@
         "moyai.whitelisted": "<red>The server is whitelisted.</red>",
 
         "chat.global.muted": "<red>The global chat is currently muted.</red>",
-        "chat.global.mute":  "<green>You have muted the global chat.</green>",
+        "chat.global.mute": "<green>You have muted the global chat.</green>",
         "chat.global.unmute": "<green>You have unmuted the global chat.</green>",
         "chat.global.already-muted": "<red>The global chat is already muted.</red>",
         "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
@@ -227,6 +227,8 @@
         "command.team.unfocus": "<green>Your team is no longer focusing <blue>%s</blue>.</green>",
         "command.team.focus.self": "<red>You cannot focus your own team.</red>",
         "command.team.focus.none": "<red>Your team is not focusing anyone.</red>",
+
+        "command.team.rallying": "<green>%s rallying at</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
 
         "command.teleport.multiple": "<red>You cannot teleport to multiple destinations.</red>",
         "command.teleport.operator": "<red>You must be an operator to teleport multiple players at a time.</red>",
