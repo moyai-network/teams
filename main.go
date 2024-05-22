@@ -285,7 +285,7 @@ func registerCommands(srv *server.Server) {
 			command.TeamStuck{},
 			//command.TeamRally{},
 			//command.TeamUnRally{},
-			//command.TeamMap{},
+			command.TeamMap{},
 			command.TeamSetDTR{},
 			command.TeamDelete{},
 		), cmd.New("whitelist", text.Colourf("Whitelist commands."), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),

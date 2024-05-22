@@ -2,16 +2,18 @@ package command
 
 import (
 	"fmt"
+	"regexp"
+	"slices"
+	"sort"
+	"strings"
+	"time"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/timeutil"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/team"
-	"regexp"
-	"sort"
-	"strings"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -175,6 +177,10 @@ type TeamSetDTR struct {
 	DTR  float64        `cmd:"dtr"`
 }
 
+type TeamMap struct {
+	Sub  cmd.SubCommand `cmd:"map"`
+}
+
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
@@ -189,6 +195,7 @@ func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 
 func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
+	src, _ := s.(cmd.NamedTarget)
 	if err != nil {
 		o.Error("Invalid Team.")
 		return
@@ -200,12 +207,12 @@ func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range players {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, "command.team.disband.disbanded", "MANAGEMENT")
+			user.Messagef(mem, src.Name(), "command.team.disband.disbanded", "MANAGEMENT")
 		}
 	}
 }
 
-/*func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
+func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 	p, _ := s.(*player.Player)
 	posX := int(p.Position().X())
 	posZ := int(p.Position().Z())
@@ -220,8 +227,13 @@ func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 	areas := area.Protected(p.World())
-	for _, t := range data.Teams() {
-		areas = append(areas, moose.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		user.Messagef(p, "command.team.load.fail")
+		return
+	}
+	for _, t := range teams {
+		areas = append(areas, area.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
 	}
 
 	for x := posX - 5; x < posX+5; x++ {
@@ -300,7 +312,7 @@ func displayMap(myMap [][]rune, size, centerX, centerZ int) {
 		}
 		fmt.Println()
 	}
-}*/
+}
 
 // Run ...
 func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
@@ -728,7 +740,7 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.team.member.not.found", string(t.Member)))
 		return
 	}
-	if !tm.Captain(string(t.Member)) && !tm.Captain(string(t.Member)) {
+	if !tm.Captain(string(t.Member)) && !tm.Leader(string(t.Member)) {
 		o.Error(lang.Translatef(l, "command.team.demote.member"))
 		return
 	}
@@ -745,7 +757,7 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 	}
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		o.Error("Failed to load teams. Contact an administrator.")
+		user.Messagef(p, "command.team.load.fail")
 	}
 
 	if len(teams) == 0 {
@@ -848,7 +860,6 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		user.Messagef(p, "user.team-less")
@@ -857,7 +868,6 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 
 	h, ok := p.Handler().(*user.Handler)
 	if !ok {
-		o.Error("Failed to load user handler. Contact an administrator.")
 		return
 	}
 	if h.Combat().Active() {
@@ -883,7 +893,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	dur := time.Second * 10
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		o.Error("Failed to load teams. Contact an administrator.")
+		user.Messagef(p, "command.team.load.fail")
 	}
 
 	for _, t := range teams {
@@ -904,7 +914,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		o.Error("Failed to load teams. Contact an administrator.")
+		user.Messagef(p, "command.team.load.fail")
 	}
 
 	sort.Slice(teams, func(i, j int) bool {
