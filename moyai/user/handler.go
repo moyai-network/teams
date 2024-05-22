@@ -253,7 +253,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				return
 			}
 			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() {
-				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load()).Seconds())
+				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(moyai.ChatCoolDown())).Seconds())
 				return
 			}
 			h.lastMessage.Store(time.Now())
