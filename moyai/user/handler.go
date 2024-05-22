@@ -238,10 +238,10 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	*message = emojis.Replace(*message)
 	r := u.Roles.Highest()
 
-	/*if !u.Mute.Expired() {
-		h.p.Message(lang.Translatef(l, "user.message.mute"))
+	if !u.Teams.Mute.Expired() {
+		h.p.Message(lang.Translatef(u.Language, "user.message.mute"))
 		return
-	}*/
+	}
 	tm, teamErr := data.LoadTeamFromMemberName(h.p.Name())
 
 	if msg := strings.TrimSpace(*message); len(msg) > 0 {
