@@ -965,7 +965,7 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	tm = tm.WithTeamFocus(targetTeam)
 	data.SaveTeam(tm)
 
-	for _, m := range team.OnlineMembers(tm) {
+	for _, m := range team.OnlineMembers(targetTeam) {
 		user.UpdateState(m)
 	}
 
@@ -988,6 +988,22 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	if focus.Kind == data.FocusTypeNone {
 		user.Messagef(p, "command.team.focus.none")
 		return
+	}
+
+	tm = tm.WithoutFocus()
+	data.SaveTeam(tm)
+
+	if focus.Kind == data.FocusTypeTeam {
+		targetTeam, err := data.LoadTeamFromName(focus.Value)
+		if err == nil {
+			for _, m := range team.OnlineMembers(targetTeam) {
+				user.UpdateState(m)
+			}
+		}
+	} else if focus.Kind == data.FocusTypePlayer {
+		if mem, ok := user.Lookup(focus.Value); ok {
+			user.UpdateState(mem)
+		}
 	}
 
 	tm = tm.WithoutFocus()
@@ -1033,6 +1049,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithPlayerFocus(target.Name())
+	data.SaveTeam(tm)
 	user.UpdateState(target)
 	team.Broadcastf(tm, "command.team.focus", target.Name())
 }

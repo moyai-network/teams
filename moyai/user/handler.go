@@ -680,7 +680,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.abilities.Set(kind, time.Minute*2)
 			h.Player().Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
 		case it.NinjaStarType:
-			if h.lastHitBy == nil {
+			if h.lastHitBy == nil || !h.combat.Active() {
 				h.p.Message(text.Colourf("<red>No last hit found</red>"))
 				break
 			}
@@ -688,7 +688,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.p.Message(text.Colourf("<red>You are on Ninja Star cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			h.p.Message(text.Colourf("<green>Ongoing to %s in 5 seconds...</red>", h.lastHitBy.Name()))
+			h.p.Message(text.Colourf("<red>Ongoing to %s in 5 seconds...</red>", h.lastHitBy.Name()))
 			h.lastHitBy.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
 			h.ability.Set(time.Second * 10)
 			h.abilities.Set(kind, time.Minute*2)
@@ -1197,8 +1197,23 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
 	w := h.p.World()
+	teams, _ := data.LoadAllTeams()
 
-	switch b.(type) {
+	switch bl := b.(type) {
+	case block.TNT:
+		ctx.Cancel()
+	case block.Chest:
+		for _, dir := range []cube.Direction{bl.Facing.RotateLeft(), bl.Facing.RotateRight()} {
+			sidePos := pos.Side(dir.Face())
+			for _, t := range teams {
+				if !t.Member(h.p.Name()) {
+					c := w.Block(sidePos)
+					if _, ok := c.(block.Chest); ok && t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(sidePos.Vec3()) {
+						ctx.Cancel()
+					}
+				}
+			}
+		}
 	case block.Sign:
 		h.sign = pos
 	case block.EnderChest:
@@ -1235,7 +1250,6 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 		return
 	}
 
-	teams, _ := data.LoadAllTeams()
 	for _, t := range teams {
 		if !t.Member(h.p.Name()) {
 			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
