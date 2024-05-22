@@ -395,7 +395,8 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 
 	_, err = data.LoadTeamFromMemberName(target.Name())
 	if err == nil {
-		user.Messagef(p, "team.invite.has-team", target.Name())
+		user.Messagef(p, "team.invite.has-team")
+		return
 
 	}
 

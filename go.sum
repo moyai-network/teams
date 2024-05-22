@@ -6,6 +6,8 @@ github.com/bedrock-gophers/inv v0.1.0 h1:R7qZ8PMShtfMvB6nKE4HhZUPkalV8pQjVlF9/6b
 github.com/bedrock-gophers/inv v0.1.0/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/inv v0.1.1-0.20240522150117-d98a8d314d03 h1:HcpPxRpx+dxUOZYdevk+EQGbY2S17eVgISpjux4YKLw=
 github.com/bedrock-gophers/inv v0.1.1-0.20240522150117-d98a8d314d03/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
+github.com/bedrock-gophers/inv v0.1.1-0.20240522150948-e0ca8baa6cb0 h1:Sv08asJ0ONSDvSGe3Q/W1UbtJnICyXAfDsEq+8Bj82o=
+github.com/bedrock-gophers/inv v0.1.1-0.20240522150948-e0ca8baa6cb0/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc h1:wkXM0BAe3unwZYkdFaJIYCdmvlSLh1dLTtV9BlDsRaI=
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc/go.mod h1:vx6yUjOWw1zmbzBgrnR2tEK413VV9nAOB7PO4IeRxIM=
 github.com/bedrock-gophers/tebex v0.1.0 h1:Q/ta+R8b8qenNGBmd2yJpn3ndGHKJPORPezZRu7wWHg=
