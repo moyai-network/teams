@@ -256,9 +256,9 @@ func startTicker(h *Handler) {
 			}
 
 			if len(sb.Lines()) > 3 {
-					h.lastScoreBoard.Store(sb)
-					h.p.RemoveScoreboard()
-					h.p.SendScoreboard(sb)
+				h.lastScoreBoard.Store(sb)
+				h.p.RemoveScoreboard()
+				h.p.SendScoreboard(sb)
 			} else {
 				h.p.RemoveScoreboard()
 				h.lastScoreBoard.Store(nil)
@@ -273,7 +273,7 @@ func startTicker(h *Handler) {
 func teamOnlineCount(t data.Team) int {
 	var onlineNames []string
 	for _, p := range moyai.Server().Players() {
-		onlineNames = append(onlineNames, p.Name())
+		onlineNames = append(onlineNames, strings.ToLower(p.Name()))
 	}
 
 	var count int
