@@ -17,6 +17,14 @@
 
         "moyai.whitelisted": "<red>The server is whitelisted.</red>",
 
+        "chat.global.muted": "<red>The global chat is currently muted.</red>",
+        "chat.global.mute":  "<green>You have muted the global chat.</green>",
+        "chat.global.unmute": "<green>You have unmuted the global chat.</green>",
+        "chat.global.already-muted": "<red>The global chat is already muted.</red>",
+        "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
+        "chat.cooldown.updated": "<green>You have updated the chat cooldown to %d seconds.</green>",
+        "chat.cooldown": "<red>You must wait %d.2f seconds before sending another message.</red>",
+
         "team.create.exists": "<red>There is already a team with that name.</red>",
         "team.create.success": "<green>You have created the team %s</green>",
         "team.create.success.broadcast": "<yellow>%s has created the team <blue>%s</blue></yellow>",

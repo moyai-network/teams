@@ -248,6 +248,15 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		msg = formatRegex.ReplaceAllString(msg, "")
 
 		global := func() {
+			if !moyai.GlobalChatEnabled() {
+				Messagef(h.p, "chat.global.muted")
+				return
+			}
+			h.lastMessage.Store(time.Now())
+			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() {
+				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load()).Seconds())
+				return
+			}
 			if teamErr == nil {
 				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
 				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(u.DisplayName, msg))
@@ -271,7 +280,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				}
 			}
 		}
-		h.lastMessage.Store(time.Now())
 		switch u.Teams.ChatType {
 		case 0:
 			if msg[0] == '!' && role.Staff(r) {

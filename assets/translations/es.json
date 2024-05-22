@@ -26,6 +26,13 @@
         "scoreboard.cooldown.golden.apple": "<gold>Manzana Dorada<grey>:</grey> %.1fs</gold>",
         "scoreboard.bard.energy": "<green>Energía de Bardo<grey>:</grey> %.1f</green>",
         "scoreboard.mage.energy": "<amethyst>Energía de Mago<grey>:</grey> %.1f</amethyst>",
-        "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>"
+        "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
+
+        "chat.global.muted": "<red>The chat is currently muted.</red>",
+        "chat.global.mute":  "<green>You have muted the global chat.</green>",
+        "chat.global.unmute": "<green>You have unmuted the global chat.</green>",
+        "chat.global.already-muted": "<red>The global chat is already muted.</red>",
+        "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
+        "chat.cooldown.updated": "<green>You have updated the chat cooldown to %d seconds.</green>"
     }
 }
