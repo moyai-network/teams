@@ -45,15 +45,16 @@ func (a *ArmourHandler) stormBreak() {
 		a.handleStormBreakProcess()
 		return
 	}
+
+	a.handleStormBreakProcess()
 	a.stormBreakerStatus.Store(true)
 	a.stormBreakerHelmet = a.p.Armour().Helmet()
 	a.p.Armour().SetHelmet(item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithValue("storm_breaker", true))
-	a.handleStormBreakProcess()
 }
 
 func (a *ArmourHandler) handleStormBreakProcess() {
+	a.stormBreakerCancel = make(chan struct{})
 	go func() {
-		a.stormBreakerCancel = make(chan struct{})
 		select {
 		case <-time.After(time.Second * 5):
 			a.stormBreakerStatus.Store(false)
