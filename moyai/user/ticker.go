@@ -147,8 +147,8 @@ func startTicker(h *Handler) {
 
 			switch h.class.Load().(type) {
 			case class.Bard:
-				if e := h.energy.Load(); e < 100-0.05 {
-					h.energy.Store(e + 0.05)
+				if e := h.energy.Load(); e < 100-0.1 {
+					h.energy.Store(e + 0.1)
 				}
 
 				i, _ := h.p.HeldItems()
@@ -159,8 +159,8 @@ func startTicker(h *Handler) {
 					}
 				}
 			case class.Mage:
-				if e := h.energy.Load(); e < 120-0.05 {
-					h.energy.Store(e + 0.05)
+				if e := h.energy.Load(); e < 120-0.1 {
+					h.energy.Store(e + 0.1)
 				}
 			}
 
