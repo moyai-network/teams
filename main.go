@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -179,22 +177,14 @@ func configureWorld(w *world.World) {
 
 func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	return func(p *player.Player) {
-		go func() {
-			err := recover()
-			if err != nil {
-				time.Sleep(time.Millisecond * 500)
-				data.FlushCache()
+		inv.RedirectPlayerPackets(p, func() {
+			time.Sleep(time.Millisecond * 500)
+			data.FlushCache()
 
-				sotw.Save()
-				_ = moyai.Server().Close()
-
-				fmt.Println(err)
-				fmt.Println(debug.Stack())
-				os.Exit(1)
-			}
-		}()
-
-		inv.RedirectPlayerPackets(p)
+			sotw.Save()
+			_ = moyai.Server().Close()
+			os.Exit(1)
+		})
 		store.ExecuteCommands(p)
 		if proxy {
 			//info := moyai.SearchInfo(p.UUID())
