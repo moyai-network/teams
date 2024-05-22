@@ -1,11 +1,12 @@
 package area
 
 import (
+	"math"
+
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"go.mongodb.org/mongo-driver/bson"
-	"math"
 )
 
 // Area represents a 2D area.
@@ -144,6 +145,8 @@ func Spawn(w *world.World) NamedArea {
 		return Overworld.Spawn()
 	case world.Nether:
 		return Nether.Spawn()
+	case world.End:
+		return NamedArea{}
 	default:
 		return Overworld.Spawn()
 	}
@@ -155,6 +158,8 @@ func WarZone(w *world.World) NamedArea {
 		return Overworld.WarZone()
 	case world.Nether:
 		return Nether.WarZone()
+	case world.End:
+		return NamedArea{}
 	default:
 		panic("should never happen")
 	}
@@ -179,6 +184,8 @@ func Roads(w *world.World) []NamedArea {
 		return Overworld.Roads()
 	case world.Nether:
 		return Nether.Roads()
+	case world.End:
+		return []NamedArea{}
 	default:
 		panic("should never happen")
 	}
@@ -191,6 +198,8 @@ func KOTHs(w *world.World) []NamedArea {
 		return Overworld.KOTHs()
 	case world.Nether:
 		return Nether.KOTHs()
+	case world.End:
+		return []NamedArea{}
 	default:
 		panic("should never happen")
 	}
