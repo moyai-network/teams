@@ -1204,6 +1204,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
 	if h.Boned() {
 		h.p.Message(text.Colourf("<red>You may not interact or place blocks while boned</red>"))
+		ctx.Cancel()
 		return
 	}
 	w := h.p.World()
@@ -1451,6 +1452,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor:
 		if h.Boned() {
 			h.p.Message(text.Colourf("<red>You may not interact or place blocks while boned</red>"))
+			ctx.Cancel()
 			return
 		}
 
