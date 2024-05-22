@@ -252,7 +252,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				Messagef(h.p, "chat.global.muted")
 				return
 			}
-			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() {
+			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() && !u.Roles.Contains(role.Admin{}) {
 				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(moyai.ChatCoolDown())).Seconds())
 				return
 			}

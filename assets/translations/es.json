@@ -28,12 +28,12 @@
         "scoreboard.mage.energy": "<amethyst>Energía de Mago<grey>:</grey> %.1f</amethyst>",
         "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
 
-        "chat.global.muted": "<red>The chat is currently muted.</red>",
-        "chat.global.mute":  "<green>You have muted the global chat.</green>",
-        "chat.global.unmute": "<green>You have unmuted the global chat.</green>",
-        "chat.global.already-muted": "<red>The global chat is already muted.</red>",
-        "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
-        "chat.cooldown.updated": "<green>You have updated the chat cooldown to %d seconds.</green>",
-        "chat.cooldown": "<red>You must wait %.2f seconds before sending another message.</red>"
+        "chat.global.muted": "<red>El chat está actualmente silenciado.</red>",
+        "chat.global.mute": "<green>Has silenciado el chat global.</green>",
+        "chat.global.unmute": "<green>Has activado el silencio del chat global.</green>",
+        "chat.global.already-muted": "<red>El chat global ya está silenciado.</red>",
+        "chat.global.already-unmuted": "<red>El chat global no está silenciado.</red>",
+        "chat.cooldown.updated": "<green>Has actualizado el tiempo de reutilización del chat a %d segundos.</green>",
+        "chat.cooldown": "<red>Tu debes esperar %.2f segundos antes de enviar otro mensaje.</red>"
     }
 }
