@@ -139,6 +139,7 @@ type Handler struct {
 func NewHandler(p *player.Player, xuid string) *Handler {
 	h, ok := loggers[p.XUID()]
 	if ok {
+		p.Teleport(h.p.Position())
 		_ = h.p.Close()
 		h.logger = false
 	}
