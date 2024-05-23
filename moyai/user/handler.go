@@ -29,6 +29,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
+	"github.com/df-mc/dragonfly/server/player/bossbar"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	it "github.com/moyai-network/teams/moyai/item"
@@ -1452,6 +1453,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	}
 
 	switch b.(type) {
+	case block.Anvil:
+		ctx.Cancel()
 	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor:
 		if h.Boned() {
 			h.p.Message(text.Colourf("<red>You may not interact or place blocks while boned</red>"))
@@ -1471,8 +1474,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-				ctx.Cancel()
-				return
+				if h.p.GameMode() != world.GameModeCreative {
+					ctx.Cancel()
+					return
+				}
+
 			}
 		}
 	}
@@ -1835,6 +1841,8 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	p := h.p
 	w := p.World()
 
+	p.SendBossBar(bossbar.New(compass(p.Rotation().Yaw())))
+
 	if !newPos.ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
 		return math.Abs(f-f2) < 0.03
 	}) {
@@ -1844,7 +1852,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 
 	if h.waypoint != nil && h.waypoint.active {
-		h.UpdateWayPointPosition()
+		h.updateWaypointPosition()
 	}
 
 	h.clearWall()
@@ -2007,7 +2015,7 @@ func (h *Handler) HandleQuit() {
 
 	tm, _ := data.LoadTeamFromMemberName(p.Name())
 	_, sotwRunning := sotw.Running()
-	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
+	if !h.loggedOut && h.p.GameMode() != world.GameModeCreative && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
 		arm := h.p.Armour()
 		inv := h.p.Inventory()
 

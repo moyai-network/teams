@@ -9,6 +9,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
+	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -42,7 +43,7 @@ func (h *Handler) SetWayPoint(w *WayPoint) {
 	waypointMu.Lock()
 	defer waypointMu.Unlock()
 	id, _ := uuid.NewRandom()
-	name := text.Colourf("<purple>%s</purple> [%.1fm]", w.name, h.DistanceToWayPoint())
+	name := text.Colourf("<purple>%s</purple> [%.1fm]", w.name, h.distanceToWaypoint())
 	entityCount += 1
 	w.entityRuntimeID = uint64(entityCount)
 	w.id = id
@@ -53,12 +54,15 @@ func (h *Handler) SetWayPoint(w *WayPoint) {
 		Position:        vec64To32(w.position),
 	}
 
-	meta := protocol.NewEntityMetadata()
-	meta.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagNoAI)
-	meta[protocol.EntityDataKeyScale] = float32(0.01)
-	ap.EntityMetadata = meta
+	m := protocol.NewEntityMetadata()
+	m[protocol.EntityDataKeyName] = name
+	m[protocol.EntityDataKeyAlwaysShowNameTag] = uint8(1)
+	m.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagAlwaysShowName)
+	m.SetFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagShowName)
+	m[protocol.EntityDataKeyScale] = float32(0.01)
+	ap.EntityMetadata = m
 
-	session_writePacket(h.s, ap)
+	unsafe.WritePacket(h.p, ap)
 
 	waypoints[id] = h.p
 	w.active = true
@@ -81,19 +85,19 @@ func (h *Handler) RemoveWaypoint() {
 	h.waypoint.active = false
 }
 
-func (h *Handler) UpdateWayPointPosition() {
+func (h *Handler) updateWaypointPosition() {
 	if h.waypoint == nil {
 		return
 	}
 
 	move := &packet.MovePlayer{
 		EntityRuntimeID: h.waypoint.entityRuntimeID,
-		Position:        h.WayPointClientPosition(),
+		Position:        h.clientDisplayPosition(),
 		Mode:            packet.MoveModeNormal,
 	}
 
 	meta := protocol.NewEntityMetadata()
-	meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple> [%.1fm]", h.waypoint.name, h.DistanceToWayPoint())
+	meta[protocol.EntityDataKeyName] = text.Colourf("<purple>%s</purple> [%.1fm]", h.waypoint.name, h.distanceToWaypoint())
 
 	set := &packet.SetActorData{
 		EntityRuntimeID: h.waypoint.entityRuntimeID,
@@ -104,18 +108,19 @@ func (h *Handler) UpdateWayPointPosition() {
 	session_writePacket(h.s, set)
 }
 
-func (h *Handler) WayPointClientPosition() mgl32.Vec3 {
+func (h *Handler) clientDisplayPosition() mgl32.Vec3 {
 	var clientPos mgl64.Vec3
-	if h.DistanceToWayPoint() > 10 {
+	if h.distanceToWaypoint() > 10 {
 		clientPos = h.p.Position().Add(h.waypoint.position.Sub(h.p.Position()).Normalize().Mul(10))
 	} else {
 		clientPos = h.waypoint.position
 	}
-	clientPos = clientPos.Add(mgl64.Vec3{0, h.p.EyeHeight() * 2})
+	height := h.p.EyeHeight() * 2
+	clientPos = clientPos.Add(mgl64.Vec3{0, height})
 	return vec64To32(clientPos)
 }
 
-func (h *Handler) DistanceToWayPoint() float64 {
+func (h *Handler) distanceToWaypoint() float64 {
 	if h.waypoint == nil {
 		return 0
 	}
