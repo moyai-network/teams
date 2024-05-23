@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/bedrock-gophers/console/console"
-	"github.com/bedrock-gophers/intercept"
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/bedrock-gophers/tebex/tebex"
 	"github.com/df-mc/dragonfly/server/block"
@@ -68,25 +67,36 @@ func main() {
 	}
 
 	config := configure(conf, log)
-	oomph := oomph.New(oomph.OomphSettings{
-		LocalAddress: ":19132",
-		RemoteAddress: ":19133",
+	ac := oomph.New(oomph.OomphSettings{
+		LocalAddress: ":19133",
+		RemoteAddress: ":19132",
 		RequirePacks: true,
 	})
 	
-	oomph.Listen(&config, text.Colourf("<dark-red>MOYAI</dark-red>"), []minecraft.Protocol{}, true, true)
-	pk := intercept.NewPacketListener()
-	pk.Listen(&config, ":19132", []minecraft.Protocol{})
-	
+	ac.Listen(&config, text.Colourf("<dark-red>balls</dark-red>"), []minecraft.Protocol{}, true, false)
 	go func() {
 		for {
-			p, err := pk.Accept()
+			_, err := ac.Accept()
 			if err != nil {
 				return
 			}
-			p.Handle(user.NewPacketHandler(p))
+
+			log.Println("LOL BRO I CONNECTED VIA OOMPGH")
+			
 		}
 	}()
+	// pk := intercept.NewPacketListener()
+	// pk.Listen(&config, ":19132", []minecraft.Protocol{})
+	
+	// go func() {
+	// 	for {
+	// 		p, err := pk.Accept()
+	// 		if err != nil {
+	// 			return
+	// 		}
+	// 		p.Handle(user.NewPacketHandler(p))
+	// 	}
+	// }()
 
 	srv := moyai.NewServer(config)
 
