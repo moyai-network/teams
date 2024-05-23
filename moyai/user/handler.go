@@ -29,6 +29,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity/effect"
+	"github.com/df-mc/dragonfly/server/player/bossbar"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	it "github.com/moyai-network/teams/moyai/item"
@@ -1836,6 +1837,8 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	p := h.p
 	w := p.World()
+
+	p.SendBossBar(bossbar.New(compass(p.Rotation().Yaw())))
 
 	if !newPos.ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
 		return math.Abs(f-f2) < 0.03

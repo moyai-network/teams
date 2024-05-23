@@ -73,8 +73,8 @@ func main() {
 		RemoteAddress: ":19133",
 		RequirePacks: true,
 	})
-
-	oomph.Listen(&server.Config{}, "Oomph", []minecraft.Protocol{}, true, true)
+	
+	oomph.Listen(&config, text.Colourf("<dark-red>MOYAI</dark-red>"), []minecraft.Protocol{}, true, true)
 	pk := intercept.NewPacketListener()
 	pk.Listen(&config, ":19132", []minecraft.Protocol{})
 	
