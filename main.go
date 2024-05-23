@@ -71,11 +71,11 @@ func main() {
 
 	config := configure(conf, log)
 	ac := oomph.New(oomph.OomphSettings{
-		LocalAddress: ":19133",
+		LocalAddress:  ":19133",
 		RemoteAddress: ":19132",
-		RequirePacks: true,
+		RequirePacks:  true,
 	})
-	
+
 	ac.Listen(&config, text.Colourf("<dark-red>balls</dark-red>"), []minecraft.Protocol{}, true, false)
 	go func() {
 		for {
@@ -85,12 +85,12 @@ func main() {
 			}
 
 			log.Println("LOL BRO I CONNECTED VIA OOMPGH")
-			
+
 		}
 	}()
 	// pk := intercept.NewPacketListener()
 	// pk.Listen(&config, ":19132", []minecraft.Protocol{})
-	
+
 	// go func() {
 	// 	for {
 	// 		p, err := pk.Accept()
@@ -216,7 +216,6 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			p.Handle(user.NewHandler(p, p.XUID()))
 			p.Armour().Handle(user.NewArmourHandler(p))
 		}
-		p.SetGameMode(world.GameModeSurvival)
 		p.RemoveScoreboard()
 		for _, ef := range p.Effects() {
 			p.RemoveEffect(ef.Type())
