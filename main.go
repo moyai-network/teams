@@ -23,6 +23,7 @@ import (
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/role"
+	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
 
@@ -67,8 +68,16 @@ func main() {
 	}
 
 	config := configure(conf, log)
+	oomph := oomph.New(oomph.OomphSettings{
+		LocalAddress: ":19132",
+		RemoteAddress: ":19133",
+		RequirePacks: true,
+	})
+
+	oomph.Listen(&server.Config{}, "Oomph", []minecraft.Protocol{}, true, true)
 	pk := intercept.NewPacketListener()
 	pk.Listen(&config, ":19132", []minecraft.Protocol{})
+	
 	go func() {
 		for {
 			p, err := pk.Accept()

@@ -1470,8 +1470,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-				ctx.Cancel()
-				return
+				if h.p.GameMode() != world.GameModeCreative {
+					ctx.Cancel()
+					return
+				}
+
 			}
 		}
 	}
