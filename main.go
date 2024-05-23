@@ -1,13 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
+	"unicode"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
@@ -87,6 +90,7 @@ func main() {
 	configureWorld(w)
 	clearEntities(w)
 	placeCrates(w)
+	placeShopSigns(w)
 	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 
 	registerCommands(srv)
@@ -242,7 +246,47 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		// u.Roles.Add(role.Pharaoh{})
 	}
 
-} // loadStore initializes the Tebex store connection.
+}
+
+var shopSigns = []shopSign{}
+
+// shopSign is a sign that can be placed in the world to create a shop. It can be used to buy or sell items.
+type shopSign struct {
+	buy      bool
+	it       world.Item
+	quantity int
+	price    int
+	pos      cube.Pos
+}
+
+func placeShopSigns(w *world.World) {
+	for _, s := range shopSigns {
+		var txt string
+		state := text.Colourf("<green>[Buy]</green>")
+		if !s.buy {
+			state = text.Colourf("<red>[Sell]</red>")
+		}
+
+		name, _ := s.it.EncodeItem()
+		txt = fmt.Sprintf("%s\n%s\n%d\n$%d", state, formatItemName(name), s.quantity, s.price)
+
+		b := block.Sign{Front: block.SignText{
+			Text: txt,
+		}}
+		w.SetBlock(s.pos, b, nil)
+	}
+}
+
+func formatItemName(s string) string {
+	split := strings.Split(s, "_")
+	for i, str := range split {
+		upperCasesPrefix := unicode.ToUpper(rune(str[0]))
+		split[i] = string(upperCasesPrefix) + str[1:]
+	}
+	return strings.Join(split, " ")
+}
+
+// loadStore initializes the Tebex store connection.
 func loadStore(key string, log *logrus.Logger) *tebex.Client {
 	store := tebex.NewClient(log, time.Second*5, key)
 	name, domain, err := store.Information()

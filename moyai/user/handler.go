@@ -790,6 +790,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 			}
 		})
 	case "[kit]":
+		return // disabled for HCF
 		if len(lines) < 2 {
 			return
 		}
