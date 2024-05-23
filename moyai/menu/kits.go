@@ -87,6 +87,7 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 
 	name := colour.StripMinecraftColour(it.CustomName())
 	if u.Teams.Kits.Active(name) {
+		inv.UpdateMenu(p, NewKitsMenu(p))
 		return
 	}
 	u.Teams.Kits.Set(name, time.Hour*4)
