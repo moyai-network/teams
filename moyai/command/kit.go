@@ -16,7 +16,7 @@ func (Kit) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	inv.SendMenu(p, menu.NewKitsMenu())
+	inv.SendMenu(p, menu.NewKitsMenu(p))
 }
 
 // Allow ...

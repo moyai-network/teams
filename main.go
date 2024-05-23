@@ -227,6 +227,12 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		if !u.Roles.Contains(role.Default{}) {
 			u.Roles.Add(role.Default{})
 		}
+
+		for _, k := range u.Teams.Kits.All() {
+			k.Reset()
+		}
+
+		data.SaveUser(u)
 		p.Message(lang.Translatef(u.Language, "discord.message"))
 		inv := p.Inventory()
 		for slot, i := range inv.Slots() {

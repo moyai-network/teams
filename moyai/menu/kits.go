@@ -7,9 +7,12 @@ import (
 	"github.com/df-mc/dragonfly/server/item/creative"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/hako/durafmt"
 	"github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"time"
 )
 
 func init() {
@@ -25,10 +28,15 @@ func (fishingRod) EncodeItem() (name string, meta int16) {
 
 type Kits struct{}
 
-func NewKitsMenu() inv.Menu {
+func NewKitsMenu(p *player.Player) inv.Menu {
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
+	}
+
 	m := inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
 	stacks := glassFilledStack(54)
-	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Master</aqua>")).WithLore(text.Colourf("<aqua>The top diamond kit on the server!</aqua>"))
+	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Pharaoh</aqua>")).WithLore(text.Colourf("<aqua>The top diamond kit on the server!</aqua>"))
 	stacks[11] = item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithCustomName(text.Colourf("<aqua>Archer</aqua>")).WithLore(text.Colourf("<aqua>Take aim with lethal archer tags!</aqua>"))
 	stacks[20] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>")).WithLore(text.Colourf("<aqua>Support fellow team members with effects!</aqua>"))
 	stacks[24] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Mage</aqua>")).WithLore(text.Colourf("<aqua>Unleash powerful debuffs on your enemies</aqua>"))
@@ -36,11 +44,39 @@ func NewKitsMenu() inv.Menu {
 	stacks[13] = item.NewStack(fishingRod{}, 1).WithCustomName(text.Colourf("<aqua>Starter</aqua>")).WithLore(text.Colourf("<aqua>Get started with basic blocks and tools!</aqua>"))
 	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>")).WithLore(text.Colourf("<aqua>A collection of blocks and other tools to create your base!</aqua>"))
 	stacks[16] = item.NewStack(item.Helmet{Tier: item.ArmourTierIron{}}, 1).WithCustomName(text.Colourf("<aqua>Miner</aqua>")).WithLore(text.Colourf("<aqua>Dig and mine away with haste and quick tools!</aqua>"))
+
+	for i, stack := range stacks {
+		if _, ok := stack.Item().(block.StainedGlassPane); ok {
+			continue
+		}
+		lore := text.Colourf("<green>Available</green>")
+		name := colour.StripMinecraftColour(stack.CustomName())
+		kits := u.Teams.Kits
+
+		if kits.Active(name) {
+			lore = text.Colourf("<red>Available in %s</red>", durafmt.Parse(kits.Remaining(name)).LimitFirstN(3).String())
+		}
+
+		stacks[i] = stack.WithLore(append(stack.Lore(), lore)...)
+	}
 	return m.WithStacks(stacks...)
 }
 
 func (Kits) Submit(p *player.Player, it item.Stack) {
-	switch colour.StripMinecraftColour(it.CustomName()) {
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
+
+	name := colour.StripMinecraftColour(it.CustomName())
+	if u.Teams.Kits.Active(name) {
+		return
+	}
+	u.Teams.Kits.Set(name, time.Hour*4)
+	data.SaveUser(u)
+
+	inv.UpdateMenu(p, NewKitsMenu(p))
+	switch name {
 	case "Master":
 		kit.Apply(kit.Master{}, p)
 	case "Archer":
