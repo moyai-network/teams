@@ -39,7 +39,7 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 
 	m := inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
 	stacks := glassFilledStack(54)
-	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Pharaoh</aqua>")).WithLore(text.Colourf("<aqua>The top diamond kit on the server!</aqua>"))
+	stacks[10] = item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithCustomName(text.Colourf("<aqua>Diamond</aqua>")).WithLore(text.Colourf("<aqua>The top diamond kit on the server!</aqua>"))
 	stacks[11] = item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithCustomName(text.Colourf("<aqua>Archer</aqua>")).WithLore(text.Colourf("<aqua>Take aim with lethal archer tags!</aqua>"))
 	stacks[20] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>")).WithLore(text.Colourf("<aqua>Support fellow team members with effects!</aqua>"))
 	stacks[24] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Mage</aqua>")).WithLore(text.Colourf("<aqua>Unleash powerful debuffs on your enemies</aqua>"))
@@ -102,19 +102,18 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	name = strings.TrimPrefix(name, "Free ")
 
 	switch name {
-	case "Master":
-		kit.Apply(kit.Master{}, p)
+	case "Diamond":
+		kit.Apply(kit.Diamond{Free: free}, p)
 	case "Archer":
 		kit.Apply(kit.Archer{Free: free}, p)
 	case "Bard":
-		kit.Apply(kit.Bard{}, p)
+		kit.Apply(kit.Bard{Free: free}, p)
 	case "Mage":
-		kit.Apply(kit.Mage{}, p)
+		kit.Apply(kit.Mage{Free: free}, p)
 	case "Rogue":
-		kit.Apply(kit.Rogue{}, p)
+		kit.Apply(kit.Rogue{Free: free}, p)
 	case "Miner":
 		kit.Apply(kit.Miner{}, p)
-
 	case "Builder":
 		kit.Apply(kit.Builder{}, p)
 	case "Starter":

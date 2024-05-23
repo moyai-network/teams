@@ -2,14 +2,15 @@ package kit
 
 import (
 	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/df-mc/dragonfly/server/item/potion"
 	"github.com/df-mc/dragonfly/server/player"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 )
 
 // Bard represents the bard class.
-type Bard struct{}
+type Bard struct {
+	Free bool
+}
 
 // Name ...
 func (Bard) Name() string {
@@ -22,9 +23,14 @@ func (Bard) Texture() string {
 }
 
 // Items ...
-func (Bard) Items(*player.Player) [36]item.Stack {
+func (b Bard) Items(*player.Player) [36]item.Stack {
+	var lvl = 2
+	if b.Free {
+		lvl = 1
+	}
+
 	items := [36]item.Stack{
-		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
+		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, lvl)),
 		item.NewStack(item.EnderPearl{}, 16),
 	}
 	for i := 2; i < 36; i++ {
@@ -37,23 +43,22 @@ func (Bard) Items(*player.Player) [36]item.Stack {
 	items[5] = item.NewStack(item.Sugar{}, 64)
 	items[6] = item.NewStack(item.MagmaCream{}, 64)
 	items[6] = item.NewStack(item.Feather{}, 64)
+
+	if b.Free {
+		items[26] = item.NewStack(item.Potion{Type: potion.Invisibility()}, 1)
+		items[25] = item.NewStack(item.Potion{Type: potion.Invisibility()}, 1)
+		items[34] = item.NewStack(item.Potion{Type: potion.FireResistance()}, 1)
+		items[35] = item.NewStack(item.Potion{Type: potion.FireResistance()}, 1)
+	}
 	return items
 }
 
 // Armour ...
-func (Bard) Armour(*player.Player) [4]item.Stack {
-	protection := item.NewEnchantment(ench.Protection{}, 2)
-	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
-
-	invis := item.NewEnchantment(ench.Invisibility{}, 1)
-	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
-	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
-	recovery := item.NewEnchantment(ench.Recovery{}, 1)
-
-	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invis),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, fireRes),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, recovery),
-		item.NewStack(item.Boots{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(protection, unbreaking, item.NewEnchantment(enchantment.FeatherFalling{}, 4)),
-	}
+func (b Bard) Armour(*player.Player) [4]item.Stack {
+	return armour(b.Free, [4]item.ArmourTier{
+		item.ArmourTierGold{},
+		item.ArmourTierGold{},
+		item.ArmourTierGold{},
+		item.ArmourTierGold{},
+	})
 }

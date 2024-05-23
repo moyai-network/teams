@@ -2,14 +2,15 @@ package kit
 
 import (
 	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/df-mc/dragonfly/server/item/potion"
 	"github.com/df-mc/dragonfly/server/player"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 )
 
 // Rogue represents the rogue class.
-type Rogue struct{}
+type Rogue struct {
+	Free bool
+}
 
 // Name ...
 func (Rogue) Name() string {
@@ -22,9 +23,14 @@ func (Rogue) Texture() string {
 }
 
 // Items ...
-func (Rogue) Items(*player.Player) [36]item.Stack {
+func (r Rogue) Items(*player.Player) [36]item.Stack {
+	var lvl = 2
+	if r.Free {
+		lvl = 1
+	}
+
 	items := [36]item.Stack{
-		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 2)),
+		item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, lvl)),
 		item.NewStack(item.EnderPearl{}, 16),
 	}
 	for i := 2; i < 36; i++ {
@@ -32,31 +38,34 @@ func (Rogue) Items(*player.Player) [36]item.Stack {
 	}
 
 	items[2] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[3] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
 	items[7] = item.NewStack(item.Sugar{}, 16)
 	items[8] = item.NewStack(item.Feather{}, 16)
-	items[16] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-	items[17] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-	items[25] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-	items[26] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-	items[34] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
-	items[35] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[10] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[19] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[28] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[11] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[20] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[29] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[12] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[21] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+	items[30] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1)
+
+	if r.Free {
+		items[26] = item.NewStack(item.Potion{Type: potion.Invisibility()}, 1)
+		items[25] = item.NewStack(item.Potion{Type: potion.Invisibility()}, 1)
+		items[34] = item.NewStack(item.Potion{Type: potion.FireResistance()}, 1)
+		items[35] = item.NewStack(item.Potion{Type: potion.FireResistance()}, 1)
+	}
 	return items
 }
 
 // Armour ...
-func (Rogue) Armour(*player.Player) [4]item.Stack {
-	protection := item.NewEnchantment(ench.Protection{}, 2)
-	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 10)
-
-	invis := item.NewEnchantment(ench.Invisibility{}, 1)
-	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
-	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
-	recovery := item.NewEnchantment(ench.Recovery{}, 1)
-
-	return [4]item.Stack{
-		item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, nightVision, invis),
-		item.NewStack(item.Chestplate{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, fireRes),
-		item.NewStack(item.Leggings{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, recovery),
-		item.NewStack(item.Boots{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(protection, unbreaking, item.NewEnchantment(enchantment.FeatherFalling{}, 4)),
-	}
+func (r Rogue) Armour(*player.Player) [4]item.Stack {
+	return armour(r.Free, [4]item.ArmourTier{
+		item.ArmourTierChain{},
+		item.ArmourTierChain{},
+		item.ArmourTierChain{},
+		item.ArmourTierChain{},
+	})
 }
