@@ -44,7 +44,7 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	case "Master":
 		kit.Apply(kit.Master{}, p)
 	case "Archer":
-		kit.Apply(kit.Archer{}, p)
+		kit.Apply(kit.Archer{true}, p)
 	case "Bard":
 		kit.Apply(kit.Bard{}, p)
 	case "Mage":

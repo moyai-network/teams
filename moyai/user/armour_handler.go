@@ -23,19 +23,39 @@ func (a *ArmourHandler) HandleTake(ctx *event.Context, slot int, itm item.Stack)
 	_, ok := itm.Value("storm_breaker")
 	if ok {
 		ctx.Cancel()
+		return
 	}
 
+	h, ok := a.p.Handler().(*Handler)
+	if ok {
+		sortClassEffects(h)
+		sortArmourEffects(h)
+	}
 }
 func (a *ArmourHandler) HandlePlace(ctx *event.Context, slot int, itm item.Stack) {
 	_, ok := itm.Value("storm_breaker")
 	if ok {
 		ctx.Cancel()
+		return
+	}
+
+	h, ok := a.p.Handler().(*Handler)
+	if ok {
+		sortClassEffects(h)
+		sortArmourEffects(h)
 	}
 }
 func (a *ArmourHandler) HandleDrop(ctx *event.Context, slot int, itm item.Stack) {
 	_, ok := itm.Value("storm_breaker")
 	if ok {
 		ctx.Cancel()
+		return
+	}
+
+	h, ok := a.p.Handler().(*Handler)
+	if ok {
+		sortClassEffects(h)
+		sortArmourEffects(h)
 	}
 }
 

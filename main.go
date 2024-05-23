@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bedrock-gophers/intercept"
 	"image"
 	"math"
 	_ "net/http/pprof"
@@ -25,7 +26,6 @@ import (
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
 
@@ -70,7 +70,7 @@ func main() {
 	}
 
 	config := configure(conf, log)
-	ac := oomph.New(oomph.OomphSettings{
+	/*ac := oomph.New(oomph.OomphSettings{
 		LocalAddress:  ":19133",
 		RemoteAddress: ":19132",
 		RequirePacks:  true,
@@ -87,19 +87,19 @@ func main() {
 			log.Println("LOL BRO I CONNECTED VIA OOMPGH")
 
 		}
-	}()
-	// pk := intercept.NewPacketListener()
-	// pk.Listen(&config, ":19132", []minecraft.Protocol{})
+	}()*/
+	pk := intercept.NewPacketListener()
+	pk.Listen(&config, ":19132", []minecraft.Protocol{})
 
-	// go func() {
-	// 	for {
-	// 		p, err := pk.Accept()
-	// 		if err != nil {
-	// 			return
-	// 		}
-	// 		p.Handle(user.NewPacketHandler(p))
-	// 	}
-	// }()
+	go func() {
+		for {
+			p, err := pk.Accept()
+			if err != nil {
+				return
+			}
+			p.Handle(user.NewPacketHandler(p))
+		}
+	}()
 
 	srv := moyai.NewServer(config)
 
