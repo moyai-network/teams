@@ -68,6 +68,9 @@ type User struct {
 	Tags     *tag.Tags   `bson:"tags"`
 	Language Language    `bson:"language"`
 
+	// PlayTime is the total playtime of the user.
+	PlayTime time.Duration `bson:"playtime"`
+	// Frozen is whether the user is frozen.
 	Frozen bool `bson:"frozen"`
 	// LastMessageFrom is the name of the player that sent the user a message.
 	LastMessageFrom string

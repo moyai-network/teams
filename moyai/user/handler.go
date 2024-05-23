@@ -2010,7 +2010,7 @@ func (h *Handler) HandleQuit() {
 	p := h.p
 
 	u, _ := data.LoadUserFromName(p.Name())
-	//u.PlayTime += time.Since(h.logTime)
+	u.PlayTime += time.Since(h.logTime)
 	data.SaveUser(u)
 
 	tm, _ := data.LoadTeamFromMemberName(p.Name())
