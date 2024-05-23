@@ -1843,7 +1843,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 
 	if h.waypoint != nil && h.waypoint.active {
-		h.UpdateWayPointPosition()
+		h.updateWaypointPosition()
 	}
 
 	h.clearWall()
