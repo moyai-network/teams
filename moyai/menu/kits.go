@@ -66,7 +66,6 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 
 		if _, ok := stack.Value("free"); !ok && u.Roles.Highest() == (role.Default{}) {
 			lore = text.Colourf("<red>Obtain at moyai.tebex.io</red>")
-
 		} else {
 			kits := u.Teams.Kits
 
@@ -96,7 +95,9 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	inv.UpdateMenu(p, NewKitsMenu(p))
 
 	var free bool
-	_, free = it.Value("free")
+	if _, free = it.Value("free"); !free && u.Roles.Highest() == (role.Default{}) {
+		return
+	}
 	name = strings.TrimPrefix(name, "Free ")
 
 	switch name {
