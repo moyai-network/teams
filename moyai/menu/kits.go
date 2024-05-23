@@ -10,6 +10,7 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"time"
@@ -45,6 +46,7 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>")).WithLore(text.Colourf("<aqua>A collection of blocks and other tools to create your base!</aqua>"))
 	stacks[16] = item.NewStack(item.Helmet{Tier: item.ArmourTierIron{}}, 1).WithCustomName(text.Colourf("<aqua>Miner</aqua>")).WithLore(text.Colourf("<aqua>Dig and mine away with haste and quick tools!</aqua>"))
 
+	glint := item.NewEnchantment(ench.Protection{}, 1)
 	for i, stack := range stacks {
 		if _, ok := stack.Item().(block.StainedGlassPane); ok {
 			continue
@@ -57,7 +59,7 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 			lore = text.Colourf("<red>Available in %s</red>", durafmt.Parse(kits.Remaining(name)).LimitFirstN(3).String())
 		}
 
-		stacks[i] = stack.WithLore(append(stack.Lore(), lore)...)
+		stacks[i] = stack.WithLore(append(stack.Lore(), lore)...).WithEnchantments(glint)
 	}
 	return m.WithStacks(stacks...)
 }
