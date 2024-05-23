@@ -2014,7 +2014,7 @@ func (h *Handler) HandleQuit() {
 
 	tm, _ := data.LoadTeamFromMemberName(p.Name())
 	_, sotwRunning := sotw.Running()
-	if !h.loggedOut && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
+	if !h.loggedOut && h.p.GameMode() != world.GameModeCreative && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
 		arm := h.p.Armour()
 		inv := h.p.Inventory()
 
