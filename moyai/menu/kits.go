@@ -12,7 +12,9 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/moyai-network/teams/moyai/kit"
+	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"strings"
 	"time"
 )
 
@@ -42,9 +44,17 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 	stacks[20] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Bard</aqua>")).WithLore(text.Colourf("<aqua>Support fellow team members with effects!</aqua>"))
 	stacks[24] = item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithCustomName(text.Colourf("<aqua>Mage</aqua>")).WithLore(text.Colourf("<aqua>Unleash powerful debuffs on your enemies</aqua>"))
 	stacks[15] = item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithCustomName(text.Colourf("<aqua>Rogue</aqua>")).WithLore(text.Colourf("<aqua>Backstab enemies to lash out massive chunks of damage!</aqua>"))
-	stacks[13] = item.NewStack(fishingRod{}, 1).WithCustomName(text.Colourf("<aqua>Starter</aqua>")).WithLore(text.Colourf("<aqua>Get started with basic blocks and tools!</aqua>"))
-	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>")).WithLore(text.Colourf("<aqua>A collection of blocks and other tools to create your base!</aqua>"))
 	stacks[16] = item.NewStack(item.Helmet{Tier: item.ArmourTierIron{}}, 1).WithCustomName(text.Colourf("<aqua>Miner</aqua>")).WithLore(text.Colourf("<aqua>Dig and mine away with haste and quick tools!</aqua>"))
+
+	stacks[13] = item.NewStack(fishingRod{}, 1).WithCustomName(text.Colourf("<aqua>Starter</aqua>")).WithLore(text.Colourf("<aqua>Get started with basic blocks and tools!</aqua>")).WithValue("free", true)
+	stacks[22] = item.NewStack(block.Grass{}, 1).WithCustomName(text.Colourf("<aqua>Builder</aqua>")).WithLore(text.Colourf("<aqua>A collection of blocks and other tools to create your base!</aqua>")).WithValue("free", true)
+
+	stacks[38] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1).WithCustomName(text.Colourf("<aqua>Free Bard</aqua>")).WithLore(text.Colourf("<aqua>Support fellow team members with effects!</aqua>")).WithValue("free", true)
+	stacks[39] = item.NewStack(item.Sword{Tier: item.ToolTierWood}, 1).WithCustomName(text.Colourf("<aqua>Free Archer</aqua>")).WithLore(text.Colourf("<aqua>Take aim with lethal archer tags!</aqua>")).WithValue("free", true)
+	stacks[40] = item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithCustomName(text.Colourf("<aqua>Free Diamond</aqua>")).WithLore(text.Colourf("<aqua>The free diamond kit on the server!</aqua>")).WithValue("free", true)
+	stacks[41] = item.NewStack(item.Sword{Tier: item.ToolTierStone}, 1).WithCustomName(text.Colourf("<aqua>Free Rogue</aqua>")).WithLore(text.Colourf("<aqua>Backstab enemies to lash out massive chunks of damage!</aqua>")).WithValue("free", true)
+	stacks[42] = item.NewStack(item.Sword{Tier: item.ToolTierGold}, 1).WithCustomName(text.Colourf("<aqua>Free Mage</aqua>")).WithLore(text.Colourf("<aqua>Unleash powerful debuffs on your enemies</aqua>")).WithValue("free", true)
+	stacks[49] = item.NewStack(item.Sword{Tier: item.ToolTierIron}, 1).WithCustomName(text.Colourf("<aqua>Free Miner</aqua>")).WithLore(text.Colourf("<aqua>Dig and mine away with haste and quick tools!</aqua>")).WithValue("free", true)
 
 	glint := item.NewEnchantment(ench.Protection{}, 1)
 	for i, stack := range stacks {
@@ -53,10 +63,16 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 		}
 		lore := text.Colourf("<green>Available</green>")
 		name := colour.StripMinecraftColour(stack.CustomName())
-		kits := u.Teams.Kits
 
-		if kits.Active(name) {
-			lore = text.Colourf("<red>Available in %s</red>", durafmt.Parse(kits.Remaining(name)).LimitFirstN(3).String())
+		if _, ok := stack.Value("free"); !ok && u.Roles.Highest() == (role.Default{}) {
+			lore = text.Colourf("<red>Obtain at moyai.tebex.io</red>")
+
+		} else {
+			kits := u.Teams.Kits
+
+			if kits.Active(name) {
+				lore = text.Colourf("<red>Available in %s</red>", durafmt.Parse(kits.Remaining(name)).LimitFirstN(3).String())
+			}
 		}
 
 		stacks[i] = stack.WithLore(append(stack.Lore(), lore)...).WithEnchantments(glint)
@@ -78,21 +94,27 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	data.SaveUser(u)
 
 	inv.UpdateMenu(p, NewKitsMenu(p))
+
+	var free bool
+	_, free = it.Value("free")
+	name = strings.TrimPrefix(name, "Free ")
+
 	switch name {
 	case "Master":
 		kit.Apply(kit.Master{}, p)
 	case "Archer":
-		kit.Apply(kit.Archer{true}, p)
+		kit.Apply(kit.Archer{Free: free}, p)
 	case "Bard":
 		kit.Apply(kit.Bard{}, p)
 	case "Mage":
 		kit.Apply(kit.Mage{}, p)
 	case "Rogue":
 		kit.Apply(kit.Rogue{}, p)
-	case "Builder":
-		kit.Apply(kit.Builder{}, p)
 	case "Miner":
 		kit.Apply(kit.Miner{}, p)
+
+	case "Builder":
+		kit.Apply(kit.Builder{}, p)
 	case "Starter":
 		kit.Apply(kit.Starter{}, p)
 	}
