@@ -4,6 +4,8 @@
         "image": "https://preview.redd.it/68cdrlhal0hz.png?auto=webp&s=a7e6c8f70065646b72d45fc6ba12c6bb9bf56923"
     },
     "translations": {
+        "discord.message": "<green>Asegúrate de unirte a nuestro Discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>",
+
         "area.enter": "<yellow>Ahora entrando en: %s</yellow>",
         "area.leave": "<yellow>Ahora saliendo de: %s</yellow>",
 
@@ -39,6 +41,190 @@
         "chat.cooldown.updated": "<green>Has actualizado el tiempo de reutilización del chat a %d segundos.</green>",
         "chat.cooldown": "<red>Tu debes esperar %.2f segundos antes de enviar otro mensaje.</red>",
 
-        "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>"
+        "team.create.exists": "<red>Ya existe un equipo con ese nombre.</red>",
+        "team.create.success": "<green>Has creado el equipo %s</green>",
+        "team.create.success.broadcast": "<yellow>%s ha creado el equipo <blue>%s</blue></yellow>",
+        "team.create.name.long": "<red>El nombre de tu equipo debe tener menos de 16 caracteres</red>",
+        "team.create.name.short": "<red>El nombre de tu equipo debe tener más de 2 caracteres</red>",
+        "team.create.name.invalid": "<red>El nombre de tu equipo contiene caracteres inválidos</red>",
+        "team.create.already": "<red>Ya estás en un equipo.</red>",
+
+        "shop.balance.insufficient": "<red>No puedes permitirte comprar este artículo</red>",
+        "shop.item.insufficient": "<red>No tienes suficiente de ese artículo para vender</red>",
+        "shop.sell.fail": "<red>No tienes suficiente de ese artículo para vender</red>",
+        "shop.sell.success": "<green>Has vendido con éxito %dx %s</green>",
+        "shop.buy.success": "<green>Has comprado con éxito %dx %s</green>",
+
+        "team.invite.success.broadcast": "<green>%s ha sido invitado a tu equipo.</green>",
+        "team.invite.already": "<red>Ya has invitado a %s a tu equipo.</red>",
+        "team.invite.self": "<red>No puedes invitarte a ti mismo a tu propio equipo.</red>",
+        "team.invite.member": "<red>%s ya está en tu equipo.</red>",
+        "team.invite.target": "<green>Has sido invitado a %s</green>",
+        "team.invite.has-team": "<red>No puedes invitar a este jugador porque ya está en un equipo.</red>",
+
+        "team.join.target": "<green>Te has unido al equipo %s.</green>",
+        "team.join.error": "<red>Ya estás en un equipo.</red>",
+        "team.join.broadcast": "<green>%s se ha unido al equipo.</green>",
+
+        "user.refill.cooldown": "<red>Debes esperar %s antes de usar /pots nuevamente.</red>",
+        "user.teleport.combat": "<red>No puedes teletransportarte mientras estás en combate.</red>",
+        "user.already.teleporting": "<red>Ya te estás teletransportando.</red>",
+        "user.team-less": "<red>No estás en un equipo.</red>",
+        "user.cool-down": "<red>Estás en un tiempo de espera de %s por %.2fs</red>",
+        "user.data.load.error": "<red>Hubo un error al cargar tus datos. Por favor, notifica al personal.</red>",
+        "user.message.mute": "<red>No puedes enviar mensajes mientras estás silenciado</red>",
+        "user.kill": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>fue asesinado por <red>%s</red><dark-red>[%d]</dark-red> usando %s.",
+        "user.killstreak": "<red>%s tiene una racha de <dark-red>%d</dark-red> asesinatos</red>",
+        "user.killstreak.award": "<green>¡Has recibido llaves por tu racha de asesinatos!</green>",
+        "user.suicide": "<yellow>%s</yellow> <grey>[<red>%d</red>]</grey> <red>se ha suicidado</red>",
+        "user.reclaim": "%s <green>reclamó su</green> %s <green>y recibió</green> %s y <red>%dx vidas</red>",
+        "user.reclaimed": "<red>Ya has reclamado tu recompensa en este mapa.</red>",
+
+        "user.ban.header": "<b><red>Estás baneado de Moyai</red></b>",
+        "user.ban.header.oomph": "<b><red>Fuiste baneado de Moyai por Oomph</red></b>",
+        "user.ban.header.alt": "<b><red>Una cuenta vinculada a ti está baneada de Moyai</red></b>",
+        "user.ban.description": "<gold>Razón:</gold> <yellow>%s</yellow>\n<dark-green>Restante:</dark-green> <green>%s</green>\n<grey><i>Para preguntas o inquietudes, consulta discord.gg/tWCfwQrRWn</grey></i>",
+
+        "command.balance.self": "<green>Tu saldo es de $%2.f.</green>",
+        "command.pay.self": "<red>No puedes pagarte a ti mismo.</red>",
+        "command.pay.negative": "<red>No puedes pagar una cantidad negativa.</red>",
+        "command.pay.insufficient": "<red>No tienes suficiente dinero.</red>",
+        "command.add.receiver": "<green>%s te ha pagado $%2.f.</green>",
+        "command.add.sender": "<green>Has pagado $%2.f a %s.</green>",
+
+        "command.colour.not-holding": "<red>No estás sosteniendo un bloque.</red>",
+        "command.colour.invalid": "<red>Ese no es un color válido.</red>",
+        "command.colour.leather": "<red>Solo puedes teñir armaduras de cuero.</red>",
+
+        "target.data.load.error": "<red>Hubo un error al cargar los datos de %s. Por favor, notifica al personal.</red>",
+
+        "archer.tag": "<blue>[Rango de Arquero (<red>%.0f</red>)]</blue> <gold>Jugador marcado por 10 segundos.</gold> <blue>(%.1f corazones)</blue>",
+
+        "command.reply.none": "<red>No tienes a quién responder.</red>",
+        "command.report.cooldown": "<red>Debes esperar %v para reportar a otro jugador.</red>",
+        "command.report.self": "<red>No puedes reportarte a ti mismo.</red>",
+        "command.report.success": "<green>Apreciamos tu reporte, el personal lo manejará lo antes posible.</green>",
+
+        "command.claim.success": "<green>Has reclamado con éxito desde</green> <yellow>%.0f <green>hasta</green> %.0f</yellow> <green>($%.0f)</green>.",
+        "command.unclaim.success": "<red>Has eliminado con éxito la reclamación de tu equipo.</red>",
+
+        "command.team.create.cooldown": "<red>Debes esperar %v antes de crear otro equipo.</red>",
+        "command.team.home.set": "<green>Se ha establecido el hogar de tu equipo.</green>",
+        "command.team.home.none": "<red>Tu equipo no tiene un hogar establecido.</red>",
+        "command.team.focus": "<green>Tu equipo está enfocando a <blue>%s</blue>.</green>",
+        "command.team.unfocus": "<green>Tu equipo ya no está enfocando a <blue>%s</blue>.</green>",
+        "command.team.focus.self": "<red>No puedes enfocar a tu propio equipo.</red>",
+        "command.team.focus.none": "<red>Tu equipo no está enfocando a nadie.</red>",
+
+        "command.team.rallying": "<green>%s agrupándose en</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
+        "command.teleport.multiple": "<red>No puedes teletransportarte a múltiples destinos.</red>",
+        "command.teleport.operator": "<red>Debes ser un operador para teletransportar a varios jugadores a la vez.</red>",
+        "command.teleport.self": "<green>Te has teletransportado a %v.</green>",
+        "command.teleport.target": "<green>Has teletransportado a %s a %v.</green>",
+
+        "command.team.promote.missing.permission": "<red>Debes ser líder o capitán para promover jugadores.</red>",
+        "command.team.promote.self": "<red>No puedes promocionarte a ti mismo.</red>",
+        "command.team.promote.leader": "<red>No puedes promover al líder.</red>",
+        "command.team.promote.captain": "<red>Debes ser líder para promover a un capitán.</red>",
+        "command.team.promote.user.promoted": "<green>%s ha sido promovido a <blue>%s</blue>.</green>",
+
+        "command.team.demote.missing.permission": "<red>Debes ser líder para degradar jugadores.</red>",
+        "command.team.demote.self": "<red>No puedes degradarte a ti mismo.</red>",
+        "command.team.demote.leader": "<red>No puedes degradar al líder.</red>",
+        "command.team.demote.member": "<red>No puedes degradar a un miembro.</red>",
+        "command.team.demote.user.demoted": "<green>%s ha sido degradado a <blue>%s</blue>.</green>",
+
+        "command.team.create.already.in": "<red>Ya estás en un equipo.</red>",
+        "command.team.create.usage": "<red>Uso: /t create <equipo></red>",
+        "command.team.create.length.minimum": "<red>¡El nombre mínimo del equipo debe tener 3 caracteres!</red>",
+        "command.team.create.length.maximum": "<red>¡El nombre máximo del equipo debe tener 12 caracteres!</red>",
+        "command.team.create": "<yellow>El equipo <blue>%s</blue> ha sido <green>creado</green> por <grey>%s</grey>.</yellow>",
+        "command.team.create.exists": "<red>¡Ese equipo ya existe!</red>",
+        "command.team.create.wait": "<red>Por favor, espera unos momentos antes de crear otro equipo.</red>",
+
+        "command.team.disband.fail": "<red>No se pudo eliminar el equipo, por favor contacta a un miembro del personal.</red>",
+        "command.team.disband.disbanded": "<red>%s ha disuelto el equipo.</red>",
+        "command.team.disband.must.leader": "<red>¡Debes ser el líder de un equipo para disolverlo!</red>",
+
+        "command.team.leave.leader": "<red>¡Debes disolver el equipo para dejarlo!</red>",
+        "command.team.leave.user.left": "<red>%s ha <yellow>abandonado</yellow> el equipo.</red>",
+        "command.team.leave.left": "<red>Has abandonado el equipo <yellow>%s</yellow>.</red>",
+
+        "command.team.info.not.found": "<red>No se encontró ningún equipo o miembro con el nombre %s.</red>",
+
+        "command.team.member.not.found": "<red>No se encontró ningún miembro con el nombre %s en tu equipo.</red>",
+
+        "command.team.invite.missing.permission": "<red>Debes ser líder o capitán para invitar jugadores.</red>",
+        "command.team.invite.already.in": "<red>¡%s ya está en tu equipo!</red>",
+        "command.team.invite.received": "<yellow>Has sido invitado a unirte a <blue>%s</blue> por <grey>%s</grey>.</yellow>",
+        "command.team.invite.sent": "<yellow>%s ha sido invitado al equipo.</yellow>",
+
+        "command.team.dtr": "<red>No puedes hacer eso mientras tu DTR se está regenerando.</red>",
+        "command.team.top.none": "<red>No hay equipos para mostrar.</red>",
+
+        "command.team.not.found": "<red>No se encontró ningún equipo con el nombre %s.</red>",
+        "command.team.join.not.invited": "<red>¡Este equipo no te ha invitado!</red>",
+        "command.team.join.joined": "<yellow>Has <green>ingresado</green> al equipo <blue>%s</blue>.</yellow>",
+        "command.team.join.user.joined": "<yellow>%s ha <green>ingresado</green> al equipo.</yellow>",
+        "command.team.join.full": "<red>¡Este equipo está completo!</red>",
+
+        "command.team.kick.captain": "<red>No puedes expulsar a los capitanes.</red>",
+        "command.team.kick.missing.permission": "<red>¡Debes ser líder o capitán para expulsar miembros!</red>",
+        "command.team.kick.not.found": "<red>¡%s no está en tu equipo!</red>",
+        "command.team.kick.leader": "<red>No puedes expulsar al líder.</red>",
+        "command.team.kick.kicked": "<yellow>%s ha sido <red>expulsado</red> del equipo.</yellow>",
+        "command.team.kick.self": "<red>No puedes expulsarte a ti mismo.</red>",
+        "command.team.kick.user.kicked": "<red>Has sido expulsado del equipo %s.</red>",
+
+        "command.team.stuck.no-safe": "<red>No se pudo encontrar una posición segura para teletransportarse.</red>",
+        "command.team.stuck.teleporting": "<yellow>Teletransportándose a <green>[%d %d %d]</green> en <green>%ds</green></yellow>",
+
+        "command.online.users": "<yellow>%v en línea</yellow> <grey>-</grey> %v",
+        "command.ping.other": "<green>El ping de %v es %vms.</green>",
+        "command.ping.self": "<green>Tu ping es %vms</green>",
+
+        "command.kit.tagged": "<red>No puedes usar esto mientras estás etiquetado.</red>",
+
+        "command.error.combat-tagged": "<red>No puedes ejecutar este comando durante el combate.</red>",
+
+        "user.kick.header.oomph": "<b><red>Has sido expulsado de Moyai por Oomph</red></b>",
+        "user.kick.autoclicker": "<red>Hemos detectado que tu CPS no es justo, por favor intenta aumentar tu tiempo de rebote o termina tu programa externo.\n<grey><i>Para preguntas o inquietudes, consulta discord.gg/moyai</grey></i>",
+        "user.kick.description": "<gold>Razón:</gold> <yellow>%s</yellow>\n<grey><i>Para preguntas o inquietudes, consulta discord.gg/moyai</grey></i>",
+
+        "oomph.staff.alert": "<gold>[<redstone>Oomph</redstone>]</gold> <aqua>%v fue marcado por %v (%v)</aqua> <grey>%v [x%v]</grey>",
+
+        "command.target.unknown": "<red>Objetivo desconocido %s</red>",
+        "command.targets.exceed": "<red>Solo puedes elegir un jugador a la vez.</red>",
+
+        "koth.start": "%s <green>ha iniciado un evento</green> %s <green>KOTH en <yellow>%0.f, %0.f</yellow></green>",
+        "koth.stop": "%s <red>ha detenido el evento</red> %s <red>KOTH</red>",
+        "koth.capturing": "%s <green>está siendo capturado por</green> %s",
+        "koth.not.capturing": "%s <red>ha sido derribado de</red> %s <red>KOTH</red>",
+        "koth.captured": "%s <green>ha sido capturado por</green> %s",
+
+        "command.logout.logging-out": "<red>Ya estás cerrando sesión.</red>",
+
+        "command.ping.output": "<green>Ping de %s: %dms</green>",
+
+        "command.pvp.enabled": "<green>¡Has habilitado el PVP!</green>",
+        "command.pvp.enabled-already": "<red>¡Ya has habilitado el PVP!</red>",
+
+        "command.sotw.not-running": "<red>Actualmente no se está ejecutando el SOTW.</red>",
+
+        "crate.key.require": "<red>Necesitas una llave %s para abrir este cofre</red>",
+
+        "target.whisper.disabled": "<red>Este jugador tiene los mensajes privados desactivados.</red>",
+        "user.whisper.disabled": "<red>Tienes los mensajes privados desactivados.</red>",
+
+        "popup.cooldown.partner_item": "<amethyst>Objetos de compañero</amethyst><grey>:</grey> <redstone>%.1fs</redstone>",
+        "popup.cooldown.partner_item.item": "<amethyst>%s</amethyst><grey>:</grey> <redstone>%.1fs</redstone>",
+        "popup.ready.partner_item.item": "<green><amethyst>%s</amethyst> ¡Está listo para usar!</green>",
+
+        "sotw.commenced": "<green>El período de inicio de SOTW ha comenzado y finalizará en una hora.</green>",
+        "sotw.ended": "<red>¡El período de inicio de SOTW ha finalizado!</red>",
+        "sotw.disabled": "<red>Se ha desactivado tu temporizador de inicio de SOTW.</red>",
+        "sotw.disabled.already": "<red>Ya has desactivado tu temporizador de inicio de SOTW.</red>",
+
+        "proxy.error": "<red>Error de proxy: por favor contacta al personal/desarrolladores en discord.gg/moyai</red>"
     }
 }

@@ -217,7 +217,7 @@ var (
 	Overworld = Areas{
 		spawn:      NewNamedArea(mgl64.Vec2{88, 88}, mgl64.Vec2{-88, -88}, text.Colourf("<green>Spawn</green>")),
 		warZone:    NewNamedArea(mgl64.Vec2{400, 400}, mgl64.Vec2{-400, -400}, text.Colourf("<red>WarZone</red>")),
-		wilderness: NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
+		wilderness: NewNamedArea(mgl64.Vec2{2500, 2500}, mgl64.Vec2{-2500, -2500}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []NamedArea{
 			NewNamedArea(mgl64.Vec2{-16, -89}, mgl64.Vec2{14, -3000}, text.Colourf("<red>North Road</red>")),
 			NewNamedArea(mgl64.Vec2{89, -16}, mgl64.Vec2{3000, 14}, text.Colourf("<red>East Road</red>")),

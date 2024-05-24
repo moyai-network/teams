@@ -266,7 +266,6 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 						} else {
 							if a != area.Wilderness(p.World()) {
 								disp[i][z-(posZ-5)] = text.Colourf("<aqua>█</aqua>")
-
 							}
 						}
 					} else {
@@ -1097,17 +1096,17 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	}
 	target, ok := t.Target[0].(*player.Player)
 	if !ok {
-		o.Error("You must target a player.")
+		user.Messagef(p, "command.team.focus.player")
 		return
 	}
 
 	if strings.EqualFold(target.Name(), p.Name()) {
-		o.Error("You cannot focus yourself.")
+		user.Messagef(p, "command.team.focus.yourself")
 		return
 	}
 
 	if tm.Member(target.Name()) {
-		o.Error("You cannot focus a member of your team.")
+		user.Messagef(p, "command.team.focus.member")
 		return
 	}
 
@@ -1131,10 +1130,10 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	switch u.Teams.ChatType {
 	case 1:
 		u.Teams.ChatType = 0
-		o.Print(text.Colourf("<green>Switched to global chat.</green>"))
+		p.Message(lang.Translatef(u.Language, "command.team.chat.global"))
 	case 0:
 		u.Teams.ChatType = 1
-		o.Print(text.Colourf("<green>Switched to faction chat.</green>"))
+		p.Message(lang.Translatef(u.Language, "command.team.chat.faction"))
 	}
 	data.SaveUser(u)
 }
@@ -1157,18 +1156,18 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		o.Error("You cannot withdraw any balance from your team.")
+		user.Messagef(p, "command.team.withdraw.permission")
 		return
 	}
 
 	amt := t.Balance
 	if amt < 1 {
-		o.Error("You must provide a minimum balance of $1.")
+		user.Messagef(p, "command.team.withdraw.minimum")
 		return
 	}
 
 	if amt > tm.Balance {
-		o.Errorf("Your team does not have a balance of $%.2f.", amt)
+		user.Messagef(p, "command.team.withdraw.insufficient", amt)
 		return
 	}
 
@@ -1178,7 +1177,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	o.Print(text.Colourf("<green>You withdrew $%.2f from %s.</green>", amt, tm.DisplayName))
+	user.Messagef(p, "command.team.withdrew.success", int(amt), tm.DisplayName)
 }
 
 // Run ...
@@ -1201,12 +1200,12 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 
 	amt := t.Balance
 	if amt < 1 {
-		o.Error("You must provide a minimum balance of $1.")
+		user.Messagef(p, "command.team.deposit.minimum")
 		return
 	}
 
 	if amt > u.Teams.Balance {
-		o.Errorf("You do not have a balance of $%.2f.", amt)
+		user.Messagef(p, "command.team.deposit.insufficient", amt)
 		return
 	}
 
@@ -1216,7 +1215,7 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.DisplayName))
+	user.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
 }
 
 // Run ...

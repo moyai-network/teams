@@ -252,6 +252,21 @@
         "command.team.unfocus": "<green>Your team is no longer focusing <blue>%s</blue>.</green>",
         "command.team.focus.self": "<red>You cannot focus your own team.</red>",
         "command.team.focus.none": "<red>Your team is not focusing anyone.</red>",
+        "command.team.focus.player": "You must target a player.",
+        "command.team.focus.yourself": "You cannot focus yourself.",
+        "commean.team.focus.member": "You cannot focus a member of your team.",
+
+        "command.team.deposit.minimum": "You must provide a minimum balance of $1.",
+        "command.team.deposit.insufficient": "You do not have a balance of $%.2f.",
+        "command.team.deposit.success": "<green>You deposited $%d into %s.</green>",
+
+        "command.team.withdraw.permission": "You cannot withdraw any balance from your team.",
+        "command.team.withdraw.minimum": "You must provide a minimum balance of $1.",
+        "command.team.withdraw.insufficient": "Your team does not have a balance of $%.2f.",
+        "command.team.withdraw.success": "<green>You withdrew $%d into %s.</green>",
+
+        "command.team.chat.global": "<green>Switched to global chat.</green>",
+        "command.team.chat.team": "<green>Switched to team chat.</green>",
 
         "command.team.rallying": "<green>%s rallying at</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
 
@@ -307,7 +322,7 @@
         "command.team.join.full": "<red>This team is full!</red>",
 
         "command.team.kick.captain": "<red>You cannot kick captains!</red>",
-        "handler": "<red>You must be leader or captain to kick members!</red>",
+        "command.team.kick.missing.permission": "<red>You must be leader or captain to kick members!</red>",
         "command.team.kick.not.found": "<red>%s is not in your team!</red>",
         "command.team.kick.leader": "<red>You cannot kick the leader!</red>",
         "command.team.kick.kicked": "<yellow>%s has been <red>kicked</red> from the team.</yellow>",

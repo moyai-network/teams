@@ -1,9 +1,10 @@
 package entity
 
 import (
-	"github.com/bedrock-gophers/nbtconv"
 	"image/color"
 	"time"
+
+	"github.com/bedrock-gophers/nbtconv"
 
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block"
