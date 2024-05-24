@@ -20,7 +20,7 @@ func NewAllower(whitelisted bool) *Allower {
 func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
 	u, err := data.LoadUserOrCreate(d.DisplayName, d.XUID)
 	if err != nil {
-		return lang.Translatef(u.Language, "user.data.load.error"), false
+		return lang.Translatef(data.Language{}, "user.data.load.error"), false
 	}
 	/*if !strings.HasPrefix(addr.String(), "127.0.0.1") {
 		return text.Colourf("<red>Please connect via the main hub: moyai.pro:19132</red>"), false
