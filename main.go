@@ -139,7 +139,6 @@ func main() {
 func placeCowSpawners(w *world.World) {
 	for _, pos := range cowSpawners {
 		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*5, 25, true)
-		world.RegisterBlock(sp)
 		w.SetBlock(pos, sp, nil)
 	}
 }

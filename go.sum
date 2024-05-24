@@ -14,6 +14,8 @@ github.com/bedrock-gophers/spawner v0.0.0-20240210035133-8c9bac505288 h1:vk8/0zm
 github.com/bedrock-gophers/spawner v0.0.0-20240210035133-8c9bac505288/go.mod h1:ToIpVGRz7L5YZRpPfsYOFh5JRMdpoEx1MdWCTGwSQTk=
 github.com/bedrock-gophers/spawner v0.0.0-20240524162856-8ab6603b16be h1:xWi5Ji9Pwss1iFPEg+EBPM+TqsnYOlApqlgIaOTDyEk=
 github.com/bedrock-gophers/spawner v0.0.0-20240524162856-8ab6603b16be/go.mod h1:ToIpVGRz7L5YZRpPfsYOFh5JRMdpoEx1MdWCTGwSQTk=
+github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d h1:w92AXsllm1U497qYTUO5WNaTu+l6Ns22qCK9Su/wrcA=
+github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d/go.mod h1:ToIpVGRz7L5YZRpPfsYOFh5JRMdpoEx1MdWCTGwSQTk=
 github.com/bedrock-gophers/tebex v0.1.0 h1:Q/ta+R8b8qenNGBmd2yJpn3ndGHKJPORPezZRu7wWHg=
 github.com/bedrock-gophers/tebex v0.1.0/go.mod h1:FxTSy5Skd0YRf4BxLpCXkhoIjrvQ3clN5sXOc5GqsSc=
 github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 h1:/G0ghZwrhou0Wq21qc1vXXMm/t/aKWkALWwITptKbE0=
