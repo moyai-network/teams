@@ -134,7 +134,6 @@ func main() {
 	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled)) {
 		// Do nothing.
 	}
-
 }
 
 func placeCowSpawners(w *world.World) {

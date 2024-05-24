@@ -4,6 +4,9 @@
         "image": "https://preview.redd.it/68cdrlhal0hz.png?auto=webp&s=a7e6c8f70065646b72d45fc6ba12c6bb9bf56923"
     },
     "translations": {
+        "area.enter": "<yellow>Ahora entrando en: %s</yellow>",
+        "area.leave": "<yellow>Ahora saliendo de: %s</yellow>",
+
         "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
         "scoreboard.kills": "<red>Muertes: <grey>%d</grey></red>",
         "scoreboard.deaths": "<red>Muertes: <grey>%d</grey></red>",

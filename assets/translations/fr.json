@@ -5,6 +5,9 @@
     },
 
     "translations": {
+        "area.enter": "<yellow>Vous entrez dans: %s</yellow>",
+        "area.leave": "<yellow>Vous quittez: %s</yellow>",
+
         "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
         "scoreboard.kills": "<red>Kills: <grey>%d</grey></red>",
         "scoreboard.deaths": "<red>Morts: <grey>%d</grey></red>",
@@ -30,7 +33,7 @@
         "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
 
         "chat.global.muted": "<red>The chat is currently muted.</red>",
-        "chat.global.mute":  "<green>You have muted the global chat.</green>",
+        "chat.global.mute": "<green>You have muted the global chat.</green>",
         "chat.global.unmute": "<green>You have unmuted the global chat.</green>",
         "chat.global.already-muted": "<red>The global chat is already muted.</red>",
         "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
