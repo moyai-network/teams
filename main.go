@@ -232,6 +232,7 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			k.Reset()
 		}
 
+		u.Teams.Refill.Reset()
 		data.SaveUser(u)
 		p.Message(lang.Translatef(u.Language, "discord.message"))
 		inv := p.Inventory()

@@ -88,6 +88,7 @@ func placePotionChests(p *player.Player) {
 func placePairedChests(a, b cube.Pos, p *player.Player, it world.Item) {
 	w := p.World()
 	che := block.NewChest()
+	pair := block.NewChest()
 
 	w.SetBlock(a, che, nil)
 	ch, pair, ok := pairChest(&che, w, b, a)
