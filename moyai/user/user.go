@@ -1,19 +1,19 @@
 package user
 
 import (
-	"github.com/moyai-network/teams/internal/cooldown"
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/process"
-	"golang.org/x/text/language"
 	"math"
 	"math/rand"
 	"strings"
 	"time"
 	"unicode"
 	_ "unsafe"
+
+	"github.com/moyai-network/teams/internal/cooldown"
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/process"
 
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
@@ -59,7 +59,11 @@ func Lookup(name string) (*player.Player, bool) {
 // Broadcast broadcasts a message to every user using that user's locale.
 func Broadcast(key string, args ...any) {
 	for _, p := range moyai.Server().Players() {
-		p.Message(lang.Translatef(data.Language{Tag: language.English}, key, args...))
+		u, err := data.LoadUserFromName(p.Name())
+		if err != nil {
+			continue
+		}
+		p.Message(lang.Translatef(u.Language, key, args...))
 	}
 }
 func (h *Handler) Player() *player.Player {

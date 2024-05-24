@@ -226,7 +226,7 @@ var (
 		},
 		koths: []NamedArea{
 			NewNamedArea(mgl64.Vec2{425, 550}, mgl64.Vec2{526, 449}, text.Colourf("<red>Oasis</red>")),
-			NewNamedArea(mgl64.Vec2{528, -417}, mgl64.Vec2{434, -561}, text.Colourf("<gold>Shrine</gold>")),
+			NewNamedArea(mgl64.Vec2{578, -561}, mgl64.Vec2{434, -417}, text.Colourf("<gold>Shrine</gold>")),
 			NewNamedArea(mgl64.Vec2{-405, 601}, mgl64.Vec2{-603, 403}, text.Colourf("<amethyst>Citadel</amethyst>")),
 			NewNamedArea(mgl64.Vec2{-471, -471}, mgl64.Vec2{-572, -572}, text.Colourf("<dark-green>Garden</dark-green>")),
 

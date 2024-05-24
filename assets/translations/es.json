@@ -108,6 +108,29 @@
         "command.claim.success": "<green>Has reclamado con éxito desde</green> <yellow>%.0f <green>hasta</green> %.0f</yellow> <green>($%.0f)</green>.",
         "command.unclaim.success": "<red>Has eliminado con éxito la reclamación de tu equipo.</red>",
 
+        "bard.ability.use": "<yellow>Has dado <green>%s %v</green> a <blue>%v</blue> compañeros de equipo</yellow>",
+        "mage.ability.use": "<yellow>Has dado <green>%s %v</green> a <blue>%v</blue> enemigos</yellow>",
+        "bard.ability.receive": "<yellow>Has recibido <green>%s %v</green> de <blue>%v</blue> compañeros de equipo</yellow>",
+        "bard.ability.receive.self": "<yellow>Has recibido <green>%s %v</green> de ti mismo</yellow>",
+        "bard.energy.insufficient": "<red>No tienes suficiente energía para usar esta habilidad.</red>",
+        "bard.ability.cooldown": "<red>Debes esperar %.1f segundos antes de usar esta habilidad nuevamente.</red>",
+
+        "gapple.cooldown": "<red>Estás en enfriamiento de manzana dorada.</red>",
+        "partner_item.cooldown": "<red>Estás en enfriamiento de Objetos de Pareja durante %.1f segundos</red>",
+        "stormbreaker.cooldown": "<red>Estás en enfriamiento de Rompe Tormentas durante %.1f segundos</red>",
+        "bone.cooldown": "<red>Estás en enfriamiento de Hueso durante %.1f segundos</red>",
+        "scrambler.cooldown": "<red>Estás en enfriamiento de Mezclador durante %.1f segundos</red>",
+        "pearl_disabler.cooldown": "<red>Estás en enfriamiento de Desactivador de Perlas durante %.1f segundos</red>",
+
+        "user.interaction.boned": "<red>No puedes romper, colocar o interactuar con bloques mientras estás afectado por Hueso</red>",
+        "user.ability.cooldown": "<red>Debes esperar %.1f segundos antes de usar esta habilidad nuevamente.</red>",
+        "user.already.in.team": "<red>Ya estás en un equipo</red>",
+
+        "bone.target": "<red>Has sido atacado con Hueso por %s</red>",
+        "bone.user": "<green>Has atacado con Hueso a %s</green>",
+        "bone.hit": "<green>Has golpeado a %s con un Hueso %d veces</green>",
+        "bone.interact": "<red>No puedes interactuar ni colocar bloques mientras estás afectado por Hueso</red>",
+
         "command.team.create.cooldown": "<red>Debes esperar %v antes de crear otro equipo.</red>",
         "command.team.home.set": "<green>Se ha establecido el hogar de tu equipo.</green>",
         "command.team.home.none": "<red>Tu equipo no tiene un hogar establecido.</red>",

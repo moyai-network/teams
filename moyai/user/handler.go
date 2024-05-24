@@ -621,7 +621,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 	if v, ok := it.SpecialItem(held); ok {
 		if cd := h.ability; cd.Active() {
-			h.p.Message(text.Colourf("<red>You are on Partner Items cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			ctx.Cancel()
 			return
 		}
