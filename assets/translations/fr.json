@@ -35,6 +35,8 @@
         "chat.global.already-muted": "<red>The global chat is already muted.</red>",
         "chat.global.already-unmuted": "<red>The global chat is not muted.</red>",
         "chat.cooldown.updated": "<green>You have updated the chat cooldown to %d seconds.</green>",
-        "chat.cooldown": "<red>You must wait %.2f seconds before sending another message.</red>"
+        "chat.cooldown": "<red>You must wait %.2f seconds before sending another message.</red>",
+
+        "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>"
     }
 }

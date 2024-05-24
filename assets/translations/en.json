@@ -67,6 +67,7 @@
         "whitelist.already": "<red>%s is already whitelisted</red>",
         "whitelist.already.not": "<red>%s is not whitelisted</red>",
 
+        "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>",
         "user.teleport.combat": "<red>You cannot teleport while in combat.</red>",
         "user.already.teleporting": "<red>You are already teleporting.</red>",
         "user.team-less": "<red>You're not in a team.</red>",

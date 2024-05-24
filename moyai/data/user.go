@@ -90,6 +90,8 @@ type User struct {
 		DeathBan *cooldown.CoolDown
 		// Report is the report cool-down.
 		Report *cooldown.CoolDown
+		// Refill is the refill cool-down.
+		Refill *cooldown.CoolDown
 		// SOTW is whether the user their SOTW timer enabled, or not.
 		SOTW bool
 		// Reclaimed is whether the user has already used their reclaim perk.
@@ -123,7 +125,9 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.DeathBan = cooldown.NewCoolDown()
 	u.Teams.Report = cooldown.NewCoolDown()
+	u.Teams.Refill = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
+	u.Teams.PVP.Set(time.Hour)
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 
@@ -229,6 +233,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.DeathBan = cooldown.NewCoolDown()
 	u.Teams.Report = cooldown.NewCoolDown()
+	u.Teams.Refill = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
