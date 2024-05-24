@@ -1133,7 +1133,7 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 		p.Message(lang.Translatef(u.Language, "command.team.chat.global"))
 	case 0:
 		u.Teams.ChatType = 1
-		p.Message(lang.Translatef(u.Language, "command.team.chat.faction"))
+		p.Message(lang.Translatef(u.Language, "command.team.chat.team"))
 	}
 	data.SaveUser(u)
 }
@@ -1177,7 +1177,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	user.Messagef(p, "command.team.withdrew.success", int(amt), tm.DisplayName)
+	user.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
 }
 
 // Run ...
@@ -1236,13 +1236,13 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		o.Error("You cannot withdraw any balance from your team.")
+		user.Messagef(p, "command.team.withdraw.permission")
 		return
 	}
 
 	amt := tm.Balance
 	if amt < 1 {
-		o.Error("Your team's balance is lower than $1.")
+		user.Messagef(p, "command.team.withdraw.minimum")
 		return
 	}
 
@@ -1252,7 +1252,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	o.Print(text.Colourf("<green>You withdrew $%d from %s.</green>", int(amt), tm.Name))
+	user.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
 }
 
 // Run ...
