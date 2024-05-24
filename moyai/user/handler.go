@@ -1911,10 +1911,16 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
 
-			// Need to handle for Y-axis cases because some koths are irregular
 			switch k {
-			case koth.Cosmic:
-				if newPos.Y() < 77 || newPos.Y() > 85 {
+			case koth.Citadel:
+				if newPos.Y() > 57 || newPos.Y() < 48 {
+					if k.StopCapturing(us) {
+						Broadcast("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+					}
+					return
+				}
+			case koth.Shrine:
+				if newPos.Y() > 70 {
 					if k.StopCapturing(us) {
 						Broadcast("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}
