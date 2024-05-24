@@ -42,5 +42,7 @@ var conf = world.EntityRegistryConfig{
 	SplashPotion: func(pos, vel mgl64.Vec3, t any, owner world.Entity) world.Entity {
 		return NewMoyaiPotion(pos, vel, owner, t.(potion.Potion))
 	},
-	Lightning: entity.DefaultRegistry.Config().Lightning,
+	Lightning: func(pos mgl64.Vec3) world.Entity {
+		return NewLightning(pos)
+	},
 }

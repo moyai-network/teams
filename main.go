@@ -192,7 +192,6 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 	if err != nil {
 		panic(err)
 	}
-
 	c.Entities = ent.Registry
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
@@ -201,6 +200,7 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 }
 
 func configureWorld(w *world.World) {
+	w.SetDifficulty(world.DifficultyHard)
 	w.StopWeatherCycle()
 	w.SetDefaultGameMode(world.GameModeSurvival)
 	w.SetTime(6000)

@@ -1732,7 +1732,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 				break
 			}
 			h.p.World().PlaySound(h.p.Position(), sound.ItemBreak{})
-			h.p.World().AddEntity(entity.NewLightning(h.p.Position()))
+			h.p.World().AddEntity(h.p.World().EntityRegistry().Config().Lightning(h.p.Position()))
 			h.abilities.Set(it.StormBreakerType{}, time.Minute*2)
 			h.ability.Set(time.Second * 10)
 
