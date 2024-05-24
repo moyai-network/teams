@@ -7,7 +7,7 @@ import (
 )
 
 type Lang struct {
-	Name string `cmd:"name"`
+	Name languages `cmd:"language"`
 }
 
 func (la Lang) Run(src cmd.Source, o *cmd.Output) {
@@ -23,7 +23,7 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output) {
 	}
 
 	for l, t := range translations {
-		if t.Properties.Name == la.Name {
+		if t.Properties.Name == string(la.Name) {
 			u.Language = data.Language{
 				Tag: l,
 			}
@@ -31,4 +31,16 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output) {
 			return
 		}
 	}
+}
+
+type (
+	languages string
+)
+
+func (c languages) Type() string {
+	return "Language"
+}
+
+func (c languages) Options(_ cmd.Source) []string {
+	return []string{"English", "French", "Spanish"}
 }
