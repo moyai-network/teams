@@ -3,7 +3,6 @@ package item
 import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/creative"
-	"github.com/df-mc/dragonfly/server/world"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -55,17 +54,10 @@ func NewKey(keyType int, n int) item.Stack {
 	}
 
 	prot := item.NewEnchantment(ench.Protection{}, 1)
-	return item.NewStack(tripWireHook{}, n).WithValue(value, true).WithCustomName(customName).WithEnchantments(prot)
-}
-
-type tripWireHook struct{}
-
-func (tripWireHook) EncodeItem() (name string, meta int16) {
-	return "minecraft:tripwire_hook", 0
+	return item.NewStack(TripwireHook{}, n).WithValue(value, true).WithCustomName(customName).WithEnchantments(prot)
 }
 
 func init() {
-	world.RegisterItem(tripWireHook{})
 	for _, t := range AllKeyTypes() {
 		creative.RegisterItem(NewKey(t.key, 1))
 	}

@@ -1215,7 +1215,7 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 	teams, _ := data.LoadAllTeams()
 
 	switch bl := b.(type) {
-	case block.TNT:
+	case block.TNT, it.TripwireHook:
 		ctx.Cancel()
 	case block.Chest:
 		for _, dir := range []cube.Direction{bl.Facing.RotateLeft(), bl.Facing.RotateRight()} {
