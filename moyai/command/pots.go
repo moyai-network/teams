@@ -46,6 +46,11 @@ func (Pots) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
+	if !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) {
+		user.Messagef(p, "team.claim.not-within")
+		return
+	}
+
 	teams, err := data.LoadAllTeams()
 	if err != nil {
 		return
