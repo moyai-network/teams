@@ -27,8 +27,8 @@ Required = true
 Tebex = ''
 Whitelisted = false
 Season = 1
-Start = 'Edit this!'
-End = 'Edit this!'
+Start = '5/24/24'
+End = '6/2/24'
 
 [Proxy]
 Enabled = false
