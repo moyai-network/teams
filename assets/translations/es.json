@@ -115,6 +115,21 @@
         "command.team.unfocus": "<green>Tu equipo ya no está enfocando a <blue>%s</blue>.</green>",
         "command.team.focus.self": "<red>No puedes enfocar a tu propio equipo.</red>",
         "command.team.focus.none": "<red>Tu equipo no está enfocando a nadie.</red>",
+        "command.team.focus.player": "Debes seleccionar un jugador.",
+        "command.team.focus.yourself": "No puedes enfocarte a ti mismo.",
+        "commean.team.focus.member": "No puedes enfocar a un miembro de tu equipo.",
+
+        "command.team.deposit.minimum": "Debes proporcionar un saldo mínimo de $1.",
+        "command.team.deposit.insufficient": "No tienes un saldo de $%.2f.",
+        "command.team.deposit.success": "<green>Has depositado $%d en %s.</green>",
+
+        "command.team.withdraw.permission": "No puedes retirar ningún saldo de tu equipo.",
+        "command.team.withdraw.minimum": "Debes proporcionar un saldo mínimo de $1.",
+        "command.team.withdraw.insufficient": "Tu equipo no tiene un saldo de $%.2f.",
+        "command.team.withdraw.success": "<green>Has retirado $%d de %s.</green>",
+
+        "command.team.chat.global": "<green>Has cambiado al chat global.</green>",
+        "command.team.chat.team": "<green>Has cambiado al chat de equipo.</green>",
 
         "command.team.rallying": "<green>%s agrupándose en</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
         "command.teleport.multiple": "<red>No puedes teletransportarte a múltiples destinos.</red>",
