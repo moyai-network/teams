@@ -199,6 +199,30 @@
         "user.ability.cooldown": "<red>You must wait %.1f seconds before using this ability again.</red>",
         "user.already.in.team": "<red>You're already in a team</red>",
 
+        "gapple.cooldown": "<red>You are on golden apple cooldown.</red>",
+        "partner_item.cooldown": "<red>You are on Partner Items cooldown for %.1f seconds</red>",
+        "stormbreaker.cooldown": "<red>You are on Storm Breaker cooldown for %.1f seconds</red>",
+        "bone.cooldown": "<red>You are on Bone cooldown for %.1f seconds</red>",
+        "scrambler.cooldown": "<red>You are on scrambler cooldown for %.1f seconds</red>",
+        "pearl_disabler.cooldown": "<red>You are on pearl disabler cooldown for %.1f seconds</red>",
+
+        "bone.target": "<red>You have been boned by %s</red>",
+        "bone.user": "<green>You have boned %s</green>",
+        "bone.hit": "<green>You have hit %s with a bone %d times</green>",
+        "bone.interact": "<red>You may not interact or place blocks while boned</red>",
+
+        "snowball.koth": "<red>You cannot switch places with someone capturing a koth</red>",
+        "snowball.far": "<red>You are too far away from %s</red>",
+
+        "scrambler.target": "<red>You have been scrambled by %s</red>",
+        "scrambler.user": "<green>You have scrambled %s</green>",
+
+        "pearl_disabler.target": "<red>You have been pearl disabled by %s</red>",
+        "pearl_disabler.user": "<green>You have pearl disabled %s</green>",
+
+        "elevator.no-block": "<red>There is no block above the sign</red>",
+        "elevator.no-space": "<red>There is not enough space to teleport</red>",
+
         "command.anticheat.alerts.disabled": "<red>You will no longer receive Oomph alerts.</red>",
         "command.anticheat.alerts.enabled": "<green>You will now receive Oomph alerts.</green>",
         "command.anticheat.delay": "<green>Your Oomph alert delay has been set to %v.</green>",
@@ -391,6 +415,8 @@
         "cheat.os.spoof": "OS Spoofer",
         "cheat.reach": "Reach",
         "cheat.timer": "Timer",
+
+        "crate.key.require": "<red>You need a %s key to open this crate</red>",
 
         "newline.single": "\n",
         "newline.double": "\n\n",

@@ -1006,14 +1006,14 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
 			if k, ok := koth.Running(); ok {
 				if pl, ok := k.Capturing(); ok && pl == h.p {
-					attacker.Message(text.Colourf("<red>You cannot switch places with someone capturing a koth</red>"))
+					Messagef(attacker, "snowball.koth")
 					break
 				}
 			}
 
 			dist := attacker.Position().Sub(attacker.Position()).Len()
 			if dist > 10 {
-				attacker.Message(text.Colourf("<red>You are too far away from %s</red>", h.p.Name()))
+				Messagef(attacker, "snowball.far")
 				break
 			}
 
@@ -1207,7 +1207,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
 	if h.Boned() {
-		h.p.Message(text.Colourf("<red>You may not interact or place blocks while boned</red>"))
+		Messagef(h.p, "bone.interact")
 		ctx.Cancel()
 		return
 	}
@@ -1312,7 +1312,7 @@ func (h *Handler) HandleItemConsume(ctx *event.Context, i item.Stack) {
 	switch i.Item().(type) {
 	case item.GoldenApple:
 		if cd := h.goldenApple; cd.Active() {
-			h.p.Message(text.Colourf("<red>You are on golden apple cooldown.</red>"))
+			Messagef(h.p, "gapple.cooldown")
 			ctx.Cancel()
 		} else {
 			cd.Set(time.Second * 30)
@@ -1326,12 +1326,10 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	i, left := h.p.HeldItems()
 	b := w.Block(pos)
 
-	h.p.Message(pos)
-
 	for _, c := range crate.All() {
 		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
 			if _, ok := i.Value("crate-key_" + colour.StripMinecraftColour(c.Name())); !ok {
-				h.p.Message(text.Colourf("<red>You need a %s key to open this crate</red>", colour.StripMinecraftColour(c.Name())))
+				Messagef(h.p, "crate.key.require", colour.StripMinecraftColour(c.Name()))
 				break
 			}
 			it.AddOrDrop(h.p, ench.AddEnchantmentLore(crate.SelectReward(c)))
@@ -1459,7 +1457,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		ctx.Cancel()
 	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor:
 		if h.Boned() {
-			h.p.Message(text.Colourf("<red>You may not interact or place blocks while boned</red>"))
+			Messagef(h.p, "gapple.cooldown")
 			ctx.Cancel()
 			return
 		}
@@ -1502,11 +1500,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				for y := pos.Y() + 1; y < 256; y++ {
 					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
 						if !blockFound {
-							h.p.Message(text.Colourf("<red>There is no block above the sign</red>"))
+							Messagef(h.p, "elevator.no-block")
 							return
 						}
 						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y + 1, pos.Z()}).(block.Air); !ok {
-							h.p.Message(text.Colourf("<red>There is not enough space to teleport up</red>"))
+							Messagef(h.p, "elevator.no-space")
 							return
 						}
 						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y()), 0}))
@@ -1519,11 +1517,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				for y := pos.Y() - 1; y > 0; y-- {
 					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
 						if !blockFound {
-							h.p.Message(text.Colourf("<red>There is not enough space to teleport down</red>"))
+							Messagef(h.p, "elevator.no-space")
 							return
 						}
 						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y - 1, pos.Z()}).(block.Air); !ok {
-							h.p.Message(text.Colourf("<red>There is not enough space to teleport down</red>"))
+							Messagef(h.p, "elevator.no-space")
 							return
 						}
 						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y() - 1), 0}))
@@ -1565,7 +1563,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			switch choice {
 			case "buy":
 				if u.Teams.Balance < price {
-					h.p.Message("shop.balance.insufficient")
+					Messagef(h.p, "shop.balance.insufficient")
 					return
 				}
 				if !ok {
@@ -1717,6 +1715,9 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 
 	//u, err := data.LoadUserOrCreate(h.p.Name(), h.p.Handler().(*Handler).XUID())
 	target, ok := Lookup(t.Name())
+	if !ok {
+		return
+	}
 	targetHandler, ok := t.Handler().(*Handler)
 	if !ok {
 		return
@@ -1724,13 +1725,13 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	typ, ok2 := it.SpecialItem(held)
 	if ok && ok2 {
 		if cd := h.ability; cd.Active() {
-			h.p.Message(text.Colourf("<red>You are on Partner Items cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			return
 		}
 		switch kind := typ.(type) {
 		case it.StormBreakerType:
 			if cd := h.abilities.Key(it.StormBreakerType{}); cd.Active() {
-				h.p.Message(text.Colourf("<red>You are on storm breaker cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				Messagef(h.p, "stormbreaker.cooldown", cd.Remaining().Seconds())
 				break
 			}
 			h.p.World().PlaySound(h.p.Position(), sound.ItemBreak{})
@@ -1747,23 +1748,23 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			targetArmourHandler.stormBreak()
 		case it.ExoticBoneType:
 			if cd := h.abilities.Key(kind); cd.Active() {
-				h.p.Message(text.Colourf("<red>You are on bone cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				Messagef(h.p, "bone.cooldown", cd.Remaining().Seconds())
 				break
 			}
 			targetHandler.AddBoneHit(t)
 			if targetHandler.Boned() {
-				target.Message(text.Colourf("<red>You have been boned by %s</red>", h.p.Name()))
-				h.p.Message(text.Colourf("<green>You have boned %s</green>", t.Name()))
+				Messagef(target, "bone.target", h.p.Name())
+				Messagef(h.p, "bone.user", t.Name())
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute)
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
 				targetHandler.ResetBoneHits(h.p)
 			} else {
-				h.p.Message(text.Colourf("<green>You have hit %s with a bone %d times</green>", t.Name(), targetHandler.BoneHits(h.p)))
+				Messagef(h.p, "bone.hit", t.Name(), targetHandler.BoneHits(h.p))
 			}
 		case it.ScramblerType:
 			if cd := h.abilities.Key(kind); cd.Active() {
-				h.p.Message(text.Colourf("<red>You are on scrambler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				Messagef(h.p, "scrambler.cooldown", cd.Remaining().Seconds())
 				break
 			}
 			targetHandler.AddScramblerHit(h.p)
@@ -1786,8 +1787,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 					target.Inventory().SetItem(j, it1)
 					target.Inventory().SetItem(i, it2)
 				}
-				target.Message(text.Colourf("<red>You have been scrambled by %s</red>", h.p.Name()))
-				h.p.Message(text.Colourf("<green>You have scrambled %s</green>", t.Name()))
+				Messagef(target, "scrambler.target", h.p.Name())
+				Messagef(h.p, "scrambler.hit", t.Name())
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute*2)
 				targetHandler.ResetScramblerHits(h.p)
@@ -1795,15 +1796,15 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			}
 		case it.PearlDisablerType:
 			if cd := h.abilities.Key(kind); cd.Active() {
-				h.p.Message(text.Colourf("<red>You are on pearl disabler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+				Messagef(h.p, "pearl_disabler.cooldown", cd.Remaining().Seconds())
 				break
 			}
 			if !targetHandler.PearlDisabled() {
-				target.Message(text.Colourf("<red>You have been pearl disabled by %s</red>", h.p.Name()))
+				Messagef(target, "pearl_disabler.target", h.p.Name())
 				targetHandler.pearl.Set(time.Second * 15)
 				targetHandler.TogglePearlDisable()
 
-				h.p.Message(text.Colourf("<green>You have pearl disabled %s</green>", t.Name()))
+				Messagef(h.p, "pearl_disabler.user", t.Name())
 				h.ability.Set(time.Second * 10)
 				h.abilities.Set(kind, time.Minute)
 				h.p.SetHeldItems(h.SubtractItem(held, 1), left)
