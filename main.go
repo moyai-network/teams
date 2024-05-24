@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bedrock-gophers/intercept"
+	"github.com/bedrock-gophers/spawner/spawner"
 	"image"
 	"math"
 	_ "net/http/pprof"
@@ -51,6 +52,13 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
+)
+
+var (
+	shopSigns   = []shopSign{}
+	cowSpawners = []cube.Pos{
+		{80, -61, 0},
+	}
 )
 
 func main() {
@@ -107,6 +115,7 @@ func main() {
 
 	w := srv.World()
 	configureWorld(w)
+	placeCowSpawners(w)
 	clearEntities(w)
 	placeCrates(w)
 	placeShopSigns(w)
@@ -122,6 +131,14 @@ func main() {
 		// Do nothing.
 	}
 
+}
+
+func placeCowSpawners(w *world.World) {
+	for _, pos := range cowSpawners {
+		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*5, 25, true)
+		world.RegisterBlock(sp)
+		w.SetBlock(pos, sp, nil)
+	}
 }
 
 func clearEntities(w *world.World) {
@@ -272,8 +289,6 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 	}
 
 }
-
-var shopSigns = []shopSign{}
 
 // shopSign is a sign that can be placed in the world to create a shop. It can be used to buy or sell items.
 type shopSign struct {
