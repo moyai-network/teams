@@ -1,6 +1,10 @@
 package command
 
 import (
+	"strings"
+	"time"
+	_ "unsafe"
+
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -14,9 +18,6 @@ import (
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
-	"strings"
-	"time"
-	_ "unsafe"
 )
 
 type Pots struct{}
@@ -109,5 +110,5 @@ func fillInventory(in *inventory.Inventory, it item.Stack) {
 
 // noinspection ALL
 //
-//go:linkname pairChest github.com/df-mc/dragonfly/server/block.(*Chest).Pair
+//go:linkname pairChest github.com/df-mc/dragonfly/server/block.(*Chest).pair
 func pairChest(c *block.Chest, w *world.World, pos, pairPos cube.Pos) (ch, pair block.Chest, ok bool)

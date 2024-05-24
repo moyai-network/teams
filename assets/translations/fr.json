@@ -5,7 +5,7 @@
     },
 
     "translations": {
-        "area.enter": "<yellow>Vous entrez dans: %s</yellow>",
+        "area.enter": "<yellow>Vous entrez: %s</yellow>",
         "area.leave": "<yellow>Vous quittez: %s</yellow>",
 
         "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
