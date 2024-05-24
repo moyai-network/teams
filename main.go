@@ -21,12 +21,15 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player/chat"
+	"github.com/df-mc/dragonfly/server/player/skin"
+	"github.com/df-mc/npc"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	cr "github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	ent "github.com/moyai-network/teams/moyai/entity"
+	"github.com/moyai-network/teams/moyai/menu"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -59,9 +62,9 @@ var (
 	shopSigns   = []shopSign{}
 	cowSpawners = []cube.Pos{
 		{-17, 63, -14},
-		// {-15, 63, -18},
-		// {-13, 63, -22},
-		// {-11, 63, -26},
+		{-15, 63, -18},
+		{-13, 63, -22},
+		{-11, 63, -26},
 	}
 )
 
@@ -121,6 +124,8 @@ func main() {
 	configureWorld(w)
 	placeCowSpawners(w)
 	clearEntities(w)
+	placeText(w, conf)
+	placeSlapper(w)
 	placeCrates(w)
 	placeShopSigns(w)
 	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
@@ -134,6 +139,82 @@ func main() {
 	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled)) {
 		// Do nothing.
 	}
+}
+
+func placeText(w *world.World, c moyai.Config) {
+	spawn := mgl64.Vec3{0.5, 68, 5}
+	crate := mgl64.Vec3{5.5, 68, 15.5}
+	kit := mgl64.Vec3{-7.5, 67, 39.5}
+	shop := mgl64.Vec3{13, 62, 60}
+	adv := mgl64.Vec3{0, 62, 81}
+	for _, e := range []*entity.Ent{
+		entity.NewText(text.Colourf("<b><red>MoyaiHCF</red></b>"), mgl64.Vec3{spawn.X(), spawn.Y() + 2.5, spawn.Z()}),
+		entity.NewText(text.Colourf("<grey>Season %v began on %v.</grey>", c.Moyai.Season, c.Moyai.Start), mgl64.Vec3{spawn.X(), spawn.Y() + 2, spawn.Z()}),
+		entity.NewText(text.Colourf("<grey>It will conclude on %v.</grey>", c.Moyai.End), mgl64.Vec3{spawn.X(), spawn.Y() + 1.6, spawn.Z()}),
+		entity.NewText(text.Colourf("<red>Store</red>: https://store.moyai.pro"), mgl64.Vec3{spawn.X(), spawn.Y() + 1.1, spawn.Z()}),
+		entity.NewText(text.Colourf("<red>Discord</red>: discord.moyai.pro"), mgl64.Vec3{spawn.X(), spawn.Y() + 0.5, spawn.Z()}),
+		entity.NewText(text.Colourf("<grey>moyai.pro</grey>"), spawn),
+	} {
+		w.AddEntity(e)
+	}
+
+	for _, e := range []*entity.Ent{
+		entity.NewText(text.Colourf("<b><red>Crates & Keys</red></b>"), mgl64.Vec3{crate.X(), crate.Y() + 2.5, crate.Z()}),
+		entity.NewText(text.Colourf("<yellow>Crate Keys can be obtained easily with /reclaim (once).</yellow>"), mgl64.Vec3{crate.X(), crate.Y() + 2, crate.Z()}),
+		entity.NewText(text.Colourf("<grey>To the left is the Partner Crate and to the right is the KOTH Crate.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.6, crate.Z()}),
+		entity.NewText(text.Colourf("<grey>In front are the three donor crates.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.1, crate.Z()}),
+		entity.NewText(text.Colourf("<red>Buy Keys</red>: store.moyai.pro"), mgl64.Vec3{crate.X(), crate.Y() + 0.5, crate.Z()}),
+	} {
+		w.AddEntity(e)
+	}
+
+	for _, e := range []*entity.Ent{
+		entity.NewText(text.Colourf("<b><red>Kits</red></b>"), mgl64.Vec3{kit.X(), kit.Y() + 2.5, kit.Z()}),
+		entity.NewText(text.Colourf("<yellow>Kits can be equipped using /kit</yellow>"), mgl64.Vec3{kit.X(), kit.Y() + 2, kit.Z()}),
+		entity.NewText(text.Colourf("<grey>All kits have a 4-hour cooldown (2-hours for donors).</grey>"), mgl64.Vec3{kit.X(), kit.Y() + 1.6, kit.Z()}),
+		entity.NewText(text.Colourf("<grey>Certain kits must be purchased through the store.</grey>"), mgl64.Vec3{kit.X(), kit.Y() + 1.1, kit.Z()}),
+		entity.NewText(text.Colourf("<red>Buy Kits</red>: store.moyai.pro"), mgl64.Vec3{kit.X(), kit.Y() + 0.5, kit.Z()}),
+	} {
+		w.AddEntity(e)
+	}
+
+	for _, e := range []*entity.Ent{
+		entity.NewText(text.Colourf("<b><red>Shop</red></b>"), mgl64.Vec3{shop.X(), shop.Y() + 2.5, shop.Z()}),
+		entity.NewText(text.Colourf("<yellow>You can buy and sell items at the shop for credits!</yellow>"), mgl64.Vec3{shop.X(), shop.Y() + 2, shop.Z()}),
+		entity.NewText(text.Colourf("<grey>You can deposit credits into your team with /f deposit.</grey>"), mgl64.Vec3{shop.X(), shop.Y() + 1.6, shop.Z()}),
+		entity.NewText(text.Colourf("<grey>Credits can also be used in certain hours during the Black Market...</grey>"), mgl64.Vec3{shop.X(), shop.Y() + 1.1, shop.Z()}),
+		entity.NewText(text.Colourf("<red>Buy Credits</red>: store.moyai.pro"), mgl64.Vec3{shop.X(), shop.Y() + 0.5, shop.Z()}),
+	} {
+		w.AddEntity(e)
+	}
+
+	for _, e := range []*entity.Ent{
+		entity.NewText(text.Colourf("<b><red>Chasing Glory!</red></b>"), mgl64.Vec3{adv.X(), adv.Y() + 2.5, adv.Z()}),
+		entity.NewText(text.Colourf("<yellow>Create a team via /t create and a claim via /t claim to get started!</yellow>"), mgl64.Vec3{adv.X(), adv.Y() + 2, adv.Z()}),
+		entity.NewText(text.Colourf("<grey>Score team points by killing users, capturing KOTHs, and other events.</grey>"), mgl64.Vec3{adv.X(), adv.Y() + 1.6, adv.Z()}),
+		entity.NewText(text.Colourf("<grey>The top three factiosn will receive prizes every map. March down South Road and get started!</grey>"), mgl64.Vec3{adv.X(), adv.Y() + 1.1, adv.Z()}),
+		entity.NewText(text.Colourf("<red>Buy Ranks</red>: store.moyai.pro"), mgl64.Vec3{adv.X(), adv.Y() + 0.5, adv.Z()}),
+	} {
+		w.AddEntity(e)
+	}
+}
+
+func placeSlapper(w *world.World) {
+	_ = npc.Create(npc.Settings{
+		Name: text.Colourf("<green>Click to use kits</green>"),
+		Skin: skin.Skin{},
+		Scale: 1,
+		Yaw: 215,
+		MainHand: item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 1)),
+		Helmet: item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Leggings: item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Boots: item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+
+		Position: mgl64.Vec3{-7, 65, 38.5},
+	}, w, func(p *player.Player) {
+		inv.SendMenu(p, menu.NewKitsMenu(p))
+	})
 }
 
 func placeCowSpawners(w *world.World) {
@@ -184,7 +265,7 @@ func placeCrates(w *world.World) {
 		b.Inventory().Handle(cr.Handler{})
 
 		w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
-		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
+		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Left click to open crate</yellow>\n<grey>Right click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
 		w.AddEntity(t)
 	}
 }
