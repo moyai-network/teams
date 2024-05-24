@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/intercept"
-	"github.com/bedrock-gophers/spawner/spawner"
 	"image"
 	"math"
 	_ "net/http/pprof"
@@ -13,6 +11,9 @@ import (
 	"syscall"
 	"time"
 	"unicode"
+
+	"github.com/bedrock-gophers/intercept"
+	"github.com/bedrock-gophers/spawner/spawner"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/inv/inv"
@@ -57,7 +58,10 @@ import (
 var (
 	shopSigns   = []shopSign{}
 	cowSpawners = []cube.Pos{
-		{80, -61, 0},
+		{-17, 63, -14},
+		// {-15, 63, -18},
+		// {-13, 63, -22},
+		// {-11, 63, -26},
 	}
 )
 
