@@ -1,14 +1,15 @@
 package koth
 
 import (
+	"math/rand"
+	"strings"
+	"time"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
 	it "github.com/moyai-network/teams/moyai/item"
-	"math/rand"
-	"strings"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
@@ -36,17 +37,35 @@ func init() {
 }
 
 var (
-	Cosmic = &KOTH{
-		name:        text.Colourf("<amethyst>Cosmic</amethyst>"),
-		area:        area.NewArea(mgl64.Vec2{497, 503}, mgl64.Vec2{503, 497}),
+	Garden = &KOTH{
+		name:        text.Colourf("<dark-green>Garden</dark-green>"),
+		area:        area.NewArea(mgl64.Vec2{-509, -509}, mgl64.Vec2{-513, -513}),
+		cancel:      make(chan struct{}),
+		coordinates: mgl64.Vec2{-500, -500},
+	}
+	Oasis = &KOTH{
+		name:        text.Colourf("<red>Oasis</red>"),
+		area:        area.NewArea(mgl64.Vec2{478, 500}, mgl64.Vec2{474, 496}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
+	}
+	Shrine = &KOTH{
+		name:        text.Colourf("<gold>Shrine</gold>"),
+		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{508, -486}),
+		cancel:      make(chan struct{}),
+		coordinates: mgl64.Vec2{500, -500},
+	}
+	Citadel = &KOTH{
+		name:        text.Colourf("<amethyst>Citadel</amethyst>"),
+		area:        area.NewArea(mgl64.Vec2{-502, 504}, mgl64.Vec2{-506, 500}),
+		cancel:      make(chan struct{}),
+		coordinates: mgl64.Vec2{-500, 500},
 	}
 )
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Cosmic}
+	return []*KOTH{Garden, Oasis, Shrine, Citadel}
 }
 
 // Running returns true if the KOTH passed is currently running.
