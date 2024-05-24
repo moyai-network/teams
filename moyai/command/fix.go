@@ -8,7 +8,7 @@ import (
 )
 
 // Fix is a command that allows the player to fix the item in their hand or another player's hand.
-type Fix struct{
+type Fix struct {
 	Player cmd.Optional[[]cmd.Target] `cmd:"player"`
 }
 
@@ -58,6 +58,20 @@ func (f FixAll) Run(s cmd.Source, o *cmd.Output) {
 	for i, it := range p.Inventory().Items() {
 		new := it.WithDurability(it.MaxDurability())
 		p.Inventory().SetItem(i, new)
+	}
+
+	for i, it := range p.Armour().Items() {
+		new := it.WithDurability(it.MaxDurability())
+		switch i {
+		case 0:
+			p.Armour().SetHelmet(new)
+		case 1:
+			p.Armour().SetChestplate(new)
+		case 2:
+			p.Armour().SetLeggings(new)
+		case 3:
+			p.Armour().SetBoots(new)
+		}
 	}
 
 	user.Messagef(p, "command.fix.success")
