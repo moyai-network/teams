@@ -238,7 +238,7 @@ func (t Team) DTRString() string {
 	if t.DTR < 0 {
 		return text.Colourf("<redstone>%.2f%s</redstone>", t.DTR, t.DTRDot())
 	}
-	return text.Colourf("<yellow>%.2f%s</yellow>", t.TrueDTR(), t.DTRDot())
+	return text.Colourf("<yellow>%.2f%s</yellow>", t.DTR, t.DTRDot())
 }
 
 // DTRDot returns the DTR dot of the faction.
