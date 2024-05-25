@@ -226,7 +226,7 @@ func (t Team) TrueDTR() float64 {
 		return t.DTR
 	}
 
-	prog := float64(since-time.Minute*10) / float64(time.Minute*5)
+	prog := float64(since-time.Minute*2) / float64(time.Minute*3)
 	return t.DTR - 1.0 + prog
 }
 
@@ -238,7 +238,7 @@ func (t Team) DTRString() string {
 	if t.DTR < 0 {
 		return text.Colourf("<redstone>%.2f%s</redstone>", t.DTR, t.DTRDot())
 	}
-	return text.Colourf("<yellow>%.2f%s</yellow>", t.DTR, t.DTRDot())
+	return text.Colourf("<yellow>%.2f%s</yellow>", t.TrueDTR(), t.DTRDot())
 }
 
 // DTRDot returns the DTR dot of the faction.

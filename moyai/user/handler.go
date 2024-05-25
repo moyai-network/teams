@@ -1799,7 +1799,7 @@ func (h *Handler) HandleQuit() {
 				}
 				u.Teams.Stats.KillStreak = 0
 				if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
+					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5)).WithLastDeath(time.Now())
 					data.SaveTeam(tm)
 				}
 				DropContents(h.p)
