@@ -1507,8 +1507,8 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 
 	if !t.OnGround() {
-		max, min := maxMin(t.Position().Y(), h.p.Position().Y())
-		if max-min >= 2.5 {
+		mx, mn := maxMin(t.Position().Y(), h.p.Position().Y())
+		if mx-mn >= 2.5 {
 			*height = 0.38 / 1.25
 		}
 	}
