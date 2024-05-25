@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"math"
+	"math/rand"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -22,6 +23,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/skin"
+	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/df-mc/npc"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
@@ -65,6 +67,12 @@ var (
 		{-15, 63, -18},
 		{-13, 63, -22},
 		{-11, 63, -26},
+	}
+	endermanSpawners = []cube.Pos{
+		{28, 63, -33},
+		{27, 63, -36},
+		{26, 63, -39},
+		{25, 63, -42},
 	}
 )
 
@@ -122,12 +130,15 @@ func main() {
 
 	w := srv.World()
 	configureWorld(w)
-	placeCowSpawners(w)
+	placeSpawners(w)
 	clearEntities(w)
 	placeText(w, conf)
 	placeSlapper(w)
 	placeCrates(w)
 	placeShopSigns(w)
+	
+	go tickBlackMarket()
+
 	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 
 	registerCommands(srv)
@@ -138,6 +149,28 @@ func main() {
 
 	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled)) {
 		// Do nothing.
+	}
+}
+
+func tickBlackMarket() {
+	t := time.NewTicker(time.Minute*15)
+	defer t.Stop()
+
+	for range t.C {
+		if time.Since(moyai.LastBlackMarket()) < time.Hour {
+			continue
+		}
+
+		if rand.Intn(4) == 0 {
+			moyai.SetLastBlackMarket(time.Now())
+			for _, p := range moyai.Server().Players() {
+				p.PlaySound(sound.BarrelOpen{})
+				p.PlaySound(sound.FireworkHugeBlast{})
+				p.PlaySound(sound.FireworkLaunch{})
+				p.PlaySound(sound.Note{})
+				user.Broadcastf("blackmarket.opened")
+			}
+		}
 	}
 }
 
@@ -217,9 +250,13 @@ func placeSlapper(w *world.World) {
 	})
 }
 
-func placeCowSpawners(w *world.World) {
+func placeSpawners(w *world.World) {
 	for _, pos := range cowSpawners {
-		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*5, 25, true)
+		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*30, 25, true)
+		w.SetBlock(pos, sp, nil)
+	}
+	for _, pos := range endermanSpawners {
+		sp := spawner.New(ent.NewEnderman, pos.Vec3Centre(), w, time.Second*5, 25, true)
 		w.SetBlock(pos, sp, nil)
 	}
 }
@@ -308,6 +345,7 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			_ = moyai.Server().Close()
 			os.Exit(1)
 		})
+		moyai.Server().World().AddEntity(p)
 		store.ExecuteCommands(p)
 		if proxy {
 			//info := moyai.SearchInfo(p.UUID())
@@ -489,6 +527,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command.BlockShop{}),
 		cmd.New("enderchest", text.Colourf("Access your enderchest."), []string{"ec"}, command.Enderchest{}),
+		cmd.New("blackmarket", text.Colourf("Access the secret items of the black market"), nil, command.BlackMarket{}),
 	} {
 		cmd.Register(c)
 	}

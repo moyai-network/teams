@@ -9,6 +9,8 @@
         "area.enter": "<yellow>Now entering: %s</yellow>",
         "area.leave": "<yellow>Now leaving: %s</yellow>",
 
+        "blackmarket.opened": "<gold>[<redstone>Black Market</redstone>]</gold> <red>The black market has been opened for 10 minutes!</red>",
+
         "class.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> teammates</yellow>",
         "class.ability.receive": "<yellow>You have received <green>%s %v</green> from <blue>%v</blue> teammates</yellow>",
         "class.ability.receive.self": "<yellow>You have received <green>%s %v</green> from yourself</yellow>",

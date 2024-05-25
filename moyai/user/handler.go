@@ -195,13 +195,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 	*message = emojis.Replace(*message)
 
-	if *message == "i" {
-		h.p.Message("ok")
-		h.ShowArmor(false)
-	} else if *message == "ii" {
-		h.p.Message("ok2")
-		h.ShowArmor(true)
-	}
 	r := u.Roles.Highest()
 
 	if !u.Teams.Mute.Expired() {
@@ -294,6 +287,16 @@ func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 
 	w := p.World()
 	b := w.Block(pos)
+
+
+	if _, ok := b.(block.ItemFrame); ok {
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) && h.p.GameMode() != world.GameModeCreative {
+				ctx.Cancel()
+				return
+			}
+		}
+	}
 
 	held, _ := p.HeldItems()
 	typ, ok := it.SpecialItem(held)
@@ -1119,6 +1122,15 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 	}
 
+	if _, ok := b.(block.ItemFrame); ok {
+		for _, a := range area.Protected(w) {
+			if a.Vec3WithinOrEqualXZ(pos.Vec3()) && h.p.GameMode() != world.GameModeCreative {
+				ctx.Cancel()
+				return
+			}
+		}
+	}
+
 	switch it := i.Item().(type) {
 	case item.EnderPearl:
 		if f, ok := b.(block.WoodFenceGate); ok && f.Open {
@@ -1215,7 +1227,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	switch b.(type) {
 	case block.Anvil:
 		ctx.Cancel()
-	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor:
+	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor, block.ItemFrame:
 		if h.coolDownBonedEffect.Active() {
 			Messagef(h.p, "user.interaction.boned")
 			ctx.Cancel()

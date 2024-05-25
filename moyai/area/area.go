@@ -161,7 +161,7 @@ func WarZone(w *world.World) NamedArea {
 	case world.End:
 		return NamedArea{}
 	default:
-		panic("should never happen")
+		//panic("should never happen")
 	}
 	return NamedArea{}
 }
@@ -173,7 +173,7 @@ func Wilderness(w *world.World) NamedArea {
 	case world.Nether:
 		return Nether.Wilderness()
 	default:
-		panic("should never happen")
+		//panic("should never happen")
 	}
 	return NamedArea{}
 }
@@ -187,7 +187,7 @@ func Roads(w *world.World) []NamedArea {
 	case world.End:
 		return []NamedArea{}
 	default:
-		panic("should never happen")
+		//panic("should never happen")
 	}
 	return []NamedArea{}
 }
@@ -201,7 +201,7 @@ func KOTHs(w *world.World) []NamedArea {
 	case world.End:
 		return []NamedArea{}
 	default:
-		panic("should never happen")
+		// panic("should never happen")
 	}
 	return []NamedArea{}
 }
