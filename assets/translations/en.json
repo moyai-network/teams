@@ -253,8 +253,8 @@
         "command.team.focus.self": "<red>You cannot focus your own team.</red>",
         "command.team.focus.none": "<red>Your team is not focusing anyone.</red>",
         "command.team.focus.player": "You must target a player.",
-        "command.team.focus.yourself": "You cannot focus yourself.",
-        "commean.team.focus.member": "You cannot focus a member of your team.",
+        "command.team.focus.yourself": "<red>You cannot focus yourself.</red>",
+        "command.team.focus.member": "<red>You cannot focus a member of your team.</red>",
 
         "command.team.deposit.minimum": "You must provide a minimum balance of $1.",
         "command.team.deposit.insufficient": "You do not have a balance of $%.2f.",
