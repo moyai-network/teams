@@ -1472,6 +1472,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok {
 		return
 	}
+	if targetHandler.logger {
+		ctx.Cancel()
+		return
+	}
 	typ, ok2 := it.SpecialItem(held)
 	if ok && ok2 {
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
