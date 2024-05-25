@@ -27,8 +27,16 @@ func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 	}
 }
 
-func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
+func (h *PacketHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet) {
 	switch pkt := pk.(type) {
+	case *packet.PlayerSkin:
+		if len(pkt.Skin.SkinData) > 4265 && (len(pkt.Skin.SkinData)-4265) >= 78530 || len(pkt.Skin.SkinData) < 9 {
+			ctx.Cancel()
+		}
+	case *packet.PlayerAuthInput:
+		if pkt.InputData&packet.InputFlagStartSwimming != 0 {
+			pkt.InputData = pkt.InputData &^ packet.InputFlagStartSwimming
+		}
 	case *packet.CommandRequest:
 		lastArgIndex := len(pkt.CommandLine) - 1
 		if lastArgIndex < 0 {
@@ -41,7 +49,7 @@ func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
 	}
 }
 
-func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
+func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
 	name := h.c.IdentityData().DisplayName
 
 	p, ok := Lookup(name)
@@ -51,6 +59,10 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	u, _ := data.LoadUserFromName(p.Name())
 
 	switch pkt := pk.(type) {
+	case *packet.ActorEvent:
+		if pkt.EventType == packet.ActorEventStartSwimming {
+			ctx.Cancel()
+		}
 	case *packet.SetActorData:
 		t, ok := lookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
