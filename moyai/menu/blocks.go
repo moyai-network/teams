@@ -34,5 +34,15 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 	switch name {
 	case "Wood":
 		inv.SendMenu(p, NewWoodMenu(p))
+	case "Wool":
+		inv.SendMenu(p, NewWoolMenu(p))
+	case "Concrete":
+		inv.SendMenu(p, NewConcreteMenu(p))
+	case "Ore Blocks":
+		inv.SendMenu(p, NewOreMenu(p))
+	case "Glass":
+		inv.SendMenu(p, NewGlassMenu(p))
+	case "Glass Panes":
+		inv.SendMenu(p, NewPaneMenu(p))
 	}
 }

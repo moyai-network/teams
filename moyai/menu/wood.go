@@ -7,13 +7,10 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/data"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -80,16 +77,5 @@ func (Wood) Submit(p *player.Player, i item.Stack) {
 		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.WarpedWood()}, 32))
 	}
 
-	inv := p.Inventory()
-	arm := p.Armour()
-	if s := unsafe.Session(p); s != session.Nop {
-		for i := 0; i < 36; i++ {
-			st, _ := inv.Item(i)
-			viewSlotChange(s, i, st, protocol.WindowIDInventory)
-		}
-
-		for i, st := range arm.Slots() {
-			viewSlotChange(s, i, st, protocol.WindowIDArmour)
-		}
-	}
+	updateInventory(p)
 }

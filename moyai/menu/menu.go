@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/enchantment"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/unsafe"
@@ -21,6 +22,21 @@ func glassFilledStack(size int) []item.Stack {
 		stacks[i] = item.NewStack(block.StainedGlassPane{Colour: item.ColourPink()}, 1).WithCustomName(text.Colourf("<aqua>Moyai</aqua>")).WithEnchantments(item.NewEnchantment(enchantment.Unbreaking{}, 1))
 	}
 	return stacks
+}
+
+func updateInventory(p *player.Player) {
+	inv := p.Inventory()
+	arm := p.Armour()
+	if s := unsafe.Session(p); s != session.Nop {
+		for i := 0; i < 36; i++ {
+			st, _ := inv.Item(i)
+			viewSlotChange(s, i, st, protocol.WindowIDInventory)
+		}
+
+		for i, st := range arm.Slots() {
+			viewSlotChange(s, i, st, protocol.WindowIDArmour)
+		}
+	}
 }
 
 
