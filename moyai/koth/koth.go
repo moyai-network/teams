@@ -134,10 +134,16 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 	if k.capturing != nil || !k.running {
 		return false
 	}
-	k.time = time.Now().Add(300 * time.Second)
+	var t time.Duration
+	if k == Citadel {
+		t = 600 * time.Second
+	} else {
+		t = 300 * time.Second
+	}
+	k.time = time.Now().Add(t)
 	go func() {
 		select {
-		case <-time.After(300 * time.Second):
+		case <-time.After(t):
 			k.capturing = nil
 			k.running = false
 
