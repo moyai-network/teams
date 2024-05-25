@@ -109,9 +109,6 @@ type Handler struct {
 	scramblerHits map[string]int
 	pearlDisabled bool
 
-	lastPearlPos mgl64.Vec3
-	lastHitBy    *player.Player
-
 	logout *process.Process
 	stuck  *process.Process
 	home   *process.Process
@@ -122,7 +119,8 @@ type Handler struct {
 	lastAttackerName atomic.Value[string]
 	lastAttackTime   atomic.Value[time.Time]
 
-	lastMessage atomic.Value[time.Time]
+	lastPearlPos mgl64.Vec3
+	lastMessage  atomic.Value[time.Time]
 
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
@@ -628,8 +626,8 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 		switch kind := v.(type) {
 		case it.TimeWarpType:
-			if h.lastPearlPos == (mgl64.Vec3{}) {
-				h.p.Message(text.Colourf("<red>You do not have a last thrown pearl.</red>"))
+			if h.lastPearlPos == (mgl64.Vec3{}) || !h.pearl.Active() {
+				h.p.Message(text.Colourf("<red>You do not have a last thrown pearl or it has expired.</red>"))
 				break
 			}
 			if cd := h.abilities.Key(kind); cd.Active() {
@@ -682,21 +680,25 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.abilities.Set(kind, time.Minute*2)
 			h.Player().Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
 		case it.NinjaStarType:
-			if h.lastHitBy == nil || !h.combat.Active() {
-				h.p.Message(text.Colourf("<red>No last hit found</red>"))
+			lastAttacker, ok := h.lastAttacker()
+			if !ok {
+				h.p.Message(text.Colourf("<red>No last valid hit found</red>"))
 				break
 			}
 			if cd := h.abilities.Key(kind); cd.Active() {
 				h.p.Message(text.Colourf("<red>You are on Ninja Star cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			h.p.Message(text.Colourf("<red>Ongoing to %s in 5 seconds...</red>", h.lastHitBy.Name()))
-			h.lastHitBy.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
+
+			h.p.Message(text.Colourf("<red>Ongoing to %s in 5 seconds...</red>", lastAttacker.Name()))
+			lastAttacker.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
 			h.ability.Set(time.Second * 10)
 			h.abilities.Set(kind, time.Minute*2)
+
 			time.AfterFunc(time.Second*5, func() {
-				if h.p != nil && h.lastHitBy != nil {
-					h.p.Teleport(h.lastHitBy.Position())
+				lastAttacker, ok = Lookup(h.lastAttackerName.Load())
+				if h.p != nil && ok {
+					h.p.Teleport(lastAttacker.Position())
 				}
 			})
 		}
@@ -819,128 +821,11 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 }
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
+	p := h.p
+
 	*dmg = *dmg / 1.25
 	if h.archer.Active() {
 		*dmg = *dmg + *dmg*0.15
-	}
-	if h.logger {
-		p := h.p
-		if (p.Health()-p.FinalDamageFrom(*dmg, src) <= 0 || (src == entity.VoidDamageSource{})) && !ctx.Cancelled() {
-			armourHandler, ok := p.Armour().Inventory().Handler().(*ArmourHandler)
-			if ok && armourHandler.stormBreakerStatus.Load() {
-				armourHandler.stormBreakerCancel <- struct{}{}
-				p.Armour().SetHelmet(armourHandler.stormBreakerHelmet)
-			}
-
-			ctx.Cancel()
-			p.World().PlaySound(p.Position(), sound.Explosion{})
-
-			npc := player.New(p.Name(), p.Skin(), p.Position())
-			npc.Handle(npcHandler{})
-			npc.SetAttackImmunity(time.Millisecond * 1400)
-			npc.SetNameTag(p.NameTag())
-			npc.SetScale(p.Scale())
-			p.World().AddEntity(npc)
-
-			for _, viewer := range p.World().Viewers(npc.Position()) {
-				viewer.ViewEntityAction(npc, entity.DeathAction{})
-			}
-			time.AfterFunc(time.Second*2, func() {
-				_ = npc.Close()
-			})
-
-			if att, ok := attackerFromSource(src); ok {
-				npc.KnockBack(att.Position(), 0.5, 0.2)
-			}
-
-			for _, e := range p.Effects() {
-				p.RemoveEffect(e.Type())
-			}
-			for _, et := range h.p.World().Entities() {
-				if be, ok := et.Type().(entity.Behaviour); ok {
-					if pro, ok := be.(*entity.ProjectileBehaviour); ok {
-						if pro.Owner() == p {
-							h.p.World().RemoveEntity(et)
-						}
-					}
-				}
-			}
-
-			h.combat.Reset()
-			h.pearl.Reset()
-			h.archer.Reset()
-
-			u, err := data.LoadUserFromName(h.p.Name())
-			if err != nil {
-				return
-			}
-			u.Teams.PVP.Set(time.Hour)
-			data.SaveUser(u)
-
-			DropContents(h.p)
-			p.SetHeldItems(item.Stack{}, item.Stack{})
-
-			p.ResetFallDistance()
-			p.Heal(20, effect.InstantHealingSource{})
-			p.Extinguish()
-			p.SetFood(20)
-			h.class.Store(class.Resolve(p))
-			UpdateState(h.p)
-
-			// TODO, add deathban later
-			h.p.Teleport(mgl64.Vec3{0, 100, 0})
-			//h.p.SetMobile()
-
-			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-				tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
-				data.SaveTeam(tm)
-			}
-
-			victim, err := data.LoadUserFromName(h.p.Name())
-			if err == nil {
-				victim.Teams.Stats.Deaths += 1
-				if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
-					victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
-				}
-				victim.Teams.Stats.KillStreak = 0
-				data.SaveUser(victim)
-			}
-
-			killer, ok := h.LastAttacker()
-			if ok {
-				k, err := data.LoadUserFromName(killer.Name())
-				if err != nil {
-					return
-				}
-				k.Teams.Stats.Kills += 1
-
-				if tm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
-					tm = tm.WithPoints(tm.Points + 1)
-					data.SaveTeam(tm)
-				}
-				data.SaveUser(k)
-
-				held, _ := killer.HeldItems()
-				heldName := held.CustomName()
-
-				if len(heldName) <= 0 {
-					heldName = it.DisplayName(held.Item())
-				}
-
-				if held.Empty() || len(heldName) <= 0 {
-					heldName = "their fist"
-				}
-
-				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
-				h.ResetLastAttacker()
-			} else {
-				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
-			}
-			if h.logger {
-				h.death <- struct{}{}
-			}
-		}
-		return
 	}
 	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
@@ -979,7 +864,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ctx.Cancel()
 			return
 		}
-		h.lastHitBy = attacker
 	case entity.AttackDamageSource:
 		if t, ok := s.Attacker.(*player.Player); ok {
 			attacker = t
@@ -988,7 +872,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			ctx.Cancel()
 			return
 		}
-		h.lastHitBy = attacker
 	case entity.VoidDamageSource:
 		if u.Teams.PVP.Active() {
 			h.p.Teleport(mgl64.Vec3{0, 80, 0})
@@ -1028,11 +911,9 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			h.p.Teleport(attackerPos)
 		}
 
-		h.lastHitBy = attacker
-
 		if s.Projectile.Type() == (entity.ArrowType{}) {
 			ha := attacker.Handler().(*Handler)
-			h.SetLastAttacker(ha)
+			h.setLastAttacker(ha)
 			if class.Compare(ha.class.Load(), class.Archer{}) && !class.Compare(h.class.Load(), class.Archer{}) {
 				h.archer.Set(time.Second * 10)
 				dist := h.p.Position().Sub(attacker.Position()).Len()
@@ -1049,7 +930,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 				attacker.Message(lang.Translatef(data.Language{}, "archer.tag", math.Round(dist), damage/2))
 			}
-
 		}
 	}
 
@@ -1066,7 +946,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		percent := 0.90
 		e, ok := attacker.Effect(effect.Strength{})
 		if e.Level() > 1 {
-			percent = 0.85
+			percent = 0.80
 		}
 
 		if ok {
@@ -1074,91 +954,11 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		}
 	}
 
-	p := h.p
-
 	if (p.Health()-p.FinalDamageFrom(*dmg, src) <= 0 || (src == entity.VoidDamageSource{})) && !ctx.Cancelled() {
-		armourHandler, ok := p.Armour().Inventory().Handler().(*ArmourHandler)
-		if ok && armourHandler.stormBreakerStatus.Load() {
-			armourHandler.stormBreakerCancel <- struct{}{}
-			p.Armour().SetHelmet(armourHandler.stormBreakerHelmet)
-		}
-
 		ctx.Cancel()
-		p.World().PlaySound(p.Position(), sound.Explosion{})
+		h.kill(src)
 
-		npc := player.New(p.Name(), p.Skin(), p.Position())
-		npc.Handle(npcHandler{})
-		npc.SetAttackImmunity(time.Millisecond * 1400)
-		npc.SetNameTag(p.NameTag())
-		npc.SetScale(p.Scale())
-		p.World().AddEntity(npc)
-
-		for _, viewer := range p.World().Viewers(npc.Position()) {
-			viewer.ViewEntityAction(npc, entity.DeathAction{})
-		}
-		time.AfterFunc(time.Second*2, func() {
-			_ = npc.Close()
-		})
-
-		if att, ok := attackerFromSource(src); ok {
-			npc.KnockBack(att.Position(), 0.5, 0.2)
-		}
-
-		for _, e := range p.Effects() {
-			p.RemoveEffect(e.Type())
-		}
-		for _, et := range h.p.World().Entities() {
-			if be, ok := et.(entity.Behaviour); ok {
-				if pro, ok := be.(*entity.ProjectileBehaviour); ok {
-					fmt.Println(pro.Owner().Position())
-					if pro.Owner() == p {
-						et.Close()
-						h.p.World().RemoveEntity(et)
-					}
-				}
-			}
-		}
-
-		h.combat.Reset()
-		h.pearl.Reset()
-		h.archer.Reset()
-
-		victim, err := data.LoadUserFromName(h.p.Name())
-		if err != nil {
-			return
-		}
-		victim.Teams.PVP.Set(time.Hour)
-		victim.Teams.Stats.Deaths += 1
-		if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
-			victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
-		}
-		victim.Teams.Stats.KillStreak = 0
-		data.SaveUser(victim)
-
-		DropContents(h.p)
-		p.SetHeldItems(item.Stack{}, item.Stack{})
-
-		//h.EnableDeathban()
-		// u.SubtractLife()
-		//deathban.Deathban().AddPlayer(p)
-
-		p.ResetFallDistance()
-		p.Heal(20, effect.InstantHealingSource{})
-		p.Extinguish()
-		p.SetFood(20)
-		h.class.Store(class.Resolve(p))
-		UpdateState(h.p)
-
-		// TODO, add deathban later
-		h.p.Teleport(mgl64.Vec3{0, 100, 0})
-		//h.p.SetMobile()
-
-		if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-			tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
-			data.SaveTeam(tm)
-		}
-
-		killer, ok := h.LastAttacker()
+		killer, ok := h.lastAttacker()
 		if ok {
 			k, err := data.LoadUserFromName(killer.Name())
 			if err != nil {
@@ -1190,7 +990,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			}
 
 			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
-			h.ResetLastAttacker()
+			h.resetLastAttacker()
 		} else {
 			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
 		}
@@ -1819,7 +1619,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 
 	if canAttack(h.p, t) {
-		th.SetLastAttacker(h)
+		th.setLastAttacker(h)
 		th.combat.Set(time.Second * 20)
 		h.combat.Set(time.Second * 20)
 	}
@@ -2068,6 +1868,9 @@ func (h *Handler) HandleQuit() {
 		UpdateState(h.p)
 
 		loggers[p.XUID()] = h
+
+		h.p.Handle(h)
+		h.p.Armour().Handle(arm.Inventory().Handler())
 		return
 	}
 }

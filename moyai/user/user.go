@@ -1,6 +1,8 @@
 package user
 
 import (
+	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/moyai/class"
 	"math"
 	"math/rand"
 	"strings"
@@ -117,16 +119,8 @@ func (h *Handler) SetLastPearlPos(pos mgl64.Vec3) {
 	h.lastPearlPos = pos
 }
 
-func (h *Handler) SetLastHitBy(p *player.Player) {
-	h.lastHitBy = p
-}
-
 func (h *Handler) LastPearlPos() mgl64.Vec3 {
 	return h.lastPearlPos
-}
-
-func (h *Handler) LastHitBy() *player.Player {
-	return h.lastHitBy
 }
 
 func (h *Handler) DropItem(it item.Stack) {
@@ -135,6 +129,115 @@ func (h *Handler) DropItem(it item.Stack) {
 	et := entity.NewItem(it, pos)
 	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
 	w.AddEntity(et)
+}
+
+// clearOwnedEntities clears all entities owned by the user.
+func (h *Handler) clearOwnedEntities() {
+	for _, et := range h.p.World().Entities() {
+		if be, ok := et.(entity.Behaviour); ok {
+			if pro, ok := be.(*entity.ProjectileBehaviour); ok {
+				if pro.Owner() == h.p {
+					_ = et.Close()
+					h.p.World().RemoveEntity(et)
+				}
+			}
+		}
+	}
+}
+
+// clearEffects clears all effects from the user.
+func (h *Handler) clearEffects() {
+	for _, ef := range h.p.Effects() {
+		h.p.RemoveEffect(ef.Type())
+	}
+}
+
+// resetCoolDowns resets all cooldowns of the user.
+func (h *Handler) resetCoolDowns() {
+	h.combat.Reset()
+	h.pearl.Reset()
+	h.factionCreate.Reset()
+}
+
+// spawnDeathNPC spawns a death NPC at the user's position.
+func (h *Handler) spawnDeathNPC(src world.DamageSource) {
+	p := h.p
+
+	npc := player.New(p.Name(), p.Skin(), p.Position())
+	npc.Handle(npcHandler{})
+	npc.SetAttackImmunity(time.Millisecond * 1400)
+	npc.SetNameTag(p.NameTag())
+	npc.SetScale(p.Scale())
+	p.World().AddEntity(npc)
+
+	for _, viewer := range p.World().Viewers(npc.Position()) {
+		viewer.ViewEntityAction(npc, entity.DeathAction{})
+	}
+	time.AfterFunc(time.Second*2, func() {
+		_ = npc.Close()
+	})
+
+	if att, ok := attackerFromSource(src); ok {
+		npc.KnockBack(att.Position(), 0.5, 0.2)
+	}
+}
+
+// kill handles the death of the user.
+func (h *Handler) kill(src world.DamageSource) {
+	p := h.p
+
+	p.World().PlaySound(p.Position(), sound.Explosion{})
+	h.handleTeamMemberDeath()
+	h.cancelStormBreak()
+	h.spawnDeathNPC(src)
+	h.clearEffects()
+	h.clearOwnedEntities()
+	h.resetCoolDowns()
+	h.incrementDeath()
+
+	DropContents(p)
+	p.SetHeldItems(item.Stack{}, item.Stack{})
+	p.ResetFallDistance()
+	p.Heal(20, effect.InstantHealingSource{})
+	p.Extinguish()
+	p.SetFood(20)
+
+	h.class.Store(class.Resolve(p))
+	UpdateState(p)
+	p.Teleport(mgl64.Vec3{0, 100, 0})
+}
+
+// cancelStormBreak cancels the storm breaker effect.
+func (h *Handler) cancelStormBreak() {
+	p := h.p
+	armourHandler, ok := p.Armour().Inventory().Handler().(*ArmourHandler)
+	if ok && armourHandler.stormBreakerStatus.Load() {
+		armourHandler.stormBreakerCancel <- struct{}{}
+		p.Armour().SetHelmet(armourHandler.stormBreakerHelmet)
+	}
+}
+
+// incrementDeath increments the death count of the user.
+func (h *Handler) incrementDeath() {
+	victim, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return
+	}
+	victim.Teams.PVP.Set(time.Hour)
+	victim.Teams.Stats.Deaths += 1
+	if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
+		victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
+	}
+	victim.Teams.Stats.KillStreak = 0
+	data.SaveUser(victim)
+}
+
+// handleTeamMemberDeath handles the death of a team member.
+func (h *Handler) handleTeamMemberDeath() {
+	if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
+		tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
+		data.SaveTeam(tm)
+	}
 }
 
 // Boned returns whether the user has been boned.
@@ -199,8 +302,8 @@ func (h *Handler) CanSendMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
 }
 
-// LastAttacker returns the last attacker of the user.
-func (h *Handler) LastAttacker() (*player.Player, bool) {
+// lastAttacker returns the last attacker of the user.
+func (h *Handler) lastAttacker() (*player.Player, bool) {
 	if time.Since(h.lastAttackTime.Load()) > 15*time.Second {
 		return nil, false
 	}
@@ -211,14 +314,14 @@ func (h *Handler) LastAttacker() (*player.Player, bool) {
 	return Lookup(name)
 }
 
-// SetLastAttacker sets the last attacker of the user.
-func (h *Handler) SetLastAttacker(t *Handler) {
+// setLastAttacker sets the last attacker of the user.
+func (h *Handler) setLastAttacker(t *Handler) {
 	h.lastAttackerName.Store(t.p.Name())
 	h.lastAttackTime.Store(time.Now())
 }
 
-// ResetLastAttacker resets the last attacker of the user.
-func (h *Handler) ResetLastAttacker() {
+// resetLastAttacker resets the last attacker of the user.
+func (h *Handler) resetLastAttacker() {
 	h.lastAttackerName.Store("")
 	h.lastAttackTime.Store(time.Time{})
 }
