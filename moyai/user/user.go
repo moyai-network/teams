@@ -398,6 +398,18 @@ func (h *Handler) substractItem(s item.Stack, d int) item.Stack {
 	return s
 }
 
+func Logger(p *player.Player) (*Handler, bool) {
+	_, ok := p.Handler().(*Handler)
+	if !ok {
+		return nil, false
+	}
+
+	if _, ok := loggers[p.XUID()]; ok {
+		return loggers[p.XUID()], true
+	}
+	return nil, false
+} 
+
 // PlayTime returns the play time of the user.
 func PlayTime(p *player.Player) time.Duration {
 	u, err := data.LoadUserFromName(p.Name())
