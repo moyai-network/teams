@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bedrock-gophers/inv/inv"
 	"github.com/moyai-network/teams/moyai"
 
 	"github.com/moyai-network/teams/internal/cooldown"
@@ -22,6 +23,7 @@ import (
 	"github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
+	"github.com/moyai-network/teams/moyai/menu"
 	"github.com/moyai-network/teams/moyai/process"
 	"github.com/moyai-network/teams/moyai/role"
 
@@ -786,7 +788,6 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	p := h.p
-
 	*dmg = *dmg / 1.25
 	if h.tagArcher.Active() {
 		*dmg = *dmg + *dmg*0.15
@@ -1421,6 +1422,13 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok {
 		return
 	}
+	
+	if colour.StripMinecraftColour(t.Name()) == "Click to use kits" {
+		inv.SendMenu(h.p, menu.NewKitsMenu(h.p))
+		ctx.Cancel()
+		return
+	}
+
 
 	if _, ok := h.p.Effect(effect.Invisibility{}); ok {
 		for _, i := range h.p.Armour().Inventory().Items() {
