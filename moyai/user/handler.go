@@ -1807,10 +1807,12 @@ func (h *Handler) HandleQuit() {
 			}
 			_ = h.p.Close()
 		}()
-		h.logger = true
-		UpdateState(h.p)
+		if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) || u.Teams.PVP.Active() || u.Teams.SOTW {
+			h.logger = true
+			UpdateState(h.p)
 
-		loggers[p.XUID()] = h
+			loggers[p.XUID()] = h
+		}
 
 		h.p.Handle(h)
 		h.p.Armour().Handle(arm.Inventory().Handler())
