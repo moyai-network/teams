@@ -38,6 +38,8 @@ func (h *PacketHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet)
 	case *packet.PlayerAuthInput:
 		if pkt.InputData&packet.InputFlagStartSwimming != 0 {
 			pkt.InputData = pkt.InputData &^ packet.InputFlagStartSwimming
+		} else if pkt.InputData&packet.InputFlagStartCrawling != 0 {
+			pkt.InputData = pkt.InputData &^ packet.InputFlagStartCrawling
 		}
 	case *packet.CommandRequest:
 		lastArgIndex := len(pkt.CommandLine) - 1
