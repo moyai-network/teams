@@ -194,6 +194,14 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	}
 
 	*message = emojis.Replace(*message)
+
+	if *message == "i" {
+		h.p.Message("ok")
+		h.ShowArmor(false)
+	} else if *message == "ii" {
+		h.p.Message("ok2")
+		h.ShowArmor(true)
+	}
 	r := u.Roles.Highest()
 
 	if !u.Teams.Mute.Expired() {
@@ -626,13 +634,12 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
 			h.coolDownSpecificAbilities.Key(kind).Set(time.Second * 10)
 		case it.FullInvisibilityType:
-			break
-			/*h.ShowArmor(false)
-			h.Player().AddEffect(effect.New(effect.Invisibility{}, 1, time.Hour).WithoutParticles())
+			h.ShowArmor(false)
+			h.p.AddEffect(effect.New(effect.Invisibility{}, 1, time.Hour).WithoutParticles())
 			h.p.SetHeldItems(h.substractItem(held, 1), left)
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
 			h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
-			h.Player().Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))*/
+			h.p.Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
 		case it.NinjaStarType:
 			lastAttacker, ok := h.lastAttacker()
 			if !ok {
@@ -888,15 +895,14 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	}
 
 	if attacker != nil {
-		//if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
-		//for _, i := range h.Player().Armour().Inventory().Items() {
-		//if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
-		//	h.Player().RemoveEffect(effect.Invisibility{})
-		//}
-		//}
-
-		//h.ShowArmor(true)
-		//}
+		if _, ok := h.p.Effect(effect.Invisibility{}); ok {
+			for _, i := range h.p.Armour().Inventory().Items() {
+					if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
+						h.p.RemoveEffect(effect.Invisibility{})
+					}
+				}
+			h.ShowArmor(true)
+		}
 		percent := 0.90
 		e, ok := attacker.Effect(effect.Strength{})
 		if e.Level() > 1 {
@@ -1404,16 +1410,15 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		return
 	}
 
-	/*if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
-		for _, i := range h.Player().Armour().Inventory().Items() {
+	if _, ok := h.p.Effect(effect.Invisibility{}); ok {
+		for _, i := range h.p.Armour().Inventory().Items() {
 			if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
-				h.Player().RemoveEffect(effect.Invisibility{})
+				h.p.RemoveEffect(effect.Invisibility{})
 			}
 		}
 
-		// TEMP REMOVEAL
-		//h.ShowArmor(true)
-	}*/
+		h.ShowArmor(true)
+	}
 
 	if !canAttack(h.p, t) {
 		ctx.Cancel()

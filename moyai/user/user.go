@@ -2,17 +2,18 @@ package user
 
 import (
 	"fmt"
-	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/unsafe"
-	"github.com/moyai-network/teams/moyai/class"
-	"github.com/moyai-network/teams/moyai/role"
 	"math"
 	"math/rand"
 	"strings"
 	"time"
 	"unicode"
 	_ "unsafe"
+
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/internal/unsafe"
+	"github.com/moyai-network/teams/moyai/class"
+	"github.com/moyai-network/teams/moyai/role"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -267,10 +268,9 @@ func (h *Handler) ShowArmor(visible bool) {
 	}
 
 	for _, pl := range moyai.Server().Players() {
-		if t, err := data.LoadTeamFromName(p.Name()); err == nil {
-			// maybe add an option eventually, so we can use this for staff mode and other stuff IDK?
+		if t, err := data.LoadTeamFromMemberName(p.Name()); err == nil {
 			if !t.Member(pl.Name()) {
-				s := unsafe.Session(p)
+				s := unsafe.Session(pl)
 				unsafe.WritePacket(s, &packet.MobArmourEquipment{
 					EntityRuntimeID: session_entityRuntimeID(s, p),
 					Helmet:          instanceFromItem(s, helmet),
