@@ -577,7 +577,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.energy.Store(en - 30)
 			}
 
-			teammates := NearbyAllies(h.p, 25)
+			teammates := nearbyAllies(h.p, 25)
 			for _, m := range teammates {
 				m.p.AddEffect(e)
 			}
@@ -605,7 +605,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.energy.Store(en - 30)
 			}
 
-			enemies := NearbyEnemies(h.p, 25)
+			enemies := nearbyEnemies(h.p, 25)
 			for _, m := range enemies {
 				m.p.AddEffect(e)
 			}
@@ -648,7 +648,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				h.p.Message(text.Colourf("<red>You are on sigil cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 				break
 			}
-			nb := NearbyCombat(h.p, 10)
+			nb := nearbyHurtable(h.p, 10)
 			for _, e := range nb {
 				if e.p == h.p {
 					continue

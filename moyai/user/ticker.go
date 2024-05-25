@@ -153,7 +153,7 @@ func startTicker(h *Handler) {
 
 				i, _ := h.p.HeldItems()
 				if e, ok := BardHoldEffectFromItem(i.Item()); ok {
-					mates := NearbyAllies(h.p, 25)
+					mates := nearbyAllies(h.p, 25)
 					for _, m := range mates {
 						m.p.AddEffect(e)
 					}

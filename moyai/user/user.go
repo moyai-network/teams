@@ -465,6 +465,19 @@ func blockReplaceable(b world.Block) bool {
 	return air || tallGrass || deadBush || torch || fire || flower || doubleFlower || doubleTallGrass
 }
 
+// PlayTime returns the play time of the user.
+func PlayTime(p *player.Player) time.Duration {
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return 0
+	}
+	h, ok := p.Handler().(*Handler)
+	if ok {
+		u.PlayTime += time.Since(h.logTime)
+	}
+	return u.PlayTime
+}
+
 // DropContents drops the contents of the user.
 func DropContents(p *player.Player) {
 	drop_contents(p)
@@ -520,8 +533,8 @@ func canAttack(pl, target *player.Player) bool {
 	return !tm.Member(target.Name())
 }
 
-// Nearby returns the nearby users of a certain distance from the user
-func Nearby(p *player.Player, dist float64) []*Handler {
+// nearbyPlayers returns the nearby users of a certain distance from the user
+func nearbyPlayers(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 	for _, e := range p.World().Entities() {
 		if e.Position().ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
@@ -537,15 +550,15 @@ func Nearby(p *player.Player, dist float64) []*Handler {
 	return pl
 }
 
-// NearbyEnemies returns the nearby enemies of a certain distance from the user
-func NearbyEnemies(p *player.Player, dist float64) []*Handler {
+// nearbyEnemies returns the nearby enemies of a certain distance from the user
+func nearbyEnemies(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		return Nearby(p, dist)
+		return nearbyPlayers(p, dist)
 	}
 
-	for _, target := range Nearby(p, dist) {
+	for _, target := range nearbyPlayers(p, dist) {
 		if !tm.Member(target.p.Name()) {
 			pl = append(pl, target)
 		}
@@ -554,8 +567,8 @@ func NearbyEnemies(p *player.Player, dist float64) []*Handler {
 	return pl
 }
 
-// NearbyAllies returns the nearby allies of a certain distance from the user
-func NearbyAllies(p *player.Player, dist float64) []*Handler {
+// nearbyAllies returns the nearby allies of a certain distance from the user
+func nearbyAllies(p *player.Player, dist float64) []*Handler {
 	h, ok := p.Handler().(*Handler)
 	if !ok {
 		return []*Handler{}
@@ -567,7 +580,7 @@ func NearbyAllies(p *player.Player, dist float64) []*Handler {
 		return pl
 	}
 
-	for _, target := range Nearby(p, dist) {
+	for _, target := range nearbyPlayers(p, dist) {
 		if tm.Member(target.p.Name()) {
 			pl = append(pl, target)
 		}
@@ -576,12 +589,12 @@ func NearbyAllies(p *player.Player, dist float64) []*Handler {
 	return pl
 }
 
-// NearbyCombat returns the nearby faction members, enemies, no faction players (basically anyone not on timer) of a certain distance from the user
-// Nearby returns the nearby users of a certain distance from the user
-func NearbyCombat(p *player.Player, dist float64) []*Handler {
+// nearbyHurtable returns the nearby faction members, enemies, no faction players (basically anyone not on timer) of a certain distance from the user
+// nearbyPlayers returns the nearby users of a certain distance from the user
+func nearbyHurtable(p *player.Player, dist float64) []*Handler {
 	var pl []*Handler
 
-	for _, target := range Nearby(p, dist) {
+	for _, target := range nearbyPlayers(p, dist) {
 		t, _ := data.LoadUserFromName(target.p.Name())
 		if !t.Teams.PVP.Active() {
 			pl = append(pl, target)
