@@ -1,6 +1,11 @@
 package data
 
 import (
+	"math"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -8,10 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"math"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -84,6 +85,8 @@ type Team struct {
 	Home mgl64.Vec3
 	// RegenerationTime is the time until the team can start regenerating their DTR.
 	RegenerationTime time.Time
+	// LastDeath is the last time someone died in the team
+	LastDeath time.Time
 	// Points is the amount of points the team has.
 	Points int
 	// KOTHWins is the amount of KOTH wins the team has.
@@ -189,6 +192,11 @@ func (t Team) WithRegenerationTime(regen time.Time) Team {
 	return t
 }
 
+func (t Team) WithLastDeath(lastDeath time.Time) Team {
+	t.LastDeath = lastDeath
+	return t
+}
+
 // Frozen returns whether the team is frozen.
 func (t Team) Frozen() bool {
 	return time.Now().Before(t.RegenerationTime)
@@ -204,6 +212,22 @@ func (t Team) WithDTR(dtr float64) Team {
 func (t Team) MaxDTR() float64 {
 	dtr := 1.01 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
+}
+
+// TrueDTR is the computed DTR accounted for lastDeath
+func (t Team) TrueDTR() float64 {
+	since := time.Since(t.LastDeath)
+
+	if eq(t.DTR, t.MaxDTR()) {
+		return t.DTR
+	}
+
+	if since >= time.Minute*15 {
+		return t.DTR
+	}
+
+	prog := float64(since-time.Minute*10) / float64(time.Minute*5)
+	return t.DTR - 1.0 + prog
 }
 
 // DTRString returns the DTR string of the faction
