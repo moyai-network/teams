@@ -134,7 +134,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),
 		coolDownSpecificAbilities: cooldown.NewMappedCoolDown[it.SpecialItemType](),
 		processHome: process.NewProcess(func(t *process.Process) {
-			p.Message(text.Colourf("<green>You have been teleported processHome.</green>"))
+			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
 		}),
 		processStuck: process.NewProcess(func(t *process.Process) {
 			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))

@@ -27,6 +27,20 @@ func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 	}
 }
 
+func (h *PacketHandler) HandleClientPacket(_ *event.Context, pk packet.Packet) {
+	switch pkt := pk.(type) {
+	case *packet.CommandRequest:
+		lastArgIndex := len(pkt.CommandLine) - 1
+		if lastArgIndex < 0 {
+			return
+		}
+
+		if pkt.CommandLine[lastArgIndex] == ' ' {
+			pkt.CommandLine = pkt.CommandLine[:lastArgIndex]
+		}
+	}
+}
+
 func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 	name := h.c.IdentityData().DisplayName
 

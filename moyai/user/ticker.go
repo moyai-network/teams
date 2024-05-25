@@ -164,7 +164,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(text.Colourf("<red><b>HCF</b></red> <grey>- Map I</grey>"))
+			sb := scoreboard.New(text.Colourf("<gold><b>HCF</b></gold> <grey>- Map I</grey>"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
@@ -183,7 +183,7 @@ func startTicker(h *Handler) {
 				}
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
 			}
-			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.lastArea.Load().Name()))
+			_, _ = sb.WriteString(text.Colourf("<yellow>Claim</yellow><grey>:</grey> %s", h.lastArea.Load().Name()))
 
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
@@ -191,11 +191,11 @@ func startTicker(h *Handler) {
 					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.Active() {
 						_, _ = sb.WriteString("§3§c")
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
 						if hm := ft.Home; hm != (mgl64.Vec3{}) {
-							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.processHome", hm.X(), hm.Z()))
+							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
 						}
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft)))
 						_, _ = sb.WriteString("§3")
 					}
 				}
@@ -214,26 +214,26 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
 			if lo := h.processLogout; !lo.Expired() && lo.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.processLogout", time.Until(lo.Expiration()).Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.logout", time.Until(lo.Expiration()).Seconds()))
 			}
 			if lo := h.processStuck; !lo.Expired() && lo.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.processStuck", time.Until(lo.Expiration()).Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.stuck", time.Until(lo.Expiration()).Seconds()))
 			}
 			if tg := h.tagCombat; tg.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
 			if h := h.processHome; !h.Expired() && h.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.processHome", time.Until(h.Expiration()).Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.home", time.Until(h.Expiration()).Seconds()))
 			}
 			if tg := h.tagArcher; tg.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.tagArcher", tg.Remaining().Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.archer", tg.Remaining().Seconds()))
 			}
 			if cd := h.coolDownPearl; cd.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.coolDownPearl", cd.Remaining().Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.pearl", cd.Remaining().Seconds()))
 			}
 
 			if cd := h.coolDownGlobalAbilities; cd.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.coolDownSpecificAbilities", cd.Remaining().Seconds()))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.abilities", cd.Remaining().Seconds()))
 			}
 
 			if cd := h.coolDownGoldenApple; cd.Active() {
