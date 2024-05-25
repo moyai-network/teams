@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/session"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
@@ -76,7 +75,7 @@ func (h *Handler) RemoveWaypoint() {
 	waypointMu.Lock()
 	defer waypointMu.Unlock()
 
-	session_writePacket(h.s, &packet.MovePlayer{
+	unsafe.WritePacket(h.p, &packet.MovePlayer{
 		EntityRuntimeID: h.waypoint.entityRuntimeID,
 		Position:        mgl32.Vec3{0, -100, 0},
 		Mode:            packet.MoveModeNormal,
@@ -104,8 +103,8 @@ func (h *Handler) updateWaypointPosition() {
 		EntityMetadata:  meta,
 	}
 
-	session_writePacket(h.s, move)
-	session_writePacket(h.s, set)
+	unsafe.WritePacket(h.p, move)
+	unsafe.WritePacket(h.p, set)
 }
 
 func (h *Handler) clientDisplayPosition() mgl32.Vec3 {
@@ -130,11 +129,6 @@ func (h *Handler) distanceToWaypoint() float64 {
 	sum := math.Pow(math.Abs(p1.X()-p2.X()), 2) + math.Pow(math.Abs(p1.Y()-p2.Y()), 2) + math.Pow(math.Abs(p1.Z()-p2.Z()), 2)
 	return math.Sqrt(sum)
 }
-
-// noinspection ALL
-//
-//go:linkname session_writePacket github.com/df-mc/dragonfly/server/session.(*Session).writePacket
-func session_writePacket(*session.Session, packet.Packet)
 
 // vec64To32 converts a mgl64.Vec3 to a mgl32.Vec3.
 func vec64To32(vec3 mgl64.Vec3) mgl32.Vec3 {

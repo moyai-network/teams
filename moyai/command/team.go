@@ -178,7 +178,7 @@ type TeamSetDTR struct {
 }
 
 type TeamMap struct {
-	Sub  cmd.SubCommand `cmd:"map"`
+	Sub cmd.SubCommand `cmd:"map"`
 }
 
 // TeamRally is a command that enables waypoint to rally.
@@ -565,9 +565,9 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 		pos := p.Position()
 		if h, ok := o.Handler().(*user.Handler); ok {
 			h.SetWayPoint(user.NewWayPoint("Rally", pos))
-			user.Messagef(h.Player(), "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
+			user.Messagef(o, "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
 		}
-		
+
 	}
 }
 
@@ -587,9 +587,9 @@ func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
 		if h, ok := o.Handler().(*user.Handler); ok {
 			h.RemoveWaypoint()
 		}
-		
+
 	}
-} 
+}
 
 // Run ...
 func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {

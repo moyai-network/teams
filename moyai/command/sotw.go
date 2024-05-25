@@ -42,7 +42,7 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 		u.Teams.SOTW = true
 		data.SaveUser(u)
 	}
-	user.Broadcast("sotw.commenced")
+	user.Broadcastf("sotw.commenced")
 }
 
 // Run ...
@@ -61,7 +61,7 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 		u.Teams.SOTW = false
 		data.SaveUser(u)
 	}
-	user.Broadcast("sotw.ended")
+	user.Broadcastf("sotw.ended")
 }
 
 // Run ...

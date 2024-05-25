@@ -42,7 +42,7 @@ func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
 		t.Message("command.key.give.received", k.Count)
 	}
 
-	user.Alert(s, "command.key.all.success", k.Count)
+	user.Alertf(s, "command.key.all.success", k.Count)
 }
 
 // Allow ...

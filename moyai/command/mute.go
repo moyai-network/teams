@@ -151,7 +151,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output) {
 	u.Teams.Mute = punishment.Punishment{}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.unmute", p.Name())
+	user.Alertf(src, "staff.alert.unmute", p.Name())
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unmute")
 	out.Print(lang.Translatef(l, "command.mute.lift", p.Name()))
 }
@@ -171,7 +171,7 @@ func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output) {
 	u.Teams.Mute = punishment.Punishment{}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.unmute", u.DisplayName)
+	user.Alertf(src, "staff.alert.unmute", u.DisplayName)
 	//webhook.SendPunishment(src.Name(), u.DisplayName(), "", "Unmute")
 	out.Print(lang.Translatef(l, "command.mute.lift", u.DisplayName))
 }
@@ -221,7 +221,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 	}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.mute", t.Name(), reason)
+	user.Alertf(src, "staff.alert.mute", t.Name(), reason)
 	//webhook.SendPunishment(src.Name(), t.Name(), reason, "Mute")
 	out.Print(lang.Translatef(l, "command.mute.success", t.Name(), reason))
 }
@@ -260,7 +260,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 	}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.mute", u.DisplayName, reason)
+	user.Alertf(src, "staff.alert.mute", u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Mute")
 	out.Print(lang.Translatef(l, "command.mute.success", u.DisplayName, reason))
 }

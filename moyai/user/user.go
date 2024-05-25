@@ -1,8 +1,12 @@
 package user
 
 import (
+	"fmt"
+	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/class"
+	"github.com/moyai-network/teams/moyai/role"
 	"math"
 	"math/rand"
 	"strings"
@@ -10,13 +14,10 @@ import (
 	"unicode"
 	_ "unsafe"
 
-	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/process"
-
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 
@@ -34,14 +35,14 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 )
 
-// LookupRuntimeID ...
-func LookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
+// lookupRuntimeID ...
+func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	h, ok := p.Handler().(*Handler)
 	if !ok {
 		return nil, false
 	}
 	for _, t := range moyai.Server().Players() {
-		if session_entityRuntimeID(h.s, t) == rid {
+		if session_entityRuntimeID(unsafe.Session(h.p), t) == rid {
 			return t, true
 		}
 	}
@@ -58,51 +59,37 @@ func Lookup(name string) (*player.Player, bool) {
 	return nil, false
 }
 
-// Broadcast broadcasts a message to every user using that user's locale.
-func Broadcast(key string, args ...any) {
-	for _, p := range moyai.Server().Players() {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
-			continue
+func Alertf(s cmd.Source, key string, args ...any) {
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+	for _, t := range moyai.Server().Players() {
+		if u, _ := data.LoadUserFromName(t.Name()); role.Staff(u.Roles.Highest()) {
+			t.Message(lang.Translatef(u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(u.Language, key), args...)))
 		}
-		p.Message(lang.Translatef(u.Language, key, args...))
 	}
 }
-func (h *Handler) Player() *player.Player {
-	return h.p
-}
 
-func (h *Handler) Logout() *process.Process {
-	return h.logout
-}
-
-func (h *Handler) Stuck() *process.Process {
-	return h.stuck
-}
-
-func (h *Handler) Home() *process.Process {
-	return h.home
-}
-
-// SubtractItem subtracts d from the count of the item stack passed and returns it, if the player is in
-// survival or adventure mode.
-func (h *Handler) SubtractItem(s item.Stack, d int) item.Stack {
-	if !h.p.GameMode().CreativeInventory() && d != 0 {
-		return s.Grow(-d)
+func Broadcastf(key string, a ...interface{}) {
+	for _, p := range moyai.Server().Players() {
+		Messagef(p, key, a...)
 	}
-	return s
 }
 
-func (h *Handler) Combat() *cooldown.CoolDown {
-	return h.combat
+func Messagef(p *player.Player, key string, a ...interface{}) {
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		p.Message("An error occurred while loading your user data.")
+		return
+	}
+	p.Message(lang.Translatef(u.Language, key, a...))
 }
 
-func (h *Handler) Pearl() *cooldown.CoolDown {
-	return h.pearl
-}
-
-func (h *Handler) FactionCreate() *cooldown.CoolDown {
-	return h.factionCreate
+func UpdateState(p *player.Player) {
+	for _, v := range p.World().Viewers(p.Position()) {
+		v.ViewEntityState(p)
+	}
 }
 
 // Vanished returns whether the user is vanished or not.
@@ -113,22 +100,6 @@ func (h *Handler) Vanished() bool {
 // ToggleVanish toggles the user's vanish state.
 func (h *Handler) ToggleVanish() {
 	h.vanished.Toggle()
-}
-
-func (h *Handler) SetLastPearlPos(pos mgl64.Vec3) {
-	h.lastPearlPos = pos
-}
-
-func (h *Handler) LastPearlPos() mgl64.Vec3 {
-	return h.lastPearlPos
-}
-
-func (h *Handler) DropItem(it item.Stack) {
-	p := h.p
-	w, pos := p.World(), p.Position()
-	et := entity.NewItem(it, pos)
-	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
-	w.AddEntity(et)
 }
 
 // clearOwnedEntities clears all entities owned by the user.
@@ -154,9 +125,9 @@ func (h *Handler) clearEffects() {
 
 // resetCoolDowns resets all cooldowns of the user.
 func (h *Handler) resetCoolDowns() {
-	h.combat.Reset()
-	h.pearl.Reset()
-	h.factionCreate.Reset()
+	h.tagCombat.Reset()
+	h.coolDownPearl.Reset()
+	h.coolDownGoldenApple.Reset()
 }
 
 // spawnDeathNPC spawns a death NPC at the user's position.
@@ -202,7 +173,7 @@ func (h *Handler) kill(src world.DamageSource) {
 	p.Extinguish()
 	p.SetFood(20)
 
-	h.class.Store(class.Resolve(p))
+	h.lastClass.Store(class.Resolve(p))
 	UpdateState(p)
 	p.Teleport(mgl64.Vec3{0, 100, 0})
 }
@@ -240,65 +211,8 @@ func (h *Handler) handleTeamMemberDeath() {
 	}
 }
 
-// Boned returns whether the user has been boned.
-func (h *Handler) Boned() bool {
-	return h.bone.Active()
-}
-
-// BoneHits returns the number of bone hits of the user.
-func (h *Handler) BoneHits(p *player.Player) int {
-	hits, ok := h.boneHits[p.Name()]
-	if !ok {
-		return 0
-	}
-	return hits
-}
-
-// AddBoneHit adds a bone hit to the user.
-func (h *Handler) AddBoneHit(p *player.Player) {
-	h.boneHits[p.Name()]++
-	if h.boneHits[p.Name()] >= 3 {
-		h.ResetBoneHits(p)
-		h.bone.Set(15 * time.Second)
-	}
-}
-
-// ResetBoneHits resets the bone hits of the user.
-func (h *Handler) ResetBoneHits(p *player.Player) {
-	h.boneHits[p.Name()] = 0
-}
-
-// ScramblerHits returns the number of scrambler hits of the user.
-func (h *Handler) ScramblerHits(p *player.Player) int {
-	hits, ok := h.scramblerHits[p.Name()]
-	if !ok {
-		return 0
-	}
-	return hits
-}
-
-// AddScramblerHit adds a scrambler hit to the user.
-func (h *Handler) AddScramblerHit(p *player.Player) {
-	h.scramblerHits[p.Name()] = h.scramblerHits[p.Name()] + 1
-}
-
-// ResetScramblerHits resets the scrambler hits of the user.
-func (h *Handler) ResetScramblerHits(p *player.Player) {
-	h.scramblerHits[p.Name()] = 0
-}
-
-// PearlDisabled returns whether the user is pearl disabled.
-func (h *Handler) PearlDisabled() bool {
-	return h.pearlDisabled
-}
-
-// TogglePearlDisable toggles the pearl disabler
-func (h *Handler) TogglePearlDisable() {
-	h.pearlDisabled = !h.pearlDisabled
-}
-
-// CanSendMessage returns true if the user can send a message.
-func (h *Handler) CanSendMessage() bool {
+// canMessage returns true if the user can send a message.
+func (h *Handler) canMessage() bool {
 	return time.Since(h.lastMessage.Load()) > time.Second*1
 }
 
@@ -328,7 +242,7 @@ func (h *Handler) resetLastAttacker() {
 
 // ShowArmor displays or removes players armor visibility from other players.
 func (h *Handler) ShowArmor(visible bool) {
-	p := h.Player()
+	p := h.p
 
 	air := item.NewStack(block.Air{}, 1)
 
@@ -356,8 +270,8 @@ func (h *Handler) ShowArmor(visible bool) {
 		if t, err := data.LoadTeamFromName(p.Name()); err == nil {
 			// maybe add an option eventually, so we can use this for staff mode and other stuff IDK?
 			if !t.Member(pl.Name()) {
-				s := player_session(pl)
-				session_writePacket(s, &packet.MobArmourEquipment{
+				s := unsafe.Session(p)
+				unsafe.WritePacket(s, &packet.MobArmourEquipment{
 					EntityRuntimeID: session_entityRuntimeID(s, p),
 					Helmet:          instanceFromItem(s, helmet),
 					Chestplate:      instanceFromItem(s, chestplate),
@@ -369,6 +283,7 @@ func (h *Handler) ShowArmor(visible bool) {
 	}
 }
 
+// sendWall sends a wall to the user.
 func (h *Handler) sendWall(newPos cube.Pos, z area.Area, color item.Colour) {
 	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
 	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
@@ -385,7 +300,7 @@ func (h *Handler) sendWall(newPos cube.Pos, z area.Area, color item.Colour) {
 				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
 					blockPos := cube.Pos{horizontal, vertical, zCoord}
 					if blockReplaceable(h.p.World().Block(blockPos)) {
-						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
+						h.viewBlockUpdate(blockPos, wallBlock, 0)
 						h.wallBlocksMu.Lock()
 						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
 						h.wallBlocksMu.Unlock()
@@ -404,7 +319,7 @@ func (h *Handler) sendWall(newPos cube.Pos, z area.Area, color item.Colour) {
 				for vertical := newPos.Y(); vertical < newPos.Y()+wallHeight; vertical++ {
 					blockPos := cube.Pos{xCoord, vertical, horizontal}
 					if blockReplaceable(h.p.World().Block(blockPos)) {
-						h.s.ViewBlockUpdate(blockPos, wallBlock, 0)
+						h.viewBlockUpdate(blockPos, wallBlock, 0)
 						h.wallBlocksMu.Lock()
 						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
 						h.wallBlocksMu.Unlock()
@@ -415,6 +330,7 @@ func (h *Handler) sendWall(newPos cube.Pos, z area.Area, color item.Colour) {
 	}
 }
 
+// formatItemName formats the item name to a more readable format.
 func formatItemName(s string) string {
 	split := strings.Split(s, "_")
 	for i, str := range split {
@@ -430,7 +346,7 @@ func (h *Handler) clearWall() {
 	for p, duration := range h.wallBlocks {
 		if duration <= 0 {
 			delete(h.wallBlocks, p)
-			h.s.ViewBlockUpdate(p, block.Air{}, 0)
+			h.viewBlockUpdate(p, h.p.World().Block(p), 0)
 			h.p.ShowParticle(p.Vec3(), particle.BlockForceField{})
 			continue
 		}
@@ -439,18 +355,26 @@ func (h *Handler) clearWall() {
 	h.wallBlocksMu.Unlock()
 }
 
+// viewBlockUpdate updates the block at the position passed for the user.
+func (h *Handler) viewBlockUpdate(p cube.Pos, b world.Block, layer int) {
+	s := unsafe.Session(h.p)
+	s.ViewBlockUpdate(p, b, layer)
+}
+
 // viewers returns a list of all viewers of the Player.
 func (h *Handler) viewers() []world.Viewer {
 	viewers := h.p.World().Viewers(h.p.Position())
+	s := unsafe.Session(h.p)
+
 	for _, v := range viewers {
-		if v == h.s {
+		if v == s {
 			return viewers
 		}
 	}
-	return append(viewers, h.s)
+	return append(viewers, s)
 }
 
-// blockReplaceable checks if the combat wall should replace a block.
+// blockReplaceable checks if the tagCombat wall should replace a block.
 func blockReplaceable(b world.Block) bool {
 	_, air := b.(block.Air)
 	_, doubleFlower := b.(block.DoubleFlower)
@@ -465,6 +389,15 @@ func blockReplaceable(b world.Block) bool {
 	return air || tallGrass || deadBush || torch || fire || flower || doubleFlower || doubleTallGrass
 }
 
+// substractItem subtracts d from the count of the item stack passed and returns it, if the player is in
+// survival or adventure mode.
+func (h *Handler) substractItem(s item.Stack, d int) item.Stack {
+	if !h.p.GameMode().CreativeInventory() && d != 0 {
+		return s.Grow(-d)
+	}
+	return s
+}
+
 // PlayTime returns the play time of the user.
 func PlayTime(p *player.Player) time.Duration {
 	u, err := data.LoadUserFromName(p.Name())
@@ -476,11 +409,6 @@ func PlayTime(p *player.Player) time.Duration {
 		u.PlayTime += time.Since(h.logTime)
 	}
 	return u.PlayTime
-}
-
-// DropContents drops the contents of the user.
-func DropContents(p *player.Player) {
-	drop_contents(p)
 }
 
 // addEffects adds a list of effects to the user.
@@ -606,13 +534,8 @@ func nearbyHurtable(p *player.Player, dist float64) []*Handler {
 
 // noinspection ALL
 //
-//go:linkname player_session github.com/df-mc/dragonfly/server/player.(*Player).session
-func player_session(*player.Player) *session.Session
-
-// noinspection ALL
-//
-//go:linkname drop_contents github.com/df-mc/dragonfly/server/player.(*Player).dropContents
-func drop_contents(*player.Player)
+//go:linkname DropContents github.com/df-mc/dragonfly/server/player.(*Player).dropContents
+func DropContents(*player.Player)
 
 // noinspection ALL
 //

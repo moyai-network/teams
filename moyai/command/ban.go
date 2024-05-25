@@ -94,7 +94,7 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 	u.Teams.Ban = punishment.Punishment{}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.unban", u.DisplayName)
+	user.Alertf(src, "staff.alert.unban", u.DisplayName)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unban")
 	o.Print(lang.Translatef(l, "command.ban.lift", u.DisplayName))
 }
@@ -144,8 +144,8 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		lang.Translatef(l, "user.ban.description", reason, durafmt.ParseShort(length)),
 	}, "\n"))
 
-	user.Alert(src, "staff.alert.ban", t.Name(), reason)
-	user.Broadcast("command.ban.broadcast", s.Name(), t.Name(), reason)
+	user.Alertf(src, "staff.alert.ban", t.Name(), reason)
+	user.Broadcastf("command.ban.broadcast", s.Name(), t.Name(), reason)
 	//webhook.SendPunishment(s.Name(), t.Name(), reason, "Ban")
 	o.Print(lang.Translatef(l, "command.ban.success", t.Name(), reason))
 }
@@ -181,8 +181,8 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 	}
 	data.SaveUser(u)
 
-	user.Alert(src, "staff.alert.ban", u.DisplayName, reason)
-	user.Broadcast("command.ban.broadcast", s.Name(), u.DisplayName, reason)
+	user.Alertf(src, "staff.alert.ban", u.DisplayName, reason)
+	user.Broadcastf("command.ban.broadcast", s.Name(), u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Ban")
 	o.Print(lang.Translatef(l, "command.ban.success", u.DisplayName, reason))
 }

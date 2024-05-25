@@ -51,7 +51,7 @@ func compareArmours(a1, a2 [4]item.Stack) bool {
 }
 
 func sortArmourEffects(h *Handler) {
-	lastArmour := h.armour.Load()
+	lastArmour := h.lastArmour.Load()
 	arm := armourStacks(h.p.Armour())
 
 	var effects []effect.Effect
@@ -97,14 +97,14 @@ func sortArmourEffects(h *Handler) {
 		}
 	}
 
-	h.armour.Store(arm)
+	h.lastArmour.Store(arm)
 }
 
 func sortClassEffects(h *Handler) {
-	lastClass := h.class.Load()
+	lastClass := h.lastClass.Load()
 	cl := class.Resolve(h.p)
 
-	h.class.Store(cl)
+	h.lastClass.Store(cl)
 
 	if lastClass == nil {
 		if cl != nil {
@@ -145,7 +145,7 @@ func startTicker(h *Handler) {
 			sortClassEffects(h)
 			sortArmourEffects(h)
 
-			switch h.class.Load().(type) {
+			switch h.lastClass.Load().(type) {
 			case class.Bard:
 				if e := h.energy.Load(); e < 100-0.1 {
 					h.energy.Store(e + 0.1)
@@ -183,7 +183,7 @@ func startTicker(h *Handler) {
 				}
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
 			}
-			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.area.Load().Name()))
+			_, _ = sb.WriteString(text.Colourf("<diamond>Claim</diamond><grey>:</grey> %s", h.lastArea.Load().Name()))
 
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
@@ -194,7 +194,7 @@ func startTicker(h *Handler) {
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
 						if hm := ft.Home; hm != (mgl64.Vec3{}) {
-							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
+							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.processHome", hm.X(), hm.Z()))
 						}
 						_, _ = sb.WriteString("§3")
 					}
@@ -213,36 +213,36 @@ func startTicker(h *Handler) {
 			if d := u.Teams.PVP; d.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
-			if lo := h.logout; !lo.Expired() && lo.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.logout", time.Until(lo.Expiration()).Seconds()))
+			if lo := h.processLogout; !lo.Expired() && lo.Ongoing() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.processLogout", time.Until(lo.Expiration()).Seconds()))
 			}
-			if lo := h.stuck; !lo.Expired() && lo.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.stuck", time.Until(lo.Expiration()).Seconds()))
+			if lo := h.processStuck; !lo.Expired() && lo.Ongoing() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.processStuck", time.Until(lo.Expiration()).Seconds()))
 			}
-			if tg := h.combat; tg.Active() && !db.Active() {
+			if tg := h.tagCombat; tg.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
-			if h := h.home; !h.Expired() && h.Ongoing() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.home", time.Until(h.Expiration()).Seconds()))
+			if h := h.processHome; !h.Expired() && h.Ongoing() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.processHome", time.Until(h.Expiration()).Seconds()))
 			}
-			if tg := h.archer; tg.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.archer", tg.Remaining().Seconds()))
+			if tg := h.tagArcher; tg.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.tagArcher", tg.Remaining().Seconds()))
 			}
-			if cd := h.pearl; cd.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.pearl", cd.Remaining().Seconds()))
-			}
-
-			if cd := h.ability; cd.Active() {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.abilities", cd.Remaining().Seconds()))
+			if cd := h.coolDownPearl; cd.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.coolDownPearl", cd.Remaining().Seconds()))
 			}
 
-			if cd := h.goldenApple; cd.Active() {
+			if cd := h.coolDownGlobalAbilities; cd.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.coolDownSpecificAbilities", cd.Remaining().Seconds()))
+			}
+
+			if cd := h.coolDownGoldenApple; cd.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.cooldown.golden.apple", cd.Remaining().Seconds()))
 			}
 
-			if class.Compare(h.class.Load(), class.Bard{}) {
+			if class.Compare(h.lastClass.Load(), class.Bard{}) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.bard.energy", h.energy.Load()))
-			} else if class.Compare(h.class.Load(), class.Mage{}) {
+			} else if class.Compare(h.lastClass.Load(), class.Mage{}) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.mage.energy", h.energy.Load()))
 			}
 

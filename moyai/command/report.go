@@ -46,7 +46,7 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveUser(u)
 
 	user.Messagef(p, "command.report.success")
-	user.Alert(s, "staff.alert.report", t.Name(), r.Reason)
+	user.Alertf(s, "staff.alert.report", t.Name(), r.Reason)
 	// webhook.Send(webhook.Report, hook.Webhook{
 	// 	Embeds: []hook.Embed{{
 	// 		Title: "Report (Practice)",

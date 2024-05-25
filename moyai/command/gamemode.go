@@ -48,14 +48,14 @@ func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
 			return
 		}
 
-		//	user.Alert(s, "staff.alert.gamemode.change.other", target.Name(), name)
+		//	user.Alertf(s, "staff.alert.gamemode.change.other", target.Name(), name)
 
 		target.SetGameMode(mode)
 		user.Messagef(p, "command.gamemode.update.other", target.Name(), name)
 		return
 	}
 	if p, ok := s.(*player.Player); ok {
-		//user.Alert(s, "staff.alert.gamemode.change", name)
+		//user.Alertf(s, "staff.alert.gamemode.change", name)
 
 		p.SetGameMode(mode)
 		user.Messagef(p, "command.gamemode.update.self", name)

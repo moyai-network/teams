@@ -114,7 +114,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			itemNames = append(itemNames, text.Colourf("<red>%dx</red> %s", i.Count(), i.CustomName()))
 		}
 		nm := []rune(r.Name())
-		user.Broadcast("user.reclaim", r.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
+		user.Broadcastf("user.reclaim", r.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
 	}
 	data.SaveUser(u)
 }

@@ -36,11 +36,11 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if h.Vanished() {
-		//user.Alert(s, "staff.alert.vanish.off")
+		//user.Alertf(s, "staff.alert.vanish.off")
 		p.SetGameMode(world.GameModeSurvival)
 		user.Messagef(p, "command.vanish.disabled")
 	} else {
-		//user.Alert(s, "staff.alert.vanish.on")
+		//user.Alertf(s, "staff.alert.vanish.on")
 		p.SetGameMode(world.GameModeSpectator)
 		user.Messagef(p, "command.vanish.enabled")
 	}

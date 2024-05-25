@@ -43,12 +43,12 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if u.Frozen {
-		//user.Alert(s, "staff.alert.unfreeze", target.Name())
+		//user.Alertf(s, "staff.alert.unfreeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.unfreeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.unfrozen"))
 		t.SetMobile()
 	} else {
-		//user.Alert(s, "staff.alert.freeze", target.Name())
+		//user.Alertf(s, "staff.alert.freeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.freeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.frozen"))
 		t.Immobile()

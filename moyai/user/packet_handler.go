@@ -38,7 +38,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 
 	switch pkt := pk.(type) {
 	case *packet.SetActorData:
-		t, ok := LookupRuntimeID(p, pkt.EntityRuntimeID)
+		t, ok := lookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
 			break
 		}
@@ -62,7 +62,7 @@ func (h *PacketHandler) HandleServerPacket(_ *event.Context, pk packet.Packet) {
 
 		if (userTeam.Focus.Kind == data.FocusTypeTeam && strings.EqualFold(targetTeam.Name, userTeam.Focus.Value)) || (userTeam.Focus.Kind == data.FocusTypePlayer && strings.EqualFold(t.Name(), userTeam.Focus.Value)) {
 			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "dark-purple", colour)
-		} else if target.archer.Active() {
+		} else if target.tagArcher.Active() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
@@ -112,9 +112,9 @@ func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
 // func (h *PacketHandler) HandleFlag(ctx *event.Context, ch check.Check, params map[string]any, l *bool) {
 // 	*l = true
 // 	ctx.Cancel()
-// 	//Broadcast("oomph.staff.alert", "wallah")
+// 	//Broadcastf("oomph.staff.alert", "wallah")
 // 	// name, variant := ch.Name()
-// 	// Broadcast("oomph.staff.alert",
+// 	// Broadcastf("oomph.staff.alert",
 // 	// 	h.p.Name(),
 // 	// 	name,
 // 	// 	variant,
