@@ -246,6 +246,10 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.mage.energy", h.energy.Load()))
 			}
 
+			if sb.Lines()[len(sb.Lines())-1] == "§3" {
+				sb.Remove(len(sb.Lines()) - 1)
+			}
+
 			_, _ = sb.WriteString("\uE000")
 			_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.footer"))
 
