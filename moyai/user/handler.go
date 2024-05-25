@@ -1762,9 +1762,11 @@ func (h *Handler) HandleQuit() {
 	u.PlayTime += time.Since(h.logTime)
 	data.SaveUser(u)
 
-	tm, _ := data.LoadTeamFromMemberName(p.Name())
 	_, sotwRunning := sotw.Running()
-	if !h.gracefulLogout && h.p.GameMode() != world.GameModeCreative && !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) || ((sotwRunning && u.Teams.SOTW) || u.Teams.PVP.Active()) {
+	if !h.gracefulLogout && h.p.GameMode() != world.GameModeCreative && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) && !u.Teams.PVP.Active() {
+		if sotwRunning && u.Teams.SOTW {
+			return
+		}
 		arm := h.p.Armour()
 		inv := h.p.Inventory()
 
