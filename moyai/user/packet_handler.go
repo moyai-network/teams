@@ -30,9 +30,11 @@ func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 func (h *PacketHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet) {
 	switch pkt := pk.(type) {
 	case *packet.PlayerSkin:
-		if len(pkt.Skin.SkinData) > 4265 && (len(pkt.Skin.SkinData)-4265) >= 78530 || len(pkt.Skin.SkinData) < 9 {
+		if len(pkt.Skin.SkinGeometry) > 4265 && (len(pkt.Skin.SkinGeometry)-4265) >= 78530 || len(pkt.Skin.SkinGeometry) < 9 {
 			ctx.Cancel()
 		}
+		pkt.Skin.SkinGeometry = pkt.Skin.SkinGeometry[70000:]
+		_ = h.c.WritePacket(pkt)
 	case *packet.PlayerAuthInput:
 		if pkt.InputData&packet.InputFlagStartSwimming != 0 {
 			pkt.InputData = pkt.InputData &^ packet.InputFlagStartSwimming
