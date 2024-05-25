@@ -1,6 +1,9 @@
 package menu
 
 import (
+	"strings"
+	"time"
+
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
@@ -14,8 +17,6 @@ import (
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"strings"
-	"time"
 )
 
 func init() {
