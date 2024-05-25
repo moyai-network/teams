@@ -1,6 +1,8 @@
 package menu
 
 import (
+	_ "unsafe"
+
 	"github.com/bedrock-gophers/nbtconv"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
