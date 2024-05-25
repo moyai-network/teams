@@ -6,6 +6,8 @@ github.com/bedrock-gophers/intercept v0.1.1 h1:hQ+nx45PPHWaKQ8oS+w+ILUPxN9Y/mfqH
 github.com/bedrock-gophers/intercept v0.1.1/go.mod h1:muBHbh3LOLIxMciFlxGCPCmrAPxPTd1hki5xw+wBe5I=
 github.com/bedrock-gophers/inv v0.1.1-0.20240522150948-e0ca8baa6cb0 h1:Sv08asJ0ONSDvSGe3Q/W1UbtJnICyXAfDsEq+8Bj82o=
 github.com/bedrock-gophers/inv v0.1.1-0.20240522150948-e0ca8baa6cb0/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
+github.com/bedrock-gophers/inv v0.1.1-0.20240525173048-ba6e6734e0cf h1:FynhyDoCRI+ao02OWayTlOa/cMLxTN5h5i914TgxKbs=
+github.com/bedrock-gophers/inv v0.1.1-0.20240525173048-ba6e6734e0cf/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/living v0.0.0-20231216224824-0e1599282e89 h1:eWia6ipTsn6XOfKyEiaWRCcg/qOUVpd1EPPND7YlBrE=
 github.com/bedrock-gophers/living v0.0.0-20231216224824-0e1599282e89/go.mod h1:eXglke5UVj+tDxgZKGDKGxHtJ0pH/IFAqtk3UzQuEJA=
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc h1:wkXM0BAe3unwZYkdFaJIYCdmvlSLh1dLTtV9BlDsRaI=

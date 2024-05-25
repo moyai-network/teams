@@ -488,6 +488,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command.BlockShop{}),
+		cmd.New("enderchest", text.Colourf("Access your enderchest."), []string{"ec"}, command.Enderchest{}),
 	} {
 		cmd.Register(c)
 	}
