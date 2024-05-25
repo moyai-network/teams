@@ -1454,7 +1454,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		return
 	}
 
-	if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
+	/*if _, ok := h.Player().Effect(effect.Invisibility{}); ok {
 		for _, i := range h.Player().Armour().Inventory().Items() {
 			if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
 				h.Player().RemoveEffect(effect.Invisibility{})
@@ -1463,7 +1463,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 
 		// TEMP REMOVEAL
 		//h.ShowArmor(true)
-	}
+	}*/
 
 	if !canAttack(h.p, t) {
 		ctx.Cancel()
