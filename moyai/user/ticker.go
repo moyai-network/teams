@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/go-gl/mathgl/mgl64"
 	"strings"
 	"time"
 
@@ -24,7 +25,6 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
 )
 
 func armourStacks(arm *inventory.Armour) [4]item.Stack {
@@ -185,22 +185,6 @@ func startTicker(h *Handler) {
 			}
 			_, _ = sb.WriteString(text.Colourf("<yellow>Claim</yellow><grey>:</grey> %s", h.lastArea.Load().Name()))
 
-			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-				focus := tm.Focus
-				if focus.Kind == data.FocusTypeTeam {
-					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.Active() {
-						_, _ = sb.WriteString("§3§c")
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
-						if hm := ft.Home; hm != (mgl64.Vec3{}) {
-							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
-						}
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
-						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
-						_, _ = sb.WriteString("§3")
-					}
-				}
-			}
-
 			if d, ok := sotw.Running(); ok && u.Teams.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
 			}
@@ -246,8 +230,19 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.mage.energy", h.energy.Load()))
 			}
 
-			if sb.Lines()[len(sb.Lines())-1] == "§3" {
-				sb.Remove(len(sb.Lines()) - 1)
+			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
+				focus := tm.Focus
+				if focus.Kind == data.FocusTypeTeam {
+					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.Active() {
+						_, _ = sb.WriteString("§c\uE000")
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
+						if hm := ft.Home; hm != (mgl64.Vec3{}) {
+							_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.home", hm.X(), hm.Z()))
+						}
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.dtr", ft.DTRString()))
+						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
+					}
+				}
 			}
 
 			_, _ = sb.WriteString("\uE000")
