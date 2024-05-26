@@ -42,7 +42,7 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 		inv.SendMenu(p, NewWoolMenu(p))
 	case "Concrete":
 		inv.SendMenu(p, NewConcreteMenu(p))
-	case "Ores":
+	case "Ore Blocks":
 		inv.SendMenu(p, NewOreMenu(p))
 	case "Glass":
 		inv.SendMenu(p, NewGlassMenu(p))
