@@ -2,20 +2,24 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
-	"os"
-	"time"
+	"syscall"
 )
 
 type Stop struct{}
 
 func (Stop) Run(src cmd.Source, out *cmd.Output) {
-	time.Sleep(time.Millisecond * 500)
+	if _, ok := src.(*player.Player); ok {
+		out.Error("This command can only be run from the console.")
+		return
+	}
+
 	data.FlushCache()
 	_ = moyai.Server().Close()
-	os.Exit(0)
+	syscall.Exit(0)
 }
 
 func (Stop) Allow(src cmd.Source) bool {
