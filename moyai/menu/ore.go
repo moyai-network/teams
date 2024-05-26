@@ -35,7 +35,7 @@ func (Ore) Submit(p *player.Player, i item.Stack) {
 	if !ore(i.Item()) {
 		return
 	}
-	buyBlock(p, i, 6000, 32)
+	buyBlock(p, i, 6000)
 }
 
 func ore(b world.Item) bool {

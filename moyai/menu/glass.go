@@ -46,5 +46,5 @@ func (Glass) Submit(p *player.Player, i item.Stack) {
 	if _, ok := i.Item().(block.StainedGlass); !ok {
 		return
 	}
-	buyBlock(p, i, 150, 32)
+	buyBlock(p, i, 150)
 }

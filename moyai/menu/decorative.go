@@ -42,5 +42,5 @@ func (Decorative) Submit(p *player.Player, i item.Stack) {
 	if _, ok := i.Item().(block.StainedGlassPane); ok {
 		return
 	}
-	buyBlock(p, i, 200, 32)
+	buyBlock(p, i, 200)
 }

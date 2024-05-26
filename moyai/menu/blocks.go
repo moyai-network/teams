@@ -53,7 +53,7 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 	}
 }
 
-func buyBlock(p *player.Player, i item.Stack, cost float64, count int) {
+func buyBlock(p *player.Player, i item.Stack, cost float64) {
 	u, _ := data.LoadUserFromName(p.Name())
 	if u.Teams.Balance < cost {
 		p.Message(lang.Translatef(u.Language, "shop.balance.insufficient"))
@@ -68,6 +68,6 @@ func buyBlock(p *player.Player, i item.Stack, cost float64, count int) {
 	u.Teams.Balance -= cost
 	data.SaveUser(u)
 
-	it.AddOrDrop(p, item.NewStack(i.Item(), count))
+	it.AddOrDrop(p, item.NewStack(i.Item(), i.Count()))
 	updateInventory(p)
 }

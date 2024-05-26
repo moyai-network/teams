@@ -40,5 +40,5 @@ func (Wood) Submit(p *player.Player, i item.Stack) {
 	if _, ok := i.Item().(block.Planks); !ok {
 		return
 	}
-	buyBlock(p, i, 300, 32)
+	buyBlock(p, i, 300)
 }
