@@ -74,8 +74,8 @@ func (a *ArmourHandler) stormBreak() {
 
 func (a *ArmourHandler) stormBreakCancel() {
 	if a.stormBreakerStatus.Load() {
-		a.stormBreakerCancel <- struct{}{}
 		a.stormBreakerStatus.Store(false)
+		a.stormBreakerCancel <- struct{}{}
 		a.p.Armour().SetHelmet(a.stormBreakerHelmet)
 	}
 }
