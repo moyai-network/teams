@@ -136,11 +136,10 @@ func main() {
 	placeSlapper(w)
 	placeCrates(w)
 	placeShopSigns(w)
-	
+
 	go tickBlackMarket()
 
 	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
-
 	registerCommands(srv)
 
 	srv.Listen()
@@ -153,7 +152,7 @@ func main() {
 }
 
 func tickBlackMarket() {
-	t := time.NewTicker(time.Minute*15)
+	t := time.NewTicker(time.Minute * 15)
 	defer t.Stop()
 
 	for range t.C {
@@ -234,15 +233,15 @@ func placeText(w *world.World, c moyai.Config) {
 
 func placeSlapper(w *world.World) {
 	_ = npc.Create(npc.Settings{
-		Name: text.Colourf("<green>Click to use kits</green>"),
-		Skin: skin.Skin{},
-		Scale: 1,
-		Yaw: 215,
-		MainHand: item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 1)),
-		Helmet: item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Name:       text.Colourf("<green>Click to use kits</green>"),
+		Skin:       skin.Skin{},
+		Scale:      1,
+		Yaw:        215,
+		MainHand:   item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 1)),
+		Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
-		Leggings: item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
-		Boots: item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+		Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 
 		Position: mgl64.Vec3{-7, 65, 38.5},
 	}, w, func(p *player.Player) {
