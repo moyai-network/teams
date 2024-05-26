@@ -290,7 +290,6 @@ func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 	w := p.World()
 	b := w.Block(pos)
 
-
 	if _, ok := b.(block.ItemFrame); ok {
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) && h.p.GameMode() != world.GameModeCreative {
@@ -899,14 +898,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	}
 
 	if attacker != nil {
-		if _, ok := h.p.Effect(effect.Invisibility{}); ok {
-			for _, i := range h.p.Armour().Inventory().Items() {
-					if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
-						h.p.RemoveEffect(effect.Invisibility{})
-					}
-				}
-			h.ShowArmor(true)
-		}
+		h.ShowArmor(true)
+
 		percent := 0.90
 		e, ok := attacker.Effect(effect.Strength{})
 		if e.Level() > 1 {
@@ -1422,23 +1415,13 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok {
 		return
 	}
-	
+
 	if colour.StripMinecraftColour(t.Name()) == "Click to use kits" {
 		inv.SendMenu(h.p, menu.NewKitsMenu(h.p))
 		ctx.Cancel()
 		return
 	}
-
-
-	if _, ok := h.p.Effect(effect.Invisibility{}); ok {
-		for _, i := range h.p.Armour().Inventory().Items() {
-			if _, ok := i.Enchantment(ench.Invisibility{}); !ok {
-				h.p.RemoveEffect(effect.Invisibility{})
-			}
-		}
-
-		h.ShowArmor(true)
-	}
+	h.ShowArmor(true)
 
 	if !canAttack(h.p, t) {
 		ctx.Cancel()
