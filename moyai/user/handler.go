@@ -63,7 +63,8 @@ var (
 		":heart:", "\uE10C",
 	)
 
-	loggers = map[string]*Handler{}
+	loggers  = map[string]*Handler{}
+	loggerMu sync.Mutex
 )
 
 type Handler struct {
@@ -113,11 +114,9 @@ type Handler struct {
 }
 
 func NewHandler(p *player.Player, xuid string) *Handler {
-	h, ok := loggers[p.XUID()]
-	if ok {
+	if h, ok := logger(p); ok {
 		p.Teleport(h.p.Position())
-		_ = h.p.Close()
-		h.logger = false
+		h.close <- struct{}{}
 	}
 	ha := &Handler{
 		p:          p,
@@ -1779,6 +1778,8 @@ func (h *Handler) HandleQuit() {
 		inv := h.p.Inventory()
 
 		h.p = player.New(p.Name(), p.Skin(), p.Position())
+		rot := p.Rotation()
+		unsafe.Rotate(h.p, rot[0], rot[1])
 		h.p.SetNameTag(text.Colourf("<red>%s</red> <grey>(LOGGER)</grey>", p.Name()))
 		h.p.Handle(h)
 		if p.Health() < 20 {
@@ -1794,7 +1795,9 @@ func (h *Handler) HandleQuit() {
 		go func() {
 			select {
 			case <-time.After(time.Second * 30):
+				break
 			case <-h.close:
+				break
 			case <-h.death:
 				u, err := data.LoadUserFromName(h.p.Name())
 				if err != nil {
@@ -1815,15 +1818,12 @@ func (h *Handler) HandleQuit() {
 			}
 			_ = h.p.Close()
 		}()
-		if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) || u.Teams.PVP.Active() || u.Teams.SOTW {
-			h.logger = true
-			UpdateState(h.p)
-
-			loggers[p.XUID()] = h
-		}
+		UpdateState(h.p)
 
 		h.p.Handle(h)
 		h.p.Armour().Handle(arm.Inventory().Handler())
+
+		setLogger(p, h)
 		return
 	}
 }
