@@ -7,10 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -46,54 +43,8 @@ func NewPaneMenu(p *player.Player) inv.Menu {
 }
 
 func (Pane) Submit(p *player.Player, i item.Stack) {
-	u, _ := data.LoadUserFromName(p.Name())
-	if u.Teams.Balance < 80 {
-		p.Message(lang.Translatef(u.Language, "shop.balance.insufficient"))
-		p.PlaySound(sound.Note{
-			Instrument: sound.Guitar(),
-			Pitch:      1,
-		})
+	if _, ok := i.Item().(block.StainedGlassPane); !ok {
 		return
 	}
-
-	p.PlaySound(sound.Experience{})
-	u.Teams.Balance -= 80
-	data.SaveUser(u)
-
-	switch i.Item() {
-	case block.StainedGlassPane{Colour: item.ColourRed()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourRed()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourOrange()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourOrange()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourYellow()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourYellow()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourLime()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourLime()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourGreen()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourGreen()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourLightBlue()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourLightBlue()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourBlue()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourBlue()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourCyan()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourCyan()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourPurple()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourPurple()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourMagenta()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourMagenta()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourPink()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourPink()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourBlack()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourBlack()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourLightGrey()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourLightGrey()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourWhite()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourWhite()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourGrey()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourGrey()}, 16))
-	case block.StainedGlassPane{Colour: item.ColourBrown()}:
-		it.AddOrDrop(p, item.NewStack(block.StainedGlassPane{Colour: item.ColourBrown()}, 16))
-	}
-
-	updateInventory(p)
+	buyBlock(p, i, 80, 16)
 }

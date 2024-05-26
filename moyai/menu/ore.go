@@ -1,16 +1,14 @@
 package menu
 
 import (
+	"github.com/df-mc/dragonfly/server/world"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -34,30 +32,16 @@ func NewOreMenu(p *player.Player) inv.Menu {
 }
 
 func (Ore) Submit(p *player.Player, i item.Stack) {
-	u, _ := data.LoadUserFromName(p.Name())
-	if u.Teams.Balance < 6000 {
-		p.Message(lang.Translatef(u.Language, "shop.balance.insufficient"))
-		p.PlaySound(sound.Note{
-			Instrument: sound.Guitar(),
-			Pitch:      1,
-		})
+	if !ore(i.Item()) {
 		return
 	}
+	buyBlock(p, i, 6000, 32)
+}
 
-	p.PlaySound(sound.Experience{})
-	u.Teams.Balance -= 6000
-	data.SaveUser(u)
-
-	switch i.Item() {
-	case block.Diamond{}:
-		it.AddOrDrop(p, item.NewStack(block.Diamond{}, 32))
-	case block.Gold{}:
-		it.AddOrDrop(p, item.NewStack(block.Gold{}, 32))
-	case block.Iron{}:
-		it.AddOrDrop(p, item.NewStack(block.Iron{}, 32))
-	case block.Emerald{}:
-		it.AddOrDrop(p, item.NewStack(block.Emerald{}, 32))
+func ore(b world.Item) bool {
+	switch b.(type) {
+	case block.Diamond, block.Gold, block.Iron, block.Emerald:
+		return true
 	}
-
-	updateInventory(p)
+	return false
 }

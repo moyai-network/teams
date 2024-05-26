@@ -7,10 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -40,42 +37,8 @@ func NewWoodMenu(p *player.Player) inv.Menu {
 }
 
 func (Wood) Submit(p *player.Player, i item.Stack) {
-	u, _ := data.LoadUserFromName(p.Name())
-	if u.Teams.Balance < 300 {
-		p.Message(lang.Translatef(u.Language, "shop.balance.insufficient"))
-		p.PlaySound(sound.Note{
-			Instrument: sound.Guitar(),
-			Pitch:      1,
-		})
+	if _, ok := i.Item().(block.Planks); !ok {
 		return
 	}
-
-	p.PlaySound(sound.Experience{})
-	u.Teams.Balance -= 300
-	data.SaveUser(u)
-
-	switch i.Item() {
-	case block.Planks{Wood: block.OakWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.OakWood()}, 32))
-	case block.Planks{Wood: block.BirchWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.BirchWood()}, 32))
-	case block.Planks{Wood: block.JungleWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.JungleWood()}, 32))
-	case block.Planks{Wood: block.AcaciaWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.AcaciaWood()}, 32))
-	case block.Planks{Wood: block.DarkOakWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.DarkOakWood()}, 32))
-	case block.Planks{Wood: block.Cherry()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.Cherry()}, 32))
-	case block.Planks{Wood: block.Mangrove()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.Mangrove()}, 32))
-	case block.Planks{Wood: block.SpruceWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.SpruceWood()}, 32))
-	case block.Planks{Wood: block.CrimsonWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.CrimsonWood()}, 32))
-	case block.Planks{Wood: block.WarpedWood()}:
-		it.AddOrDrop(p, item.NewStack(block.Planks{Wood: block.WarpedWood()}, 32))
-	}
-
-	updateInventory(p)
+	buyBlock(p, i, 300, 32)
 }
