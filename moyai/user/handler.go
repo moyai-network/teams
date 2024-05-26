@@ -1711,9 +1711,16 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	for _, a := range append(area.Protected(w), areas...) {
 		if a.Vec3WithinOrEqualFloorXZ(newPos) {
 			if ar != a {
+				if u.Teams.PVP.Active() {
+					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {
+						u.Teams.PVP.TogglePause()
+					}
+				}
+
 				if ar != (area.NamedArea{}) {
 					Messagef(h.p, "area.leave", ar.Name())
 				}
+
 				h.lastArea.Store(a)
 				Messagef(h.p, "area.enter", a.Name())
 				return

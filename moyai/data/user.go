@@ -127,7 +127,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Report = cooldown.NewCoolDown()
 	u.Teams.Refill = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
-	u.Teams.PVP.Set(time.Hour)
+	u.Teams.PVP.Set(time.Hour + time.Second)
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 
