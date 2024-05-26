@@ -183,9 +183,8 @@ func (h *Handler) kill(src world.DamageSource) {
 func (h *Handler) cancelStormBreak() {
 	p := h.p
 	armourHandler, ok := p.Armour().Inventory().Handler().(*ArmourHandler)
-	if ok && armourHandler.stormBreakerStatus.Load() {
-		armourHandler.stormBreakerCancel <- struct{}{}
-		p.Armour().SetHelmet(armourHandler.stormBreakerHelmet)
+	if ok {
+		armourHandler.stormBreakCancel()
 	}
 }
 
@@ -408,7 +407,7 @@ func Logger(p *player.Player) (*Handler, bool) {
 		return loggers[p.XUID()], true
 	}
 	return nil, false
-} 
+}
 
 // PlayTime returns the play time of the user.
 func PlayTime(p *player.Player) time.Duration {

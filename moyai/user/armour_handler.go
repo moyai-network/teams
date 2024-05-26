@@ -72,6 +72,14 @@ func (a *ArmourHandler) stormBreak() {
 	a.p.Armour().SetHelmet(item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{Colour: item.ColourBrown().RGBA()}}, 1).WithValue("storm_breaker", true))
 }
 
+func (a *ArmourHandler) stormBreakCancel() {
+	if a.stormBreakerStatus.Load() {
+		a.stormBreakerCancel <- struct{}{}
+		a.stormBreakerStatus.Store(false)
+		a.p.Armour().SetHelmet(a.stormBreakerHelmet)
+	}
+}
+
 func (a *ArmourHandler) handleStormBreakProcess() {
 	a.stormBreakerCancel = make(chan struct{})
 	go func() {
