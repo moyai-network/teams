@@ -56,10 +56,40 @@ func instanceFromItem(it item.Stack) protocol.ItemInstance {
 	}
 }
 
+type glint struct{}
+
+func (glint) Name() string {
+	return ""
+}
+func (glint) MaxLevel() int {
+	return 1
+}
+func (glint) Cost(level int) (int, int) {
+	return 0, 0
+}
+func (glint) Rarity() item.EnchantmentRarity {
+	return item.EnchantmentRarityRare
+}
+func (glint) CompatibleWithEnchantment(t item.EnchantmentType) bool {
+	return true
+}
+func (glint) CompatibleWithItem(i world.Item) bool {
+	return true
+}
+
+
 // noinspection ALL
 //
 //go:linkname item_id github.com/df-mc/dragonfly/server/item.id
 func item_id(s item.Stack) int32
+
+func formatBool(b bool) string {
+	if b {
+		return "<green>Yes</green>"
+	} else {
+		return "<red>No</red>"
+	}
+}
 
 // stackFromItem converts an item.Stack to its network ItemStack representation.
 func stackFromItem(it item.Stack) protocol.ItemStack {

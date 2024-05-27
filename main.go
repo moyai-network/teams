@@ -527,6 +527,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("blackmarket", text.Colourf("Access the secret items of the black market"), nil, command.BlackMarket{}),
 		cmd.New("trim", text.Colourf("Add trims to your armor"), nil, command.Trim{}, command.TrimClear{}),
 		cmd.New("end", text.Colourf("End your adventure."), nil, command.End{}),
+		cmd.New("settings", text.Colourf("Access your settings."), nil, command.Settings{}),
 	} {
 		cmd.Register(c)
 	}
