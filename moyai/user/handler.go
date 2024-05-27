@@ -1714,6 +1714,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				if u.Teams.PVP.Active() {
 					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {
 						u.Teams.PVP.TogglePause()
+						data.SaveUser(u)
 					}
 				}
 
@@ -1774,6 +1775,9 @@ func (h *Handler) HandleQuit() {
 
 	u, _ := data.LoadUserFromName(p.Name())
 	u.PlayTime += time.Since(h.logTime)
+	if !u.Teams.PVP.Paused() {
+		u.Teams.PVP.TogglePause()
+	}
 	data.SaveUser(u)
 
 	_, sotwRunning := sotw.Running()
