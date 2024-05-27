@@ -60,8 +60,8 @@ type Settings struct {
 	Language string
 	// Display is the display settings of the user.
 	Display struct {
-		// Scoreboard is whether the user wants to see the scoreboard.
-		Scoreboard bool
+		// ScoreboardDisabled is whether the user wants to see the scoreboard.
+		ScoreboardDisabled bool
 		// CPS is whether the user wants to see their CPS.
 		CPS bool
 		// ActiveTag is the active tag of the user.
@@ -114,9 +114,7 @@ func DefaultSettings() Settings {
 
 	s.Language = "en"
 
-	s.Display.Scoreboard = true
 	s.Display.CPS = false
-
 	s.Gameplay.AutoReapplyKit = true
 
 	s.Privacy.PrivateMessages = true

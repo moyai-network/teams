@@ -170,7 +170,7 @@ func startTicker(h *Handler) {
 			sb.RemovePadding()
 
 			u, _ := data.LoadUserFromName(h.p.Name())
-			if !u.Teams.Settings.Display.Scoreboard {
+			if u.Teams.Settings.Display.ScoreboardDisabled {
 				h.p.RemoveScoreboard()
 				continue
 			}

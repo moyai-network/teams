@@ -20,7 +20,7 @@ func NewDisplaySettings(p *player.Player) inv.Menu {
 
 	stacks[12] = item.NewStack(item.Dye{Colour: item.ColourBlue()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>Scoreboard</dark-aqua>")).
-		WithLore(text.Colourf("<grey><aqua>Enabled: </aqua>%s</grey>", formatBool(u.Teams.Settings.Display.Scoreboard))).
+		WithLore(text.Colourf("<grey><aqua>Enabled: </aqua>%s</grey>", formatBool(!u.Teams.Settings.Display.ScoreboardDisabled))).
 		WithEnchantments(item.NewEnchantment(glint{}, 1))
 	stacks[13] = item.NewStack(item.Dye{Colour: item.ColourBlack()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>CPS</dark-aqua>")).
@@ -51,7 +51,7 @@ func (b DisplaySettings) Submit(p *player.Player, it item.Stack) {
 	}
 	switch d.Colour {
 	case item.ColourBlue():
-		u.Teams.Settings.Display.Scoreboard = !u.Teams.Settings.Display.Scoreboard
+		u.Teams.Settings.Display.ScoreboardDisabled = !u.Teams.Settings.Display.ScoreboardDisabled
 		data.SaveUser(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewDisplaySettings(p))
