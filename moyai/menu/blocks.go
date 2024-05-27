@@ -50,6 +50,8 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 		inv.SendMenu(p, NewPaneMenu(p))
 	case "Decorative":
 		inv.SendMenu(p, NewDecorativeMenu(p))
+	case "Miscillaneous":
+		inv.SendMenu(p, NewMiscMenu(p))
 	}
 }
 
