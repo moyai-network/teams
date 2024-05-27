@@ -42,24 +42,28 @@ var (
 		area:        area.NewArea(mgl64.Vec2{-509, -509}, mgl64.Vec2{-513, -513}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, -500},
+		duration:    time.Minute * 5,
 	}
 	Oasis = &KOTH{
 		name:        text.Colourf("<red>Oasis</red>"),
 		area:        area.NewArea(mgl64.Vec2{478, 500}, mgl64.Vec2{474, 496}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
+		duration:    time.Minute * 5,
 	}
 	Shrine = &KOTH{
 		name:        text.Colourf("<gold>Shrine</gold>"),
 		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{508, -486}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -500},
+		duration:    time.Minute * 5,
 	}
 	Citadel = &KOTH{
 		name:        text.Colourf("<amethyst>Citadel</amethyst>"),
 		area:        area.NewArea(mgl64.Vec2{-502, 504}, mgl64.Vec2{-506, 500}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, 500},
+		duration:    time.Minute * 10,
 	}
 )
 
@@ -97,6 +101,7 @@ type KOTH struct {
 	cancel      chan struct{}
 	area        area.Area
 	coordinates mgl64.Vec2
+	duration    time.Duration
 }
 
 // Name returns the name of the KOTH.
@@ -109,6 +114,11 @@ func (k *KOTH) Start() {
 	k.running = true
 	k.capturing = nil
 	k.cancel = make(chan struct{}, 0)
+}
+
+// Duration returns the duration of the KOTH.
+func (k *KOTH) Duration() time.Duration {
+	return k.duration
 }
 
 // Stop stops the KOTH.
@@ -134,12 +144,7 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 	if k.capturing != nil || !k.running {
 		return false
 	}
-	var t time.Duration
-	if k == Citadel {
-		t = 600 * time.Second
-	} else {
-		t = 300 * time.Second
-	}
+	t := k.Duration()
 	k.time = time.Now().Add(t)
 	go func() {
 		select {
