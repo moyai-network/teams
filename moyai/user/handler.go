@@ -508,6 +508,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case item.EnderPearl:
 		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 			Messagef(h.p, "item.use.citadel.disabled")
+			ctx.Cancel()
 			return
 		}
 		if cd := h.coolDownPearl; cd.Active() {
