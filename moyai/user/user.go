@@ -198,6 +198,9 @@ func (h *Handler) incrementDeath() {
 		return
 	}
 	victim.Teams.PVP.Set(time.Hour)
+	if !victim.Teams.PVP.Paused() {
+		victim.Teams.PVP.TogglePause()
+	}
 	victim.Teams.Stats.Deaths += 1
 	if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
 		victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak

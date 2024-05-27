@@ -25,6 +25,7 @@ func (c PvpEnable) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if u.Teams.PVP.Active() {
+		user.UpdateState(p)
 		u.Teams.PVP.Reset()
 		user.Messagef(p, "command.pvp.enable")
 	} else {
