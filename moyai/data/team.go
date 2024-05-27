@@ -112,15 +112,13 @@ func DefaultTeam(name string) Team {
 
 // WithRename renames the team.
 func (t Team) WithRename(name string) Team {
-	teamMu.Lock()
-	delete(teams, t.Name)
+	DisbandTeam(t)
 
 	t.DisplayName = name
 	t.Name = strings.ToLower(name)
 	t.Renamed = true
 
-	teams[t.Name] = t
-	teamMu.Unlock()
+	SaveTeam(t)
 	return t
 }
 
