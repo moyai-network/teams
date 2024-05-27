@@ -11,11 +11,17 @@ var (
 
 func ResolveFromArmour(a [4]item.ArmourTier) Class {
 	for _, c := range classes {
-		if a[0] == c.Armour()[0] && a[1] == c.Armour()[1] && a[2] == c.Armour()[2] && a[3] == c.Armour()[3] {
+		if compareTierTypes(a[0], c.Armour()[0]) && compareTierTypes(a[1], c.Armour()[1]) && compareTierTypes(a[2], c.Armour()[2]) && compareTierTypes(a[3], c.Armour()[3]) {
 			return c
 		}
 	}
 	return nil
+}
+
+func compareTierTypes[a item.ArmourTier, b item.ArmourTier](t1 a, t2 b) bool {
+	_, ok1 := any(t1).(b)
+	_, ok2 := any(t2).(a)
+	return ok1 && ok2
 }
 
 func Resolve(p *player.Player) Class {
