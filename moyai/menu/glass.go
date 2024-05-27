@@ -38,7 +38,7 @@ func NewGlassMenu(p *player.Player) inv.Menu {
 	stacks[39] = item.NewStack(block.StainedGlass{Colour: item.ColourWhite()}, 32).WithLore(text.Colourf("<gold>Cost:</gold> <green>$150</green>"))
 	stacks[40] = item.NewStack(block.StainedGlass{Colour: item.ColourGrey()}, 32).WithLore(text.Colourf("<gold>Cost:</gold> <green>$150</green>"))
 	stacks[41] = item.NewStack(block.StainedGlass{Colour: item.ColourBrown()}, 32).WithLore(text.Colourf("<gold>Cost:</gold> <green>$150</green>"))
-
+	
 	return m.WithStacks(stacks...)
 }
 
