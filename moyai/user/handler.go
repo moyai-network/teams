@@ -1500,6 +1500,11 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			h.coolDownSpecificAbilities.Set(it.StormBreakerType{}, time.Minute*2)
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
 
+			if targetHandler.lastClass.Load() != nil {
+				Messagef(h.p, "ability.classes.disabled")
+				break
+			}
+
 			targetArmourHandler, ok := target.Armour().Inventory().Handler().(*ArmourHandler)
 			if !ok {
 				break
