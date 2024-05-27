@@ -14,8 +14,8 @@ type Kit struct{}
 // KitReset is a command to reset a players kit.
 type KitReset struct {
 	adminAllower
-	Sub    cmd.SubCommand           `cmd:"reset"`
-	Target cmd.Optional[cmd.Target] `cmd:"target"`
+	Sub    cmd.SubCommand             `cmd:"reset"`
+	Target cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
 
 // Run ...
@@ -45,7 +45,7 @@ func (k KitReset) Run(src cmd.Source, out *cmd.Output) {
 		data.SaveUser(u)
 		return
 	}
-	tg, ok := t.(*player.Player)
+	tg, ok := t[0].(*player.Player)
 	if !ok {
 		return
 	}
