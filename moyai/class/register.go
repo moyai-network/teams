@@ -40,14 +40,14 @@ func Resolve(p *player.Player) Class {
 	return ResolveFromArmour([4]item.ArmourTier{helmet.Tier, chestplate.Tier, leggings.Tier, boots.Tier})
 }
 
-func Compare(a any, b Class) bool {
+func Compare(a Class, b Class) bool {
 	if a == b {
 		return true
 	}
 	return false
 }
 
-func CompareAny(a any, b ...Class) bool {
+func CompareAny(a Class, b ...Class) bool {
 	for _, c := range b {
 		if Compare(a, c) {
 			return true
