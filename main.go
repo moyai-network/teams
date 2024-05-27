@@ -312,6 +312,7 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 		panic(err)
 	}
 	c.Entities = ent.Registry
+	moyai.ConfigureEnd(ent.Registry)
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
@@ -526,6 +527,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("enderchest", text.Colourf("Access your enderchest."), []string{"ec"}, command.Enderchest{}),
 		cmd.New("blackmarket", text.Colourf("Access the secret items of the black market"), nil, command.BlackMarket{}),
 		cmd.New("trim", text.Colourf("Add trims to your armor"), nil, command.Trim{}, command.TrimClear{}),
+		cmd.New("end", text.Colourf("End your adventure."), nil, command.End{}),
 	} {
 		cmd.Register(c)
 	}

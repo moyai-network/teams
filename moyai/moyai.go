@@ -4,9 +4,12 @@ import (
 	"time"
 
 	"github.com/df-mc/dragonfly/server"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/dragonfly/server/world/mcdb"
 )
 
 var srv *server.Server
+var end *world.World
 var lastBlackMarket time.Time
 var blackMarketOpened time.Time
 
@@ -33,4 +36,20 @@ func BlackMarketOpened() time.Time {
 
 func SetBlackMarketOpened(t time.Time) {
 	blackMarketOpened = t
+}
+
+func End() *world.World {
+	return end
+}
+
+func ConfigureEnd(reg world.EntityRegistry) {
+	prov, err := mcdb.Open("assets/end")
+	if err != nil {
+		panic(err)
+	}
+	end = world.Config{
+		Provider: prov,
+		Dim: world.End,
+		Entities: reg,
+	}.New()
 }

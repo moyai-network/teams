@@ -14,6 +14,8 @@ func init() {
 	for _, b := range allFrames() {
 		world.RegisterBlock(b)
 	}
+
+	world.RegisterItem(PortalFrame{})
 }
 
 type PortalFrame struct {

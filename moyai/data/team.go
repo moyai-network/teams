@@ -185,6 +185,9 @@ func (t Team) WithClaim(claim area.Area) Team {
 // WithPoints returns the team with the given amount of points
 func (t Team) WithPoints(points int) Team {
 	t.Points = points
+	if t.Points < 0 {
+		t.Points = 0
+	}
 	return t
 }
 

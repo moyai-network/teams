@@ -18,6 +18,7 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/area"
+	b "github.com/moyai-network/teams/moyai/block"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/crate"
@@ -1633,6 +1634,19 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if u.Frozen {
 		ctx.Cancel()
 		return
+	}
+
+	bl := w.Block(cubePos)
+	if _, ok := bl.(b.PortalBlock); ok {
+		if h.p.World().Dimension() == world.Overworld {
+			moyai.End().AddEntity(h.p)
+			<-time.After(time.Second) // No clue why
+			h.p.Teleport(mgl64.Vec3{0, 27, 0})
+		} else {
+			moyai.Server().World().AddEntity(h.p)
+			<-time.After(time.Second) // No clue why
+			h.p.Teleport(mgl64.Vec3{0, 100, 0})
+		}
 	}
 
 	if u.Teams.PVP.Active() {
