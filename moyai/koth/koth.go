@@ -13,6 +13,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
+	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -39,37 +40,49 @@ func init() {
 var (
 	Garden = &KOTH{
 		name:        text.Colourf("<dark-green>Garden</dark-green>"),
-		area:        area.NewArea(mgl64.Vec2{-509, -509}, mgl64.Vec2{-513, -513}),
+		dimension: world.Overworld,
+		area:        area.NewArea(mgl64.Vec2{-508, -508}, mgl64.Vec2{-514, -514}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, -500},
 		duration:    time.Minute * 5,
 	}
 	Oasis = &KOTH{
 		name:        text.Colourf("<red>Oasis</red>"),
-		area:        area.NewArea(mgl64.Vec2{478, 500}, mgl64.Vec2{474, 496}),
+		dimension: world.Overworld,
+		area:        area.NewArea(mgl64.Vec2{479, 501}, mgl64.Vec2{473, 495}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Minute * 5,
 	}
 	Shrine = &KOTH{
 		name:        text.Colourf("<gold>Shrine</gold>"),
-		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{508, -486}),
+		dimension: world.Overworld,
+		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{509, -486}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -500},
 		duration:    time.Minute * 5,
 	}
 	Citadel = &KOTH{
 		name:        text.Colourf("<amethyst>Citadel</amethyst>"),
+		dimension: world.Overworld,
 		area:        area.NewArea(mgl64.Vec2{-502, 504}, mgl64.Vec2{-506, 500}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, 500},
 		duration:    time.Minute * 10,
 	}
+	End = &KOTH{
+		name:        text.Colourf("<purple>End</purple>"),
+		dimension: world.End,
+		area:        area.NewArea(mgl64.Vec2{-11, 87}, mgl64.Vec2{-17, 93}),
+		cancel:      make(chan struct{}),
+		coordinates: mgl64.Vec2{-14, 90},
+		duration:    time.Minute * 5,
+	}
 )
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Garden, Oasis, Shrine, Citadel}
+	return []*KOTH{Garden, Oasis, Shrine, Citadel, End}
 }
 
 // Running returns true if the KOTH passed is currently running.
@@ -95,6 +108,7 @@ func Lookup(name string) (*KOTH, bool) {
 // KOTH represents a King of the Hill event.
 type KOTH struct {
 	name        string
+	dimension world.Dimension
 	capturing   *player.Player
 	running     bool
 	time        time.Time
@@ -107,6 +121,11 @@ type KOTH struct {
 // Name returns the name of the KOTH.
 func (k *KOTH) Name() string {
 	return k.name
+}
+
+// Dimension returns the dimension of the KOTH.
+func (k *KOTH) Dimension() world.Dimension {
+	return k.dimension
 }
 
 // Start starts the KOTH.

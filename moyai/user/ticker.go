@@ -2,9 +2,10 @@ package user
 
 import (
 	"fmt"
-	"github.com/go-gl/mathgl/mgl64"
 	"strings"
 	"time"
+
+	"github.com/go-gl/mathgl/mgl64"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
