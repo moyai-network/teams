@@ -197,7 +197,7 @@ func (h *Handler) incrementDeath() {
 	if err != nil {
 		return
 	}
-	victim.Teams.PVP.Set(time.Hour)
+	victim.Teams.PVP.Set(time.Hour + (time.Second / 2))
 	if !victim.Teams.PVP.Paused() {
 		victim.Teams.PVP.TogglePause()
 	}

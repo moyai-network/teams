@@ -1645,7 +1645,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		} else {
 			moyai.Server().World().AddEntity(h.p)
 			<-time.After(time.Second) // No clue why
-			h.p.Teleport(mgl64.Vec3{0, 100, 0})
+			h.p.Teleport(mgl64.Vec3{0, 100, 0}) // TODO: Add end portal
 		}
 	}
 
@@ -1687,7 +1687,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	k, ok := koth.Running()
 	if ok {
 		r := u.Roles.Highest()
-		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) && k.Dimension() == w.Dimension() {
 			switch k {
 			case koth.Citadel:
 				if newPos.Y() > 57 || newPos.Y() < 48 {
@@ -1698,6 +1698,13 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				}
 			case koth.Shrine:
 				if newPos.Y() > 70 {
+					if k.StopCapturing(us) {
+						Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+					}
+					return
+				}
+			case koth.End:
+				if newPos.Y() > 40 {
 					if k.StopCapturing(us) {
 						Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}

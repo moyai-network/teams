@@ -2,9 +2,10 @@ package user
 
 import (
 	"fmt"
-	"github.com/go-gl/mathgl/mgl64"
 	"strings"
 	"time"
+
+	"github.com/go-gl/mathgl/mgl64"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
@@ -179,7 +180,7 @@ func startTicker(h *Handler) {
 			if k, ok := koth.Running(); ok && !db.Active() {
 				t := time.Until(k.Time())
 				if _, ok := k.Capturing(); !ok {
-					t = k.Length()
+					t = k.Duration()
 				}
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.koth.running", k.Name(), parseDuration(t)))
 			}
