@@ -1405,6 +1405,12 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 	}
 	tm = tm.WithRename(t.Name)
 
+	for _, m := range tm.Members {
+		if mem, ok := user.Lookup(m.Name); ok {
+			user.UpdateState(mem)
+		}
+	}
+
 	user.Messagef(p, "team.rename.success", tm.DisplayName)
 	team.Broadcastf(tm, "team.rename.success.broadcast", p.Name(), tm.DisplayName)
 }
