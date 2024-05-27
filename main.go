@@ -503,7 +503,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("role", text.Colourf("Manage user roles."), nil, command.RoleAdd{}, command.RoleRemove{}, command.RoleAddOffline{}, command.RoleRemoveOffline{}, command.RoleList{}),
 		cmd.New("teleport", text.Colourf("Teleport yourself or another player to a position."), []string{"tp"}, command.TeleportToPos{}, command.TeleportTargetsToPos{}, command.TeleportTargetsToTarget{}, command.TeleportToTarget{}),
 		cmd.New("reclaim", text.Colourf("Manage a reclaim."), nil, command.Reclaim{}, command.ReclaimReset{}),
-		cmd.New("kit", text.Colourf("Choose a kit."), nil, command.Kit{}),
+		cmd.New("kit", text.Colourf("Choose a kit."), nil, command.Kit{}, command.KitReset{}),
 		cmd.New("ban", text.Colourf("Unleash the ban hammer."), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{} /*command.BanInfoOffline{},*/, command.BanForm{}),
 		//cmd.New("blacklist", text.Colourf("Blacklist little evaders."), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
 		cmd.New("kick", text.Colourf("Kick a user."), nil, command.Kick{}),
