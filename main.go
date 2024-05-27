@@ -345,7 +345,6 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			_ = moyai.Server().Close()
 			os.Exit(1)
 		})
-		moyai.Server().World().AddEntity(p)
 		store.ExecuteCommands(p)
 		if proxy {
 			//info := moyai.SearchInfo(p.UUID())
