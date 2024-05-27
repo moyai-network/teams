@@ -16,5 +16,5 @@ func (e Enderchest) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	inv.SendMenu(p, inv.NewCustomMenu("EnderChest", inv.ContainerEnderChest{}, p.EnderChestInventory()))
+	inv.SendMenu(p, inv.NewCustomMenu("Ender Chest", inv.ContainerEnderChest{}, p.EnderChestInventory()))
 }
