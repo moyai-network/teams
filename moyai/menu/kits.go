@@ -81,6 +81,10 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 }
 
 func (Kits) Submit(p *player.Player, it item.Stack) {
+	if _, ok := it.Item().(block.StainedGlassPane); ok {
+		return
+	}
+
 	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
