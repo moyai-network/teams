@@ -54,6 +54,81 @@ type Stats struct {
 	BestKillStreak int `bson:"best_streak"`
 }
 
+// Settings is a structure containing the settings of a user.
+type Settings struct {
+	// Language is the language of the user.
+	Language string
+	// Display is the display settings of the user.
+	Display struct {
+		// Scoreboard is whether the user wants to see the scoreboard.
+		Scoreboard bool
+		// CPS is whether the user wants to see their CPS.
+		CPS bool
+		// ActiveTag is the active tag of the user.
+		ActiveTag string
+	}
+	Visual struct {
+		// Lightning is true if lightning deaths should be enabled.
+		Lightning bool
+		// Splashes is true if potion splashes should be enabled.
+		Splashes bool
+		// PearlAnimation is true if players should appear to zoom instead of instantly teleport.
+		PearlAnimation bool
+	}
+	// Privacy is the privacy settings of the user.
+	Privacy struct {
+		// PrivateMessages is whether the user wants to receive private messages.
+		PrivateMessages bool
+		// PublicStatistics is true if the user's statistics should be public.
+		PublicStatistics bool
+		// DuelRequests is true if duel requests should be allowed.
+		DuelRequests bool
+	}
+	// Gameplay is the gameplay settings of the user.
+	Gameplay struct {
+		// ToggleSprint is true if the user should automatically toggle sprinting.
+		ToggleSprint bool
+		// AutoReapplyKit is true if the user should automatically reapply the kit.
+		AutoReapplyKit bool
+		// PreventInterference is true if the user should prevent interference with other players.
+		PreventInterference bool
+		// PreventClutter is true if clutter should be prevented.
+		PreventClutter bool
+		// InstantRespawn is true if the user should respawn instantly.
+		InstantRespawn bool
+	}
+	// Advanced is a section of settings related to advanced features, such as capes or splash colours.
+	Advanced struct {
+		// Cape is the name of the user's cape.
+		Cape string
+		// ParticleMultiplier is the multiplier of combat particles.
+		ParticleMultiplier int
+		// PotionSplashColor is the colour of the potion splash particles.
+		PotionSplashColor string
+	}
+}
+
+// DefaultSettings returns the default settings.
+func DefaultSettings() Settings {
+	s := Settings{}
+
+	s.Language = "en"
+
+	s.Display.Scoreboard = true
+	s.Display.CPS = false
+
+	s.Gameplay.AutoReapplyKit = true
+
+	s.Privacy.PrivateMessages = true
+	s.Privacy.DuelRequests = true
+	s.Privacy.PublicStatistics = true
+
+	s.Visual.Lightning = true
+	s.Visual.Splashes = true
+
+	return s
+}
+
 type User struct {
 	XUID        string `bson:"xuid"`
 	Name        string `bson:"name"`
@@ -109,6 +184,8 @@ type User struct {
 		Dead bool
 		// Stats contains the stats of the user.
 		Stats Stats `bson:"stats"`
+
+		Settings Settings
 	} `bson:"nocta"`
 }
 
