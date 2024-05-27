@@ -19,3 +19,8 @@ func (Donor2) Chat(name, message string) string {
 func (Donor2) Color(name string) string {
 	return text.Colourf("<dark-green>%s</dark-green>", name)
 }
+
+// Inherits returns the role that this role inherits from.
+func (Donor2) Inherits() Role {
+	return Donor1{}
+}
