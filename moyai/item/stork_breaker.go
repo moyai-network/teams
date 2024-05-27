@@ -17,7 +17,7 @@ func (StormBreakerType) Item() world.Item {
 }
 
 func (StormBreakerType) Lore() []string {
-	return []string{text.Colourf("<grey>TODO</grey>")}
+	return []string{text.Colourf("<grey>Hit a player to summon a lightning bolt on them and replace their helmet by a leather one for 5 seconds.</grey>")}
 }
 
 func (StormBreakerType) Key() string {

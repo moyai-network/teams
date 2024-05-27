@@ -518,7 +518,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Archer, class.Rogue:
 		if e, ok := ArcherRogueEffectFromItem(held.Item()); ok {
 			if cd := h.coolDownArcherRogueItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "lastClass.coolDownGlobalAbilities.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			h.p.AddEffect(e)
@@ -532,11 +532,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				return
 			}
 			if cd := h.coolDownBardItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "lastClass.coolDownGlobalAbilities.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				Messagef(h.p, "lastClass.energy.insufficient")
+				Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -548,7 +548,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "bard.coolDownGlobalAbilities.use", effectutil.EffectName(e), lvl, len(teammates))
+			Messagef(h.p, "bard.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.coolDownBardItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -560,11 +560,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			if cd := h.coolDownMageItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "lastClass.coolDownGlobalAbilities.cooldown", cd.Remaining().Seconds())
+				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				Messagef(h.p, "lastClass.energy.insufficient")
+				Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -576,7 +576,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "mage.coolDownGlobalAbilities.use", effectutil.EffectName(e), lvl, len(enemies))
+			Messagef(h.p, "mage.ability.use", effectutil.EffectName(e), lvl, len(enemies))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.coolDownMageItem.Key(held.Item()).Set(15 * time.Second)
 		}

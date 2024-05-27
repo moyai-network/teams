@@ -17,7 +17,7 @@ func (ExoticBoneType) Item() world.Item {
 }
 
 func (ExoticBoneType) Lore() []string {
-	return []string{text.Colourf("<grey>Hit a player 3 times to prevent them from\nbreaking, placing or interacting with blocks for 15 seconds</grey>")}
+	return []string{text.Colourf("<grey>Hit a player to prevent them from\nbreaking, placing or interacting with blocks for 15 seconds</grey>")}
 }
 
 func (ExoticBoneType) Key() string {

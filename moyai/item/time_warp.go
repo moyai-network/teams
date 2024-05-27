@@ -9,7 +9,7 @@ import (
 type TimeWarpType struct{}
 
 func (TimeWarpType) Name() string {
-	return text.Colourf("<blue>Roberto's Time Warp</blue>")
+	return text.Colourf("<blue>Time Warp</blue>")
 }
 
 func (TimeWarpType) Item() world.Item {

@@ -9,7 +9,7 @@ import (
 type FullInvisibilityType struct{}
 
 func (FullInvisibilityType) Name() string {
-	return text.Colourf("<black>xCqzzz's Full Invisibility</black>")
+	return text.Colourf("<black>Full Invisibility</black>")
 }
 
 func (FullInvisibilityType) Item() world.Item {
