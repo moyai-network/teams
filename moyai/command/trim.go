@@ -13,9 +13,9 @@ type Trim struct {
 	Material material `cmd:"material"`
 }
 
-// Trim is a command that allows the player to clear trims to their armor
+// TrimClear is a command that allows the player to clear trims to their armor
 type TrimClear struct {
-	Sub      cmd.SubCommand       `cmd:"clear"`
+	Sub cmd.SubCommand `cmd:"clear"`
 }
 
 // Run ...
@@ -27,7 +27,7 @@ func (t Trim) Run(src cmd.Source, out *cmd.Output) {
 
 	arm := p.Armour()
 	trim := item.ArmourTrim{
-		Template: nameToTemplate(string(t.Template)),
+		Template: item.ArmourSmithingTemplateFromString(string(t.Template)),
 		Material: item.ArmourTrimMaterialFromString(string(t.Material)),
 	}
 
@@ -50,6 +50,7 @@ func (TrimClear) Run(src cmd.Source, out *cmd.Output) {
 
 	arm.Set(arm.Helmet().WithArmourTrim(item.ArmourTrim{}), arm.Chestplate().WithArmourTrim(item.ArmourTrim{}), arm.Leggings().WithArmourTrim(item.ArmourTrim{}), arm.Boots().WithArmourTrim(item.ArmourTrim{}))
 }
+
 type template string
 type material string
 
@@ -88,49 +89,6 @@ func (material) Type() string {
 	return "material"
 }
 
-func nameToTemplate(name string) item.ArmourSmithingTemplate {
-	switch name {
-	case "netherite_upgrade":
-		return item.TemplateNetheriteUpgrade()
-	case "sentry":
-		return item.TemplateSentry()
-	case "vex":
-		return item.TemplateVex()
-	case "wild":
-		return item.TemplateWild()
-	case "coast":
-		return item.TemplateCoast()
-	case "dune":
-		return item.TemplateDune()
-	case "wayfinder":
-		return item.TemplateWayFinder()
-	case "raiser":
-		return item.TemplateRaiser()
-	case "shaper":
-		return item.TemplateShaper()
-	case "host":
-		return item.TemplateHost()
-	case "ward":
-		return item.TemplateWard()
-	case "silence":
-		return item.TemplateSilence()
-	case "tide":
-		return item.TemplateTide()
-	case "snout":
-		return item.TemplateSnout()
-	case "rib":
-		return item.TemplateRib()
-	case "eye":
-		return item.TemplateEye()
-	case "spire":
-		return item.TemplateSpire()
-	case "flow":
-		return item.TemplateFlow()
-	case "bolt":
-		return item.TemplateBolt()
-	}
-	panic("should not happen")
-}
 // Options ...
 func (material) Options(s cmd.Source) []string {
 	return []string{
