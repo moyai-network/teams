@@ -67,41 +67,41 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			items = append(items, it.NewKey(it.KeyTypeMenes, 3))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 4))
 			lives = 3
-			/*case role.Khufu{}:
-				items = append(items, it.NewPartnerPackage(4))
-				items = append(items, it.NewKey(it.KeyTypeRamses, 10))
-				items = append(items, it.NewKey(it.KeyTypeMenes, 5))
-				items = append(items, it.NewKey(it.KeyTypePartner, 3))
-				items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
-				lives = 30
-			case role.Ramses{}:
-				items = append(items, it.NewPartnerPackage(5))
-				items = append(items, it.NewKey(it.KeyTypeRamses, 15))
-				items = append(items, it.NewKey(it.KeyTypeMenes, 10))
-				items = append(items, it.NewKey(it.KeyTypePartner, 6))
-				items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
-				lives = 45
-			case role.Menes{}, role.Mod{}, role.Trial{}:
-				items = append(items, it.NewPartnerPackage(7))
-				items = append(items, it.NewKey(it.KeyTypeRamses, 20))
-				items = append(items, it.NewKey(it.KeyTypeMenes, 15))
-				items = append(items, it.NewKey(it.KeyTypePartner, 12))
-				items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
-				lives = 60
-			case role.Pharaoh{}:
-				items = append(items, it.NewPartnerPackage(9))
-				items = append(items, it.NewKey(it.KeyTypeRamses, 30))
-				items = append(items, it.NewKey(it.KeyTypeMenes, 20))
-				items = append(items, it.NewKey(it.KeyTypePartner, 18))
-				items = append(items, it.NewKey(it.KeyTypePharaoh, 8))
-				lives = 75
-			case role.Partner{}, role.Manager{}, role.Admin{}, role.Owner{}:
-				items = append(items, it.NewPartnerPackage(10))
-				items = append(items, it.NewKey(it.KeyTypeRamses, 30))
-				items = append(items, it.NewKey(it.KeyTypeMenes, 20))
-				items = append(items, it.NewKey(it.KeyTypePartner, 20))
-				items = append(items, it.NewKey(it.KeyTypePharaoh, 10))
-				lives = 85*/
+		/*case role.Khufu{}:
+			items = append(items, it.NewPartnerPackage(4))
+			items = append(items, it.NewKey(it.KeyTypeRamses, 10))
+			items = append(items, it.NewKey(it.KeyTypeMenes, 5))
+			items = append(items, it.NewKey(it.KeyTypePartner, 3))
+			items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
+			lives = 30
+		case role.Ramses{}:
+			items = append(items, it.NewPartnerPackage(5))
+			items = append(items, it.NewKey(it.KeyTypeRamses, 15))
+			items = append(items, it.NewKey(it.KeyTypeMenes, 10))
+			items = append(items, it.NewKey(it.KeyTypePartner, 6))
+			items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
+			lives = 45
+		case role.Menes{}, role.Mod{}, role.Trial{}:
+			items = append(items, it.NewPartnerPackage(7))
+			items = append(items, it.NewKey(it.KeyTypeRamses, 20))
+			items = append(items, it.NewKey(it.KeyTypeMenes, 15))
+			items = append(items, it.NewKey(it.KeyTypePartner, 12))
+			items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
+			lives = 60
+		case role.dono{}:
+			items = append(items, it.NewPartnerPackage(9))
+			items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+			items = append(items, it.NewKey(it.KeyTypeMenes, 20))
+			items = append(items, it.NewKey(it.KeyTypePartner, 18))
+			items = append(items, it.NewKey(it.KeyTypePharaoh, 8))
+			lives = 75*/
+		case role.Donor1{}, role.Manager{}, role.Admin{}, role.Owner{}:
+			items = append(items, it.NewPartnerPackage(10))
+			items = append(items, it.NewKey(it.KeyTypeRamses, 30))
+			items = append(items, it.NewKey(it.KeyTypeMenes, 20))
+			items = append(items, it.NewKey(it.KeyTypePartner, 20))
+			items = append(items, it.NewKey(it.KeyTypePharaoh, 10))
+			lives = 85
 		}
 		for _, i := range items {
 			it.AddOrDrop(h, i)

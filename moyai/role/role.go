@@ -229,6 +229,10 @@ func (r *Roles) checkExpiry() {
 func init() {
 	Register(Operator{})
 	Register(Default{})
+	Register(Donor1{})
+	Register(Donor2{})
+	Register(Donor3{})
+	Register(Donor4{})
 	Register(Trial{})
 	Register(Mod{})
 	Register(Admin{})
