@@ -22,11 +22,14 @@ func NewDecorativeMenu(p *player.Player) inv.Menu {
 	stacks[22] = item.NewStack(block.Purpur{}, 32)
 	stacks[23] = item.NewStack(block.EndStone{}, 32)
 	stacks[24] = item.NewStack(block.Bricks{}, 32)
-	stacks[30] = item.NewStack(block.NetherBricks{Type: block.NormalNetherBricks()}, 32)
-	stacks[29] = item.NewStack(block.NetherBricks{Type: block.ChiseledNetherBricks()}, 32)
-	stacks[31] = item.NewStack(block.NetherBricks{Type: block.RedNetherBricks()}, 32)
-	stacks[32] = item.NewStack(block.NetherBricks{Type: block.CrackedNetherBricks()}, 32)
+	stacks[29] = item.NewStack(block.NetherBricks{Type: block.NormalNetherBricks()}, 32)
+	stacks[30] = item.NewStack(block.NetherBricks{Type: block.RedNetherBricks()}, 32)
+	stacks[31] = item.NewStack(block.Calcite{}, 32)
+	stacks[32] = item.NewStack(block.Shroomlight{}, 32)
 	stacks[33] = item.NewStack(block.DecoratedPot{}, 32)
+	stacks[39] = item.NewStack(block.Blackstone{Type: block.NormalBlackstone()}, 32)
+	stacks[40] = item.NewStack(block.Deepslate{Type: block.NormalDeepslate()}, 32)
+	stacks[41] = item.NewStack(block.Amethyst{}, 32)
 
 	for i := 0; i < 54; i++ {
 		if _, ok := stacks[i].Item().(block.StainedGlassPane); ok {
