@@ -462,6 +462,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("chat", text.Colourf("Chat management commands."), nil, command.ChatMute{}, command.ChatUnMute{}, command.ChatCoolDown{}),
 		cmd.New("t", text.Colourf("The main team management command."), []string{"f"},
 			command.TeamCreate{},
+			command.TeamRename{},
 			command.TeamInformation{},
 			command.TeamDisband{},
 			command.TeamInvite{},

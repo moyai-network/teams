@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/colour"
 	"regexp"
 	"slices"
 	"sort"
@@ -186,9 +187,15 @@ type TeamRally struct {
 	Sub cmd.SubCommand `cmd:"rally"`
 }
 
-// TeamRally is a command that disable waypoint to rally.
+// TeamUnRally is a command that disable waypoint to rally.
 type TeamUnRally struct {
 	Sub cmd.SubCommand `cmd:"unrally"`
+}
+
+// TeamRename is a command to rename your team.
+type TeamRename struct {
+	Sub  cmd.SubCommand `cmd:"rename"`
+	Name string         `cmd:"name"`
 }
 
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
@@ -339,18 +346,9 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		user.Messagef(p, "team.create.already")
 		return
 	}
-	t.Name = strings.TrimSpace(t.Name)
 
-	if !regex.MatchString(t.Name) {
-		user.Messagef(p, "team.create.name.invalid")
-		return
-	}
-	if len(t.Name) < 3 {
-		user.Messagef(p, "team.create.name.short")
-		return
-	}
-	if len(t.Name) > 15 {
-		user.Messagef(p, "team.create.name.long")
+	t.Name = colour.StripMinecraftColour(t.Name)
+	if !validateTeamName(p, t.Name) {
 		return
 	}
 
@@ -372,6 +370,24 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 
 	user.Messagef(p, "team.create.success", tm.DisplayName)
 	user.Broadcastf("team.create.success.broadcast", p.Name(), tm.DisplayName)
+}
+
+func validateTeamName(p *player.Player, name string) bool {
+	name = strings.TrimSpace(name)
+
+	if !regex.MatchString(name) {
+		user.Messagef(p, "team.create.name.invalid")
+		return false
+	}
+	if len(name) < 3 {
+		user.Messagef(p, "team.create.name.short")
+		return false
+	}
+	if len(name) > 15 {
+		user.Messagef(p, "team.create.name.long")
+		return false
+	}
+	return true
 }
 
 // Run ...
@@ -1365,124 +1381,32 @@ func safePosition(p *player.Player, radius int) cube.Pos {
 	return cube.Pos{}
 }
 
-// Allow ...
-func (TeamCreate) Allow(src cmd.Source) bool {
-	return allow(src, false)
-}
+// Run ...
+func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
 
-// Allow ...
-func (TeamDisband) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
+	tm, err := data.LoadTeamFromMemberName(p.Name())
+	if err != nil {
+		user.Messagef(p, "user.team-less")
+		return
+	}
 
-// Allow ...
-func (TeamInvite) Allow(src cmd.Source) bool {
-	return allow(src, false)
-}
+	if tm.Renamed {
+		user.Messagef(p, "team.rename.already")
+		return
+	}
 
-// Allow ...
-func (TeamJoin) Allow(src cmd.Source) bool {
-	return allow(src, false)
-}
+	t.Name = colour.StripMinecraftColour(t.Name)
+	if !validateTeamName(p, t.Name) {
+		return
+	}
+	tm = tm.WithRename(t.Name)
 
-// Allow ...
-func (TeamInformation) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamWho) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamLeave) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamKick) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamPromote) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamDemote) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamTop) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamClaim) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamUnClaim) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamSetHome) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamHome) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamList) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamFocusTeam) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamUnFocus) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamFocusPlayer) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamChat) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamWithdraw) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamDeposit) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamWithdrawAll) Allow(s cmd.Source) bool {
-	return allow(s, false)
-}
-
-// Allow ...
-func (TeamDepositAll) Allow(s cmd.Source) bool {
-	return allow(s, false)
+	user.Messagef(p, "team.rename.success", tm.DisplayName)
+	team.Broadcastf(tm, "team.rename.success.broadcast", p.Name(), tm.DisplayName)
 }
 
 func (TeamDelete) Allow(s cmd.Source) bool {

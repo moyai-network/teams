@@ -97,6 +97,8 @@ type Team struct {
 	Claim area.Area
 	// Focus is the focus information for a team
 	Focus Focus
+	// Renamed is whether the team has been renamed.
+	Renamed bool
 }
 
 // DefaultTeam returns a team with default values
@@ -106,6 +108,20 @@ func DefaultTeam(name string) Team {
 		DTR:         1.01,
 		DisplayName: name,
 	}
+}
+
+// WithRename renames the team.
+func (t Team) WithRename(name string) Team {
+	teamMu.Lock()
+	delete(teams, t.Name)
+
+	t.DisplayName = name
+	t.Name = strings.ToLower(name)
+	t.Renamed = true
+
+	teams[t.Name] = t
+	teamMu.Unlock()
+	return t
 }
 
 // WithMembers returns the team with the given members.
