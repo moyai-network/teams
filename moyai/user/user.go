@@ -206,7 +206,10 @@ func (h *Handler) incrementDeath() {
 // handleTeamMemberDeath handles the death of a team member.
 func (h *Handler) handleTeamMemberDeath() {
 	if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-		tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithRegenerationTime(time.Now().Add(time.Minute * 5))
+		tm = tm.WithDTR(tm.DTR - 1).WithRegenerationTime(time.Now().Add(time.Minute * 10))
+		if tm.Points > 0 {
+			tm = tm.WithPoints(tm.Points - 1)
+		}
 		data.SaveTeam(tm)
 	}
 }
