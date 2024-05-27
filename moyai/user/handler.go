@@ -1697,11 +1697,13 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if err != nil {
 		fmt.Println(err)
 	}
+	t, teamErr := data.LoadTeamFromMemberName(h.p.Name())
+
 	for _, tm := range teams {
 		a := tm.Claim
 
 		name := text.Colourf("<red>%s</red>", tm.DisplayName)
-		if t, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil && t.Name == tm.Name {
+		if teamErr == nil && t.Name == tm.Name {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
 		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
