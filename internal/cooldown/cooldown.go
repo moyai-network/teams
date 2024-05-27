@@ -37,10 +37,6 @@ func (c *CoolDown) Paused() bool {
 
 // Set sets the player the cooldown.
 func (c *CoolDown) Set(dur time.Duration) {
-	if c.paused.Load() {
-		c.remainingAtPause.Store(dur)
-		return
-	}
 	c.expiration = *atomic.NewValue(time.Now().Add(dur))
 }
 

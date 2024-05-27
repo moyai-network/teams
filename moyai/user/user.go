@@ -159,13 +159,13 @@ func (h *Handler) kill(src world.DamageSource) {
 	p := h.p
 
 	p.World().PlaySound(p.Position(), sound.Explosion{})
+	h.incrementDeath()
 	h.handleTeamMemberDeath()
 	h.cancelStormBreak()
 	h.spawnDeathNPC(src)
 	h.clearEffects()
 	h.clearOwnedEntities()
 	h.resetCoolDowns()
-	h.incrementDeath()
 
 	DropContents(p)
 	p.SetHeldItems(item.Stack{}, item.Stack{})
@@ -176,7 +176,10 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	h.lastClass.Store(class.Resolve(p))
 	UpdateState(p)
-	p.Teleport(mgl64.Vec3{0, 100, 0})
+
+	sortArmourEffects(h)
+	sortClassEffects(h)
+	p.Teleport(mgl64.Vec3{0, 68, 0})
 }
 
 // cancelStormBreak cancels the storm breaker effect.
@@ -194,7 +197,7 @@ func (h *Handler) incrementDeath() {
 	if err != nil {
 		return
 	}
-	victim.Teams.PVP.Set(time.Hour + time.Second)
+	victim.Teams.PVP.Set(time.Hour)
 	victim.Teams.Stats.Deaths += 1
 	if victim.Teams.Stats.KillStreak > victim.Teams.Stats.BestKillStreak {
 		victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
