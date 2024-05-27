@@ -151,4 +151,5 @@ func init() {
 	Register(Mexico{})
 	Register(Canada{})
 	Register(France{})
+	Register(Russia{})
 }
