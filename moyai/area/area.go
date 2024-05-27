@@ -159,7 +159,7 @@ func WarZone(w *world.World) NamedArea {
 	case world.Nether:
 		return Nether.WarZone()
 	case world.End:
-		return NamedArea{}
+		return End.WarZone()
 	default:
 		//panic("should never happen")
 	}
@@ -241,6 +241,9 @@ var (
 			NewNamedArea(mgl64.Vec2{6, -61}, mgl64.Vec2{-8, -2540}, text.Colourf("<red>Road</red>")),
 			NewNamedArea(mgl64.Vec2{-8, 66}, mgl64.Vec2{7, 2540}, text.Colourf("<red>Road</red>")),
 		},
+	}
+	End = Areas{
+		warZone:      NewNamedArea(mgl64.Vec2{250, 250}, mgl64.Vec2{-150, -150}, text.Colourf("<purple>End</purple>")),
 	}
 )
 
