@@ -483,7 +483,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
-	tm = tm.WithDTR(tm.DTR + 1)
+	tm = tm.WithDTR(tm.DTR + 1.1)
 	data.SaveTeam(tm)
 
 	team.Broadcastf(tm, "team.join.broadcast", p.Name())
@@ -669,13 +669,13 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 
 	tm = tm.WithoutMember(p.Name())
 	tm = tm.WithDTR(tm.DTR - 1.1)
+	data.SaveTeam(tm)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.leave.user.left")
 		}
 	}
-	data.SaveTeam(tm)
 }
 
 // Run ...
@@ -722,14 +722,13 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm = tm.WithoutMember(string(t.Member))
 	tm = tm.WithDTR(tm.DTR - 1.1)
+	data.SaveTeam(tm)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
 			user.Messagef(mem, "command.team.kick.kicked")
 		}
 	}
-
-	data.SaveTeam(tm)
 }
 
 // Run ...

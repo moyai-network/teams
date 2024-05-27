@@ -227,7 +227,7 @@ func (t Team) WithDTR(dtr float64) Team {
 
 // MaxDTR returns the max DTR of the faction.
 func (t Team) MaxDTR() float64 {
-	dtr := 1.01 * float64(len(t.Members))
+	dtr := 1.1 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
 }
 
