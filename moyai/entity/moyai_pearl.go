@@ -114,6 +114,15 @@ func teleport(e *entity.Ent, target trace.Result) {
 			v.ViewEntityMovement(p, e.Position(), rot, onGround)
 		}
 
+		// session_writePacket(player_session(p), &packet.MovePlayer{
+		// 	EntityRuntimeID: 1,
+		// 	Position:        mgl32.Vec3{float32(target.Position()[0]), float32(target.Position()[1] + 1.621), float32(target.Position()[2])},
+		// 	Pitch:           float32(rot[1]),
+		// 	Yaw:             float32(rot[0]),
+		// 	HeadYaw:         float32(rot[0]),
+		// 	Mode:            packet.MoveModeNormal,
+		// })
+
 		e.World().PlaySound(tlp.Position(), sound.Teleport{})
 		tlp.Teleport(target.Position())
 		tlp.Hurt(5, entity.FallDamageSource{})
