@@ -116,7 +116,7 @@ type Handler struct {
 func NewHandler(p *player.Player, xuid string) *Handler {
 	if h, ok := logger(p); ok {
 		p.Teleport(h.p.Position())
-		h.close <- struct{}{}
+		_ = h.p.Close()
 	}
 	ha := &Handler{
 		p:          p,
