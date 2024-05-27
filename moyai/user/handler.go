@@ -219,13 +219,15 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				return
 			}
 			h.lastMessage.Store(time.Now())
+			displayName := u.DisplayName
+			if t, ok := tag.ByName(u.Teams.Settings.Display.ActiveTag); ok {
+				displayName = u.DisplayName + " " + t.Format()
+			}
+
 			if teamErr == nil {
-				n := u.DisplayName
-				if t, ok := tag.ByName(u.Teams.Settings.Display.ActiveTag); ok {
-					n = u.DisplayName + " " + t.Format()
-				} 
-				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(n, msg))
-				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(n, msg))
+
+				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
+				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
 
 				for _, t := range moyai.Server().Players() {
 					if tm.Member(t.Name()) {
@@ -236,7 +238,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				}
 				chat.StdoutSubscriber{}.Message(formatEnemy)
 			} else {
-				_, _ = chat.Global.WriteString(r.Chat(u.DisplayName, msg))
+				_, _ = chat.Global.WriteString(r.Chat(displayName, msg))
 			}
 		}
 
