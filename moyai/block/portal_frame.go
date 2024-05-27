@@ -1,8 +1,6 @@
 package block
 
 import (
-	"fmt"
-
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/block/model"
@@ -76,6 +74,5 @@ func allFrames() []world.Block {
 			Filled: true,
 		})
 	}
-	fmt.Println(frames)
 	return frames
 }
