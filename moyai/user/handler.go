@@ -1501,6 +1501,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		}
 		switch kind := typ.(type) {
 		case it.StormBreakerType:
+			if targetHandler.lastClass.Load() != nil {
+				Messagef(h.p, "ability.classes.disabled")
+				break
+			}
 			if cd := h.coolDownSpecificAbilities.Key(it.StormBreakerType{}); cd.Active() {
 				Messagef(h.p, "stormbreaker.cooldown", cd.Remaining().Seconds())
 				break
@@ -1509,11 +1513,6 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			h.p.World().AddEntity(h.p.World().EntityRegistry().Config().Lightning(h.p.Position()))
 			h.coolDownSpecificAbilities.Set(it.StormBreakerType{}, time.Minute*2)
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
-
-			if targetHandler.lastClass.Load() != nil {
-				Messagef(h.p, "ability.classes.disabled")
-				break
-			}
 
 			targetArmourHandler, ok := target.Armour().Inventory().Handler().(*ArmourHandler)
 			if !ok {
@@ -1645,7 +1644,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			h.p.Teleport(mgl64.Vec3{0, 27, 0})
 		} else {
 			moyai.Server().World().AddEntity(h.p)
-			<-time.After(time.Second) // No clue why
+			<-time.After(time.Second)           // No clue why
 			h.p.Teleport(mgl64.Vec3{0, 100, 0}) // TODO: Add end portal
 		}
 	}
