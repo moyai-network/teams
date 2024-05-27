@@ -170,6 +170,10 @@ func startTicker(h *Handler) {
 			sb.RemovePadding()
 
 			u, _ := data.LoadUserFromName(h.p.Name())
+			if !u.Teams.Settings.Display.Scoreboard {
+				h.p.RemoveScoreboard()
+				continue
+			}
 			l := u.Language
 			db := u.Teams.DeathBan
 

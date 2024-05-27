@@ -1,10 +1,11 @@
 package tag
 
 import (
+	"sync"
+
 	"github.com/df-mc/atomic"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/exp/slices"
-	"sync"
 )
 
 // Tag represents a tag that can be applied to a player. It is used to format the chat messages
@@ -135,4 +136,15 @@ func (t *Tags) UnmarshalBSON(data []byte) error {
 		t.active = *atomic.NewValue(tag)
 	}
 	return nil
+}
+
+func init() {
+	Register(OG{})
+	Register(Dab{})
+	Register(Mew{})
+	Register(Nulled{})
+	Register(PVP{})
+	Register(Combos{})
+	Register(UWU{})
+	Register(Akhi{})
 }
