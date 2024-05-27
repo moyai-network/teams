@@ -147,4 +147,6 @@ func init() {
 	Register(Combos{})
 	Register(UWU{})
 	Register(Akhi{})
+	Register(USA{})
+	Register(Mexico{})
 }
