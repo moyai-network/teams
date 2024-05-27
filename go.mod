@@ -66,4 +66,4 @@ replace github.com/sandertv/gophertunnel => github.com/oomph-ac/gophertunnel v0.
 
 replace github.com/sandertv/go-raknet => github.com/GameParrot/tedac-raknet v0.0.4
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240524210430-104afa65e64d
+replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240527141141-7b3f8d10df5b
