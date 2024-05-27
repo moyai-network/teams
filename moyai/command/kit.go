@@ -24,7 +24,10 @@ func (Kit) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	inv.SendMenu(p, menu.NewKitsMenu(p))
+
+	if men, ok := menu.NewKitsMenu(p); ok {
+		inv.SendMenu(p, men)
+	}
 }
 
 // Run ...

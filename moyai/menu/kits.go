@@ -32,10 +32,10 @@ func (fishingRod) EncodeItem() (name string, meta int16) {
 
 type Kits struct{}
 
-func NewKitsMenu(p *player.Player) inv.Menu {
+func NewKitsMenu(p *player.Player) (inv.Menu, bool) {
 	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
-		return inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
+		return inv.Menu{}, false
 	}
 
 	m := inv.NewMenu(Kits{}, "Kits", inv.ContainerChest{DoubleChest: true})
@@ -77,7 +77,7 @@ func NewKitsMenu(p *player.Player) inv.Menu {
 
 		stacks[i] = stack.WithLore(append(stack.Lore(), lore)...).WithEnchantments(glint)
 	}
-	return m.WithStacks(stacks...)
+	return m.WithStacks(stacks...), true
 }
 
 func (Kits) Submit(p *player.Player, it item.Stack) {
@@ -92,13 +92,17 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 
 	name := colour.StripMinecraftColour(it.CustomName())
 	if u.Teams.Kits.Active(name) {
-		inv.SendMenu(p, NewKitsMenu(p))
+		if menu, ok := NewKitsMenu(p); ok {
+			inv.SendMenu(p, menu)
+		}
 		return
 	}
 	u.Teams.Kits.Set(name, time.Hour*4)
 	data.SaveUser(u)
 
-	inv.SendMenu(p, NewKitsMenu(p))
+	if menu, ok := NewKitsMenu(p); ok {
+		inv.SendMenu(p, menu)
+	}
 
 	var free bool
 	if _, free = it.Value("free"); !free && u.Roles.Highest() == (role.Default{}) {

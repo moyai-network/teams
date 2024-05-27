@@ -1422,7 +1422,9 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 
 	if colour.StripMinecraftColour(t.Name()) == "Click to use kits" {
-		inv.SendMenu(h.p, menu.NewKitsMenu(h.p))
+		if men, ok := menu.NewKitsMenu(h.p); ok {
+			inv.SendMenu(h.p, men)
+		}
 		ctx.Cancel()
 		return
 	}

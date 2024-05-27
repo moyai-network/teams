@@ -245,7 +245,9 @@ func placeSlapper(w *world.World) {
 
 		Position: mgl64.Vec3{-7, 65, 38.5},
 	}, w, func(p *player.Player) {
-		inv.SendMenu(p, menu.NewKitsMenu(p))
+		if men, ok := menu.NewKitsMenu(p); ok {
+			inv.SendMenu(p, men)
+		}
 	})
 }
 
