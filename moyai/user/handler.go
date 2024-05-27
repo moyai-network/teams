@@ -505,6 +505,10 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	}
 	switch held.Item().(type) {
 	case item.EnderPearl:
+		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
+			Messagef(h.p, "item.use.citadel.disabled")
+			return
+		}
 		if cd := h.coolDownPearl; cd.Active() {
 			Messagef(h.p, "user.cool-down", "Ender Pearl", cd.Remaining().Seconds())
 			ctx.Cancel()
@@ -1485,6 +1489,10 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	}
 	typ, ok2 := it.SpecialItem(held)
 	if ok && ok2 {
+		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
+			Messagef(h.p, "item.use.citadel.disabled")
+			return
+		}
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
 			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			return
