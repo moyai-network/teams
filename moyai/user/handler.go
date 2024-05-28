@@ -1548,34 +1548,34 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			h.coolDownSpecificAbilities.Set(kind, time.Minute)
 			h.p.SetHeldItems(h.substractItem(held, 1), left)
 			targetHandler.coolDownBonedEffect.Set(time.Second * 10)
-		case it.ScramblerType:
-			if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-				Messagef(h.p, "scrambler.cooldown", cd.Remaining().Seconds())
-				break
-			}
-			var used []int
-			for i := 0; i <= 7; i++ {
-				j := rand.Intn(8)
-				var u bool
-				for _, v := range used {
-					if v == j {
-						u = true
-					}
-				}
-				if u {
-					continue
-				}
-				used = append(used, j)
-				it1, _ := target.Inventory().Item(i)
-				it2, _ := target.Inventory().Item(j)
-				target.Inventory().SetItem(j, it1)
-				target.Inventory().SetItem(i, it2)
-			}
-			Messagef(target, "scrambler.target", h.p.Name())
-			Messagef(h.p, "scrambler.user", t.Name())
-			h.coolDownGlobalAbilities.Set(time.Second * 10)
-			h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
-			h.p.SetHeldItems(h.substractItem(held, 1), left)
+		// case it.ScramblerType:
+		// 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		// 		Messagef(h.p, "scrambler.cooldown", cd.Remaining().Seconds())
+		// 		break
+		// 	}
+		// 	var used []int
+		// 	for i := 0; i <= 7; i++ {
+		// 		j := rand.Intn(8)
+		// 		var u bool
+		// 		for _, v := range used {
+		// 			if v == j {
+		// 				u = true
+		// 			}
+		// 		}
+		// 		if u {
+		// 			continue
+		// 		}
+		// 		used = append(used, j)
+		// 		it1, _ := target.Inventory().Item(i)
+		// 		it2, _ := target.Inventory().Item(j)
+		// 		target.Inventory().SetItem(j, it1)
+		// 		target.Inventory().SetItem(i, it2)
+		// 	}
+		// 	Messagef(target, "scrambler.target", h.p.Name())
+		// 	Messagef(h.p, "scrambler.user", t.Name())
+		// 	h.coolDownGlobalAbilities.Set(time.Second * 10)
+		// 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+		// 	h.p.SetHeldItems(h.substractItem(held, 1), left)
 		case it.PearlDisablerType:
 			if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
 				Messagef(h.p, "pearl_disabler.cooldown", cd.Remaining().Seconds())
