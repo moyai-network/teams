@@ -40,7 +40,7 @@ func init() {
 var (
 	Garden = &KOTH{
 		name:        text.Colourf("<dark-green>Garden</dark-green>"),
-		dimension: world.Overworld,
+		dimension:   world.Overworld,
 		area:        area.NewArea(mgl64.Vec2{-508, -508}, mgl64.Vec2{-514, -514}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, -500},
@@ -48,7 +48,7 @@ var (
 	}
 	Oasis = &KOTH{
 		name:        text.Colourf("<red>Oasis</red>"),
-		dimension: world.Overworld,
+		dimension:   world.Overworld,
 		area:        area.NewArea(mgl64.Vec2{479, 501}, mgl64.Vec2{473, 495}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
@@ -56,7 +56,7 @@ var (
 	}
 	Shrine = &KOTH{
 		name:        text.Colourf("<gold>Shrine</gold>"),
-		dimension: world.Overworld,
+		dimension:   world.Overworld,
 		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{509, -486}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -500},
@@ -64,7 +64,7 @@ var (
 	}
 	Citadel = &KOTH{
 		name:        text.Colourf("<amethyst>Citadel</amethyst>"),
-		dimension: world.Overworld,
+		dimension:   world.Overworld,
 		area:        area.NewArea(mgl64.Vec2{-502, 504}, mgl64.Vec2{-506, 500}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, 500},
@@ -72,7 +72,7 @@ var (
 	}
 	End = &KOTH{
 		name:        text.Colourf("<purple>End</purple>"),
-		dimension: world.End,
+		dimension:   world.End,
 		area:        area.NewArea(mgl64.Vec2{-11, 87}, mgl64.Vec2{-17, 93}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-14, 90},
@@ -108,7 +108,7 @@ func Lookup(name string) (*KOTH, bool) {
 // KOTH represents a King of the Hill event.
 type KOTH struct {
 	name        string
-	dimension world.Dimension
+	dimension   world.Dimension
 	capturing   *player.Player
 	running     bool
 	time        time.Time
@@ -132,7 +132,7 @@ func (k *KOTH) Dimension() world.Dimension {
 func (k *KOTH) Start() {
 	k.running = true
 	k.capturing = nil
-	k.cancel = make(chan struct{}, 0)
+	k.cancel = make(chan struct{})
 }
 
 // Duration returns the duration of the KOTH.

@@ -1702,27 +1702,27 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 	k, ok := koth.Running()
 	if ok {
-		r := u.Roles.Highest()
+		//r := u.Roles.Highest()
 		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) && k.Dimension() == w.Dimension() {
 			switch k {
 			case koth.Citadel:
 				if newPos.Y() > 57 || newPos.Y() < 48 {
 					if k.StopCapturing(us) {
-						Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}
 					return
 				}
 			case koth.Shrine:
 				if newPos.Y() > 70 {
 					if k.StopCapturing(us) {
-						Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}
 					return
 				}
 			case koth.End:
 				if newPos.Y() > 40 {
 					if k.StopCapturing(us) {
-						Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
+						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 					}
 					return
 				}
@@ -1732,12 +1732,10 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 				return
 			}
 			if k.StartCapturing(us) {
-				Broadcastf("koth.capturing", k.Name(), r.Color(u.DisplayName))
+				//Broadcastf("koth.capturing", k.Name(), r.Color(u.DisplayName))
 			}
-		} else {
-			if k.StopCapturing(us) {
-				Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
-			}
+		} else if k.StopCapturing(us) {
+			//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 		}
 	}
 
