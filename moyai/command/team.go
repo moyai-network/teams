@@ -669,7 +669,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithoutMember(p.Name())
-	tm = tm.WithDTR(tm.DTR - 1.1)
+	tm = tm.WithDTR(tm.DTR - 1.01)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
