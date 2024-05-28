@@ -22,7 +22,7 @@ func (menes) Position() mgl64.Vec3 {
 }
 
 func (menes) Facing() cube.Face {
-	return cube.FaceNorth
+	return cube.FaceWest
 }
 
 var menesEnchantments = []item.Enchantment{

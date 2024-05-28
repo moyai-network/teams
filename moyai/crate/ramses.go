@@ -22,7 +22,7 @@ func (ramses) Position() mgl64.Vec3 {
 }
 
 func (ramses) Facing() cube.Face {
-	return cube.FaceNorth
+	return cube.FaceWest
 }
 
 var ramsesEnchantments = []item.Enchantment{

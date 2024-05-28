@@ -20,7 +20,7 @@ func (koth) Position() mgl64.Vec3 {
 }
 
 func (koth) Facing() cube.Face {
-	return cube.FaceNorth
+	return cube.FaceEast
 }
 
 var kothEnchantments = []item.Enchantment{

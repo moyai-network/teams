@@ -23,7 +23,7 @@ func (pharaoh) Position() mgl64.Vec3 {
 }
 
 func (pharaoh) Facing() cube.Face {
-	return cube.FaceNorth
+	return cube.FaceWest
 }
 
 var pharaohEnchantments = []item.Enchantment{
