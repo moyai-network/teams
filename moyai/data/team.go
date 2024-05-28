@@ -212,6 +212,11 @@ func (t Team) Frozen() bool {
 	return time.Since(t.LastDeath) < time.Minute*15
 }
 
+// Regenerating returns whether the team is regenerating.
+func (t Team) Regenerating() bool {
+	return !eq(t.DTR, t.MaxDTR()) && !t.Frozen()
+}
+
 // WithDTR returns the team with the given dtr.
 func (t Team) WithDTR(dtr float64) Team {
 	t.DTR = dtr
