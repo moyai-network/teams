@@ -132,6 +132,7 @@ func (t Team) WithoutMember(name string) Team {
 	for i, m := range t.Members {
 		if strings.EqualFold(name, m.Name) {
 			t.Members = append(t.Members[:i], t.Members[i+1:]...)
+			break
 		}
 	}
 	return t
