@@ -34,6 +34,6 @@ func (r Rename) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	held = held.WithCustomName(r.Name)
+	held = held.WithCustomName("§r" + r.Name)
 	p.SetHeldItems(held, off)
 }
