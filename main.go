@@ -8,10 +8,12 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"reflect"
 	"strings"
 	"syscall"
 	"time"
 	"unicode"
+	"unsafe"
 
 	"github.com/bedrock-gophers/intercept"
 	"github.com/bedrock-gophers/spawner/spawner"
@@ -137,7 +139,8 @@ func main() {
 	placeCrates(w)
 	placeShopSigns(w)
 
-	go tickBlackMarket()
+	go tickBlackMarket(srv)
+	go tickClearLag(srv)
 
 	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 	registerCommands(srv)
@@ -151,7 +154,33 @@ func main() {
 	}
 }
 
-func tickBlackMarket() {
+func tickClearLag(srv *server.Server) {
+	t := time.NewTicker(time.Minute / 2)
+	defer t.Stop()
+
+	for range t.C {
+		for _, e := range srv.World().Entities() {
+			if et, ok := e.(*entity.Ent); ok && et.Type() == (entity.ItemType{}) {
+				age := fetchPrivateField[time.Duration](et, "age")
+				if age > (time.Minute*5)/2 {
+					srv.World().RemoveEntity(e)
+				}
+			}
+		}
+	}
+
+}
+
+// fetchPrivateField fetches a private field of a session.
+func fetchPrivateField[T any](v any, name string) T {
+	reflectedValue := reflect.ValueOf(v).Elem()
+	privateFieldValue := reflectedValue.FieldByName(name)
+	privateFieldValue = reflect.NewAt(privateFieldValue.Type(), unsafe.Pointer(privateFieldValue.UnsafeAddr())).Elem()
+
+	return privateFieldValue.Interface().(T)
+}
+
+func tickBlackMarket(srv *server.Server) {
 	t := time.NewTicker(time.Minute * 15)
 	defer t.Stop()
 
@@ -162,7 +191,7 @@ func tickBlackMarket() {
 
 		if rand.Intn(4) == 0 {
 			moyai.SetLastBlackMarket(time.Now())
-			for _, p := range moyai.Server().Players() {
+			for _, p := range srv.Players() {
 				p.PlaySound(sound.BarrelOpen{})
 				p.PlaySound(sound.FireworkHugeBlast{})
 				p.PlaySound(sound.FireworkLaunch{})

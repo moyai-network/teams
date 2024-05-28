@@ -166,6 +166,7 @@ func (h *Handler) kill(src world.DamageSource) {
 	h.clearEffects()
 	h.clearOwnedEntities()
 	h.resetCoolDowns()
+	unsafe.Session(h.p).EmptyUIInventory()
 
 	DropContents(p)
 	p.SetHeldItems(item.Stack{}, item.Stack{})
