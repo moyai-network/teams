@@ -1675,7 +1675,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 		} else {
 			moyai.Server().World().AddEntity(h.p)
 			<-time.After(time.Second)
-			h.p.Teleport(mgl64.Vec3{200, 80, 200}) 
+			h.p.Teleport(mgl64.Vec3{0, 60, 250})
 		}
 	}
 
