@@ -458,6 +458,7 @@ func loadStore(key string, log *logrus.Logger) *tebex.Client {
 
 func registerCommands(srv *server.Server) {
 	for _, c := range []cmd.Command{
+		cmd.New("rename", text.Colourf("Rename your items."), nil, command.Rename{}),
 		cmd.New("stop", text.Colourf("Stop the server."), nil, command.Stop{}),
 		cmd.New("pots", text.Colourf("Place potion chests."), nil, command.Pots{}),
 		cmd.New("fix", text.Colourf("Fix your inventory."), nil, command.Fix{}, command.FixAll{}),

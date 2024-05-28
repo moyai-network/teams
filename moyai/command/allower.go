@@ -12,3 +12,11 @@ type adminAllower struct{}
 func (adminAllower) Allow(s cmd.Source) bool {
 	return allow(s, true, role.Admin{})
 }
+
+// donor1Allower is an allower that allows all users with the donor1 role to execute a command.
+type donor1Allower struct{}
+
+// Allow ...
+func (donor1Allower) Allow(s cmd.Source) bool {
+	return allow(s, true, role.Donor1{})
+}

@@ -99,6 +99,10 @@
         "user.blacklist.header.alt": "<b><red>An account linked to you is blacklisted from Moyai</red></b>",
         "user.blacklist.description": "<gold>Reason:</gold> <yellow>%s</yellow>\n<grey><i>For questions or concerns, refer to discord.gg/tWCfwQrRWn</grey></i>",
 
+        "command.rename.too-short": "<red>The name you provided is too short.</red>",
+        "command.rename.too-long": "<red>The name you provided is too long.</red>",
+        "command.rename.no-item": "<red>You must be holding an item to use this command.</red>",
+
         "command.alias.accounts": "\n<yellow>Listed accounts under %v's IP</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's DID</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's SSID</yellow>\n<grey>%v</grey>\n\n",
         "command.tl": "<green>%s</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
 
