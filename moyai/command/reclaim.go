@@ -45,6 +45,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	}
 	u.Teams.Reclaimed = true
 
+	highest := u.Roles.Highest()
 	for _, r := range u.Roles.All() {
 		if r == (role.Operator{}) {
 			continue
@@ -114,7 +115,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			itemNames = append(itemNames, text.Colourf("<red>%dx</red> %s", i.Count(), i.CustomName()))
 		}
 		nm := []rune(r.Name())
-		user.Broadcastf("user.reclaim", r.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
+		user.Broadcastf("user.reclaim", highest.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
 	}
 	data.SaveUser(u)
 }
@@ -130,11 +131,6 @@ func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
 		u.Teams.Reclaimed = false
 		data.SaveUser(u)
 	}
-}
-
-// Allow ...
-func (Reclaim) Allow(s cmd.Source) bool {
-	return allow(s, false)
 }
 
 // Allow ...
