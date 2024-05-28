@@ -1028,6 +1028,10 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 				// Hacky way to re-roll so that it's lower probability
 				i = it.NewSpecialItem(keys[rand.Intn(len(keys))], rand.Intn(3)+1)
 			}
+			if _, ok2 := ite.(it.StormBreakerType); ok2 {
+				// Hacky way to re-roll so that it's lower probability
+				i = it.NewSpecialItem(keys[rand.Intn(len(keys))], rand.Intn(3)+1)
+			}
 		}
 		ctx.Cancel()
 

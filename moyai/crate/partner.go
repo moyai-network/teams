@@ -38,6 +38,7 @@ func (partner) Rewards() []Reward {
 		5: NewReward(it.NewSpecialItem(it.TimeWarpType{}, 1), 10),
 		6: NewReward(it.NewSpecialItem(it.ExoticBoneType{}, 1), 20),
 		//13: NewReward(it.NewSpecialItem(it.ScramblerType{}, 1), 20),
-		13: NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
+		12: NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
+		14: NewReward(it.NewSpecialItem(it.StormBreakerType{}, 1), 5),
 	}
 }
