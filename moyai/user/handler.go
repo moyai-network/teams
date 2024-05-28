@@ -1438,6 +1438,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
 	*force, *height = 0.394, 0.394
+	// Syn: *force, *height = 0.388, 0.4
+
 	t, ok := e.(*player.Player)
 	if !ok {
 		return

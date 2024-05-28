@@ -49,8 +49,8 @@ func NewMoyaiPotion(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity, t potion
 }
 
 var moyaiPotionConf = entity.ProjectileBehaviourConfig{
-	Gravity: 0.06,
-	Drag:    0.0025,
+	Gravity: 0.07,
+	Drag:    0.01,
 	Damage:  -1,
 	Sound:   sound.GlassBreak{},
 }
