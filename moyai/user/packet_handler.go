@@ -40,6 +40,13 @@ func (h *PacketHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet)
 			pkt.InputData = pkt.InputData &^ packet.InputFlagStartCrawling
 		}
 	case *packet.CommandRequest:
+		split := strings.Split(pkt.CommandLine, " ")
+		if len(split) <= 0 {
+			return
+		}
+		split[0] = strings.ToLower(split[0])
+		pkt.CommandLine = strings.Join(split, " ")
+
 		lastArgIndex := len(pkt.CommandLine) - 1
 		if lastArgIndex < 0 {
 			return
