@@ -2,12 +2,13 @@ package command
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai/colour"
 	"regexp"
 	"slices"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/colour"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/timeutil"
@@ -483,7 +484,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
-	tm = tm.WithDTR(tm.DTR + 1.1)
+	tm = tm.WithDTR(tm.DTR + 1.01)
 	data.SaveTeam(tm)
 
 	team.Broadcastf(tm, "team.join.broadcast", p.Name())
@@ -721,7 +722,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
 	}
 	tm = tm.WithoutMember(string(t.Member))
-	tm = tm.WithDTR(tm.DTR - 1.1)
+	tm = tm.WithDTR(tm.DTR - 1.01)
 	data.SaveTeam(tm)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
