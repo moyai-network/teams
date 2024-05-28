@@ -400,6 +400,7 @@ func updatedRegeneration(t Team) Team {
 	if since <= time.Minute*15 {
 		return t
 	}
+	since = since - time.Minute*15
 
 	prog := float64(since-time.Minute*2) / float64(time.Minute*3)
 	t.DTR = -1.0 + prog
