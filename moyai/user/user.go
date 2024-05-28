@@ -180,6 +180,7 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	sortArmourEffects(h)
 	sortClassEffects(h)
+	moyai.Server().World().AddEntity(p)
 	p.Teleport(mgl64.Vec3{0, 68, 0})
 }
 
