@@ -597,6 +597,12 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	}
 
 	if v, ok := it.SpecialItem(held); ok {
+		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
+			Messagef(h.p, "item.use.citadel.disabled")
+			ctx.Cancel()
+			return
+		}
+
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
 			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			ctx.Cancel()
