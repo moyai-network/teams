@@ -1674,8 +1674,8 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			h.p.Teleport(mgl64.Vec3{0, 27, 0})
 		} else {
 			moyai.Server().World().AddEntity(h.p)
-			<-time.After(time.Second)           // No clue why
-			h.p.Teleport(mgl64.Vec3{0, 100, 0}) // TODO: Add end portal
+			<-time.After(time.Second)
+			h.p.Teleport(mgl64.Vec3{200, 80, 200}) 
 		}
 	}
 
