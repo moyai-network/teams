@@ -117,8 +117,16 @@ type Handler struct {
 
 func NewHandler(p *player.Player, xuid string) *Handler {
 	if h, ok := logger(p); ok {
+		if h.p.World().Dimension() == world.End {
+			moyai.End().AddEntity(p)
+			<-time.After(time.Second)
+		}
 		p.Teleport(h.p.Position())
 		_ = h.p.Close()
+	}
+
+	if p.World().Dimension() == world.End {
+		moyai.End().AddEntity(p)
 	}
 	ha := &Handler{
 		p:          p,
@@ -1566,7 +1574,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		// 			continue
 		// 		}
 		// 		used = append(used, j)
-		// 		it1, _ := target.Inventory().Item(i)
+		// 		it1, _ := target.Invgentory().Item(i)
 		// 		it2, _ := target.Inventory().Item(j)
 		// 		target.Inventory().SetItem(j, it1)
 		// 		target.Inventory().SetItem(i, it2)
@@ -1831,8 +1839,11 @@ func (h *Handler) HandleQuit() {
 	data.SaveUser(u)
 
 	_, sotwRunning := sotw.Running()
-	if !h.gracefulLogout && h.p.GameMode() != world.GameModeCreative && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) && !u.Teams.PVP.Active() {
+	if !h.gracefulLogout && h.p.GameMode() != world.GameModeCreative && !u.Teams.PVP.Active() {
 		if sotwRunning && u.Teams.SOTW {
+			return
+		}
+		if area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(p.Position()) && p.World().Dimension() != world.End {
 			return
 		}
 		arm := h.p.Armour()
