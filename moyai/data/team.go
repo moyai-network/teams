@@ -41,8 +41,9 @@ func init() {
 
 func teamCached(f func(Team) bool) (Team, bool) {
 	teamMu.Lock()
-	defer teamMu.Unlock()
-	for _, t := range teams {
+	tms := teams
+	teamMu.Unlock()
+	for _, t := range tms {
 		if f(t) {
 			return t, true
 		}
@@ -376,7 +377,9 @@ func LoadTeamFromName(name string) (Team, error) {
 		return updatedRegeneration(t), nil
 	}
 
-	return decodeSingleTeamFromFilter(bson.M{"name": bson.M{"$eq": name}})
+	// TEAMS ARE NOW ALWAYS CACHED
+	//return decodeSingleTeamFromFilter(bson.M{"name": bson.M{"$eq": name}})
+	return Team{}, nil
 }
 
 // LoadTeamFromMemberName loads a team using the given member name.
@@ -392,7 +395,10 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 	}); ok {
 		return updatedRegeneration(t), nil
 	}
-	return decodeSingleTeamFromFilter(bson.M{"members.name": bson.M{"$eq": name}})
+
+	// TEAMS ARE NOW ALWAYS CACHED
+	//return decodeSingleTeamFromFilter(bson.M{"members.name": bson.M{"$eq": name}})
+	return Team{}, nil
 }
 
 func updatedRegeneration(t Team) Team {
