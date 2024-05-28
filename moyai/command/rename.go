@@ -8,7 +8,7 @@ import (
 // Rename is a command that renames the item in the player's hand.
 type Rename struct {
 	donor1Allower
-	name cmd.Varargs
+	Name cmd.Varargs
 }
 
 // Run ...
@@ -18,11 +18,11 @@ func (r Rename) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if len(r.name) < 2 {
+	if len(r.Name) < 2 {
 		o.Error("command.rename.too-short")
 		return
 	}
-	if len(r.name) > 16 {
+	if len(r.Name) > 16 {
 		o.Error("command.rename.too-long")
 		return
 	}
@@ -34,6 +34,6 @@ func (r Rename) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	held = held.WithCustomName(r.name)
+	held = held.WithCustomName(r.Name)
 	p.SetHeldItems(held, off)
 }
