@@ -380,7 +380,7 @@ func LoadTeamFromName(name string) (Team, error) {
 
 	// TEAMS ARE NOW ALWAYS CACHED
 	//return decodeSingleTeamFromFilter(bson.M{"name": bson.M{"$eq": name}})
-	return Team{}, nil
+	return Team{}, mongo.ErrNoDocuments
 }
 
 // LoadTeamFromMemberName loads a team using the given member name.
@@ -399,7 +399,7 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 
 	// TEAMS ARE NOW ALWAYS CACHED
 	//return decodeSingleTeamFromFilter(bson.M{"members.name": bson.M{"$eq": name}})
-	return Team{}, nil
+	return Team{}, mongo.ErrNoDocuments
 }
 
 func updatedRegeneration(t Team) Team {
