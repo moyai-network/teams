@@ -133,6 +133,7 @@ func (t Team) WithoutMember(name string) Team {
 	for i, m := range t.Members {
 		if strings.EqualFold(name, m.Name) {
 			t.Members = append(t.Members[:i], t.Members[i+1:]...)
+			break
 		}
 	}
 	return t
@@ -227,7 +228,7 @@ func (t Team) WithDTR(dtr float64) Team {
 
 // MaxDTR returns the max DTR of the faction.
 func (t Team) MaxDTR() float64 {
-	dtr := 1.1 * float64(len(t.Members))
+	dtr := 1.01 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
 }
 

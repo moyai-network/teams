@@ -669,7 +669,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	tm = tm.WithoutMember(p.Name())
-	tm = tm.WithDTR(tm.DTR - 1.1)
+	tm = tm.WithDTR(tm.DTR - 1.01)
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
@@ -863,6 +863,10 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		user.Messagef(p, "user.team-less")
+		return
+	}
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
+		user.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
 	if cl := tm.Claim; cl != (area.Area{}) {
@@ -1393,7 +1397,10 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 		user.Messagef(p, "user.team-less")
 		return
 	}
-
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
+		user.Messagef(p, "command.team.promote.missing.permission")
+		return
+	}
 	if tm.Renamed {
 		user.Messagef(p, "team.rename.already")
 		return
