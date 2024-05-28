@@ -865,6 +865,10 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(p, "user.team-less")
 		return
 	}
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
+		user.Messagef(p, "command.team.promote.missing.permission")
+		return
+	}
 	if cl := tm.Claim; cl != (area.Area{}) {
 		user.Messagef(p, "team.has-claim")
 		return
@@ -1393,7 +1397,10 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 		user.Messagef(p, "user.team-less")
 		return
 	}
-
+	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
+		user.Messagef(p, "command.team.promote.missing.permission")
+		return
+	}
 	if tm.Renamed {
 		user.Messagef(p, "team.rename.already")
 		return
