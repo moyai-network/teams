@@ -184,12 +184,15 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
+
+	ha.updateCurrentArea(p.Position(), u)
 	data.SaveUser(u)
 
 	ha.logTime = time.Now()
 
 	UpdateState(ha.p)
 	go startTicker(ha)
+
 	return ha
 }
 
@@ -1752,7 +1755,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 			//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
 		}
 	}
+	h.updateCurrentArea(newPos, u)
+}
 
+func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
+	w := h.p.World()
 	var areas []area.NamedArea
 
 	teams, err := data.LoadAllTeams()
