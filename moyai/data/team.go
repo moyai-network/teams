@@ -12,7 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 var (
@@ -132,7 +131,7 @@ func (t Team) WithMembers(m ...Member) Team {
 func (t Team) WithoutMember(name string) Team {
 	for i, m := range t.Members {
 		if strings.EqualFold(name, m.Name) {
-			t.Members = slices.Delete(t.Members, i, i+1)
+			t.Members = append(t.Members[:i], t.Members[i+1:]...)
 		}
 	}
 	return t
