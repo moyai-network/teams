@@ -391,6 +391,9 @@ func updatedRegeneration(t Team) Team {
 
 	prog := float64(since-time.Minute*2) / float64(time.Minute*3)
 	t.DTR = -1.0 + prog
+	if t.DTR > t.MaxDTR() {
+		t.DTR = t.MaxDTR()
+	}
 	return t
 }
 
