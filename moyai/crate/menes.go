@@ -21,6 +21,10 @@ func (menes) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{9, 65, 35}).Vec3Middle()
 }
 
+func (menes) Facing() cube.Face {
+	return cube.FaceNorth
+}
+
 var menesEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 2),
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),

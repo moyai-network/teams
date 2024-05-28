@@ -20,6 +20,10 @@ func (partner) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{17, 67, 12}).Vec3Middle()
 }
 
+func (partner) Facing() cube.Face {
+	return cube.FaceNorth
+}
+
 var partnerEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 2),
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),

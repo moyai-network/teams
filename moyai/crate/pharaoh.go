@@ -22,6 +22,10 @@ func (pharaoh) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{9, 65, 31}).Vec3Middle()
 }
 
+func (pharaoh) Facing() cube.Face {
+	return cube.FaceNorth
+}
+
 var pharaohEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 3),
 	item.NewEnchantment(enchantment.Unbreaking{}, 3),

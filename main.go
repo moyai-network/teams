@@ -306,6 +306,7 @@ func clearEntities(w *world.World) {
 func placeCrates(w *world.World) {
 	for _, c := range crate.All() {
 		b := block.NewChest()
+		b.Facing = c.Facing().Direction()
 		b.CustomName = text.Colourf("%s <grey>Crate</grey>", c.Name())
 
 		*b.Inventory() = *inventory.New(27, nil)

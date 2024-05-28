@@ -1,6 +1,7 @@
 package crate
 
 import (
+	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/moyai/colour"
@@ -13,6 +14,8 @@ type Crate interface {
 	Name() string
 	// Position returns the position of the crate.
 	Position() mgl64.Vec3
+	// Facing returns the facing of the crate.
+	Facing() cube.Face
 	// Rewards returns the rewards associated with the crate.
 	Rewards() []Reward
 }

@@ -21,6 +21,10 @@ func (ramses) Position() mgl64.Vec3 {
 	return cube.PosFromVec3(mgl64.Vec3{9, 65, 39}).Vec3Middle()
 }
 
+func (ramses) Facing() cube.Face {
+	return cube.FaceNorth
+}
+
 var ramsesEnchantments = []item.Enchantment{
 	item.NewEnchantment(ench.Protection{}, 2),
 	item.NewEnchantment(enchantment.Unbreaking{}, 2),
