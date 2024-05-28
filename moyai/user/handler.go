@@ -1670,11 +1670,11 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	if _, ok := bl.(b.PortalBlock); ok {
 		if h.p.World().Dimension() == world.Overworld {
 			moyai.End().AddEntity(h.p)
-			<-time.After(time.Second) // No clue why
+			<-time.After(time.Second / 20)
 			h.p.Teleport(mgl64.Vec3{0, 27, 0})
 		} else {
 			moyai.Server().World().AddEntity(h.p)
-			<-time.After(time.Second)
+			<-time.After(time.Second / 20)
 			h.p.Teleport(mgl64.Vec3{0, 60, 250})
 		}
 	}
