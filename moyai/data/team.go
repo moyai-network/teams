@@ -83,8 +83,6 @@ type Team struct {
 	DTR float64
 	// Home is the home point for the team.
 	Home mgl64.Vec3
-	// RegenerationTime is the time until the team can start regenerating their DTR.
-	RegenerationTime time.Time
 	// LastDeath is the last time someone died in the team
 	LastDeath time.Time
 	// Points is the amount of points the team has.
@@ -204,12 +202,6 @@ func (t Team) WithHome(home mgl64.Vec3) Team {
 	return t
 }
 
-// WithRegenerationTime returns the team with the given regeneration time.
-func (t Team) WithRegenerationTime(regen time.Time) Team {
-	t.RegenerationTime = regen
-	return t
-}
-
 func (t Team) WithLastDeath(lastDeath time.Time) Team {
 	t.LastDeath = lastDeath
 	return t
@@ -217,7 +209,7 @@ func (t Team) WithLastDeath(lastDeath time.Time) Team {
 
 // Frozen returns whether the team is frozen.
 func (t Team) Frozen() bool {
-	return time.Now().Before(t.RegenerationTime)
+	return time.Since(t.LastDeath) < time.Minute*15
 }
 
 // WithDTR returns the team with the given dtr.
@@ -230,22 +222,6 @@ func (t Team) WithDTR(dtr float64) Team {
 func (t Team) MaxDTR() float64 {
 	dtr := 1.01 * float64(len(t.Members))
 	return math.Round(dtr*100) / 100
-}
-
-// TrueDTR is the computed DTR accounted for lastDeath
-func (t Team) TrueDTR() float64 {
-	since := time.Since(t.LastDeath)
-
-	if eq(t.DTR, t.MaxDTR()) {
-		return t.DTR
-	}
-
-	if since >= time.Minute*15 {
-		return t.DTR
-	}
-
-	prog := float64(since-time.Minute*2) / float64(time.Minute*3)
-	return t.DTR - 1.0 + prog
 }
 
 // DTRString returns the DTR string of the faction
@@ -403,9 +379,18 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 }
 
 func updatedRegeneration(t Team) Team {
-	if t.RegenerationTime.Before(time.Now()) && t.DTR < t.MaxDTR() {
-		t = t.WithDTR(t.MaxDTR())
+	since := time.Since(t.LastDeath)
+
+	if eq(t.DTR, t.MaxDTR()) {
+		return t
 	}
+
+	if since <= time.Minute*15 {
+		return t
+	}
+
+	prog := float64(since-time.Minute*2) / float64(time.Minute*3)
+	t.DTR = -1.0 + prog
 	return t
 }
 

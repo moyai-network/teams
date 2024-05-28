@@ -1525,8 +1525,9 @@ func teamInformationFormat(t data.Team) string {
 	var formattedLeader string
 	var formattedCaptains []string
 	var formattedMembers []string
-	if time.Now().Before(t.RegenerationTime) {
-		formattedRegenerationTime = text.Colourf("\n <yellow>Time Until Regen</yellow> <blue>%s</blue>", time.Until(t.RegenerationTime).Round(time.Second))
+	regenerationTime := t.LastDeath.Add(time.Minute * 15)
+	if time.Now().Before(regenerationTime) {
+		formattedRegenerationTime = text.Colourf("\n <yellow>Time Until Regen</yellow> <blue>%s</blue>", time.Until(regenerationTime).Round(time.Second))
 	}
 	formattedDtr = t.DTRString()
 	var onlineCount int
