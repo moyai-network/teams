@@ -68,15 +68,19 @@ type Roles struct {
 
 // NewRoles creates a new Roles instance.
 func NewRoles(roles []Role, expirations map[Role]time.Time) *Roles {
-	return &Roles{
+	r := &Roles{
 		roles:           roles,
 		roleExpirations: expirations,
 	}
+	r.removeDuplicates()
+	return r
 }
 
 // Add adds a role to the manager's role list.
 func (r *Roles) Add(ro Role) {
-	r.checkExpiry()
+	if r.Contains(ro) {
+		return
+	}
 	r.roleMu.Lock()
 	r.roles = append(r.roles, ro)
 	r.roleMu.Unlock()
@@ -196,6 +200,23 @@ func (r *Roles) UnmarshalBSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// removeDuplicates removes duplicate roles from the user's role list.
+func (r *Roles) removeDuplicates() {
+	r.roleMu.Lock()
+	defer r.roleMu.Unlock()
+
+	var rls []Role
+	seen := map[Role]struct{}{}
+	for _, ro := range r.roles {
+		if _, ok := seen[ro]; !ok {
+			seen[ro] = struct{}{}
+			rls = append(rls, ro)
+		}
+	}
+	r.roles = rls
+
 }
 
 // propagateRoles propagates roles to the user's role list.
