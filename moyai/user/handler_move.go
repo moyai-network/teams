@@ -125,10 +125,10 @@ func (h *Handler) updateKOTHState(newPos mgl64.Vec3, u data.User) {
 	}
 
 	k, ok := koth.Running()
-	if !ok {
+	if !ok || k.Dimension() != w.Dimension() {
 		return
 	}
-	if !k.Area().Vec3WithinOrEqualFloorXZ(newPos) && k.Dimension() == w.Dimension() {
+	if !k.Area().Vec3WithinOrEqualFloorXZ(newPos) {
 		k.StopCapturing(p)
 		return
 	}
@@ -142,6 +142,7 @@ func (h *Handler) updateKOTHState(newPos mgl64.Vec3, u data.User) {
 	case koth.Shrine:
 		if newPos.Y() > 70 {
 			k.StopCapturing(p)
+			return
 		}
 	case koth.End:
 		if newPos.Y() > 40 {
