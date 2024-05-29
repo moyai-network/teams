@@ -52,7 +52,9 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(p, "command.vanish.enabled")
 	}
 
-	user.ToggleVanish(p, u)
+	u.Vanished = !u.Vanished
+	data.SaveUser(u)
+	user.UpdateVanishState(p, u)
 }
 
 // Allow ...

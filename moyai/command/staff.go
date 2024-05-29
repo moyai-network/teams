@@ -39,7 +39,10 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(p, "command.vanish.enabled")
 	}
 
-	user.ToggleVanish(p, u)
+	u.StaffMode = !u.StaffMode
+	u.Vanished = !u.Vanished
+	data.SaveUser(u)
+	user.UpdateVanishState(p, u)
 }
 
 func (StaffMode) Allow(s cmd.Source) bool {

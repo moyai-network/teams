@@ -182,7 +182,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	h.updateCurrentArea(p.Position(), u)
 	h.updateKOTHState(p.Position(), u)
-	handleVanishState(p, u)
+	UpdateVanishState(p, u)
 	data.SaveUser(u)
 
 	h.logTime = time.Now()

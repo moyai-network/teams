@@ -93,13 +93,6 @@ func UpdateState(p *player.Player) {
 	}
 }
 
-// ToggleVanish toggles the user's vanish state.
-func ToggleVanish(p *player.Player, u data.User) {
-	u.Vanished = !u.Vanished
-	data.SaveUser(u)
-	handleVanishState(p, u)
-}
-
 func hideVanished(p *player.Player) {
 	for _, t := range moyai.Server().Players() {
 		u, err := data.LoadUserFromName(t.Name())
@@ -124,8 +117,8 @@ func showVanished(p *player.Player) {
 	}
 }
 
-// handleVanishState vanishes the user.
-func handleVanishState(p *player.Player, u data.User) {
+// UpdateVanishState vanishes the user.
+func UpdateVanishState(p *player.Player, u data.User) {
 	if u.Vanished {
 		showVanished(p)
 	} else {
