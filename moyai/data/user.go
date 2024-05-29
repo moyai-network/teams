@@ -62,8 +62,8 @@ type Settings struct {
 	Display struct {
 		// ScoreboardDisabled is whether the user wants to see the scoreboard.
 		ScoreboardDisabled bool
-		// CPS is whether the user wants to see their CPS.
-		CPS bool
+		// BossBar is whether the user wants to see their Bossbar.
+		Bossbar bool
 		// ActiveTag is the active tag of the user.
 		ActiveTag string
 	}
@@ -114,7 +114,7 @@ func DefaultSettings() Settings {
 
 	s.Language = "en"
 
-	s.Display.CPS = false
+	s.Display.Bossbar = true
 	s.Gameplay.AutoReapplyKit = true
 
 	s.Privacy.PrivateMessages = true
