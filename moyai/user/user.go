@@ -38,7 +38,11 @@ import (
 
 func HideVanished(p *player.Player) {
 	for _, t := range moyai.Server().Players() {
-		if h, ok := t.Handler().(*Handler); ok && h.Vanished() {
+		u, err := data.LoadUserFromName(t.Name())
+		if err != nil {
+			continue
+		}
+		if u.Vanished {
 			p.HideEntity(t)
 		}
 	}
@@ -46,7 +50,11 @@ func HideVanished(p *player.Player) {
 
 func ShowVanished(p *player.Player) {
 	for _, t := range moyai.Server().Players() {
-		if h, ok := t.Handler().(*Handler); ok && h.Vanished() {
+		u, err := data.LoadUserFromName(t.Name())
+		if err != nil {
+			continue
+		}
+		if u.Vanished {
 			p.ShowEntity(t)
 		}
 	}
@@ -110,7 +118,7 @@ func UpdateState(p *player.Player) {
 }
 
 // Vanished returns whether the user is vanished or not.
-func (h *Handler) Vanished() bool {
+func (h *Handler) vanished() bool {
 	u, err := data.LoadUserFromName(h.p.Name())
 	if err != nil {
 		return false
@@ -120,33 +128,29 @@ func (h *Handler) Vanished() bool {
 }
 
 // ToggleVanish toggles the user's vanish state.
-func (h *Handler) ToggleVanish() {
-	u, err := data.LoadUserFromName(h.p.Name())
-	if err != nil {
-		return
-	}
+func ToggleVanish(p *player.Player, u data.User) {
 	u.Vanished = !u.Vanished
 	data.SaveUser(u)
-	h.handleVanishState()
+	handleVanishState(p, u)
 }
 
 // handleVanishState vanishes the user.
-func (h *Handler) handleVanishState() {
-	if h.Vanished() {
-		ShowVanished(h.p)
+func handleVanishState(p *player.Player, u data.User) {
+	if u.Vanished {
+		ShowVanished(p)
 	} else {
-		HideVanished(h.p)
+		HideVanished(p)
 	}
 
 	for _, t := range moyai.Server().Players() {
-		th, ok := t.Handler().(*Handler)
-		if !ok {
+		target, err := data.LoadUserFromName(p.Name())
+		if err != nil {
 			continue
 		}
-		if !th.Vanished() && h.Vanished() {
-			t.HideEntity(h.p)
-		} else if !th.Vanished() && !h.Vanished() {
-			t.ShowEntity(h.p)
+		if !target.Vanished && u.Vanished {
+			t.HideEntity(p)
+		} else if !target.Vanished && !u.Vanished {
+			t.ShowEntity(p)
 		}
 	}
 }

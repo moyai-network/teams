@@ -132,7 +132,9 @@ type User struct {
 	Name        string `bson:"name"`
 	DisplayName string `bson:"display_name"`
 	Whitelisted bool   `bson:"whitelisted"`
-	Vanished    bool   `bson:"vanished"`
+
+	StaffMode bool `bson:"staff_mode"`
+	Vanished  bool `bson:"vanished"`
 
 	Address      string `bson:"address"`
 	DeviceID     string `bson:"device_id"`

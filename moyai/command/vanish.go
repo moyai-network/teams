@@ -4,6 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
 )
@@ -31,13 +32,13 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	h, ok := p.Handler().(*user.Handler)
-	if !ok {
+	u, err := data.LoadUserFromXUID(p.XUID())
+	if err != nil {
 		return
 	}
 	mode := p.GameMode()
 
-	if h.Vanished() {
+	if u.Vanished {
 		//user.Alertf(s, "staff.alert.vanish.off")
 		vanishMode, ok := mode.(vanishGameMode)
 		if !ok {
@@ -51,7 +52,7 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 		user.Messagef(p, "command.vanish.enabled")
 	}
 
-	h.ToggleVanish()
+	user.ToggleVanish(p, u)
 }
 
 // Allow ...
