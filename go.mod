@@ -20,7 +20,7 @@ require (
 require (
 	github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5
 	github.com/bedrock-gophers/intercept v0.1.1
-	github.com/bedrock-gophers/inv v0.1.1-0.20240527173844-5ae07af560c1
+	github.com/bedrock-gophers/inv v0.1.1-0.20240529135428-32b7a40362bc
 	github.com/bedrock-gophers/living v0.0.0-20231216224824-0e1599282e89
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc
 	github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d
