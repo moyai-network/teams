@@ -1569,7 +1569,7 @@ func teamInformationFormat(t data.Team) string {
 			"<yellow>Balance: </yellow><blue>$%2.f</blue>\n "+
 			"<yellow>Points: </yellow><red>%d</red>\n "+
 			"<yellow>Koth Captures: <red>%d</red>\n "+
-			"<yellow>Deaths until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, t.KOTHWins, formattedDtr, formattedRegenerationTime)
+			"<yellow>Deaths Until Raidable: </yellow>%s%s\n\uE000", t.DisplayName, onlineCount, len(t.Members), home, formattedLeader, strings.Join(formattedCaptains, ", "), strings.Join(formattedMembers, ", "), t.Balance, t.Points, t.KOTHWins, formattedDtr, formattedRegenerationTime)
 }
 
 func formatMember(name string, kills int, online bool) string {
