@@ -1,8 +1,9 @@
 package moyai
 
 import (
-	"github.com/df-mc/dragonfly/server/player"
 	"time"
+
+	"github.com/df-mc/dragonfly/server/player"
 
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/world"
@@ -61,7 +62,7 @@ func SetBlackMarketOpened(t time.Time) {
 }
 
 func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder string) (*world.World, *world.World) {
-	endProv, err := mcdb.Open(netherFolder)
+	endProv, err := mcdb.Open(endFolder)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +72,7 @@ func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder strin
 		Entities: reg,
 	}.New()
 
-	netherProv, err := mcdb.Open(endFolder)
+	netherProv, err := mcdb.Open(netherFolder)
 	if err != nil {
 		panic(err)
 	}
