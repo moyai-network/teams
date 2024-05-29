@@ -127,7 +127,6 @@ func main() {
 	}()
 
 	srv := moyai.NewServer(config)
-
 	handleServerClose(srv)
 
 	w := srv.World()
@@ -378,6 +377,14 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 			os.Exit(1)
 		})
 		store.ExecuteCommands(p)
+
+		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
+		if !u.Roles.Contains(role.Default{}) {
+			u.Roles.Add(role.Default{})
+		}
+		u.Roles.Add(role.Donor1{})
+
+		p.Message(lang.Translatef(u.Language, "discord.message"))
 		if proxy {
 			//info := moyai.SearchInfo(p.UUID())
 			//p.Handle(user.NewHandler(p, info.XUID))
@@ -392,14 +399,7 @@ func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
 		p.ShowCoordinates()
 		p.SetFood(20)
 
-		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
-		if !u.Roles.Contains(role.Default{}) {
-			u.Roles.Add(role.Default{})
-		}
-		u.Roles.Add(role.Donor1{})
-
 		data.SaveUser(u)
-		p.Message(lang.Translatef(u.Language, "discord.message"))
 		inv := p.Inventory()
 		for slot, i := range inv.Slots() {
 			for _, sp := range it.SpecialItems() {
