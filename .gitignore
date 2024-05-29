@@ -7,6 +7,7 @@ assets/players
 assets/hcfworld.zip
 assets/level.dat
 assets/sotw.log
+assets/worlds/*
 *.dat
 oomph/
 *.exe*
