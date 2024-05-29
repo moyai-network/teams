@@ -36,6 +36,22 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 )
 
+func HideVanished(p *player.Player) {
+	for _, t := range moyai.Server().Players() {
+		if h, ok := t.Handler().(*Handler); ok && h.Vanished() {
+			p.HideEntity(t)
+		}
+	}
+}
+
+func ShowVanished(p *player.Player) {
+	for _, t := range moyai.Server().Players() {
+		if h, ok := t.Handler().(*Handler); ok && h.Vanished() {
+			p.ShowEntity(t)
+		}
+	}
+}
+
 // lookupRuntimeID ...
 func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	h, ok := p.Handler().(*Handler)
@@ -101,6 +117,24 @@ func (h *Handler) Vanished() bool {
 // ToggleVanish toggles the user's vanish state.
 func (h *Handler) ToggleVanish() {
 	h.vanished.Toggle()
+
+	if h.Vanished() {
+		ShowVanished(h.p)
+	} else {
+		HideVanished(h.p)
+	}
+
+	for _, t := range moyai.Server().Players() {
+		th, ok := t.Handler().(*Handler)
+		if !ok {
+			continue
+		}
+		if !th.Vanished() && h.Vanished() {
+			t.HideEntity(h.p)
+		} else if !th.Vanished() && !h.Vanished() {
+			t.ShowEntity(h.p)
+		}
+	}
 }
 
 // clearOwnedEntities clears all entities owned by the user.

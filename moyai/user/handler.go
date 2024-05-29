@@ -124,6 +124,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		moyai.End().AddEntity(p)
 	}
 
+	HideVanished(p)
 	h := &Handler{
 		p:          p,
 		wallBlocks: map[cube.Pos]float64{},
