@@ -47,6 +47,7 @@ require (
 	github.com/sandertv/go-raknet v1.13.0 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
