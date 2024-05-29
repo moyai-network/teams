@@ -36,30 +36,6 @@ import (
 	"github.com/df-mc/dragonfly/server/session"
 )
 
-func HideVanished(p *player.Player) {
-	for _, t := range moyai.Server().Players() {
-		u, err := data.LoadUserFromName(t.Name())
-		if err != nil {
-			continue
-		}
-		if u.Vanished {
-			p.HideEntity(t)
-		}
-	}
-}
-
-func ShowVanished(p *player.Player) {
-	for _, t := range moyai.Server().Players() {
-		u, err := data.LoadUserFromName(t.Name())
-		if err != nil {
-			continue
-		}
-		if u.Vanished {
-			p.ShowEntity(t)
-		}
-	}
-}
-
 // lookupRuntimeID ...
 func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	h, ok := p.Handler().(*Handler)
@@ -124,12 +100,36 @@ func ToggleVanish(p *player.Player, u data.User) {
 	handleVanishState(p, u)
 }
 
+func hideVanished(p *player.Player) {
+	for _, t := range moyai.Server().Players() {
+		u, err := data.LoadUserFromName(t.Name())
+		if err != nil {
+			continue
+		}
+		if u.Vanished {
+			p.HideEntity(t)
+		}
+	}
+}
+
+func showVanished(p *player.Player) {
+	for _, t := range moyai.Server().Players() {
+		u, err := data.LoadUserFromName(t.Name())
+		if err != nil {
+			continue
+		}
+		if u.Vanished {
+			p.ShowEntity(t)
+		}
+	}
+}
+
 // handleVanishState vanishes the user.
 func handleVanishState(p *player.Player, u data.User) {
 	if u.Vanished {
-		ShowVanished(p)
+		showVanished(p)
 	} else {
-		HideVanished(p)
+		hideVanished(p)
 	}
 
 	for _, t := range moyai.Server().Players() {
