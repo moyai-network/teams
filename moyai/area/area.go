@@ -232,14 +232,20 @@ var (
 		},
 	}
 	Nether = Areas{
-		spawn:      NewNamedArea(mgl64.Vec2{60, 65}, mgl64.Vec2{-65, -60}, text.Colourf("<green>Spawn</green>")),
-		warZone:    NewNamedArea(mgl64.Vec2{300, 300}, mgl64.Vec2{-300, -300}, text.Colourf("<red>Warzone</red>")),
+		spawn:      NewNamedArea(mgl64.Vec2{-37, 37}, mgl64.Vec2{37, -37}, text.Colourf("<green>Spawn</green>")),
+		warZone:    NewNamedArea(mgl64.Vec2{600, 600}, mgl64.Vec2{-600, -600}, text.Colourf("<red>Warzone</red>")),
 		wilderness: NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []NamedArea{
-			NewNamedArea(mgl64.Vec2{-66, -7}, mgl64.Vec2{-2540, 7}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{61, 7}, mgl64.Vec2{2540, -7}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{6, -61}, mgl64.Vec2{-8, -2540}, text.Colourf("<red>Road</red>")),
-			NewNamedArea(mgl64.Vec2{-8, 66}, mgl64.Vec2{7, 2540}, text.Colourf("<red>Road</red>")),
+			NewNamedArea(mgl64.Vec2{-15, -38}, mgl64.Vec2{15, -2000}, text.Colourf("<red>North Road</red>")),
+			NewNamedArea(mgl64.Vec2{38, -15}, mgl64.Vec2{3000, 15}, text.Colourf("<red>East Road</red>")),
+			NewNamedArea(mgl64.Vec2{15, 38}, mgl64.Vec2{-15, 3000}, text.Colourf("<red>South Road</red>")),
+			NewNamedArea(mgl64.Vec2{-38, 15}, mgl64.Vec2{-3000, -15}, text.Colourf("<red>West Road</red>")),
+		},
+		koths: []NamedArea{
+			NewNamedArea(mgl64.Vec2{-554, -58}, mgl64.Vec2{-396, -216}, text.Colourf("<gold>Glowstone City</gold>")),
+			NewNamedArea(mgl64.Vec2{-33, 375}, mgl64.Vec2{-283, 625}, text.Colourf("<blue>Conquest</blue>")),
+			NewNamedArea(mgl64.Vec2{445, -57}, mgl64.Vec2{545, -157}, text.Colourf("<red>Nether</red>")),
+			NewNamedArea(mgl64.Vec2{34, -350}, mgl64.Vec2{334, -650}, text.Colourf("<dark-red>Hades</dark-red>")),
 		},
 	}
 	End = Areas{

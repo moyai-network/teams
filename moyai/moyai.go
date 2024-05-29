@@ -82,5 +82,6 @@ func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder strin
 		Dim:      world.Nether,
 		Entities: reg,
 	}.New()
+
 	return nether, end
 }

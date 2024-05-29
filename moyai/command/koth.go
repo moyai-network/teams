@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/moyai-network/teams/moyai"
@@ -72,6 +73,35 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 
 	coords := ko.Coordinates()
 	user.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
+	var st string
+	if ko == koth.Citadel || ko == koth.Hades {
+		st = fmt.Sprintf(`
+§e█████████§r
+§e█████████§r
+§e█§6█§e█§6█§e█§6█§e█§6█§e█§r
+§e█§6███████§e█§r
+§e█§6█§b█§6█§b█§6█§b█§6█§e█§r §e%s§r
+§e█§6███████§e█§r §6can be contested now!§r
+§e█████████§r
+§e█████████§r
+§e█████████§r
+
+`, ko.Name())
+	} else {
+		st = fmt.Sprintf(`
+§7█████████§r
+§7██§4█§7███§4█§7██§r
+§7██§4█§7██§4█§7███§r
+§7██§4███§7████§r
+§7██§4█§7██§4█§7███ §e%s KOTH§r
+§7██§4█§7███§4█§7██§r §6can be contested now!§r
+§7██§4█§7███§4█§7██§r
+§7█████████§r
+`, ko.Name())
+	}
+
+
+	p.Message(text.Colourf(st))
 }
 
 // Run ...

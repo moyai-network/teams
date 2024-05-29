@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"strings"
 	_ "unsafe"
 
@@ -68,6 +69,8 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 	u, _ := data.LoadUserFromName(p.Name())
 
 	switch pkt := pk.(type) {
+	case *packet.ChangeDimension:
+		fmt.Println("DIM", pkt.Dimension)
 	case *packet.ActorEvent:
 		if pkt.EventType == packet.ActorEventStartSwimming {
 			ctx.Cancel()

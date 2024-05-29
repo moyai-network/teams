@@ -114,6 +114,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		if h.p.World().Dimension() == world.End {
 			moyai.End().AddEntity(p)
 			<-time.After(time.Second)
+		} else if h.p.World().Dimension() == world.Nether {
+			moyai.Nether().AddEntity(p)
+			<-time.After(time.Second)
 		}
 		p.Teleport(h.p.Position())
 		_ = h.p.Close()
@@ -121,6 +124,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	if p.World().Dimension() == world.End {
 		moyai.End().AddEntity(p)
+	} else if p.World().Dimension() == world.Nether {
+		moyai.Nether().AddEntity(p)
 	}
 
 	h := &Handler{
