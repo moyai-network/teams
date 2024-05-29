@@ -276,7 +276,7 @@ func startTicker(h *Handler) {
 
 func teamOnlineCount(t data.Team) int {
 	var onlineNames []string
-	for _, p := range moyai.Server().Players() {
+	for _, p := range moyai.Players() {
 		onlineNames = append(onlineNames, strings.ToLower(p.Name()))
 	}
 

@@ -58,7 +58,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 				formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
 				formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
 
-				for _, t := range moyai.Server().Players() {
+				for _, t := range moyai.Players() {
 					if tm.Member(t.Name()) {
 						t.Message(formatTeam)
 					} else {
@@ -72,7 +72,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		}
 
 		staff := func() {
-			for _, s := range moyai.Server().Players() {
+			for _, s := range moyai.Players() {
 				if us, err := data.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && role.Staff(us.Roles.Highest()) {
 					Messagef(s, "staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 				}

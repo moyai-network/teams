@@ -122,7 +122,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 
 // Run ...
 func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
-	for _, p := range moyai.Server().Players() {
+	for _, p := range moyai.Players() {
 		u, err := data.LoadUserFromName(p.Name())
 		if err != nil {
 			continue

@@ -1,6 +1,7 @@
 package moyai
 
 import (
+	"github.com/df-mc/dragonfly/server/player"
 	"time"
 
 	"github.com/df-mc/dragonfly/server"
@@ -8,13 +9,34 @@ import (
 	"github.com/df-mc/dragonfly/server/world/mcdb"
 )
 
-var srv *server.Server
-var end *world.World
-var lastBlackMarket time.Time
-var blackMarketOpened time.Time
+var (
+	// srv is the server instance of the Moyai server.
+	srv *server.Server
+	// end is the world of the End dimension.
+	end *world.World
+	// nether is the world of the Nether dimension.
+	nether *world.World
 
-func Server() *server.Server {
-	return srv
+	// lastBlackMarket is the time at which the last black market was opened.
+	lastBlackMarket time.Time
+	// blackMarketOpened is the time at which the black market was last opened.
+	blackMarketOpened time.Time
+)
+
+func Overworld() *world.World {
+	return srv.World()
+}
+
+func End() *world.World {
+	return end
+}
+
+func Nether() *world.World {
+	return nether
+}
+
+func Players() []*player.Player {
+	return srv.Players()
 }
 
 func NewServer(config server.Config) *server.Server {
@@ -38,19 +60,26 @@ func SetBlackMarketOpened(t time.Time) {
 	blackMarketOpened = t
 }
 
-func End() *world.World {
-	return end
-}
-
-func ConfigureEnd(reg world.EntityRegistry) *world.World {
-	prov, err := mcdb.Open("assets/end")
+func ConfigureDimensions(reg world.EntityRegistry) (*world.World, *world.World) {
+	endProv, err := mcdb.Open("assets/end")
 	if err != nil {
 		panic(err)
 	}
 	end = world.Config{
-		Provider: prov,
+		Provider: endProv,
 		Dim:      world.End,
 		Entities: reg,
 	}.New()
-	return end
+
+	netherProv, err := mcdb.Open("assets/nether")
+	if err != nil {
+		panic(err)
+	}
+
+	nether = world.Config{
+		Provider: netherProv,
+		Dim:      world.Nether,
+		Entities: reg,
+	}.New()
+	return nether, end
 }

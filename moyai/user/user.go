@@ -42,7 +42,7 @@ func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 	if !ok {
 		return nil, false
 	}
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		if session_entityRuntimeID(unsafe.Session(h.p), t) == rid {
 			return t, true
 		}
@@ -52,7 +52,7 @@ func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
 
 // Lookup looks up the Handler of a name passed.
 func Lookup(name string) (*player.Player, bool) {
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		if strings.EqualFold(name, t.Name()) {
 			return t, true
 		}
@@ -65,7 +65,7 @@ func Alertf(s cmd.Source, key string, args ...any) {
 	if !ok {
 		return
 	}
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		if u, _ := data.LoadUserFromName(t.Name()); role.Staff(u.Roles.Highest()) {
 			t.Message(lang.Translatef(u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(u.Language, key), args...)))
 		}
@@ -73,7 +73,7 @@ func Alertf(s cmd.Source, key string, args ...any) {
 }
 
 func Broadcastf(key string, a ...interface{}) {
-	for _, p := range moyai.Server().Players() {
+	for _, p := range moyai.Players() {
 		Messagef(p, key, a...)
 	}
 }
@@ -94,7 +94,7 @@ func UpdateState(p *player.Player) {
 }
 
 func hideVanished(p *player.Player) {
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		u, err := data.LoadUserFromName(t.Name())
 		if err != nil {
 			continue
@@ -106,7 +106,7 @@ func hideVanished(p *player.Player) {
 }
 
 func showVanished(p *player.Player) {
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		u, err := data.LoadUserFromName(t.Name())
 		if err != nil {
 			continue
@@ -125,7 +125,7 @@ func UpdateVanishState(p *player.Player, u data.User) {
 		hideVanished(p)
 	}
 
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		target, err := data.LoadUserFromName(p.Name())
 		if err != nil {
 			continue
@@ -215,7 +215,7 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	sortArmourEffects(h)
 	sortClassEffects(h)
-	moyai.Server().World().AddEntity(p)
+	moyai.Overworld().AddEntity(p)
 	p.Teleport(mgl64.Vec3{0, 68, 0})
 }
 
@@ -312,7 +312,7 @@ func (h *Handler) ShowArmor(visible bool) {
 		boots = p.Armour().Boots()
 	}
 
-	for _, pl := range moyai.Server().Players() {
+	for _, pl := range moyai.Players() {
 		if t, err := data.LoadTeamFromMemberName(p.Name()); err == nil {
 			if !t.Member(pl.Name()) {
 				s := unsafe.Session(pl)

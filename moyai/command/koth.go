@@ -64,7 +64,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 	ko.Start()
 
-	for _, u := range moyai.Server().Players() {
+	for _, u := range moyai.Players() {
 		if ko.Area().Vec3WithinOrEqualXZ(u.Position()) {
 			ko.StartCapturing(u)
 		}

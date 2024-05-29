@@ -129,8 +129,12 @@ func main() {
 	srv := moyai.NewServer(config)
 	handleServerClose(srv)
 
+	nether, end := moyai.ConfigureDimensions(config.Entities)
 	w := srv.World()
 	configureWorld(w)
+	configureWorld(nether)
+	configureWorld(end)
+
 	placeSpawners(w)
 	clearEntities(w)
 	placeText(w, conf)
@@ -141,14 +145,12 @@ func main() {
 	go tickBlackMarket(srv)
 	go tickClearLag(srv)
 
-	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 	registerCommands(srv)
-
 	srv.Listen()
 
 	store := loadStore(conf.Moyai.Tebex, log)
 
-	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled)) {
+	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled, srv)) {
 		// Do nothing.
 	}
 }
@@ -343,8 +345,6 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 		panic(err)
 	}
 	c.Entities = ent.Registry
-	end := moyai.ConfigureEnd(ent.Registry)
-	inv.PlaceFakeContainer(end, cube.Pos{0, 255, 0})
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
@@ -365,18 +365,24 @@ func configureWorld(w *world.World) {
 	l := world.NewLoader(8, w, world.NopViewer{})
 	l.Move(w.Spawn().Vec3Middle())
 	l.Load(math.MaxInt)
+
+	inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
 }
 
-func acceptFunc(store *tebex.Client, proxy bool) func(*player.Player) {
-	return func(p *player.Player) {
-		inv.RedirectPlayerPackets(p, func() {
-			time.Sleep(time.Millisecond * 500)
-			data.FlushCache()
+func recoverFunc(srv *server.Server) func() {
+	return func() {
+		time.Sleep(time.Millisecond * 500)
+		data.FlushCache()
 
-			sotw.Save()
-			_ = moyai.Server().Close()
-			os.Exit(1)
-		})
+		sotw.Save()
+		_ = srv.Close()
+		os.Exit(1)
+	}
+}
+
+func acceptFunc(store *tebex.Client, proxy bool, srv *server.Server) func(*player.Player) {
+	return func(p *player.Player) {
+		inv.RedirectPlayerPackets(p, recoverFunc(srv))
 		store.ExecuteCommands(p)
 
 		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
@@ -491,7 +497,7 @@ func registerCommands(srv *server.Server) {
 	for _, c := range []cmd.Command{
 		cmd.New("staff", text.Colourf("Staff management commands."), nil, command.StaffMode{}),
 		cmd.New("rename", text.Colourf("Rename your items."), nil, command.Rename{}),
-		cmd.New("stop", text.Colourf("Stop the server."), nil, command.Stop{}),
+		cmd.New("stop", text.Colourf("Stop the server."), nil, command.NewStop(srv)),
 		cmd.New("pots", text.Colourf("Place potion chests."), nil, command.Pots{}),
 		cmd.New("fix", text.Colourf("Fix your inventory."), nil, command.Fix{}, command.FixAll{}),
 		cmd.New("chat", text.Colourf("Chat management commands."), nil, command.ChatMute{}, command.ChatUnMute{}, command.ChatCoolDown{}),

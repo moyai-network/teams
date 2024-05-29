@@ -69,7 +69,7 @@ func (h *Handler) handleEndPortalEntry() {
 		<-time.After(time.Second / 20)
 		h.p.Teleport(mgl64.Vec3{0, 27, 0})
 	} else {
-		moyai.Server().World().AddEntity(h.p)
+		moyai.Overworld().AddEntity(h.p)
 		<-time.After(time.Second / 20)
 		h.p.Teleport(mgl64.Vec3{0, 60, 250})
 	}

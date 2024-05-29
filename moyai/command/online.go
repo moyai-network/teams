@@ -16,7 +16,7 @@ type Online struct{}
 // Run ...
 func (Online) Run(s cmd.Source, o *cmd.Output) {
 	var users []string
-	for _, u := range moyai.Server().Players() {
+	for _, u := range moyai.Players() {
 		d, err := data.LoadUserFromName(u.Name())
 		if err != nil {
 			o.Print(lang.Translatef(locale(s), "target.data.load.error", u.Name()))

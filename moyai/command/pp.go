@@ -42,7 +42,7 @@ func (pp PartnerPackage) Run(s cmd.Source, o *cmd.Output) {
 
 // Run ...
 func (pa PartnerPackageAll) Run(s cmd.Source, o *cmd.Output) {
-	for _, t := range moyai.Server().Players() {
+	for _, t := range moyai.Players() {
 		it.AddOrDrop(t, it.NewPartnerPackage(pa.Count))
 		t.Message("command.partner_package.give.received", pa.Count)
 	}
