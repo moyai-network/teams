@@ -568,6 +568,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("blackmarket", text.Colourf("Access the secret items of the black market"), nil, command.BlackMarket{}),
 		cmd.New("trim", text.Colourf("Add trims to your armor"), nil, command.Trim{}, command.TrimClear{}),
 		cmd.New("end", text.Colourf("End your adventure."), nil, command.End{}),
+		cmd.New("nether", text.Colourf("End your adventure."), nil, command.Nether{}),
 		cmd.New("settings", text.Colourf("Access your settings."), nil, command.Settings{}),
 		cmd.New("tag", text.Colourf("Manage your tags."), nil, command.TagAddOnline{}, command.TagAddOffline{}, command.TagRemoveOnline{}, command.TagRemoveOffline{}, command.TagSet{}),
 		cmd.New("cape", text.Colourf("Manage your capes."), nil, command.Cape{}),
