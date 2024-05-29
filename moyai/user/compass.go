@@ -7,9 +7,9 @@ import (
 
 func compass(direction float64) string {
 	direction = math.Mod(direction+360, 360)
-	direction = direction * 2/10
+	direction = direction * 2 / 10
 
-	compass := []string{
+	comp := []string{
 		"§4S §r", "| ", "| ", "| ", "| ", "| ", "| ", "| ", "| ", "§4S", "W §r",
 		"| ", "| ", "| ", "| ", "| ", "| ", "| ", "§4W §r", "| ", "| ", "| ", "| ",
 		"| ", "| ", "| ", "| ", "§4N", "W §r", "| ", "| ", "| ", "| ", "| ", "| ",
@@ -30,17 +30,17 @@ func compass(direction float64) string {
 	}
 	direction += 72
 
-	start := int(int(direction) - int(math.Floor(float64(25)/2)))
-	
+	start := int(direction) - int(math.Floor(float64(25)/2))
+
 	if start < 0 {
 		start = 0
 	}
-	
+
 	end := start + 25
-	if end > len(compass) {
-		end = len(compass)
+	if end > len(comp) {
+		end = len(comp)
 	}
 
-	slice := compass[start:end]
+	slice := comp[start:end]
 	return strings.Join(slice, "")
 }
