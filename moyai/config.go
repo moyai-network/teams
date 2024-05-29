@@ -4,6 +4,10 @@ import "github.com/df-mc/dragonfly/server"
 
 type Config struct {
 	server.UserConfig
+	Nether, End struct {
+		Folder string
+	}
+
 	// Moyai contains fields specific to moyai
 	Moyai struct {
 		// Tebex is the Tebex API key.

@@ -10,7 +10,14 @@ QuitMessage = ''
 
 [World]
 SaveData = true
-Folder = "assets/hcfworld"
+Folder = "assets/worlds/overworld"
+
+[Nether]
+Folder = "assets/worlds/nether"
+
+[End]
+Folder = "assets/worlds/end"
+
 
 [Players]
 MaxCount = 0

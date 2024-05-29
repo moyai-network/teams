@@ -129,7 +129,7 @@ func main() {
 	srv := moyai.NewServer(config)
 	handleServerClose(srv)
 
-	nether, end := moyai.ConfigureDimensions(config.Entities)
+	nether, end := moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
 	w := srv.World()
 	configureWorld(w)
 	configureWorld(nether)

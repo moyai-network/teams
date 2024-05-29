@@ -60,8 +60,8 @@ func SetBlackMarketOpened(t time.Time) {
 	blackMarketOpened = t
 }
 
-func ConfigureDimensions(reg world.EntityRegistry) (*world.World, *world.World) {
-	endProv, err := mcdb.Open("assets/end")
+func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder string) (*world.World, *world.World) {
+	endProv, err := mcdb.Open(netherFolder)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +71,7 @@ func ConfigureDimensions(reg world.EntityRegistry) (*world.World, *world.World) 
 		Entities: reg,
 	}.New()
 
-	netherProv, err := mcdb.Open("assets/nether")
+	netherProv, err := mcdb.Open(endFolder)
 	if err != nil {
 		panic(err)
 	}
