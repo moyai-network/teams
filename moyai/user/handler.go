@@ -18,7 +18,6 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/area"
-	b "github.com/moyai-network/teams/moyai/block"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/crate"
@@ -37,7 +36,6 @@ import (
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/bossbar"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/df-mc/dragonfly/server/world"
@@ -128,7 +126,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	if p.World().Dimension() == world.End {
 		moyai.End().AddEntity(p)
 	}
-	ha := &Handler{
+
+	h := &Handler{
 		p:          p,
 		wallBlocks: map[cube.Pos]float64{},
 
@@ -155,8 +154,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		death: make(chan struct{}),
 	}
 
-	ha.processLogout = process.NewProcess(func(t *process.Process) {
-		ha.gracefulLogout = true
+	h.processLogout = process.NewProcess(func(t *process.Process) {
+		h.gracefulLogout = true
 		p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
 	})
 
@@ -185,15 +184,15 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
 
-	ha.updateCurrentArea(p.Position(), u)
+	h.updateCurrentArea(p.Position(), u)
+	h.updateKOTHState(p.Position(), u)
 	data.SaveUser(u)
 
-	ha.logTime = time.Now()
+	h.logTime = time.Now()
 
-	UpdateState(ha.p)
-	go startTicker(ha)
-
-	return ha
+	UpdateState(h.p)
+	go startTicker(h)
+	return h
 }
 
 // formatRegex is a regex used to clean color formatting on a string.
@@ -1625,191 +1624,6 @@ func maxMin(n, n2 float64) (max float64, min float64) {
 		return n, n2
 	}
 	return n2, n
-}
-
-func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newPitch float64) {
-	if h.logger {
-		return
-	}
-	u, err := data.LoadUserFromName(h.p.Name())
-	if err != nil {
-		return
-	}
-
-	p := h.p
-	w := p.World()
-
-	p.SendBossBar(bossbar.New(compass(p.Rotation().Yaw())))
-
-	if !newPos.ApproxFuncEqual(p.Position(), func(f float64, f2 float64) bool {
-		return math.Abs(f-f2) < 0.03
-	}) {
-		h.processHome.Cancel()
-		h.processLogout.Cancel()
-		h.processStuck.Cancel()
-	}
-
-	if h.waypoint != nil && h.waypoint.active {
-		h.updateWaypointPosition()
-	}
-
-	h.clearWall()
-	cubePos := cube.PosFromVec3(newPos)
-
-	if h.tagCombat.Active() {
-		a := area.Spawn(w)
-		mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
-		if mul.Vec3WithinOrEqualFloorXZ(p.Position()) {
-			h.sendWall(cubePos, area.Overworld.Spawn().Area, item.ColourRed())
-		}
-	}
-
-	if u.Frozen {
-		ctx.Cancel()
-		return
-	}
-
-	bl := w.Block(cubePos)
-	if _, ok := bl.(b.PortalBlock); ok {
-		if h.p.World().Dimension() == world.Overworld {
-			moyai.End().AddEntity(h.p)
-			<-time.After(time.Second / 20)
-			h.p.Teleport(mgl64.Vec3{0, 27, 0})
-		} else {
-			moyai.Server().World().AddEntity(h.p)
-			<-time.After(time.Second / 20)
-			h.p.Teleport(mgl64.Vec3{0, 60, 250})
-		}
-	}
-
-	if u.Teams.PVP.Active() {
-		teams, _ := data.LoadAllTeams()
-		for _, a := range teams {
-			a := a.Claim
-			if a != (area.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
-				ctx.Cancel()
-				return
-			}
-
-			mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
-			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) && !area.Spawn(p.World()).Vec3WithinOrEqualFloorXZ(newPos) {
-				h.sendWall(cubePos, a, item.ColourBlue())
-			}
-		}
-
-		if newPos.Y() < 0 {
-			h.p.Teleport(mgl64.Vec3{0, 100, 0})
-		}
-	}
-
-	if _, ok := sotw.Running(); ok && u.Teams.SOTW {
-		if newPos.Y() < 0 {
-			h.p.Teleport(mgl64.Vec3{0, 100, 0})
-		}
-	}
-
-	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(newPos) && h.tagCombat.Active() {
-		ctx.Cancel()
-		return
-	}
-
-	us, ok := Lookup(u.Name)
-	if !ok {
-		return
-	}
-	k, ok := koth.Running()
-	if ok {
-		//r := u.Roles.Highest()
-		if k.Area().Vec3WithinOrEqualFloorXZ(newPos) && k.Dimension() == w.Dimension() {
-			switch k {
-			case koth.Citadel:
-				if newPos.Y() > 57 || newPos.Y() < 48 {
-					if k.StopCapturing(us) {
-						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
-					}
-					return
-				}
-			case koth.Shrine:
-				if newPos.Y() > 70 {
-					if k.StopCapturing(us) {
-						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
-					}
-					return
-				}
-			case koth.End:
-				if newPos.Y() > 40 {
-					if k.StopCapturing(us) {
-						//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
-					}
-					return
-				}
-			}
-
-			if u.Teams.PVP.Active() {
-				return
-			}
-			if k.StartCapturing(us) {
-				//Broadcastf("koth.capturing", k.Name(), r.Color(u.DisplayName))
-			}
-		} else if k.StopCapturing(us) {
-			//Broadcastf("koth.not.capturing", r.Color(u.DisplayName), k.Name())
-		}
-	}
-	h.updateCurrentArea(newPos, u)
-}
-
-func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
-	w := h.p.World()
-	var areas []area.NamedArea
-
-	teams, err := data.LoadAllTeams()
-	if err != nil {
-		fmt.Println(err)
-	}
-	t, teamErr := data.LoadTeamFromMemberName(h.p.Name())
-
-	for _, tm := range teams {
-		a := tm.Claim
-
-		name := text.Colourf("<red>%s</red>", tm.DisplayName)
-		if teamErr == nil && t.Name == tm.Name {
-			name = text.Colourf("<green>%s</green>", tm.DisplayName)
-		}
-		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
-	}
-
-	ar := h.lastArea.Load()
-	for _, a := range append(area.Protected(w), areas...) {
-		if a.Vec3WithinOrEqualFloorXZ(newPos) {
-			if ar != a {
-				if u.Teams.PVP.Active() {
-					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {
-						u.Teams.PVP.TogglePause()
-						data.SaveUser(u)
-					}
-				}
-
-				if ar != (area.NamedArea{}) {
-					Messagef(h.p, "area.leave", ar.Name())
-				}
-
-				h.lastArea.Store(a)
-				Messagef(h.p, "area.enter", a.Name())
-				return
-			} else {
-				return
-			}
-		}
-	}
-
-	if ar != area.Wilderness(w) {
-		if ar != (area.NamedArea{}) {
-			Messagef(h.p, "area.leave", ar.Name())
-
-		}
-		h.lastArea.Store(area.Wilderness(w))
-		Messagef(h.p, "area.enter", area.Wilderness(w).Name())
-	}
 }
 
 func (h *Handler) HandleItemDrop(ctx *event.Context, e world.Entity) {

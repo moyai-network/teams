@@ -7,31 +7,31 @@ import (
 )
 
 func init() {
-	world.RegisterBlock(PortalBlock{})
-	world.RegisterItem(PortalBlock{})
+	world.RegisterBlock(EndPortalBlock{})
+	world.RegisterItem(EndPortalBlock{})
 }
 
-type PortalBlock struct {}
+type EndPortalBlock struct{}
 
-func (f PortalBlock) BreakInfo() block.BreakInfo {
+func (f EndPortalBlock) BreakInfo() block.BreakInfo {
 	return block.BreakInfo{
-		Hardness: -1,
+		Hardness:        -1,
 		BlastResistance: 3_600_000,
 	}
 }
 
-func (f PortalBlock) EncodeItem() (name string, meta int16) {
+func (f EndPortalBlock) EncodeItem() (name string, meta int16) {
 	return "minecraft:end_portal", 0
 }
 
-func (f PortalBlock) EncodeBlock() (name string, properties map[string]any) {
+func (f EndPortalBlock) EncodeBlock() (name string, properties map[string]any) {
 	return "minecraft:end_portal", map[string]any{}
 }
 
-func (f PortalBlock) Hash() uint64 {
+func (f EndPortalBlock) Hash() uint64 {
 	return 200
 }
 
-func (f PortalBlock) Model() world.BlockModel {
+func (f EndPortalBlock) Model() world.BlockModel {
 	return model.EnchantingTable{}
 }
