@@ -69,7 +69,6 @@ type Handler struct {
 	p *player.Player
 
 	logTime           time.Time
-	vanished          atomic.Bool
 	claimSelectionPos [2]mgl64.Vec2
 	waypoint          *WayPoint
 	energy            atomic.Value[float64]
@@ -124,7 +123,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		moyai.End().AddEntity(p)
 	}
 
-	HideVanished(p)
 	h := &Handler{
 		p:          p,
 		wallBlocks: map[cube.Pos]float64{},
@@ -184,6 +182,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	h.updateCurrentArea(p.Position(), u)
 	h.updateKOTHState(p.Position(), u)
+	h.handleVanishState()
 	data.SaveUser(u)
 
 	h.logTime = time.Now()

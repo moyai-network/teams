@@ -111,13 +111,27 @@ func UpdateState(p *player.Player) {
 
 // Vanished returns whether the user is vanished or not.
 func (h *Handler) Vanished() bool {
-	return h.vanished.Load()
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return false
+	}
+
+	return u.Vanished
 }
 
 // ToggleVanish toggles the user's vanish state.
 func (h *Handler) ToggleVanish() {
-	h.vanished.Toggle()
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return
+	}
+	u.Vanished = !u.Vanished
+	data.SaveUser(u)
+	h.handleVanishState()
+}
 
+// handleVanishState vanishes the user.
+func (h *Handler) handleVanishState() {
 	if h.Vanished() {
 		ShowVanished(h.p)
 	} else {
