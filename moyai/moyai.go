@@ -42,14 +42,15 @@ func End() *world.World {
 	return end
 }
 
-func ConfigureEnd(reg world.EntityRegistry) {
+func ConfigureEnd(reg world.EntityRegistry) *world.World {
 	prov, err := mcdb.Open("assets/end")
 	if err != nil {
 		panic(err)
 	}
 	end = world.Config{
 		Provider: prov,
-		Dim: world.End,
+		Dim:      world.End,
 		Entities: reg,
 	}.New()
+	return end
 }

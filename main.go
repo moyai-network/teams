@@ -343,7 +343,8 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 		panic(err)
 	}
 	c.Entities = ent.Registry
-	moyai.ConfigureEnd(ent.Registry)
+	end := moyai.ConfigureEnd(ent.Registry)
+	inv.PlaceFakeContainer(end, cube.Pos{0, 255, 0})
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
