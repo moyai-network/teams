@@ -114,6 +114,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	if h, ok := logger(p); ok {
 		if h.p.World().Dimension() == world.End {
 			moyai.End().AddEntity(p)
+			unsafe.WritePacket(p, &packet.PlayerFog{
+				Stack: []string{"minecraft:fog_the_end"},
+			})
 			<-time.After(time.Second)
 		} else if h.p.World().Dimension() == world.Nether {
 			unsafe.WritePacket(p, &packet.PlayerFog{
@@ -127,6 +130,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	}
 
 	if p.World().Dimension() == world.End {
+		unsafe.WritePacket(p, &packet.PlayerFog{
+			Stack: []string{"minecraft:fog_the_end"},
+		})
 		moyai.End().AddEntity(p)
 	} else if p.World().Dimension() == world.Nether {
 		unsafe.WritePacket(p, &packet.PlayerFog{

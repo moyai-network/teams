@@ -72,6 +72,8 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 		var stack []string
 		if pkt.Dimension == 1 {
 			stack = append(stack, "minecraft:fog_hell")
+		} else if pkt.Dimension == 2 {
+			stack = append(stack, "minecraft:fog_the_end")
 		}
 
 		_ = h.c.WritePacket(&packet.PlayerFog{

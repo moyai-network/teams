@@ -35,6 +35,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/df-mc/goleveldb v1.1.9 // indirect
 	github.com/df-mc/worldupgrader v1.0.14 // indirect
+	github.com/flonja/multiversion v0.0.0-20240506134321-1cf851752c31 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect

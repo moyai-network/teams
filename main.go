@@ -114,7 +114,8 @@ func main() {
 		}
 	}()*/
 	pk := intercept.NewPacketListener()
-	pk.Listen(&config, ":19132", []minecraft.Protocol{})
+	pk.Listen(&config, ":19132", []minecraft.Protocol{
+	})
 
 	go func() {
 		for {
