@@ -26,6 +26,7 @@ require (
 	github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d
 	github.com/bedrock-gophers/tebex v0.1.0
 	github.com/df-mc/npc v1.0.4
+	github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7
 	github.com/samber/lo v1.39.0
 )
@@ -39,7 +40,6 @@ require (
 	github.com/disgoorg/json v1.1.0 // indirect
 	github.com/elliotchance/orderedmap/v2 v2.2.0 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
-	github.com/flonja/multiversion v0.0.0-20240506134321-1cf851752c31 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
@@ -48,8 +48,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
-	github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3 // indirect
-	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/petermattis/goid v0.0.0-20240327183114-c42a807a84ba // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
@@ -67,7 +65,6 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
@@ -76,4 +73,4 @@ replace github.com/sandertv/gophertunnel => github.com/oomph-ac/gophertunnel v0.
 
 replace github.com/sandertv/go-raknet => github.com/GameParrot/tedac-raknet v0.0.4
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240527141141-7b3f8d10df5b
+replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240529205555-9a843949701a
