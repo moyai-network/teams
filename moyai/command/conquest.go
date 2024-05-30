@@ -16,7 +16,7 @@ import (
 
 // ConquestStart is a command that starts a KOTH.
 type ConquestStart struct {
-	Sub  cmd.SubCommand `cmd:"start"`
+	Sub cmd.SubCommand `cmd:"start"`
 }
 
 // ConquestStop is a command that stops a KOTH.
@@ -51,15 +51,15 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 
 	user.Broadcastf("koth.start", name, "Conquest", -100.0, -500.0)
 	st := fmt.Sprintf(`
-§e█████████§r
-§e█████████§r
-§e█§6█§e█§6█§e█§6█§e█§6█§e█§r
-§e█§6███████§e█§r
-§e█§6█§b█§6█§b█§6█§b█§6█§e█§r §eConquest§r
-§e█§6███████§e█§r §6can be contested now!§r
-§e█████████§r
-§e█████████§r
-§e█████████§r
+ §e█████████§r
+ §e█████████§r
+ §e█§6█§e█§6█§e█§6█§e█§6█§e█§r
+ §e█§6███████§e█§r
+ §e█§6█§b█§6█§b█§6█§b█§6█§e█§r §eConquest§r
+ §e█§6███████§e█§r §6can be contested now!§r
+ §e█████████§r
+ §e█████████§r
+ §e█████████§r
 
 `)
 
