@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"strings"
 	_ "unsafe"
 
@@ -70,7 +69,11 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 
 	switch pkt := pk.(type) {
 	case *packet.ChangeDimension:
-		fmt.Println("DIM", pkt.Dimension)
+		_ = h.c.WritePacket(&packet.PlayerFog{
+			Stack: []string{
+				"minecraft:fog_hell",
+			},
+		})
 	case *packet.ActorEvent:
 		if pkt.EventType == packet.ActorEventStartSwimming {
 			ctx.Cancel()
