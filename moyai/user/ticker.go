@@ -263,7 +263,7 @@ func startTicker(h *Handler) {
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 				}
-	
+
 				if len(teams) < 3 {
 					for i, t := range teams {
 						if t.ConquestPoints > 0 {
@@ -282,7 +282,7 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.first", top[0]))
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.second", top[1]))
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.third", top[2]))
-				
+
 				times := [4]time.Duration{}
 
 				for i, c := range conquest.All() {
@@ -291,10 +291,9 @@ func startTicker(h *Handler) {
 						times[i] = c.Duration()
 					}
 				}
-				
+
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.claimed.first", parseDuration(times[0]), parseDuration(times[1])))
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.claimed.second", parseDuration(times[2]), parseDuration(times[3])))
-				_, _ = sb.WriteString("§a\uE000")
 			}
 
 			_, _ = sb.WriteString("\uE000")
