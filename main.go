@@ -613,6 +613,11 @@ func handleServerClose(srv *server.Server) {
 		data.FlushCache()
 
 		sotw.Save()
+		err := moyai.Nether().Close()
+		if err != nil {
+			logrus.Fatalln("close nether: %v", err)
+		}
+		moyai.End().Close()
 		if err := srv.Close(); err != nil {
 			logrus.Fatalln("close server: %v", err)
 		}
