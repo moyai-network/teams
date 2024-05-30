@@ -50,7 +50,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	user.Broadcastf("koth.start", name, "Conquest", -100.0, -500.0)
-	st := fmt.Sprintf(`
+	st := fmt.Sprintf(`
 §e█████████§r
 §e█████████§r
 §e█§6█§e█§6█§e█§6█§e█§6█§e█§r
@@ -60,7 +60,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 §e█████████§r
 §e█████████§r
 §e█████████§r
-
+
 `)
 
 	p.Message(text.Colourf(st))
@@ -76,9 +76,8 @@ func (ConquestStop) Run(s cmd.Source, o *cmd.Output) {
 			name = r.Color(p.Name())
 		}
 	}
-	if conquest.Running() {
+	if !conquest.Running() {
 		user.Messagef(p, "command.koth.not.running")
-		return
 	} else {
 		conquest.Stop()
 		user.Broadcastf("koth.stop", name, "Conquest")

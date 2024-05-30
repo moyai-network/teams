@@ -20,7 +20,7 @@ import (
 
 func init() {
 	t := time.NewTicker(time.Hour * 4)
-	n := rand.Intn(len(All()))
+	n := rand.Intn(len(All()[:2]))
 	k := All()[n]
 	_, _ = chat.Global.WriteString(text.Colourf("%s is now active!", k.name))
 	k.Start()

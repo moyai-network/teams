@@ -11,6 +11,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player/bossbar"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	b "github.com/moyai-network/teams/moyai/block"
@@ -18,6 +19,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -200,6 +202,7 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 	ar := h.lastArea.Load()
 	for _, a := range append(area.Protected(w), areas...) {
 		if a.Vec3WithinOrEqualFloorXZ(newPos) {
+
 			if ar != a {
 				if u.Teams.PVP.Active() {
 					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {
@@ -213,6 +216,11 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 				}
 
 				h.lastArea.Store(a)
+				if a.Name() == koth.Citadel.Name() {
+					unsafe.WritePacket(h.p, &packet.PlayerFog{
+						Stack: []string{"minecraft:fog_warped_forest"},
+					})
+				}
 				Messagef(h.p, "area.enter", a.Name())
 				return
 			} else {
@@ -223,6 +231,11 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 
 	if ar != area.Wilderness(w) {
 		if ar != (area.NamedArea{}) {
+			if ar.Name() == koth.Citadel.Name() {
+				unsafe.WritePacket(h.p, &packet.PlayerFog{
+					Stack: []string{"minecraft:fog_ocean"},
+				})
+			}
 			Messagef(h.p, "area.leave", ar.Name())
 
 		}

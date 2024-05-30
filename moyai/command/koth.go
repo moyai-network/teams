@@ -75,7 +75,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	user.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
 	var st string
 	if ko == koth.Citadel || ko == koth.Hades {
-		st = fmt.Sprintf(`
+		st = fmt.Sprintf(`
 §e█████████§r
 §e█████████§r
 §e█§6█§e█§6█§e█§6█§e█§6█§e█§r
@@ -85,10 +85,10 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 §e█████████§r
 §e█████████§r
 §e█████████§r
-
+
 `, ko.Name())
 	} else {
-		st = fmt.Sprintf(`
+		st = fmt.Sprintf(`
 §7█████████§r
 §7██§4█§7███§4█§7██§r
 §7██§4█§7██§4█§7███§r
@@ -97,9 +97,8 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 §7██§4█§7███§4█§7██§r §6can be contested now!§r
 §7██§4█§7███§4█§7██§r
 §7█████████§r
-`, ko.Name())
+`, ko.Name())
 	}
-
 
 	p.Message(text.Colourf(st))
 }

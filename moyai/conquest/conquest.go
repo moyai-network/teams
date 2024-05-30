@@ -2,21 +2,24 @@ package conquest
 
 import (
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
+	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var (
 	// running is true if the Conquest event is running.
-	running bool
+	running atomic.Bool
 
 	Red = &Conquest{
 		name:        text.Colourf("<red>Red Zone</red>"),
@@ -50,7 +53,7 @@ var (
 
 // Start starts all Conquest events.
 func Start() {
-	running = true
+	running.Store(true)
 	for _, c := range All() {
 		c.start()
 	}
@@ -58,7 +61,7 @@ func Start() {
 
 // Stop stops all Conquest events.
 func Stop() {
-	running = false
+	running.Store(false)
 	for _, c := range All() {
 		c.stop()
 	}
@@ -71,7 +74,7 @@ func All() []*Conquest {
 
 // Running returns true if the Conquest event is running.
 func Running() bool {
-	return running
+	return running.Load()
 }
 
 // Lookup returns a Conquest by its name. The second return value is true if the Conquest was found, and false
@@ -130,7 +133,7 @@ func (c *Conquest) Capturing() (*player.Player, bool) {
 
 // StartCapturing starts the capturing of the Conquest.
 func (c *Conquest) StartCapturing(p *player.Player) bool {
-	if c.capturing != nil || !running {
+	if c.capturing != nil || !running.Load() {
 		return false
 	}
 	t := c.duration
@@ -156,7 +159,13 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 			pts := LookupTeamPoints(tm)
 			if pts >= 250 {
 				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.won", tm.Name, pts))
-				// it.AddOrDrop Conquest keys
+				for _, m := range tm.Members {
+					for _, p := range moyai.Players() {
+						if p.Name() == m.Name {
+							it.AddOrDrop(p, it.NewKey(it.KeyTypeConquest, 2))
+						}
+					}
+				}
 				resetPoints()
 				Stop()
 			}
@@ -172,7 +181,7 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 
 // StopCapturing stops the capturing of the KOTH.
 func (c *Conquest) StopCapturing(p *player.Player) bool {
-	if !running {
+	if !running.Load() {
 		return false
 	}
 	if c.capturing == p {
