@@ -13,15 +13,28 @@ import (
 
 func Start() {
 	running = true
+	for _, c := range All() {
+		c.start()
+	}
 }
 
 func Stop() {
 	running = false
+	for _, c := range All() {
+		c.stop()
+	}
 }
 
 var running bool
 
 var (
+	Red = &Conquest{
+		name:        text.Colourf("<red>Red</red>"),
+		cancel:      make(chan struct{}),
+		area:        area.NewArea(mgl64.Vec2{-94, 563}, mgl64.Vec2{-88, 569}),
+		coordinates: mgl64.Vec2{500, 500},
+		duration:    time.Second * 30,
+	}
 	Blue = &Conquest{
 		name:        text.Colourf("<blue>Blue</blue>"),
 		cancel:      make(chan struct{}),
@@ -43,17 +56,10 @@ var (
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
-	Red = &Conquest{
-		name:        text.Colourf("<red>Red</red>"),
-		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{-94, 563}, mgl64.Vec2{-88, 569}),
-		coordinates: mgl64.Vec2{500, 500},
-		duration:    time.Second * 30,
-	}
 )
 
 func All() []*Conquest {
-	return []*Conquest{Blue, Green, Yellow, Red}
+	return []*Conquest{Red, Blue, Green, Yellow}
 }
 
 func Running() bool {
@@ -83,6 +89,11 @@ type Conquest struct {
 // Name returns the name of the Conquest.
 func (c *Conquest) Name() string {
 	return c.name
+}
+
+// Duration returns the duration of the Conquest.
+func (c *Conquest) Duration() time.Duration {
+	return c.duration
 }
 
 func (c *Conquest) start() {
@@ -127,6 +138,7 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 			// 	return
 			// }
 			// TODO: Add conquest points
+			c.StopCapturing(p)
 		case <-c.cancel:
 			c.capturing = nil
 			return

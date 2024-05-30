@@ -10,6 +10,7 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/class"
+	"github.com/moyai-network/teams/moyai/conquest"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -248,6 +249,27 @@ func startTicker(h *Handler) {
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.online", teamOnlineCount(ft), len(tm.Members)))
 					}
 				}
+			}
+
+			if conquest.Running() {
+				_, _ = sb.WriteString("§4\uE000")
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.running"))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.first", "TODO"))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.second", "TODO"))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.third", "TODO"))
+				
+				times := [4]time.Duration{}
+
+				for i, c := range conquest.All() {
+					times[i] = time.Until(c.Time())
+					if _, ok := c.Capturing(); !ok {
+						times[i] = c.Duration()
+					}
+				}
+				
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.claimed.first", parseDuration(times[0]), parseDuration(times[1])))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.claimed.second", parseDuration(times[2]), parseDuration(times[3])))
+				_, _ = sb.WriteString("§a\uE000")
 			}
 
 			_, _ = sb.WriteString("\uE000")
