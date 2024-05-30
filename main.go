@@ -572,6 +572,7 @@ func registerCommands(srv *server.Server) {
 		cmd.New("settings", text.Colourf("Access your settings."), nil, command.Settings{}),
 		cmd.New("tag", text.Colourf("Manage your tags."), nil, command.TagAddOnline{}, command.TagAddOffline{}, command.TagRemoveOnline{}, command.TagRemoveOffline{}, command.TagSet{}),
 		cmd.New("cape", text.Colourf("Manage your capes."), nil, command.Cape{}),
+		cmd.New("conquest", text.Colourf("Manage Conquest."), nil, command.ConquestStart{}, command.ConquestStop{}),
 	} {
 		cmd.Register(c)
 	}

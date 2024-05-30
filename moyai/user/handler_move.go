@@ -14,6 +14,7 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	b "github.com/moyai-network/teams/moyai/block"
+	"github.com/moyai-network/teams/moyai/conquest"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/sotw"
@@ -52,6 +53,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 	}
 
 	h.updateKOTHState(newPos, u)
+	h.updateConquestState(newPos, u)
 	h.updateCurrentArea(newPos, u)
 }
 
@@ -115,6 +117,26 @@ func (h *Handler) cancelProcesses(newPos mgl64.Vec3) {
 		h.processHome.Cancel()
 		h.processLogout.Cancel()
 		h.processStuck.Cancel()
+	}
+}
+
+func (h *Handler) updateConquestState(newPos mgl64.Vec3, u data.User) {
+	p := h.p
+	w := p.World()
+	if u.Teams.PVP.Active() {
+		return
+	}
+	if !conquest.Running() || w.Dimension() != world.Nether {
+		return
+	}
+	areas := conquest.All()
+
+	for _, a := range areas {
+		if a.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+			a.StartCapturing(p)
+		} else {
+			a.StopCapturing(p)
+		}
 	}
 }
 
