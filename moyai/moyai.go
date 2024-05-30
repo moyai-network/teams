@@ -24,6 +24,10 @@ var (
 	blackMarketOpened time.Time
 )
 
+func Worlds() []*world.World {
+	return []*world.World{Overworld(), Nether(), End()}
+}
+
 func Overworld() *world.World {
 	return srv.World()
 }
