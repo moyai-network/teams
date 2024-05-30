@@ -69,13 +69,14 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 
 	switch pkt := pk.(type) {
 	case *packet.ChangeDimension:
+		var stack []string
 		if pkt.Dimension == 1 {
-			_ = h.c.WritePacket(&packet.PlayerFog{
-				Stack: []string{
-					"minecraft:fog_hell",
-				},
-			})
+			stack = append(stack, "minecraft:fog_hell")
 		}
+
+		_ = h.c.WritePacket(&packet.PlayerFog{
+			Stack: stack,
+		})
 	case *packet.ActorEvent:
 		if pkt.EventType == packet.ActorEventStartSwimming {
 			ctx.Cancel()
