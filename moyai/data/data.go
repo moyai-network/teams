@@ -22,7 +22,6 @@ func FlushCache() {
 	teamMu.Lock()
 	defer teamMu.Unlock()
 	for _, t := range teams {
-		t.ConquestPoints = 0
 		err := saveTeamData(t)
 		if err != nil {
 			log.Println("Error saving team data:", err)
