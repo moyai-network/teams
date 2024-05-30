@@ -254,17 +254,27 @@ func startTicker(h *Handler) {
 			if conquest.Running() {
 				_, _ = sb.WriteString("§4\uE000")
 				teams := conquest.OrderedTeamsByPoints()
-				f := "<grey>%s <yellow>(</yellow><red>%d</red><grey>/</grey><green>250</green><yellow>)</yellow></grey>"
+				f := "<grey>%s <yellow>(</yellow><green>%d</green><grey>/</grey><red>250</red><yellow>)</yellow></grey>"
 				top := []string{
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 				}
 
-				for i, tm := range teams[:3] {
+				count := 3
+				if len(teams) < 3 {
+					count = len(teams)
+				}
+				for i, tm := range teams[:count] {
 					pts := conquest.LookupTeamPoints(tm)
 					if pts > 0 {
-						top[i] = fmt.Sprintf(f, tm.DisplayName, pts)
+						var name string
+						if t, err := data.LoadTeamFromMemberName(h.p.Name()); err != nil || t.Name != tm.Name {
+							name = fmt.Sprintf("<red>%s</red>", tm.DisplayName)
+						} else {
+							name = fmt.Sprintf("<green>%s</green>", tm.DisplayName)
+						}
+						top[i] = fmt.Sprintf(f, name, pts)
 					}
 				}
 

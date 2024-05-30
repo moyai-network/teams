@@ -43,6 +43,7 @@ import (
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/restartfu/roman"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -115,6 +116,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			moyai.End().AddEntity(p)
 			<-time.After(time.Second)
 		} else if h.p.World().Dimension() == world.Nether {
+			unsafe.WritePacket(p, &packet.PlayerFog{
+				Stack: []string{"minecraft:fog_hell"},
+			})
 			moyai.Nether().AddEntity(p)
 			<-time.After(time.Second)
 		}
@@ -125,6 +129,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	if p.World().Dimension() == world.End {
 		moyai.End().AddEntity(p)
 	} else if p.World().Dimension() == world.Nether {
+		unsafe.WritePacket(p, &packet.PlayerFog{
+			Stack: []string{"minecraft:fog_hell"},
+		})
 		moyai.Nether().AddEntity(p)
 	}
 

@@ -17,6 +17,7 @@ const (
 	KeyTypePartner = 2
 	KeyTypeMenes   = 3
 	KeyTypeRamses  = 4
+	KeyTypeConquest = 5
 )
 
 func AllKeyTypes() []KeyType {
@@ -26,6 +27,7 @@ func AllKeyTypes() []KeyType {
 		{key: KeyTypePartner},
 		{key: KeyTypeMenes},
 		{key: KeyTypeRamses},
+		{key: KeyTypeConquest},
 	}
 }
 
@@ -49,6 +51,9 @@ func NewKey(keyType int, n int) item.Stack {
 	case KeyTypeRamses:
 		value = "crate-key_Ramses"
 		customName = text.Colourf("<diamond>Ramses Crate Key</diamond>")
+	case KeyTypeConquest:
+		value = "crate-key_Conquest"
+		customName = text.Colourf("<blue>Conquest Crate Key</blue>")
 	default:
 		panic("should never happen")
 	}

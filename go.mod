@@ -13,7 +13,7 @@ require (
 	github.com/sandertv/gophertunnel v1.37.1-0.20240429220227-ca0215be47bb
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.15.0
-	golang.org/x/exp v0.0.0-20240529005216-23cca8864a10
+	golang.org/x/exp v0.0.0-20240530194437-404ba88c7ed0
 	golang.org/x/text v0.15.0
 )
 
@@ -47,8 +47,6 @@ require (
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sandertv/go-raknet v1.13.0 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
-	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
