@@ -2,7 +2,6 @@ package data
 
 import (
 	"math"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -90,8 +89,6 @@ type Team struct {
 	Points int
 	// KOTHWins is the amount of KOTH wins the team has.
 	KOTHWins int
-	// ConquestPoints is the amount of Conquest points the team has.
-	ConquestPoints int
 	// ConquestWins is the amount of Conquest wins the team has.
 	ConquestWins int
 	// Balance is the amount of money the team has.
@@ -195,14 +192,6 @@ func (t Team) WithPoints(points int) Team {
 	return t
 }
 
-func (t Team) WithConquestPoints(points int) Team {
-	t.ConquestPoints = points
-	if t.ConquestPoints < 0 {
-		t.ConquestPoints = 0
-	}
-	return t
-}
-
 // WithBalance returns the team with the given balance.
 func (t Team) WithBalance(bal float64) Team {
 	t.Balance = bal
@@ -251,7 +240,7 @@ func (t Team) DTRString() string {
 		return text.Colourf("<green>%.2f%s</green>", t.DTR, t.DTRDot())
 	}
 	if t.DTR < 0 {
-		return text.Colourf("<redstone>%.2f%s</redstone>", t.DTR, t.DTRDot())
+		return text.Colourf("<red>%.2f%s</red>", t.DTR, t.DTRDot())
 	}
 	return text.Colourf("<yellow>%.2f%s</yellow>", t.DTR, t.DTRDot())
 }
@@ -260,15 +249,11 @@ func (t Team) DTRString() string {
 func (t Team) DTRDot() string {
 	if t.Regenerating() {
 		return "<purple>■</purple>"
-
 	}
 	if eq(t.DTR, t.MaxDTR()) {
 		return "<green>■</green>"
 	}
-	if t.DTR < 0 {
-		return "<redstone>■</redstone>"
-	}
-	return "<yellow>■</yellow>"
+	return "<red>■</red>"
 }
 
 // Leader returns whether the given username is the one of the leader.
@@ -403,26 +388,7 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 	return Team{}, mongo.ErrNoDocuments
 }
 
-// LoadTeamsOrderedConquestPoints loads all teams ordered by their conquest points.
-func LoadTeamsOrderedConquestPoints() ([]Team, error) {
-	teams, err := LoadAllTeams()
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(teams, func(i, j int) bool {
-		return teams[i].ConquestPoints > teams[j].ConquestPoints
-	})
-	return teams, nil
-}
-
-func ResetConquestPoints() {
-	teamMu.Lock()
-	for _, t := range teams {
-		t.ConquestPoints = 0
-	}
-	teamMu.Unlock()
-}
-
+// updatedRegeneration returns the team with the regeneration updated.
 func updatedRegeneration(t Team) Team {
 	since := time.Since(t.LastDeath)
 

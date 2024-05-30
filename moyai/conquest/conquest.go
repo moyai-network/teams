@@ -14,23 +14,10 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-func Start() {
-	running = true
-	for _, c := range All() {
-		c.start()
-	}
-}
-
-func Stop() {
-	running = false
-	for _, c := range All() {
-		c.stop()
-	}
-}
-
-var running bool
-
 var (
+	// running is true if the Conquest event is running.
+	running bool
+
 	Red = &Conquest{
 		name:        text.Colourf("<red>Red Zone</red>"),
 		cancel:      make(chan struct{}),
@@ -61,14 +48,33 @@ var (
 	}
 )
 
+// Start starts all Conquest events.
+func Start() {
+	running = true
+	for _, c := range All() {
+		c.start()
+	}
+}
+
+// Stop stops all Conquest events.
+func Stop() {
+	running = false
+	for _, c := range All() {
+		c.stop()
+	}
+}
+
+// All returns all Conquest events.
 func All() []*Conquest {
 	return []*Conquest{Red, Blue, Green, Yellow}
 }
 
+// Running returns true if the Conquest event is running.
 func Running() bool {
 	return running
 }
 
+// Lookup returns a Conquest by its name. The second return value is true if the Conquest was found, and false
 func Lookup(name string) (*Conquest, bool) {
 	for _, c := range All() {
 		if strings.EqualFold(colour.StripMinecraftColour(c.Name()), name) {
@@ -99,25 +105,30 @@ func (c *Conquest) Duration() time.Duration {
 	return c.duration
 }
 
+// start starts the capturing of the Conquest.
 func (c *Conquest) start() {
 	c.capturing = nil
 	c.cancel = make(chan struct{})
 }
 
+// stop stops the capturing of the Conquest.
 func (c *Conquest) stop() {
 	c.capturing = nil
 	c.time = time.Time{}
 	close(c.cancel)
 }
 
-func (c *Conquest) PlayerCapturing(p *player.Player) bool  {
+// PlayerCapturing returns true if the player is capturing the Conquest.
+func (c *Conquest) PlayerCapturing(p *player.Player) bool {
 	return c.capturing == p
 }
 
+// Capturing returns the player capturing the Conquest, if any.
 func (c *Conquest) Capturing() (*player.Player, bool) {
 	return c.capturing, c.capturing != nil
 }
 
+// StartCapturing starts the capturing of the Conquest.
 func (c *Conquest) StartCapturing(p *player.Player) bool {
 	if c.capturing != nil || !running {
 		return false
@@ -138,16 +149,15 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 				c.StopCapturing(p)
 				return
 			}
-			points := tm.ConquestPoints
-			tm = tm.WithConquestPoints(points + 10)
-			data.SaveTeam(tm)
+			increaseTeamPoints(tm, 10)
 			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Color(u.DisplayName)))
 			c.StopCapturing(p)
 
-			if tm.ConquestPoints >= 250 {
-				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.won", tm.Name, tm.ConquestPoints))
+			pts := LookupTeamPoints(tm)
+			if pts >= 250 {
+				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.won", tm.Name, pts))
 				// it.AddOrDrop Conquest keys
-				data.ResetConquestPoints()
+				resetPoints()
 				Stop()
 			}
 
