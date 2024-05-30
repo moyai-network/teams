@@ -49,7 +49,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 
-	user.Broadcastf("koth.start", name, "Conquest", "500", "500")
+	user.Broadcastf("koth.start", name, "Conquest", -100.0, -500.0)
 	st := fmt.Sprintf(`
 §e█████████§r
 §e█████████§r

@@ -253,10 +253,35 @@ func startTicker(h *Handler) {
 
 			if conquest.Running() {
 				_, _ = sb.WriteString("§4\uE000")
+				teams, err := data.LoadTeamsOrderedConquestPoints()
+				if err != nil {
+					return
+				}
+				f := "<grey>%s <yellow>(</yellow><red>%d</red><grey>/</grey><green>250</green><yellow>)</yellow></grey>"
+				top := []string{
+					fmt.Sprintf(f, "<grey>None</grey>", 0),
+					fmt.Sprintf(f, "<grey>None</grey>", 0),
+					fmt.Sprintf(f, "<grey>None</grey>", 0),
+				}
+	
+				if len(teams) < 3 {
+					for i, t := range teams {
+						if t.ConquestPoints > 0 {
+							top[i] = fmt.Sprintf(f, t.DisplayName, t.ConquestPoints)
+						}
+					}
+				} else {
+					top = []string{
+						fmt.Sprintf(f, teams[0].DisplayName, teams[0].ConquestPoints),
+						fmt.Sprintf(f, teams[1].DisplayName, teams[1].ConquestPoints),
+						fmt.Sprintf(f, teams[2].DisplayName, teams[2].ConquestPoints),
+					}
+				}
+
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.running"))
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.first", "TODO"))
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.second", "TODO"))
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.third", "TODO"))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.first", top[0]))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.second", top[1]))
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.conquest.third", top[2]))
 				
 				times := [4]time.Duration{}
 

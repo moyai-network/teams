@@ -2,6 +2,7 @@ package data
 
 import (
 	"math"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -89,6 +90,10 @@ type Team struct {
 	Points int
 	// KOTHWins is the amount of KOTH wins the team has.
 	KOTHWins int
+	// ConquestPoints is the amount of Conquest points the team has.
+	ConquestPoints int
+	// ConquestWins is the amount of Conquest wins the team has.
+	ConquestWins int
 	// Balance is the amount of money the team has.
 	Balance float64
 	// Claim is the claim area of the team.
@@ -186,6 +191,14 @@ func (t Team) WithPoints(points int) Team {
 	t.Points = points
 	if t.Points < 0 {
 		t.Points = 0
+	}
+	return t
+}
+
+func (t Team) WithConquestPoints(points int) Team {
+	t.ConquestPoints = points
+	if t.ConquestPoints < 0 {
+		t.ConquestPoints = 0
 	}
 	return t
 }
@@ -388,6 +401,26 @@ func LoadTeamFromMemberName(name string) (Team, error) {
 	// TEAMS ARE NOW ALWAYS CACHED
 	//return decodeSingleTeamFromFilter(bson.M{"members.name": bson.M{"$eq": name}})
 	return Team{}, mongo.ErrNoDocuments
+}
+
+// LoadTeamsOrderedConquestPoints loads all teams ordered by their conquest points.
+func LoadTeamsOrderedConquestPoints() ([]Team, error) {
+	teams, err := LoadAllTeams()
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(teams, func(i, j int) bool {
+		return teams[i].ConquestPoints > teams[j].ConquestPoints
+	})
+	return teams, nil
+}
+
+func ResetConquestPoints() {
+	teamMu.Lock()
+	for _, t := range teams {
+		t.ConquestPoints = 0
+	}
+	teamMu.Unlock()
 }
 
 func updatedRegeneration(t Team) Team {

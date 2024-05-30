@@ -2,9 +2,10 @@ package data
 
 import (
 	"context"
+	"log"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 func FlushCache() {
@@ -21,6 +22,7 @@ func FlushCache() {
 	teamMu.Lock()
 	defer teamMu.Unlock()
 	for _, t := range teams {
+		t.ConquestPoints = 0
 		err := saveTeamData(t)
 		if err != nil {
 			log.Println("Error saving team data:", err)

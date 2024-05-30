@@ -132,7 +132,7 @@ func (h *Handler) updateConquestState(newPos mgl64.Vec3, u data.User) {
 	areas := conquest.All()
 
 	for _, a := range areas {
-		if a.Area().Vec3WithinOrEqualFloorXZ(newPos) {
+		if a.Area().Vec3WithinOrEqualFloorXZ(newPos) && newPos.Y() < 40 {
 			a.StartCapturing(p)
 		} else {
 			a.StopCapturing(p)

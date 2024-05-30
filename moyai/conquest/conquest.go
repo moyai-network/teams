@@ -5,9 +5,12 @@ import (
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -29,28 +32,28 @@ var running bool
 
 var (
 	Red = &Conquest{
-		name:        text.Colourf("<red>Red</red>"),
+		name:        text.Colourf("<red>Red Zone</red>"),
 		cancel:      make(chan struct{}),
 		area:        area.NewArea(mgl64.Vec2{-94, 563}, mgl64.Vec2{-88, 569}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Blue = &Conquest{
-		name:        text.Colourf("<blue>Blue</blue>"),
+		name:        text.Colourf("<blue>Blue Zone</blue>"),
 		cancel:      make(chan struct{}),
 		area:        area.NewArea(mgl64.Vec2{89, 436}, mgl64.Vec2{-95, 430}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Green = &Conquest{
-		name:        text.Colourf("<green>Green</green>"),
+		name:        text.Colourf("<green>Green Zone</green>"),
 		cancel:      make(chan struct{}),
 		area:        area.NewArea(mgl64.Vec2{-222, 431}, mgl64.Vec2{-228, 437}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Yellow = &Conquest{
-		name:        text.Colourf("<yellow>Yellow</yellow>"),
+		name:        text.Colourf("<yellow>Yellow Zone</yellow>"),
 		cancel:      make(chan struct{}),
 		area:        area.NewArea(mgl64.Vec2{-221, 564}, mgl64.Vec2{-227, 570}),
 		coordinates: mgl64.Vec2{500, 500},
@@ -125,20 +128,29 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 		select {
 		case <-time.After(t):
 			c.capturing = nil
-			//TODO: c.running = false
-
-			// u, err := data.LoadUserFromName(p.Name())
-			// if err != nil {
-			// 	c.StopCapturing(p)
-			// 	return
-			// }
-			// tm, err := data.LoadTeamFromMemberName(u.Name)
-			// if err != nil {
-			// 	c.StopCapturing(p)
-			// 	return
-			// }
-			// TODO: Add conquest points
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				c.StopCapturing(p)
+				return
+			}
+			tm, err := data.LoadTeamFromMemberName(u.Name)
+			if err != nil {
+				c.StopCapturing(p)
+				return
+			}
+			points := tm.ConquestPoints
+			tm = tm.WithConquestPoints(points + 10)
+			data.SaveTeam(tm)
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Color(u.DisplayName)))
 			c.StopCapturing(p)
+
+			if tm.ConquestPoints >= 250 {
+				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.won", tm.Name, tm.ConquestPoints))
+				// it.AddOrDrop Conquest keys
+				data.ResetConquestPoints()
+				Stop()
+			}
+
 		case <-c.cancel:
 			c.capturing = nil
 			return

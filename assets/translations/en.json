@@ -429,6 +429,9 @@
         "koth.not.capturing": "%s <red>was knocked from </red>%s <red>KOTH</red>",
         "koth.captured": "%s <green>has been captured by</green> %s",
 
+        "conquest.captured": "%s <green>has been captured by</green> %s <green>(+10 points)</green>",
+        "conquest.won": "<yellow>%s</yellow> <green>has won the <blue>Conquest</blue> with <yellow>%d</yellow> points</green>",
+
         "command.koth.running": "<red>A KOTH is already running.</red>",
         "command.koth.invalid": "<red>Invalid KOTH.</red>",
         "command.koth.not-running": "<red>No KOTH is currently running.</red>",
