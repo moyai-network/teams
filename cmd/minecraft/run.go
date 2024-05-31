@@ -162,6 +162,8 @@ func handleServerClose(srv *server.Server) {
 		if err := srv.Close(); err != nil {
 			logrus.Fatalln("close server: %v", err)
 		}
+
+		destroyAirDrop(srv.World(), lastDropPos)
 	}()
 }
 
