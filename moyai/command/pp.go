@@ -5,18 +5,19 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // PartnerPackage is a command that allows admins to give players partner packages
 type PartnerPackage struct {
+	adminAllower
 	Targets []cmd.Target `cmd:"target"`
 	Count   int          `cmd:"count"`
 }
 
 // PartnerPackageAll is a command that distributes partner packages to the server
 type PartnerPackageAll struct {
+	adminAllower
 	Sub   cmd.SubCommand `cmd:"all"`
 	Count int            `cmd:"count"`
 }
@@ -47,14 +48,4 @@ func (pa PartnerPackageAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	o.Print(text.Colourf("<green>Successfully gave partner packages to all online players.</green>"))
-}
-
-// Allow ...
-func (PartnerPackage) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
-}
-
-// Allow ...
-func (PartnerPackageAll) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
 }

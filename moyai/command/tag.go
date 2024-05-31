@@ -4,13 +4,13 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // TagAddOnline is a command that can be used to add a tag to a player online.
 type TagAddOnline struct {
+	adminAllower
 	Sub    cmd.SubCommand `cmd:"add"`
 	Target []cmd.Target
 	Tag    tagList
@@ -18,6 +18,7 @@ type TagAddOnline struct {
 
 // TagAddOffline is a command that can be used to add a tag to a player offline.
 type TagAddOffline struct {
+	adminAllower
 	Sub    cmd.SubCommand `cmd:"add"`
 	Target string
 	Tag    tagList
@@ -25,6 +26,7 @@ type TagAddOffline struct {
 
 // TagRemoveOnline is a command that can be used to remove a tag from a player online.
 type TagRemoveOnline struct {
+	adminAllower
 	Sub    cmd.SubCommand `cmd:"remove"`
 	Target []cmd.Target
 	Tag    tagList
@@ -32,6 +34,7 @@ type TagRemoveOnline struct {
 
 // TagRemoveOffline is a command that can be used to remove a tag from a player offline.
 type TagRemoveOffline struct {
+	adminAllower
 	Sub    cmd.SubCommand `cmd:"remove"`
 	Target string
 	Tag    tagList
@@ -161,31 +164,6 @@ func (t TagSet) Run(src cmd.Source, out *cmd.Output) {
 	u.Teams.Settings.Display.ActiveTag = tg.Name()
 	data.SaveUser(u)
 	out.Print(text.Colourf("<green>Your active tag has been set to </green>%s<green>.</green>", tg.Format()))
-}
-
-// Allow ...
-func (t TagSet) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Donor1{})
-}
-
-// Allow ...
-func (t TagAddOnline) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Admin{})
-}
-
-// Allow ...
-func (t TagAddOffline) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Admin{})
-}
-
-// Allow ...
-func (t TagRemoveOnline) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Admin{})
-}
-
-// Allow ...
-func (t TagRemoveOffline) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Admin{})
 }
 
 // ownedTagList is a type that implements the cmd.Enum interface for the tag command.

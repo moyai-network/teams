@@ -15,6 +15,7 @@ import (
 
 // RoleAdd is a command to add a role to a player.
 type RoleAdd struct {
+	managerAllower
 	Sub      cmd.SubCommand       `cmd:"add"`
 	Targets  []cmd.Target         `cmd:"target"`
 	Role     roles                `cmd:"role"`
@@ -23,6 +24,7 @@ type RoleAdd struct {
 
 // RoleRemove is a command to remove a role from a player.
 type RoleRemove struct {
+	managerAllower
 	Sub     cmd.SubCommand `cmd:"remove"`
 	Targets []cmd.Target   `cmd:"target"`
 	Role    roles          `cmd:"role"`
@@ -30,6 +32,7 @@ type RoleRemove struct {
 
 // RoleAddOffline is a command to remove a role from an offline user.
 type RoleAddOffline struct {
+	managerAllower
 	Sub      cmd.SubCommand       `cmd:"add"`
 	Target   string               `cmd:"target"`
 	Role     roles                `cmd:"role"`
@@ -38,6 +41,7 @@ type RoleAddOffline struct {
 
 // RoleRemoveOffline is a command to remove a role from an offline user.
 type RoleRemoveOffline struct {
+	managerAllower
 	Sub    cmd.SubCommand `cmd:"remove"`
 	Target string         `cmd:"target"`
 	Role   roles          `cmd:"role"`
@@ -45,6 +49,7 @@ type RoleRemoveOffline struct {
 
 // RoleList is a command to list all users with a role.
 type RoleList struct {
+	managerAllower
 	Sub  cmd.SubCommand `cmd:"list"`
 	Role roles          `cmd:"role"`
 }
@@ -319,31 +324,6 @@ func (r RoleList) Run(s cmd.Source, o *cmd.Output) {
 		usernames = append(usernames, u.DisplayName)
 	}
 	o.Print(lang.Translatef(l, "command.role.list", r.Role, len(users), strings.Join(usernames, ", ")))
-}
-
-// Allow ...
-func (RoleAdd) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
-}
-
-// Allow ...
-func (RoleRemove) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
-}
-
-// Allow ...
-func (RoleAddOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
-}
-
-// Allow ...
-func (RoleRemoveOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
-}
-
-// Allow ...
-func (RoleList) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
 }
 
 type (

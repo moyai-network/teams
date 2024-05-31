@@ -16,45 +16,52 @@ import (
 )
 
 // MuteForm is a command that is used to mute an online player through a punishment form.
-type MuteForm struct{}
+type MuteForm struct{ trialAllower }
 
 // MuteList is a command that outputs a list of muted players.
 type MuteList struct {
+	trialAllower
 	Sub cmd.SubCommand `cmd:"list"`
 }
 
 // MuteInfo is a command that displays the mute information of an online player.
 type MuteInfo struct {
+	trialAllower
 	Sub     cmd.SubCommand `cmd:"info"`
 	Targets []cmd.Target   `cmd:"target"`
 }
 
 // MuteInfoOffline is a command that displays the mute information of an offline player.
 type MuteInfoOffline struct {
+	trialAllower
 	Sub    cmd.SubCommand `cmd:"info"`
 	Target string         `cmd:"target"`
 }
 
 // MuteLift is a command that is used to lift the mute of an online player.
 type MuteLift struct {
+	modAllower
 	Sub     cmd.SubCommand `cmd:"lift"`
 	Targets []cmd.Target   `cmd:"target"`
 }
 
 // MuteLiftOffline is a command that is used to lift the mute of an offline player.
 type MuteLiftOffline struct {
+	modAllower
 	Sub    cmd.SubCommand `cmd:"lift"`
 	Target string         `cmd:"target"`
 }
 
 // Mute is a command that is used to mute an online player.
 type Mute struct {
+	trialAllower
 	Targets []cmd.Target `cmd:"target"`
 	Reason  muteReason   `cmd:"reason"`
 }
 
 // MuteOffline is a command that is used to mute an offline player.
 type MuteOffline struct {
+	trialAllower
 	Target string     `cmd:"target"`
 	Reason muteReason `cmd:"reason"`
 }
@@ -263,46 +270,6 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 	moyai.Alertf(src, "staff.alert.mute", u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Mute")
 	out.Print(lang.Translatef(l, "command.mute.success", u.DisplayName, reason))
-}
-
-// Allow ...
-func (MuteList) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
-}
-
-// Allow ...
-func (MuteInfo) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
-}
-
-// Allow ...
-func (MuteInfoOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
-}
-
-// Allow ...
-func (MuteForm) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Trial{})
-}
-
-// Allow ...
-func (Mute) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
-}
-
-// Allow ...
-func (MuteOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
-}
-
-// Allow ...
-func (MuteLift) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
-}
-
-// Allow ...
-func (MuteLiftOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
 }
 
 type (

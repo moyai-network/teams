@@ -3,17 +3,18 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
 )
 
 // Key is a command that allows admins to give players keys.
 type Key struct {
+	adminAllower
 	Targets []cmd.Target `cmd:"target"`
 	Count   int          `cmd:"count"`
 }
 
 // KeyAll is a command that distributes keys to the server
 type KeyAll struct {
+	adminAllower
 	Sub   cmd.SubCommand `cmd:"all"`
 	Count int            `cmd:"count"`
 }
@@ -42,14 +43,4 @@ func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	moyai.Alertf(s, "command.key.all.success", k.Count)
-}
-
-// Allow ...
-func (Key) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
-}
-
-// Allow ...
-func (KeyAll) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
 }

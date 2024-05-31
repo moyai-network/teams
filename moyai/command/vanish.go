@@ -6,7 +6,6 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
 )
 
@@ -24,7 +23,9 @@ func (vanishGameMode) AllowsInteraction() bool  { return true }
 func (vanishGameMode) Visible() bool            { return true }
 
 // Vanish is a command that hides a staff from everyone else.
-type Vanish struct{}
+type Vanish struct {
+	trialAllower
+}
 
 // Run ...
 func (Vanish) Run(s cmd.Source, o *cmd.Output) {
@@ -56,9 +57,4 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 	u.Vanished = !u.Vanished
 	data.SaveUser(u)
 	user.UpdateVanishState(p, u)
-}
-
-// Allow ...
-func (Vanish) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Trial{})
 }

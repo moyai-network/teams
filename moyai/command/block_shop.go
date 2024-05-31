@@ -26,8 +26,3 @@ func (BlockShop) Run(src cmd.Source, out *cmd.Output) {
 	inv.SendMenu(p, menu.NewBlocksMenu(p))
 
 }
-
-// Allow ...
-func (BlockShop) Allow(src cmd.Source) bool {
-	return allow(src, false)
-}

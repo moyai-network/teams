@@ -11,6 +11,7 @@ import (
 
 // Kick is a command that disconnects another player from the server.
 type Kick struct {
+	trialAllower
 	Targets []cmd.Target `cmd:"target"`
 }
 
@@ -51,9 +52,4 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	o.Print(lang.Translatef(l, "command.kick.multiple", kicked))
-}
-
-// Allow ...
-func (Kick) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Trial{})
 }

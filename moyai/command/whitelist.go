@@ -6,10 +6,10 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 )
 
 type WhiteListAdd struct {
+	operatorAllower
 	Sub    cmd.SubCommand `cmd:"add"`
 	Target string         `cmd:"target"`
 }
@@ -40,6 +40,7 @@ func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output) {
 }
 
 type WhiteListRemove struct {
+	operatorAllower
 	Sub    cmd.SubCommand `cmd:"remove"`
 	Target string         `cmd:"target"`
 }
@@ -64,12 +65,4 @@ func (w WhiteListRemove) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 
 	out.Print(lang.Translatef(l, "whitelist.remove", u.DisplayName))
-}
-
-func (w WhiteListRemove) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Operator{})
-}
-
-func (w WhiteListAdd) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Operator{})
 }

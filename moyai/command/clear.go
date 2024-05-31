@@ -7,7 +7,7 @@ import (
 )
 
 // Clear clears your inventory
-type Clear struct{}
+type Clear struct{ adminAllower }
 
 // Run ...
 func (c Clear) Run(s cmd.Source, o *cmd.Output) {

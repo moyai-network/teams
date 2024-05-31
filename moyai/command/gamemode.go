@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -12,6 +11,7 @@ import (
 
 // GameMode is a command for a player to change their own game mode or another player's.
 type GameMode struct {
+	managerAllower
 	GameMode gameMode                   `cmd:"gamemode"`
 	Targets  cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
@@ -62,11 +62,6 @@ func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	moyai.Messagef(p, "command.gamemode.console")
-}
-
-// Allow ...
-func (GameMode) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
 }
 
 type gameMode string

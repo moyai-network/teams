@@ -16,33 +16,38 @@ import (
 )
 
 // BanForm is a command that is used to ban a player through a punishment form.
-type BanForm struct{}
+type BanForm struct{ modAllower }
 
 // BanList is a command that outputs a list of banned players.
 type BanList struct {
+	modAllower
 	Sub cmd.SubCommand `cmd:"list"`
 }
 
 // BanInfoOffline is a command that displays the ban information of an offline player.
 type BanInfoOffline struct {
+	modAllower
 	Sub    cmd.SubCommand `cmd:"info"`
 	Target string         `cmd:"target"`
 }
 
 // BanLiftOffline is a command that is used to lift the ban of an offline player.
 type BanLiftOffline struct {
+	modAllower
 	Sub    cmd.SubCommand `cmd:"lift"`
 	Target string         `cmd:"target"`
 }
 
 // Ban is a command that is used to ban an online player.
 type Ban struct {
+	modAllower
 	Targets []cmd.Target `cmd:"target"`
 	Reason  banReason    `cmd:"reason"`
 }
 
 // BanOffline is a command that is used to ban an offline player.
 type BanOffline struct {
+	modAllower
 	Target string    `cmd:"target"`
 	Reason banReason `cmd:"reason"`
 }
@@ -185,36 +190,6 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 	moyai.Broadcastf("command.ban.broadcast", s.Name(), u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Ban")
 	o.Print(lang.Translatef(l, "command.ban.success", u.DisplayName, reason))
-}
-
-// Allow ...
-func (BanList) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
-}
-
-// Allow ...
-func (BanInfoOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
-}
-
-// Allow ...
-func (BanForm) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Mod{})
-}
-
-// Allow ...
-func (Ban) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
-}
-
-// Allow ...
-func (BanOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
-}
-
-// Allow ...
-func (BanLiftOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Mod{})
 }
 
 type banReason string

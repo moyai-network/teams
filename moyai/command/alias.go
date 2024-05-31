@@ -8,17 +8,18 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // AliasOnline is a command used to check the alt accounts of an online player.
 type AliasOnline struct {
+	adminAllower
 	Targets []cmd.Target `cmd:"target"`
 }
 
 // AliasOffline is a command used to check the alt accounts of an offline player.
 type AliasOffline struct {
+	adminAllower
 	Target string `cmd:"target"`
 }
 
@@ -87,14 +88,4 @@ func (a AliasOffline) Run(s cmd.Source, o *cmd.Output) {
 		u.DisplayName, strings.Join(deviceNames, g),
 		u.DisplayName, strings.Join(ssidNames, g)),
 	)
-}
-
-// Allow ...
-func (AliasOnline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
-}
-
-// Allow ...
-func (AliasOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
 }

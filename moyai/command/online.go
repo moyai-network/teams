@@ -31,8 +31,3 @@ func (Online) Run(s cmd.Source, o *cmd.Output) {
 	}
 	o.Printf(lang.Translatef(locale(s), "command.online.users", len(users), strings.Join(users, ", ")))
 }
-
-// Allow ...
-func (Online) Allow(s cmd.Source) bool {
-	return allow(s, true)
-}

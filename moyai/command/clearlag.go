@@ -5,11 +5,10 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
 )
 
 // ClearLag clears all entitys on the floor.
-type ClearLag struct{}
+type ClearLag struct{ operatorAllower }
 
 // Run ...
 func (c ClearLag) Run(s cmd.Source, o *cmd.Output) {
@@ -32,9 +31,4 @@ func (c ClearLag) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	moyai.Messagef(p, "command.clearlag", itemCount)
-}
-
-// Allow ...
-func (c ClearLag) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Operator{})
 }

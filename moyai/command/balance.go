@@ -3,7 +3,6 @@ package command
 import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -122,6 +121,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 }
 
 type BalanceAdd struct {
+	operatorAllower
 	Sub    cmd.SubCommand `cmd:"add"`
 	Target []cmd.Target   `cmd:"target"`
 	Amount float64        `cmd:"amount"`
@@ -188,8 +188,4 @@ func (b BalanceAddOffline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(t)
 
 	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
-}
-
-func (BalanceAdd) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Operator{})
 }

@@ -18,6 +18,7 @@ type TeleportToPos struct {
 
 // TeleportToTarget is a command that teleports the user to another player.
 type TeleportToTarget struct {
+	trialAllower
 	Targets []cmd.Target `cmd:"destination"`
 }
 
@@ -113,11 +114,6 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output) {
 // Allow ...
 func (TeleportToPos) Allow(s cmd.Source) bool {
 	return allow(s, false, role.Admin{})
-}
-
-// Allow ...
-func (TeleportToTarget) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Trial{})
 }
 
 // Allow ...

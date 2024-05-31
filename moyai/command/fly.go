@@ -5,11 +5,10 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
 )
 
 // Fly is a command that allows the player to fly in spawn.
-type Fly struct{}
+type Fly struct{ adminAllower }
 
 // Run ...
 func (Fly) Run(s cmd.Source, o *cmd.Output) {
@@ -21,11 +20,6 @@ func (Fly) Run(s cmd.Source, o *cmd.Output) {
 	}
 	moyai.Messagef(p, "command.fly.enabled")
 	p.SetGameMode(flyGameMode{GameMode: p.GameMode()})
-}
-
-// Allow ...
-func (Fly) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Admin{})
 }
 
 // flyGameMode is a game mode that allows the player to fly.

@@ -5,12 +5,11 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
 )
 
 type StaffMode struct {
-	adminAllower
+	trialAllower
 	Sub cmd.SubCommand `cmd:"mode"`
 }
 
@@ -44,8 +43,4 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 	u.Vanished = !u.Vanished
 	data.SaveUser(u)
 	user.UpdateVanishState(p, u)
-}
-
-func (StaffMode) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Trial{})
 }

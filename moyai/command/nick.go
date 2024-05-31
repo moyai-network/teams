@@ -9,11 +9,12 @@ import (
 
 // Nick is a command that allows the player to change their nickname.
 type Nick struct {
+	adminAllower
 	Name string `cmd:"name"`
 }
 
 // NickReset is a command that allows the player to reset their nickname.
-type NickReset struct{}
+type NickReset struct{ adminAllower }
 
 // Run ...
 func (n Nick) Run(src cmd.Source, o *cmd.Output) {

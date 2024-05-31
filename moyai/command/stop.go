@@ -4,11 +4,10 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
 	"syscall"
 )
 
-type Stop struct{}
+type Stop struct{ operatorAllower }
 
 func (s Stop) Run(src cmd.Source, out *cmd.Output) {
 	if _, ok := src.(*player.Player); ok {
@@ -18,8 +17,4 @@ func (s Stop) Run(src cmd.Source, out *cmd.Output) {
 
 	moyai.Close()
 	syscall.Exit(0)
-}
-
-func (Stop) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Operator{})
 }

@@ -6,18 +6,19 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // SOTWStart is a command to start SOTW.
 type SOTWStart struct {
+	managerAllower
 	Sub cmd.SubCommand `cmd:"start"`
 }
 
 // SOTWEnd is a command to end SOTW.
 type SOTWEnd struct {
+	managerAllower
 	Sub cmd.SubCommand `cmd:"end"`
 }
 
@@ -83,16 +84,6 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
 
 	u.Teams.SOTW = false
 	data.SaveUser(u)
-}
-
-// Allow ...
-func (SOTWStart) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
-}
-
-// Allow ...
-func (SOTWEnd) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
 }
 
 // Allow ...
