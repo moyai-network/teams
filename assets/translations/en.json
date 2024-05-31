@@ -43,7 +43,7 @@
         "team.create.name.invalid": "<red>The name of your team contains invalid characters</red>",
         "team.create.already": "<red>You're already in a team.</red>",
 
-        "command.lives.not-enough": "<red>You do not have %s lives to give to %s.</red>",
+        "command.lives.not-enough": "<red>You do not have %d lives to give to %s.</red>",
         "command.revive.not-enough": "<red>You do not have enough lives to revive %s.</red>",
         "command.lives.give.sender": "<green>You have given %d lives to %s.</green>",
         "command.lives.give.receiver": "<green>%s has given you %d lives.</green>",
