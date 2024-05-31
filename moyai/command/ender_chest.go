@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
 )
 
@@ -16,5 +17,5 @@ func (e Enderchest) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	inv.SendMenu(p, inv.NewCustomMenu("Ender Chest", inv.ContainerEnderChest{}, p.EnderChestInventory()))
+	inv.SendMenu(p, inv.NewCustomMenu("Ender Chest", inv.ContainerEnderChest{}, p.EnderChestInventory(), func(inv *inventory.Inventory) {}))
 }

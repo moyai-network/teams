@@ -137,6 +137,18 @@ func sortClassEffects(h *Handler) {
 	}
 }
 
+func tickDeathban(h *Handler) {
+	u, _ := data.LoadUserFromName(h.p.Name())
+	if u.Teams.Dead && !u.Teams.DeathBan.Active() {
+		u.Teams.Dead = false
+		u.Teams.DeathBan.Reset()
+		h.p.Armour().Clear()
+		h.p.Inventory().Clear()
+		moyai.Overworld().AddEntity(h.p)
+		h.p.Teleport(mgl64.Vec3{0, 80})
+	}
+}
+
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
 	t := time.NewTicker(100 * time.Millisecond)
