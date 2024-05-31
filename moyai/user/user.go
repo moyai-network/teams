@@ -106,6 +106,11 @@ func UpdateVanishState(p *player.Player, u data.User) {
 	}
 }
 
+// LogTime returns the log time of the user.
+func (h *Handler) LogTime() time.Duration {
+	return time.Since(h.logTime)
+}
+
 // clearOwnedEntities clears all entities owned by the user.
 func (h *Handler) clearOwnedEntities() {
 	for _, et := range h.p.World().Entities() {
@@ -185,7 +190,7 @@ func (h *Handler) kill(src world.DamageSource) {
 	sortArmourEffects(h)
 	sortClassEffects(h)
 	moyai.Deathban().AddEntity(p)
-	p.Teleport(mgl64.Vec3{5, 13,44})
+	p.Teleport(mgl64.Vec3{5, 13, 44})
 }
 
 // cancelStormBreak cancels the storm breaker effect.

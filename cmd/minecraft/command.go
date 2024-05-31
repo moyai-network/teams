@@ -10,6 +10,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
+		cmd.New("prizes", "play time rewards", nil, command.Prizes{}),
 		cmd.New("lives", "lives management commands", nil, command.Lives{}, command.LivesGiveOnline{}, command.LivesGiveOffline{}),
 		cmd.New("staff", text.Colourf("Staff management commands."), nil, command.StaffMode{}),
 		cmd.New("rename", text.Colourf("Rename your items."), nil, command.Rename{}),
