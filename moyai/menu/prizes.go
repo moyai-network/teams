@@ -58,14 +58,14 @@ func SendPrizesMenu(p *player.Player) {
 			playtime := u.PlayTime + h.LogTime()
 
 			stacks[13] = item.NewStack(item.Compass{}, 1).WithCustomName(text.Colourf("<yellow>Playtime:</yellow>")).WithLore(text.Colourf("<purple>%s</purple>", durafmt.Parse(playtime).LimitFirstN(2)))
-			// REWARD INDEXES:
-			// 19
-			// 20
-			// 21
-			// 22
-			// 23
-			// 29
-			// 31
+
+			stacks[20] = formatRewardItem(1, time.Hour, playtime, false)
+			stacks[21] = formatRewardItem(1, time.Hour*3, playtime, false)
+			stacks[22] = formatRewardItem(1, time.Hour*5, playtime, false)
+			stacks[23] = formatRewardItem(1, time.Hour*7, playtime, false)
+			stacks[24] = formatRewardItem(1, time.Hour*10, playtime, false)
+			stacks[30] = formatRewardItem(1, time.Hour*15, playtime, false)
+			stacks[32] = formatRewardItem(1, time.Hour*24, playtime, false)
 
 			m = m.WithStacks(stacks...)
 
@@ -73,6 +73,29 @@ func SendPrizesMenu(p *player.Player) {
 			<-time.After(time.Second)
 		}
 	}()
+}
+
+func formatRewardItem(n int, requiredPlayTime time.Duration, playtime time.Duration, claimed bool) item.Stack {
+	col := item.ColourGrey()
+	if claimed {
+		col = item.ColourGreen()
+	}
+
+	it := item.NewStack(item.Dye{Colour: col}, 1).WithCustomName(text.Colourf("<red>Reward #%d</red>", n))
+	if claimed {
+		return it.WithLore(text.Colourf("<green>Claimed</green>"))
+	}
+	lores := []string{
+		text.Colourf("<yellow>%s of play time</yellow>", durafmt.Parse(requiredPlayTime).LimitFirstN(1)),
+	}
+
+	if playtime >= requiredPlayTime {
+		lores = append(lores, text.Colourf("</grey>You may claim this prize now</green>"))
+	} else {
+		lores = append(lores, text.Colourf("<grey>You may claim this prize in</grey> <yellow>%s<yellow>", durafmt.Parse(requiredPlayTime-playtime).LimitFirstN(3)))
+	}
+
+	return it.WithLore(lores...)
 }
 
 func (*Prizes) Submit(p *player.Player, i item.Stack) {
