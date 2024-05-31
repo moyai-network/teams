@@ -24,7 +24,7 @@ func (Lives) Run(src cmd.Source, _ *cmd.Output) {
 }
 
 type LivesGiveOnline struct {
-	Target cmd.Optional[[]cmd.Target]
+	Target []cmd.Target
 	Count  int
 }
 
@@ -34,11 +34,7 @@ func (l LivesGiveOnline) Run(src cmd.Source, _ *cmd.Output) {
 		return
 	}
 
-	t, ok := l.Target.Load()
-	if !ok {
-		return
-	}
-	tg, ok := t[0].(*player.Player)
+	tg, ok := l.Target[0].(*player.Player)
 	if !ok {
 		return
 	}
