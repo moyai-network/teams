@@ -14,6 +14,16 @@ func placeText(c moyai.Config) {
 	kit := mgl64.Vec3{-7.5, 67, 39.5}
 	shop := mgl64.Vec3{13, 62, 60}
 	adv := mgl64.Vec3{0, 62, 81}
+	for _, e := range moyai.Overworld().Entities() {
+		if _, ok := e.Type().(entity.TextType); ok {
+			e.Close()
+		}
+	}
+	for _, e := range moyai.Overworld().Entities() {
+		if _, ok := e.Type().(entity.TextType); ok {
+			e.Close()
+		}
+	}
 	for _, e := range []*entity.Ent{
 		entity.NewText(text.Colourf("<b><red>MoyaiHCF</red></b>"), mgl64.Vec3{spawn.X(), spawn.Y() + 2.5, spawn.Z()}),
 		entity.NewText(text.Colourf("<grey>Season %v began on %v.</grey>", c.Moyai.Season, c.Moyai.Start), mgl64.Vec3{spawn.X(), spawn.Y() + 2, spawn.Z()}),
