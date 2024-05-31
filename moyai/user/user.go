@@ -185,7 +185,7 @@ func (h *Handler) kill(src world.DamageSource) {
 	sortArmourEffects(h)
 	sortClassEffects(h)
 	moyai.Deathban().AddEntity(p)
-	p.Teleport(mgl64.Vec3{0, 40, 0})
+	p.Teleport(mgl64.Vec3{5, 13,44})
 }
 
 // cancelStormBreak cancels the storm breaker effect.

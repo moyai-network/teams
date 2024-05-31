@@ -54,7 +54,7 @@ func Run() error {
 	srv.Listen()
 
 	moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
-	moyai.ConfigureDeathban(config.Entities, "./assets/deathban2")
+	moyai.ConfigureDeathban(config.Entities, "./assets/deathban")
 	configureWorlds()
 
 	placeSpawners()

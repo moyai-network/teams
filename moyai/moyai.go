@@ -1,10 +1,11 @@
 package moyai
 
 import (
+	"time"
+
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sirupsen/logrus"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
 
@@ -40,7 +41,7 @@ var (
 )
 
 func Worlds() []*world.World {
-	return []*world.World{Overworld(), Nether(), End()}
+	return []*world.World{Overworld(), Nether(), End(), Deathban()}
 }
 
 func Overworld() *world.World {

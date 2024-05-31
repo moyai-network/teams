@@ -37,6 +37,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/menu"
 	"github.com/moyai-network/teams/moyai/process"
@@ -188,7 +189,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			p.Armour().Clear()
 			p.Inventory().Clear()
 			moyai.Deathban().AddEntity(p)
-			p.Teleport(mgl64.Vec3{0, 40, 0})
+			p.Teleport(mgl64.Vec3{5, 13,44})
 		} else {
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
@@ -745,12 +746,12 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	if h.tagArcher.Active() {
 		*dmg = *dmg + *dmg*0.15
 	}
-	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
+	u, err := data.LoadUserFromName(h.p.Name())
+	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) && !u.Teams.Dead {
 		ctx.Cancel()
 		return
 	}
 
-	u, err := data.LoadUserFromName(h.p.Name())
 	if err != nil || u.Teams.PVP.Active() {
 		ctx.Cancel()
 		return
@@ -1334,36 +1335,17 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					})
 				}
 			}
-		} /*else if title == "[kit]" {
+		} else if title == "[kit]" {
 			key := colour.StripMinecraftColour(lines[1])
 			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
 				return
 			}
-			cd := u.Teams.Kits.Key(key)
-			if cd.Active() {
-				moyai.Messagef(h.p, "command.kit.cooldown", cd.Remaining().Round(time.Second))
-				return
-			} else {
-				cd.Set(time.Minute)
+
+			if u.Teams.Dead && key == "deathban" {
+				kit.Apply(kit.Diamond{}, h.p)
 			}
-			switch strings.ToLower(colour.StripMinecraftColour(lines[1])) {
-			case "diamond":
-				kit2.Apply(kit2.Master{}, h.p)
-			case "tagArcher":
-				kit2.Apply(kit2.Archer{}, h.p)
-			case "bard":
-				kit2.Apply(kit2.Bard{}, h.p)
-			case "coolDownBackStab":
-				kit2.Apply(kit2.Rogue{}, h.p)
-			case "stray":
-				kit2.Apply(kit2.Mage{}, h.p)
-			case "miner":
-				kit2.Apply(kit2.Miner{}, h.p)
-			case "builder":
-				kit2.Apply(kit2.Builder{}, h.p)
-			}
-		}*/
+		}
 	}
 }
 
