@@ -4,8 +4,6 @@ github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5 h1:Etg/VpP
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5/go.mod h1:nGvjhKkEoeo04nSPVvdlBK489C+33WOYx28nxZ/TDzE=
 github.com/bedrock-gophers/intercept v0.1.1 h1:hQ+nx45PPHWaKQ8oS+w+ILUPxN9Y/mfqHMdg1GTbNHg=
 github.com/bedrock-gophers/intercept v0.1.1/go.mod h1:muBHbh3LOLIxMciFlxGCPCmrAPxPTd1hki5xw+wBe5I=
-github.com/bedrock-gophers/inv v0.1.1-0.20240529135428-32b7a40362bc h1:ObeNYAfvW2JjP21h0jOSOmVnXjsTJKxEi2ERUEfMdP0=
-github.com/bedrock-gophers/inv v0.1.1-0.20240529135428-32b7a40362bc/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/inv v0.1.1-0.20240531144842-859c97d80ddd h1:4/BmXGtKRPfHgUkepuxwrcM4oxuapSJIYXgi1P34gZw=
 github.com/bedrock-gophers/inv v0.1.1-0.20240531144842-859c97d80ddd/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/inv v0.1.1-0.20240531151452-b6e604164115 h1:eCihecvVEmA16uTL5db/VLc8Au4r3tXzrdXxUy8frTQ=
