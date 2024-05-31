@@ -432,7 +432,7 @@
         "command.targets.exceed": "<red>You may only choose one player at a time.</red>",
 
         "koth.start": "%s <green>has started a</green> %s <green>KOTH event at <yellow>%0.f, %0.f</yellow></green>",
-        "koth.stop": "%s <red>has stopped the</red> %s <red>KOTH event</red>",
+        "koth.stop": "%s <green>has stopped the</green> %s <green>KOTH event</green>",
         "koth.capturing": "%s <green>is being captured by</green> %s",
         "koth.not.capturing": "%s <red>was knocked from </red>%s <red>KOTH</red>",
         "koth.captured": "%s <green>has been captured by</green> %s",
