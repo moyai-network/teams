@@ -200,6 +200,12 @@ type TeamRename struct {
 	Name string         `cmd:"name"`
 }
 
+// TeamCamp is a command to teleport close to a base.
+type TeamCamp struct {
+	Sub  cmd.SubCommand `cmd:"camp"`
+	Team teamName
+}
+
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
@@ -1314,7 +1320,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
-	pos := safePosition(p, 24)
+	pos := safePosition(p, cube.PosFromVec3(p.Position()), 24)
 	if pos == (cube.Pos{}) {
 		moyai.Messagef(p, "command.team.stuck.no-safe")
 		return
@@ -1326,7 +1332,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if h.Stuck().Ongoing() {
-		o.Error("You are already stucking, step-bro.")
+		o.Error("You are already in the stuck process.")
 		return
 	}
 
@@ -1338,8 +1344,41 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	})
 }
 
-func safePosition(p *player.Player, radius int) cube.Pos {
-	pos := cube.PosFromVec3(p.Position())
+// Run ...
+func (t TeamCamp) Run(src cmd.Source, o *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromName(string(t.Team))
+	if err != nil {
+		moyai.Messagef(p, "command.team.not.found", t.Team)
+		return
+	}
+
+	if tm.Home == (mgl64.Vec3{}) {
+		moyai.Messagef(p, "command.team.homeless", tm.DisplayName)
+		return
+	}
+	pos := safePosition(p, cube.PosFromVec3(tm.Home), 50)
+
+	h, ok := p.Handler().(*user.Handler)
+	if !ok {
+		return
+	}
+
+	if h.CampOngoing() {
+		o.Error("You are already in the camp process.")
+		return
+	}
+
+	h.BeginCamp(tm, pos)
+}
+
+func safePosition(p *player.Player, pos cube.Pos, radius int) cube.Pos {
+	w := p.World()
+
 	minX := pos.X() - radius
 	maxX := pos.X() + radius
 	minZ := pos.Z() - radius
@@ -1356,10 +1395,10 @@ func safePosition(p *player.Player, radius int) cube.Pos {
 				if tm.Claim != (area.Area{}) {
 					if tm.Claim.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
 						if t, err := data.LoadTeamFromMemberName(p.Name()); err == nil && t.Name == tm.Name {
-							y := p.World().Range().Max()
+							y := w.Range().Max()
 							for y > pos.Y() {
 								y--
-								b := p.World().Block(cube.Pos{x, y, z})
+								b := w.Block(cube.Pos{x, y, z})
 								if b != (block.Air{}) {
 									return cube.Pos{x, y, z}
 								}

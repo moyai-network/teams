@@ -103,6 +103,7 @@ type Handler struct {
 	processLogout             *process.Process
 	processStuck              *process.Process
 	processHome               *process.Process
+	processCamp               *process.Process
 
 	gracefulLogout bool
 	logger         bool
@@ -747,7 +748,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		*dmg = *dmg + *dmg*0.15
 	}
 	u, err := data.LoadUserFromName(h.p.Name())
-	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) && !u.Teams.Dead {
+	if area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position()) {
 		ctx.Cancel()
 		return
 	}

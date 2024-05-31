@@ -50,6 +50,7 @@ func registerCommands() {
 			command.TeamMap{},
 			command.TeamSetDTR{},
 			command.TeamDelete{},
+			command.TeamCamp{},
 		), cmd.New("whitelist", text.Colourf("Whitelist commands."), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("tl", text.Colourf("Send your location to teammates"), nil, command.TL{}),
 		cmd.New("balance", text.Colourf("Manage your balance."), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}, command.BalanceAdd{}, command.BalanceAddOffline{}),

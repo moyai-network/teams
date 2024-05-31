@@ -191,6 +191,7 @@
         "scoreboard.focus.online": "<orange>Online<grey>:</grey> <yellow>%d/%d</yellow>",
         "scoreboard.focus.home": "<orange>HQ<grey>:</grey> <yellow>%.0f, %.0f</yellow>",
         "scoreboard.teleportation.stuck": "<black>Stuck<grey>:</grey> %.1fs</black>",
+        "scoreboard.teleportation.camp": "<dark-red>Camp<grey>:</grey> %.1fs</dark-red>",
         "scoreboard.teleportation.home": "<blue>Home<grey>:</grey> %.1fs</blue>",
         "scoreboard.cooldown.pearl": "<purple>Ender Pearl<grey>:</grey> %.1fs</purple>",
         "scoreboard.cooldown.abilities": "<amethyst>Partner Items<grey>:</grey> %.1fs</amethyst>",
@@ -272,6 +273,7 @@
         "command.claim.success": "<green>You have successfully claimed from</green> <yellow>%.0f <green>to</green> %.0f</yellow> <green>($%.0f)</green>.",
         "command.unclaim.success": "<red>You have successfully removed your team's claim.</red>",
 
+        "command.team.homeless": "<red>The team %s does not have a home to teleport close to.</red>",
         "command.team.create.cooldown": "<red>You must wait %v before creating another team.</red>",
         "command.team.home.set": "<green>Your team's home has been set.</green>",
         "command.team.home.none": "<red>Your team does not have a home set.</red>",

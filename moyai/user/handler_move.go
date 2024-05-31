@@ -119,6 +119,9 @@ func (h *Handler) cancelProcesses(newPos mgl64.Vec3) {
 		h.processHome.Cancel()
 		h.processLogout.Cancel()
 		h.processStuck.Cancel()
+		if h.CampOngoing() {
+			h.processCamp.Cancel()
+		}
 	}
 }
 

@@ -221,6 +221,10 @@ func startTicker(h *Handler) {
 			if lo := h.processStuck; !lo.Expired() && lo.Ongoing() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.stuck", time.Until(lo.Expiration()).Seconds()))
 			}
+			if h.CampOngoing() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.camp", time.Until(h.processCamp.Expiration()).Seconds()))
+			}
+
 			if tg := h.tagCombat; tg.Active() && !db.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
