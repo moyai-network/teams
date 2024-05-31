@@ -40,11 +40,11 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 		global := func() {
 			if !moyai.GlobalChatEnabled() {
-				Messagef(h.p, "chat.global.muted")
+				moyai.Messagef(h.p, "chat.global.muted")
 				return
 			}
 			if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() && !u.Roles.Contains(role.Admin{}) {
-				Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(moyai.ChatCoolDown())).Seconds())
+				moyai.Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(moyai.ChatCoolDown())).Seconds())
 				return
 			}
 			h.lastMessage.Store(time.Now())
@@ -74,7 +74,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		staff := func() {
 			for _, s := range moyai.Players() {
 				if us, err := data.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && role.Staff(us.Roles.Highest()) {
-					Messagef(s, "staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
+					moyai.Messagef(s, "staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 				}
 			}
 		}

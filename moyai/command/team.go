@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai"
 	"regexp"
 	"slices"
 	"sort"
@@ -225,7 +226,7 @@ func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range players {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, src.Name(), "command.team.disband.disbanded", "MANAGEMENT")
+			moyai.Messagef(mem, src.Name(), "command.team.disband.disbanded", "MANAGEMENT")
 		}
 	}
 }
@@ -247,7 +248,7 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 	areas := area.Protected(p.World())
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		user.Messagef(p, "command.team.load.fail")
+		moyai.Messagef(p, "command.team.load.fail")
 		return
 	}
 	for _, t := range teams {
@@ -344,7 +345,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err == nil {
-		user.Messagef(p, "team.create.already")
+		moyai.Messagef(p, "team.create.already")
 		return
 	}
 
@@ -354,12 +355,12 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if u.Teams.Create.Active() {
-		user.Messagef(p, "command.team.create.cooldown", timeutil.FormatDuration(u.Teams.Create.Remaining()))
+		moyai.Messagef(p, "command.team.create.cooldown", timeutil.FormatDuration(u.Teams.Create.Remaining()))
 		return
 	}
 
 	if _, err = data.LoadTeamFromName(t.Name); err == nil {
-		user.Messagef(p, "team.create.exists")
+		moyai.Messagef(p, "team.create.exists")
 		return
 	}
 
@@ -369,23 +370,23 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 	u.Teams.Create.Set(time.Minute * 3)
 	data.SaveUser(u)
 
-	user.Messagef(p, "team.create.success", tm.DisplayName)
-	user.Broadcastf("team.create.success.broadcast", p.Name(), tm.DisplayName)
+	moyai.Messagef(p, "team.create.success", tm.DisplayName)
+	moyai.Broadcastf("team.create.success.broadcast", p.Name(), tm.DisplayName)
 }
 
 func validateTeamName(p *player.Player, name string) bool {
 	name = strings.TrimSpace(name)
 
 	if !regex.MatchString(name) {
-		user.Messagef(p, "team.create.name.invalid")
+		moyai.Messagef(p, "team.create.name.invalid")
 		return false
 	}
 	if len(name) < 3 {
-		user.Messagef(p, "team.create.name.short")
+		moyai.Messagef(p, "team.create.name.short")
 		return false
 	}
 	if len(name) > 15 {
-		user.Messagef(p, "team.create.name.long")
+		moyai.Messagef(p, "team.create.name.long")
 		return false
 	}
 	return true
@@ -402,27 +403,27 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 	if target == p {
-		user.Messagef(p, "team.invite.self")
+		moyai.Messagef(p, "team.invite.self")
 		return
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
 	if tm.Frozen() {
-		user.Messagef(p, "command.team.dtr")
+		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
 	if len(tm.Members) == 6 {
-		user.Messagef(p, "command.team.join.full")
+		moyai.Messagef(p, "command.team.join.full")
 		return
 	}
 
 	if tm.Member(target.Name()) {
-		user.Messagef(p, "team.invite.member", target.Name())
+		moyai.Messagef(p, "team.invite.member", target.Name())
 		return
 	}
 
@@ -433,13 +434,13 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 
 	_, err = data.LoadTeamFromMemberName(target.Name())
 	if err == nil {
-		user.Messagef(p, "team.invite.has-team")
+		moyai.Messagef(p, "team.invite.has-team")
 		return
 
 	}
 
 	if targetUser.Teams.Invitations.Active(tm.Name) {
-		user.Messagef(p, "team.invite.already", target.Name())
+		moyai.Messagef(p, "team.invite.already", target.Name())
 		return
 	}
 
@@ -447,7 +448,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(targetUser)
 
 	team.Broadcastf(tm, "team.invite.success.broadcast", target.Name())
-	user.Messagef(target, "team.invite.target", tm.DisplayName)
+	moyai.Messagef(target, "team.invite.target", tm.DisplayName)
 }
 
 // Run ...
@@ -456,23 +457,23 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 
 	_, err := data.LoadTeamFromMemberName(p.Name())
 	if err == nil {
-		user.Messagef(p, "team.join.error")
+		moyai.Messagef(p, "team.join.error")
 		return
 	}
 
 	tm, err := data.LoadTeamFromName(string(t.Team))
 	if err != nil {
-		user.Messagef(p, "command.team.not.found")
+		moyai.Messagef(p, "command.team.not.found")
 		return
 	}
 
 	if tm.Frozen() {
-		user.Messagef(p, "command.team.dtr")
+		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
 	if len(tm.Members) == 6 {
-		user.Messagef(p, "command.team.join.full")
+		moyai.Messagef(p, "command.team.join.full")
 		return
 	}
 
@@ -502,7 +503,7 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 	if strings.TrimSpace(name) == "" {
 		tm, err := data.LoadTeamFromMemberName(p.Name())
 		if err != nil {
-			user.Messagef(p, "user.team-less")
+			moyai.Messagef(p, "user.team-less")
 			return
 		}
 		o.Print(teamInformationFormat(tm))
@@ -523,7 +524,7 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if !anyFound {
-		user.Messagef(p, "command.team.info.not.found", name)
+		moyai.Messagef(p, "command.team.info.not.found", name)
 		return
 	}
 }
@@ -540,7 +541,7 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 	if strings.TrimSpace(name) == "" {
 		tm, err := data.LoadTeamFromMemberName(p.Name())
 		if err != nil {
-			user.Messagef(p, "user.team-less")
+			moyai.Messagef(p, "user.team-less")
 			return
 		}
 		o.Print(teamInformationFormat(tm))
@@ -561,7 +562,7 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if !anyFound {
-		user.Messagef(p, "command.team.info.not.found", name)
+		moyai.Messagef(p, "command.team.info.not.found", name)
 		return
 	}
 }
@@ -574,7 +575,7 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	online := team.OnlineMembers(tm)
@@ -582,7 +583,7 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 		pos := p.Position()
 		if h, ok := o.Handler().(*user.Handler); ok {
 			h.SetWayPoint(user.NewWayPoint("Rally", pos))
-			user.Messagef(o, "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
+			moyai.Messagef(o, "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
 		}
 
 	}
@@ -596,7 +597,7 @@ func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	online := team.OnlineMembers(tm)
@@ -639,7 +640,7 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range players {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, "command.team.disband.disbanded", p.Name())
+			moyai.Messagef(mem, "command.team.disband.disbanded", p.Name())
 		}
 	}
 }
@@ -654,7 +655,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
@@ -673,7 +674,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, "command.team.leave.user.left")
+			moyai.Messagef(mem, "command.team.leave.user.left")
 		}
 	}
 	data.SaveTeam(tm)
@@ -688,38 +689,38 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.kick.missing.permission")
+		moyai.Messagef(p, "command.team.kick.missing.permission")
 		return
 	}
 	if strings.EqualFold(p.Name(), string(t.Member)) {
-		user.Messagef(p, "command.team.kick.self")
+		moyai.Messagef(p, "command.team.kick.self")
 		return
 	}
 	if tm.Leader(string(t.Member)) {
-		user.Messagef(p, "command.team.kick.leader")
+		moyai.Messagef(p, "command.team.kick.leader")
 		return
 	}
 	if tm.Captain(p.Name()) && tm.Captain(string(t.Member)) {
-		user.Messagef(p, "command.team.kick.captain")
+		moyai.Messagef(p, "command.team.kick.captain")
 		return
 	}
 	if !tm.Member(string(t.Member)) {
-		user.Messagef(p, "command.team.kick.not.found", string(t.Member))
+		moyai.Messagef(p, "command.team.kick.not.found", string(t.Member))
 		return
 	}
 
 	if tm.Frozen() {
-		user.Messagef(p, "command.team.dtr")
+		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
 	us, ok := user.Lookup(string(t.Member))
 	if ok {
-		user.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
+		moyai.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
 	}
 	tm = tm.WithoutMember(string(t.Member))
 	tm = tm.WithDTR(tm.DTR - 1.01)
@@ -727,7 +728,7 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
-			user.Messagef(mem, "command.team.kick.kicked")
+			moyai.Messagef(mem, "command.team.kick.kicked")
 		}
 	}
 }
@@ -741,34 +742,34 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.promote.missing.permission")
+		moyai.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
 	if strings.EqualFold(p.Name(), string(t.Member)) {
-		user.Messagef(p, "command.team.promote.self")
+		moyai.Messagef(p, "command.team.promote.self")
 		return
 	}
 	if tm.Leader(p.Name()) {
-		user.Messagef(p, "command.team.promote.leader")
+		moyai.Messagef(p, "command.team.promote.leader")
 		return
 	}
 	if tm.Captain(p.Name()) && tm.Captain(string(t.Member)) {
-		user.Messagef(p, "command.team.promote.captain")
+		moyai.Messagef(p, "command.team.promote.captain")
 		return
 	}
 	if !tm.Member(string(t.Member)) {
-		user.Messagef(p, "command.team.member.not.found", string(t.Member))
+		moyai.Messagef(p, "command.team.member.not.found", string(t.Member))
 		return
 	}
 
 	tm = tm.Promote(string(t.Member))
 	data.SaveTeam(tm)
 	if err != nil {
-		user.Messagef(p, "team.save.fail")
+		moyai.Messagef(p, "team.save.fail")
 		return
 	}
 	rankName := "Captain"
@@ -788,7 +789,7 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) {
@@ -824,11 +825,11 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 	}
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		user.Messagef(p, "command.team.load.fail")
+		moyai.Messagef(p, "command.team.load.fail")
 	}
 
 	if len(teams) == 0 {
-		user.Messagef(p, "command.team.top.none")
+		moyai.Messagef(p, "command.team.top.none")
 		return
 	}
 
@@ -862,15 +863,15 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.promote.missing.permission")
+		moyai.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
 	if cl := tm.Claim; cl != (area.Area{}) {
-		user.Messagef(p, "team.has-claim")
+		moyai.Messagef(p, "team.has-claim")
 		return
 	}
 	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true))
@@ -884,16 +885,16 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) {
-		user.Messagef(p, "team.not-leader")
+		moyai.Messagef(p, "team.not-leader")
 		return
 	}
 	tm = tm.WithClaim(area.Area{}).WithHome(mgl64.Vec3{})
 	data.SaveTeam(tm)
-	user.Messagef(p, "command.unclaim.success")
+	moyai.Messagef(p, "command.unclaim.success")
 }
 
 // Run ...
@@ -904,25 +905,25 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	cl := tm.Claim
 	if cl == (area.Area{}) {
-		user.Messagef(p, "team.claim.none")
+		moyai.Messagef(p, "team.claim.none")
 		return
 	}
 	if !cl.Vec3WithinOrEqualXZ(p.Position()) {
-		user.Messagef(p, "team.claim.not-within")
+		moyai.Messagef(p, "team.claim.not-within")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "team.not-leader-or-captain")
+		moyai.Messagef(p, "team.not-leader-or-captain")
 		return
 	}
 	tm = tm.WithHome(p.Position())
 	data.SaveTeam(tm)
-	user.Messagef(p, "command.team.home.set")
+	moyai.Messagef(p, "command.team.home.set")
 }
 
 // Run ...
@@ -933,7 +934,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
@@ -942,18 +943,18 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if h.Combat().Active() {
-		user.Messagef(p, "user.teleport.combat")
+		moyai.Messagef(p, "user.teleport.combat")
 		return
 	}
 
 	if h.Home().Ongoing() {
-		user.Messagef(p, "user.already.teleporting")
+		moyai.Messagef(p, "user.already.teleporting")
 		return
 	}
 
 	hm := tm.Home
 	if hm == (mgl64.Vec3{}) {
-		user.Messagef(p, "command.team.home.none")
+		moyai.Messagef(p, "command.team.home.none")
 		return
 	}
 	if area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
@@ -964,7 +965,7 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 	dur := time.Second * 10
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		user.Messagef(p, "command.team.load.fail")
+		moyai.Messagef(p, "command.team.load.fail")
 	}
 
 	for _, t := range teams {
@@ -985,7 +986,7 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 
 	teams, err := data.LoadAllTeams()
 	if err != nil {
-		user.Messagef(p, "command.team.load.fail")
+		moyai.Messagef(p, "command.team.load.fail")
 	}
 
 	sort.Slice(teams, func(i, j int) bool {
@@ -1031,17 +1032,17 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	targetTeam, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
-		user.Messagef(p, "command.team.not.found", string(t.Name))
+		moyai.Messagef(p, "command.team.not.found", string(t.Name))
 		return
 	}
 
 	if tm.Name == targetTeam.Name {
-		user.Messagef(p, "command.team.focus.self")
+		moyai.Messagef(p, "command.team.focus.self")
 		return
 	}
 	tm = tm.WithTeamFocus(targetTeam)
@@ -1062,13 +1063,13 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	focus := tm.Focus
 
 	if focus.Kind == data.FocusTypeNone {
-		user.Messagef(p, "command.team.focus.none")
+		moyai.Messagef(p, "command.team.focus.none")
 		return
 	}
 
@@ -1107,7 +1108,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	}
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if len(t.Target) > 1 {
@@ -1116,17 +1117,17 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 	}
 	target, ok := t.Target[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.team.focus.player")
+		moyai.Messagef(p, "command.team.focus.player")
 		return
 	}
 
 	if strings.EqualFold(target.Name(), p.Name()) {
-		user.Messagef(p, "command.team.focus.yourself")
+		moyai.Messagef(p, "command.team.focus.yourself")
 		return
 	}
 
 	if tm.Member(target.Name()) {
-		user.Messagef(p, "command.team.focus.member")
+		moyai.Messagef(p, "command.team.focus.member")
 		return
 	}
 
@@ -1171,23 +1172,23 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.withdraw.permission")
+		moyai.Messagef(p, "command.team.withdraw.permission")
 		return
 	}
 
 	amt := t.Balance
 	if amt < 1 {
-		user.Messagef(p, "command.team.withdraw.minimum")
+		moyai.Messagef(p, "command.team.withdraw.minimum")
 		return
 	}
 
 	if amt > tm.Balance {
-		user.Messagef(p, "command.team.withdraw.insufficient", amt)
+		moyai.Messagef(p, "command.team.withdraw.insufficient", amt)
 		return
 	}
 
@@ -1197,7 +1198,7 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	user.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
+	moyai.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
 }
 
 // Run ...
@@ -1214,18 +1215,18 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
 	amt := t.Balance
 	if amt < 1 {
-		user.Messagef(p, "command.team.deposit.minimum")
+		moyai.Messagef(p, "command.team.deposit.minimum")
 		return
 	}
 
 	if amt > u.Teams.Balance {
-		user.Messagef(p, "command.team.deposit.insufficient", amt)
+		moyai.Messagef(p, "command.team.deposit.insufficient", amt)
 		return
 	}
 
@@ -1235,7 +1236,7 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	user.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
+	moyai.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
 }
 
 // Run ...
@@ -1251,18 +1252,18 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.withdraw.permission")
+		moyai.Messagef(p, "command.team.withdraw.permission")
 		return
 	}
 
 	amt := tm.Balance
 	if amt < 1 {
-		user.Messagef(p, "command.team.withdraw.minimum")
+		moyai.Messagef(p, "command.team.withdraw.minimum")
 		return
 	}
 
@@ -1272,7 +1273,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveTeam(tm)
 	data.SaveUser(u)
 
-	user.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
+	moyai.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
 }
 
 // Run ...
@@ -1288,7 +1289,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
@@ -1315,7 +1316,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	}
 	pos := safePosition(p, 24)
 	if pos == (cube.Pos{}) {
-		user.Messagef(p, "command.team.stuck.no-safe")
+		moyai.Messagef(p, "command.team.stuck.no-safe")
 		return
 	}
 
@@ -1329,7 +1330,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	user.Messagef(p, "command.team.stuck.teleporting", pos.X(), pos.Y(), pos.Z(), 30)
+	moyai.Messagef(p, "command.team.stuck.teleporting", pos.X(), pos.Y(), pos.Z(), 30)
 	h.Stuck().Teleport(p, time.Second*30, mgl64.Vec3{
 		float64(pos.X()),
 		float64(pos.Y()),
@@ -1394,15 +1395,15 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
-		user.Messagef(p, "command.team.promote.missing.permission")
+		moyai.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
 	if tm.Renamed {
-		user.Messagef(p, "team.rename.already")
+		moyai.Messagef(p, "team.rename.already")
 		return
 	}
 
@@ -1418,7 +1419,7 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 		}
 	}
 
-	user.Messagef(p, "team.rename.success", tm.DisplayName)
+	moyai.Messagef(p, "team.rename.success", tm.DisplayName)
 	team.Broadcastf(tm, "team.rename.success.broadcast", p.Name(), tm.DisplayName)
 }
 

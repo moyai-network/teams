@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/user"
 	"math/rand"
 	"time"
 )
@@ -28,7 +27,7 @@ func tickBlackMarket(srv *server.Server) {
 				p.PlaySound(sound.FireworkHugeBlast{})
 				p.PlaySound(sound.FireworkLaunch{})
 				p.PlaySound(sound.Note{})
-				user.Broadcastf("blackmarket.opened")
+				moyai.Broadcastf("blackmarket.opened")
 			}
 		}
 	}

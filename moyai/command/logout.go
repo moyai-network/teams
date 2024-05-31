@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -22,7 +23,7 @@ func (l Logout) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if h.Logout().Ongoing() {
-		user.Messagef(p, "command.logout.logging-out")
+		moyai.Messagef(p, "command.logout.logging-out")
 		return
 	}
 	h.Logout().Teleport(p, time.Second*30, p.Position())

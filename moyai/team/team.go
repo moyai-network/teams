@@ -2,6 +2,7 @@ package team
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 )
@@ -17,6 +18,6 @@ func OnlineMembers(tm data.Team) (players []*player.Player) {
 
 func Broadcastf(tm data.Team, key string, args ...interface{}) {
 	for _, p := range OnlineMembers(tm) {
-		user.Messagef(p, key, args...)
+		moyai.Messagef(p, key, args...)
 	}
 }

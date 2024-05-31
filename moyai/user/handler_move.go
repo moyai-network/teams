@@ -212,7 +212,7 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 				}
 
 				if ar != (area.NamedArea{}) {
-					Messagef(h.p, "area.leave", ar.Name())
+					moyai.Messagef(h.p, "area.leave", ar.Name())
 				}
 
 				h.lastArea.Store(a)
@@ -221,7 +221,7 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 						Stack: []string{"minecraft:fog_warped_forest"},
 					})
 				}
-				Messagef(h.p, "area.enter", a.Name())
+				moyai.Messagef(h.p, "area.enter", a.Name())
 				return
 			} else {
 				return
@@ -236,10 +236,10 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 					Stack: []string{"minecraft:fog_ocean"},
 				})
 			}
-			Messagef(h.p, "area.leave", ar.Name())
+			moyai.Messagef(h.p, "area.leave", ar.Name())
 
 		}
 		h.lastArea.Store(area.Wilderness(w))
-		Messagef(h.p, "area.enter", area.Wilderness(w).Name())
+		moyai.Messagef(h.p, "area.enter", area.Wilderness(w).Name())
 	}
 }

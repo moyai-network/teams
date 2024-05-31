@@ -1,4 +1,4 @@
-package minecraft
+package moyai
 
 import (
 	"github.com/df-mc/dragonfly/server/block"
@@ -8,10 +8,8 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math/rand"
 	"time"
@@ -23,8 +21,8 @@ func tickAirDrop(w *world.World) {
 	for {
 		<-time.After(time.Minute * 10)
 		pos := findAirDropPosition(w)
-		user.Broadcastf("airdrop.incoming", pos.X(), pos.Z())
-		for _, p := range moyai.Players() {
+		Broadcastf("airdrop.incoming", pos.X(), pos.Z())
+		for _, p := range Players() {
 			p.PlaySound(sound.BarrelOpen{})
 			p.PlaySound(sound.FireworkHugeBlast{})
 			p.PlaySound(sound.FireworkLaunch{})
@@ -38,7 +36,7 @@ func tickAirDrop(w *world.World) {
 func dropAirDrop(w *world.World, pos cube.Pos) {
 	bl := generateAirDrop(w)
 	w.SetBlock(pos, bl, nil)
-	for _, p := range moyai.Players() {
+	for _, p := range Players() {
 		p.PlaySound(sound.BarrelClose{})
 		p.PlaySound(sound.FireworkBlast{})
 		p.PlaySound(sound.FireworkTwinkle{})

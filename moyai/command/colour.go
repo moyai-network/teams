@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/moyai"
 )
 
 type Colour struct {
@@ -18,7 +18,7 @@ func (c Colour) Run(source cmd.Source, output *cmd.Output) {
 	}
 	held, left := p.HeldItems()
 	if held.Empty() {
-		user.Messagef(p, "command.colour.hold")
+		moyai.Messagef(p, "command.colour.hold")
 		return
 	}
 	var clr item.Colour
@@ -57,7 +57,7 @@ func (c Colour) Run(source cmd.Source, output *cmd.Output) {
 	case "light_grey":
 		clr = item.ColourLightGrey()
 	default:
-		user.Messagef(p, "command.colour.invalid")
+		moyai.Messagef(p, "command.colour.invalid")
 	}
 
 	newTier := item.ArmourTierLeather{Colour: clr.RGBA()}
@@ -66,28 +66,28 @@ func (c Colour) Run(source cmd.Source, output *cmd.Output) {
 	switch it := held.Item().(type) {
 	case item.Helmet:
 		if _, ok := it.Tier.(item.ArmourTierLeather); !ok {
-			user.Messagef(p, "command.colour.leather")
+			moyai.Messagef(p, "command.colour.leather")
 			return
 		}
 		it.Tier = newTier
 		newItem = it
 	case item.Chestplate:
 		if _, ok := it.Tier.(item.ArmourTierLeather); !ok {
-			user.Messagef(p, "command.colour.leather")
+			moyai.Messagef(p, "command.colour.leather")
 			return
 		}
 		it.Tier = newTier
 		newItem = it
 	case item.Leggings:
 		if _, ok := it.Tier.(item.ArmourTierLeather); !ok {
-			user.Messagef(p, "command.colour.leather")
+			moyai.Messagef(p, "command.colour.leather")
 			return
 		}
 		it.Tier = newTier
 		newItem = it
 	case item.Boots:
 		if _, ok := it.Tier.(item.ArmourTierLeather); !ok {
-			user.Messagef(p, "command.colour.leather")
+			moyai.Messagef(p, "command.colour.leather")
 			return
 		}
 		it.Tier = newTier

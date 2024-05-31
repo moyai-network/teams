@@ -1,13 +1,13 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/role"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // GameMode is a command for a player to change their own game mode or another player's.
@@ -38,30 +38,30 @@ func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
 
 	targets := g.Targets.LoadOr(nil)
 	if len(targets) > 1 {
-		user.Messagef(p, "command.targets.exceed")
+		moyai.Messagef(p, "command.targets.exceed")
 		return
 	}
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			user.Messagef(p, "command.target.unknown")
+			moyai.Messagef(p, "command.target.unknown")
 			return
 		}
 
-		//	user.Alertf(s, "staff.alert.gamemode.change.other", target.Name(), name)
+		//	moyai.Alertf(s, "staff.alert.gamemode.change.other", target.Name(), name)
 
 		target.SetGameMode(mode)
-		user.Messagef(p, "command.gamemode.update.other", target.Name(), name)
+		moyai.Messagef(p, "command.gamemode.update.other", target.Name(), name)
 		return
 	}
 	if p, ok := s.(*player.Player); ok {
-		//user.Alertf(s, "staff.alert.gamemode.change", name)
+		//moyai.Alertf(s, "staff.alert.gamemode.change", name)
 
 		p.SetGameMode(mode)
-		user.Messagef(p, "command.gamemode.update.self", name)
+		moyai.Messagef(p, "command.gamemode.update.self", name)
 		return
 	}
-	user.Messagef(p, "command.gamemode.console")
+	moyai.Messagef(p, "command.gamemode.console")
 }
 
 // Allow ...

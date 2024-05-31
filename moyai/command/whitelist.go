@@ -4,9 +4,9 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 type WhiteListAdd struct {
@@ -20,23 +20,23 @@ func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 	if len(w.Target) <= 0 {
-		user.Messagef(p, "invalid.username")
+		moyai.Messagef(p, "invalid.username")
 		return
 	}
 	u, err := data.LoadUserFromName(w.Target)
 	if err != nil {
-		user.Messagef(p, "target.data.load.error", w.Target)
+		moyai.Messagef(p, "target.data.load.error", w.Target)
 		return
 	}
 	if u.Whitelisted {
-		user.Messagef(p, "whitelist.already", u.DisplayName)
+		moyai.Messagef(p, "whitelist.already", u.DisplayName)
 		return
 	}
 
 	u.Whitelisted = true
 	data.SaveUser(u)
 
-	user.Messagef(p, "whitelist.add", u.DisplayName)
+	moyai.Messagef(p, "whitelist.add", u.DisplayName)
 }
 
 type WhiteListRemove struct {

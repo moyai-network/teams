@@ -1,7 +1,6 @@
 package minecraft
 
 import (
-	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/command"
@@ -9,11 +8,11 @@ import (
 )
 
 // registerCommands registers all commands that are available in the server.
-func registerCommands(srv *server.Server) {
+func registerCommands() {
 	for _, c := range []cmd.Command{
 		cmd.New("staff", text.Colourf("Staff management commands."), nil, command.StaffMode{}),
 		cmd.New("rename", text.Colourf("Rename your items."), nil, command.Rename{}),
-		cmd.New("stop", text.Colourf("Stop the server."), nil, command.NewStop(srv)),
+		cmd.New("stop", text.Colourf("Stop the server."), nil, command.Stop{}),
 		cmd.New("pots", text.Colourf("Place potion chests."), nil, command.Pots{}),
 		cmd.New("fix", text.Colourf("Fix your inventory."), nil, command.Fix{}, command.FixAll{}),
 		cmd.New("chat", text.Colourf("Chat management commands."), nil, command.ChatMute{}, command.ChatUnMute{}, command.ChatCoolDown{}),

@@ -50,7 +50,7 @@ func Run() error {
 	srv := moyai.NewServer(config)
 	handleServerClose(srv)
 
-	registerCommands(srv)
+	registerCommands()
 	srv.Listen()
 
 	moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
@@ -63,7 +63,6 @@ func Run() error {
 	placeCrates()
 	placeShopSigns()
 
-	go tickAirDrop(srv.World())
 	go tickBlackMarket(srv)
 	go tickClearLag()
 
@@ -150,21 +149,7 @@ func handleServerClose(srv *server.Server) {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
-		destroyAirDrop(srv.World(), lastDropPos)
-
-		time.Sleep(time.Millisecond * 500)
-		data.FlushCache()
-
-		sotw.Save()
-		err := moyai.Nether().Close()
-		if err != nil {
-			logrus.Fatalln("close nether: %v", err)
-		}
-		moyai.End().Close()
-		if err := srv.Close(); err != nil {
-			logrus.Fatalln("close server: %v", err)
-		}
-
+		///moyai.Close()
 	}()
 }
 

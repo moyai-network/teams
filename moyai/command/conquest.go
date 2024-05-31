@@ -10,7 +10,6 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -35,7 +34,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 	if conquest.Running() {
-		user.Messagef(p, "command.koth.running")
+		moyai.Messagef(p, "command.koth.running")
 		return
 	}
 	conquest.Start()
@@ -49,7 +48,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 
-	user.Broadcastf("koth.start", name, "Conquest", -100.0, -500.0)
+	moyai.Broadcastf("koth.start", name, "Conquest", -100.0, -500.0)
 	st := fmt.Sprintf(`
  §e█████████§r
  §e█████████§r
@@ -77,10 +76,10 @@ func (ConquestStop) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 	if !conquest.Running() {
-		user.Messagef(p, "command.koth.not.running")
+		moyai.Messagef(p, "command.koth.not.running")
 	} else {
 		conquest.Stop()
-		user.Broadcastf("koth.stop", name, "Conquest")
+		moyai.Broadcastf("koth.stop", name, "Conquest")
 	}
 }
 

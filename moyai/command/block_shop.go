@@ -4,9 +4,9 @@ import (
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/menu"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // BlockShop is a command that allows players to use blockshop.
@@ -19,7 +19,7 @@ func (BlockShop) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 	if !area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
-		user.Messagef(p, "in.spawn")
+		moyai.Messagef(p, "in.spawn")
 		return
 	}
 

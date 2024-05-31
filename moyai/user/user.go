@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"strings"
@@ -9,15 +8,11 @@ import (
 	"unicode"
 	_ "unsafe"
 
-	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/internal/unsafe"
-	"github.com/moyai-network/teams/moyai/class"
-	"github.com/moyai-network/teams/moyai/role"
-
-	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
@@ -58,33 +53,6 @@ func Lookup(name string) (*player.Player, bool) {
 		}
 	}
 	return nil, false
-}
-
-func Alertf(s cmd.Source, key string, args ...any) {
-	p, ok := s.(*player.Player)
-	if !ok {
-		return
-	}
-	for _, t := range moyai.Players() {
-		if u, _ := data.LoadUserFromName(t.Name()); role.Staff(u.Roles.Highest()) {
-			t.Message(lang.Translatef(u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(u.Language, key), args...)))
-		}
-	}
-}
-
-func Broadcastf(key string, a ...interface{}) {
-	for _, p := range moyai.Players() {
-		Messagef(p, key, a...)
-	}
-}
-
-func Messagef(p *player.Player, key string, a ...interface{}) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
-		p.Message("An error occurred while loading your user data.")
-		return
-	}
-	p.Message(lang.Translatef(u.Language, key, a...))
 }
 
 func UpdateState(p *player.Player) {

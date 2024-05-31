@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
+	"github.com/moyai-network/teams/moyai"
 )
 
 // Clear clears your inventory
@@ -19,5 +19,5 @@ func (c Clear) Run(s cmd.Source, o *cmd.Output) {
 	p.Inventory().Clear()
 	p.Armour().Clear()
 
-	user.Messagef(p, "command.clear")
+	moyai.Messagef(p, "command.clear")
 }

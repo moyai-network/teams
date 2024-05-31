@@ -21,7 +21,7 @@ func (Hub) Run(s cmd.Source, o *cmd.Output) {
 	// }
 
 	// if h.Combat().Active() {
-	// 	user.Messagef(p, "command.error.combat-tagged")
+	// 	moyai.Messagef(p, "command.error.combat-tagged")
 	// }
 
 	// o.Print(text.Colourf("<green>Travelling to <black>The</black> <gold>Hub</gold>...</green>"))

@@ -1,15 +1,14 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"strings"
-
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -31,19 +30,19 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if len(a.Targets) > 1 {
-		user.Messagef(p, "command.targets.exceed")
+		moyai.Messagef(p, "command.targets.exceed")
 		return
 	}
 
 	target, ok := a.Targets[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 
 	u, err := data.LoadUserFromName(target.Name())
 	if err != nil {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 
@@ -57,7 +56,7 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output) {
 	ssidNames := names(usersSSID, true)
 
 	g := text.Colourf("<grey> - </grey>")
-	user.Messagef(p, "command.alias.accounts",
+	moyai.Messagef(p, "command.alias.accounts",
 		target.Name(), strings.Join(ipNames, g),
 		target.Name(), strings.Join(deviceNames, g),
 		target.Name(), strings.Join(ssidNames, g),

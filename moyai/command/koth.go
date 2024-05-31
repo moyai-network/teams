@@ -12,7 +12,6 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -55,12 +54,12 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 	if _, ok := koth.Running(); ok {
-		user.Messagef(p, "command.koth.running")
+		moyai.Messagef(p, "command.koth.running")
 		return
 	}
 	ko, ok := koth.Lookup(string(k.KOTH))
 	if !ok {
-		user.Messagef(p, "command.koth.invalid")
+		moyai.Messagef(p, "command.koth.invalid")
 		return
 	}
 	ko.Start()
@@ -72,7 +71,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	coords := ko.Coordinates()
-	user.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
+	moyai.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
 	var st string
 	if ko == koth.Citadel || ko == koth.Hades {
 		st = fmt.Sprintf(`
@@ -114,11 +113,11 @@ func (KothStop) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 	if k, ok := koth.Running(); !ok {
-		user.Messagef(p, "command.koth.not.running")
+		moyai.Messagef(p, "command.koth.not.running")
 		return
 	} else {
 		k.Stop()
-		user.Broadcastf("koth.stop", name, k.Name())
+		moyai.Broadcastf("koth.stop", name, k.Name())
 	}
 }
 

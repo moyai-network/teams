@@ -6,7 +6,6 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -31,11 +30,11 @@ func (pp PartnerPackage) Run(s cmd.Source, o *cmd.Output) {
 
 	t, ok := pp.Targets[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 
-	user.Messagef(p, "command.partner_package.give.success", t.Name(), pp.Count)
+	moyai.Messagef(p, "command.partner_package.give.success", t.Name(), pp.Count)
 	it.AddOrDrop(p, it.NewPartnerPackage(pp.Count))
 	t.Message("command.partner_package.give.received", pp.Count)
 }

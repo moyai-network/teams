@@ -1,9 +1,9 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -22,7 +22,7 @@ func (Balance) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	user.Messagef(p, "command.balance.self", u.Teams.Balance)
+	moyai.Messagef(p, "command.balance.self", u.Teams.Balance)
 }
 
 type BalancePayOnline struct {
@@ -47,7 +47,7 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if t == p {
-		user.Messagef(p, "command.pay.self")
+		moyai.Messagef(p, "command.pay.self")
 		return
 	}
 
@@ -57,11 +57,11 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		user.Messagef(p, "command.pay.negative")
+		moyai.Messagef(p, "command.pay.negative")
 		return
 	}
 	if u.Teams.Balance < b.Amount {
-		user.Messagef(p, "command.pay.insufficient")
+		moyai.Messagef(p, "command.pay.insufficient")
 		return
 	}
 
@@ -71,8 +71,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(target)
 
-	user.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), 0)
-	user.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), 0)
+	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), 0)
+	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), 0)
 }
 
 type BalancePayOffline struct {
@@ -92,17 +92,17 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		user.Messagef(p, "command.pay.negative")
+		moyai.Messagef(p, "command.pay.negative")
 		return
 	}
 
 	if u.Teams.Balance < b.Amount {
-		user.Messagef(p, "command.pay.insufficient")
+		moyai.Messagef(p, "command.pay.insufficient")
 		return
 	}
 
 	if strings.EqualFold(b.Target, p.Name()) {
-		user.Messagef(p, "command.pay.self")
+		moyai.Messagef(p, "command.pay.self")
 		return
 	}
 
@@ -118,7 +118,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(t)
 
-	user.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
+	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
 }
 
 type BalanceAdd struct {
@@ -143,7 +143,7 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		user.Messagef(p, "command.add.negative")
+		moyai.Messagef(p, "command.add.negative")
 		return
 	}
 
@@ -156,8 +156,8 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output) {
 
 	data.SaveUser(target)
 
-	user.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), b.Amount)
-	user.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), b.Amount)
+	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), b.Amount)
+	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), b.Amount)
 }
 
 type BalanceAddOffline struct {
@@ -173,7 +173,7 @@ func (b BalanceAddOffline) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if b.Amount < 0 {
-		user.Messagef(p, "command.add.negative")
+		moyai.Messagef(p, "command.add.negative")
 		return
 	}
 
@@ -187,7 +187,7 @@ func (b BalanceAddOffline) Run(src cmd.Source, out *cmd.Output) {
 
 	data.SaveUser(t)
 
-	user.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
+	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
 }
 
 func (BalanceAdd) Allow(src cmd.Source) bool {

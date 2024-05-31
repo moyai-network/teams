@@ -4,10 +4,10 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/sotw"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -42,7 +42,7 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output) {
 		u.Teams.SOTW = true
 		data.SaveUser(u)
 	}
-	user.Broadcastf("sotw.commenced")
+	moyai.Broadcastf("sotw.commenced")
 }
 
 // Run ...
@@ -61,7 +61,7 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output) {
 		u.Teams.SOTW = false
 		data.SaveUser(u)
 	}
-	user.Broadcastf("sotw.ended")
+	moyai.Broadcastf("sotw.ended")
 }
 
 // Run ...
@@ -76,10 +76,10 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if !u.Teams.SOTW {
-		user.Messagef(p, "sotw.disabled.already")
+		moyai.Messagef(p, "sotw.disabled.already")
 		return
 	}
-	user.Messagef(p, "sotw.disabled")
+	moyai.Messagef(p, "sotw.disabled")
 
 	u.Teams.SOTW = false
 	data.SaveUser(u)

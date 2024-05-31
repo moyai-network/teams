@@ -3,15 +3,15 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/cape"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/samber/lo"
 )
 
 type Cape struct {
-	Cape  capes    `cmd:"capes"`
+	Cape capes `cmd:"capes"`
 }
 
 // Run ...
@@ -33,9 +33,8 @@ func (a Cape) Run(s cmd.Source, o *cmd.Output) {
 	pl.SetSkin(sk)
 	u.Teams.Settings.Advanced.Cape = c.Name()
 	data.SaveUser(u)
-	user.Messagef(pl, "cape.selected", c.Name())
+	moyai.Messagef(pl, "cape.selected", c.Name())
 }
-
 
 type (
 	capes string

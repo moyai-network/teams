@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"strings"
 	"time"
 	_ "unsafe"
@@ -17,7 +18,6 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 type Pots struct{}
@@ -33,22 +33,22 @@ func (Pots) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if u.Teams.Refill.Active() {
-		user.Messagef(p, "user.refill.cooldown", durafmt.Parse(u.Teams.Refill.Remaining()).LimitFirstN(2))
+		moyai.Messagef(p, "user.refill.cooldown", durafmt.Parse(u.Teams.Refill.Remaining()).LimitFirstN(2))
 		return
 	}
 
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
-		user.Messagef(p, "user.team-less")
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 	if tm.Claim == (area.Area{}) {
-		user.Messagef(p, "team.claim.none")
+		moyai.Messagef(p, "team.claim.none")
 		return
 	}
 
 	if !tm.Claim.Vec3WithinOrEqualFloorXZ(p.Position()) {
-		user.Messagef(p, "team.claim.not-within")
+		moyai.Messagef(p, "team.claim.not-within")
 		return
 	}
 

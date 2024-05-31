@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"strings"
@@ -9,7 +10,6 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/moyai/user"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -36,17 +36,17 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	}*/
 	msg := strings.TrimSpace(string(w.Message))
 	if len(msg) <= 0 {
-		user.Messagef(p, "message.empty")
+		moyai.Messagef(p, "message.empty")
 		return
 	}
 	if len(w.Target) > 1 {
-		user.Messagef(p, "command.targets.exceed")
+		moyai.Messagef(p, "command.targets.exceed")
 		return
 	}
 
 	tP, ok := w.Target[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 	t, err := data.LoadUserFromName(tP.Name())
@@ -74,8 +74,8 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveUser(t)
 
 	tP.PlaySound(sound.Experience{})
-	user.Messagef(p, "command.whisper.to", tTag, tMsg)
-	user.Messagef(tP, "command.whisper.from", uTag, uMsg)
+	moyai.Messagef(p, "command.whisper.to", tTag, tMsg)
+	moyai.Messagef(tP, "command.whisper.from", uTag, uMsg)
 }
 
 // Allow ...

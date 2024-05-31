@@ -310,17 +310,17 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		return
 	}
 	if !t.Leader(u.Name) {
-		Messagef(h.p, "team.not-leader")
+		moyai.Messagef(h.p, "team.not-leader")
 		return
 	}
 	if t.Claim != (area.Area{}) {
-		Messagef(h.p, "team.has-claim")
+		moyai.Messagef(h.p, "team.has-claim")
 		return
 	}
 
 	pos := h.claimSelectionPos
 	if pos[0] == (mgl64.Vec2{}) || pos[1] == (mgl64.Vec2{}) {
-		Messagef(h.p, "team.claim.select-before")
+		moyai.Messagef(h.p, "team.claim.select-before")
 		return
 	}
 	claim := area.NewArea(pos[0], pos[1])
@@ -344,20 +344,20 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 
 		for _, b := range blocksPos {
 			if a.Vec3WithinOrEqualXZ(b.Vec3()) {
-				Messagef(h.p, "team.area.already-claimed")
+				moyai.Messagef(h.p, "team.area.already-claimed")
 				return
 			}
 			if areaTooClose(a.Area, vec3ToVec2(b.Vec3()), threshold) {
-				Messagef(h.p, message)
+				moyai.Messagef(h.p, message)
 				return
 			}
 		}
 		if a.Vec2WithinOrEqual(pos[0]) || a.Vec2WithinOrEqual(pos[1]) {
-			Messagef(h.p, "team.area.already-claimed")
+			moyai.Messagef(h.p, "team.area.already-claimed")
 			return
 		}
 		if areaTooClose(a.Area, pos[0], threshold) || areaTooClose(a.Area, pos[1], threshold) {
-			Messagef(h.p, message)
+			moyai.Messagef(h.p, message)
 			return
 		}
 	}
@@ -374,20 +374,20 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 		}
 		for _, b := range blocksPos {
 			if c.Vec3WithinOrEqualXZ(b.Vec3()) {
-				Messagef(h.p, "team.area.already-claimed")
+				moyai.Messagef(h.p, "team.area.already-claimed")
 				return
 			}
 			if areaTooClose(c, vec3ToVec2(b.Vec3()), 1) {
-				Messagef(h.p, "team.area.too-close")
+				moyai.Messagef(h.p, "team.area.too-close")
 				return
 			}
 		}
 		if c.Vec2WithinOrEqual(pos[0]) || c.Vec2WithinOrEqual(pos[1]) {
-			Messagef(h.p, "team.area.already-claimed")
+			moyai.Messagef(h.p, "team.area.already-claimed")
 			return
 		}
 		if areaTooClose(c, pos[0], 1) || areaTooClose(c, pos[1], 1) {
-			Messagef(h.p, "team.area.too-close")
+			moyai.Messagef(h.p, "team.area.too-close")
 			return
 		}
 	}
@@ -396,13 +396,13 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	y := claim.Max().Y() - claim.Min().Y()
 	ar := x * y
 	if ar > 75*75 {
-		Messagef(h.p, "team.claim.too-big")
+		moyai.Messagef(h.p, "team.claim.too-big")
 		return
 	}
 	cost := ar * 5
 
 	if t.Balance < cost {
-		Messagef(h.p, "team.claim.no-money")
+		moyai.Messagef(h.p, "team.claim.no-money")
 		return
 	}
 
@@ -410,7 +410,7 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	t = t.WithClaim(claim)
 	data.SaveTeam(t)
 
-	Messagef(h.p, "command.claim.success", pos[0], pos[1], cost)
+	moyai.Messagef(h.p, "command.claim.success", pos[0], pos[1], cost)
 }
 
 func vec3ToVec2(v mgl64.Vec3) mgl64.Vec2 {
@@ -450,12 +450,12 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	switch held.Item().(type) {
 	case item.EnderPearl:
 		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
-			Messagef(h.p, "item.use.citadel.disabled")
+			moyai.Messagef(h.p, "item.use.citadel.disabled")
 			ctx.Cancel()
 			return
 		}
 		if cd := h.coolDownPearl; cd.Active() {
-			Messagef(h.p, "user.cool-down", "Ender Pearl", cd.Remaining().Seconds())
+			moyai.Messagef(h.p, "user.cool-down", "Ender Pearl", cd.Remaining().Seconds())
 			ctx.Cancel()
 		} else {
 			cd.Set(15 * time.Second)
@@ -467,7 +467,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	case class.Archer, class.Rogue:
 		if e, ok := ArcherRogueEffectFromItem(held.Item()); ok {
 			if cd := h.coolDownArcherRogueItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			h.p.AddEffect(e)
@@ -481,11 +481,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 				return
 			}
 			if cd := h.coolDownBardItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				Messagef(h.p, "class.energy.insufficient")
+				moyai.Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -497,7 +497,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "bard.ability.use", effectutil.EffectName(e), lvl, len(teammates))
+			moyai.Messagef(h.p, "bard.ability.use", effectutil.EffectName(e), lvl, len(teammates))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.coolDownBardItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -509,11 +509,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			if cd := h.coolDownMageItem.Key(held.Item()); cd.Active() {
-				Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "class.ability.cooldown", cd.Remaining().Seconds())
 				return
 			}
 			if en := h.energy.Load(); en < 30 {
-				Messagef(h.p, "class.energy.insufficient")
+				moyai.Messagef(h.p, "class.energy.insufficient")
 				return
 			} else {
 				h.energy.Store(en - 30)
@@ -525,7 +525,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			}
 
 			lvl, _ := roman.Itor(e.Level())
-			Messagef(h.p, "mage.ability.use", effectutil.EffectName(e), lvl, len(enemies))
+			moyai.Messagef(h.p, "mage.ability.use", effectutil.EffectName(e), lvl, len(enemies))
 			h.p.SetHeldItems(held.Grow(-1), item.Stack{})
 			h.coolDownMageItem.Key(held.Item()).Set(15 * time.Second)
 		}
@@ -533,13 +533,13 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 
 	if v, ok := it.SpecialItem(held); ok {
 		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
-			Messagef(h.p, "item.use.citadel.disabled")
+			moyai.Messagef(h.p, "item.use.citadel.disabled")
 			ctx.Cancel()
 			return
 		}
 
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
-			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
+			moyai.Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			ctx.Cancel()
 			return
 		}
@@ -807,14 +807,14 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		if s.Projectile.Type() == (it.SwitcherBallType{}) {
 			if k, ok := koth.Running(); ok {
 				if pl, ok := k.Capturing(); ok && pl == h.p {
-					Messagef(attacker, "snowball.koth")
+					moyai.Messagef(attacker, "snowball.koth")
 					break
 				}
 			}
 
 			dist := attacker.Position().Sub(attacker.Position()).Len()
 			if dist > 10 {
-				Messagef(attacker, "snowball.far")
+				moyai.Messagef(attacker, "snowball.far")
 				break
 			}
 
@@ -879,7 +879,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			k.Teams.Stats.KillStreak += 1
 
 			if k.Teams.Stats.KillStreak%5 == 0 {
-				Broadcastf("user.killstreak", killer.Name(), k.Teams.Stats.KillStreak)
+				moyai.Broadcastf("user.killstreak", killer.Name(), k.Teams.Stats.KillStreak)
 				it.AddOrDrop(killer, it.NewKey(it.KeyTypePartner, int(k.Teams.Stats.KillStreak)/2))
 			}
 
@@ -918,7 +918,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
 	if h.coolDownBonedEffect.Active() {
-		Messagef(h.p, "coolDownBonedEffect.interact")
+		moyai.Messagef(h.p, "coolDownBonedEffect.interact")
 		ctx.Cancel()
 		return
 	}
@@ -1027,7 +1027,7 @@ func (h *Handler) HandleItemConsume(ctx *event.Context, i item.Stack) {
 	switch i.Item().(type) {
 	case item.GoldenApple:
 		if cd := h.coolDownGoldenApple; cd.Active() {
-			Messagef(h.p, "gapple.cooldown")
+			moyai.Messagef(h.p, "gapple.cooldown")
 			ctx.Cancel()
 		} else {
 			cd.Set(time.Second * 30)
@@ -1044,7 +1044,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	for _, c := range crate.All() {
 		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
 			if _, ok := i.Value("crate-key_" + colour.StripMinecraftColour(c.Name())); !ok {
-				Messagef(h.p, "crate.key.require", colour.StripMinecraftColour(c.Name()))
+				moyai.Messagef(h.p, "crate.key.require", colour.StripMinecraftColour(c.Name()))
 				break
 			}
 			it.AddOrDrop(h.p, ench.AddEnchantmentLore(crate.SelectReward(c)))
@@ -1112,12 +1112,12 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 
 			if !tm.Leader(h.p.Name()) {
-				Messagef(h.p, "team.not-leader")
+				moyai.Messagef(h.p, "team.not-leader")
 				return
 			}
 
 			if tm.Claim != (area.Area{}) {
-				Messagef(h.p, "team.has-claim")
+				moyai.Messagef(h.p, "team.has-claim")
 				break
 			}
 
@@ -1132,11 +1132,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 
 				if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
-					Messagef(h.p, "team.area.already-claimed")
+					moyai.Messagef(h.p, "team.area.already-claimed")
 					return
 				}
 				if areaTooClose(a.Area, vec3ToVec2(pos.Vec3()), threshold) {
-					Messagef(h.p, message)
+					moyai.Messagef(h.p, message)
 					return
 				}
 			}
@@ -1148,11 +1148,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 					continue
 				}
 				if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
-					Messagef(h.p, "team.area.already-claimed")
+					moyai.Messagef(h.p, "team.area.already-claimed")
 					return
 				}
 				if areaTooClose(c, vec3ToVec2(pos.Vec3()), 1) {
-					Messagef(h.p, "team.area.too-close")
+					moyai.Messagef(h.p, "team.area.too-close")
 					return
 				}
 			}
@@ -1165,14 +1165,14 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				y := ar.Max().Y() - ar.Min().Y()
 				a := x * y
 				if a > 75*75 {
-					Messagef(h.p, "team.claim.too-big")
+					moyai.Messagef(h.p, "team.claim.too-big")
 					return
 				}
 				cost := int(a * 5)
-				Messagef(h.p, "team.claim.cost", cost)
+				moyai.Messagef(h.p, "team.claim.cost", cost)
 			}
 			h.claimSelectionPos[pn-1] = mgl64.Vec2{float64(pos.X()), float64(pos.Z())}
-			Messagef(h.p, "team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+			moyai.Messagef(h.p, "team.claim.set-position", pn, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
 		}
 	}
 
@@ -1181,7 +1181,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		ctx.Cancel()
 	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor, block.ItemFrame:
 		if h.coolDownBonedEffect.Active() {
-			Messagef(h.p, "user.interaction.boned")
+			moyai.Messagef(h.p, "user.interaction.boned")
 			ctx.Cancel()
 			return
 		}
@@ -1224,11 +1224,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				for y := pos.Y() + 1; y < 256; y++ {
 					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
 						if !blockFound {
-							Messagef(h.p, "elevator.no-block")
+							moyai.Messagef(h.p, "elevator.no-block")
 							return
 						}
 						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y + 1, pos.Z()}).(block.Air); !ok {
-							Messagef(h.p, "elevator.no-space")
+							moyai.Messagef(h.p, "elevator.no-space")
 							return
 						}
 						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y()), 0}))
@@ -1241,11 +1241,11 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				for y := pos.Y() - 1; y > 0; y-- {
 					if _, ok := h.p.World().Block(cube.Pos{pos.X(), y, pos.Z()}).(block.Air); ok {
 						if !blockFound {
-							Messagef(h.p, "elevator.no-space")
+							moyai.Messagef(h.p, "elevator.no-space")
 							return
 						}
 						if _, ok := h.p.World().Block(cube.Pos{pos.X(), y - 1, pos.Z()}).(block.Air); !ok {
-							Messagef(h.p, "elevator.no-space")
+							moyai.Messagef(h.p, "elevator.no-space")
 							return
 						}
 						h.p.Teleport(pos.Vec3Middle().Add(mgl64.Vec3{0, float64(y - pos.Y() - 1), 0}))
@@ -1287,7 +1287,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			switch choice {
 			case "buy":
 				if u.Teams.Balance < price {
-					Messagef(h.p, "shop.balance.insufficient")
+					moyai.Messagef(h.p, "shop.balance.insufficient")
 					return
 				}
 				if !ok {
@@ -1297,7 +1297,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				u.Teams.Balance = u.Teams.Balance - price
 				data.SaveUser(u)
 				it.AddOrDrop(h.p, item.NewStack(itm, q))
-				Messagef(h.p, "shop.buy.success", q, lines[1])
+				moyai.Messagef(h.p, "shop.buy.success", q, lines[1])
 			case "sell":
 				inv := h.p.Inventory()
 				count := 0
@@ -1316,9 +1316,9 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				if count >= q {
 					u.Teams.Balance = u.Teams.Balance + float64(count/q)*price
 					data.SaveUser(u)
-					Messagef(h.p, "shop.sell.success", count, lines[1])
+					moyai.Messagef(h.p, "shop.sell.success", count, lines[1])
 				} else {
-					Messagef(h.p, "shop.sell.fail")
+					moyai.Messagef(h.p, "shop.sell.fail")
 					return
 				}
 				for i, v := range items {
@@ -1342,7 +1342,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			cd := u.Teams.Kits.Key(key)
 			if cd.Active() {
-				Messagef(h.p, "command.kit.cooldown", cd.Remaining().Round(time.Second))
+				moyai.Messagef(h.p, "command.kit.cooldown", cd.Remaining().Round(time.Second))
 				return
 			} else {
 				cd.Set(time.Minute)
@@ -1449,21 +1449,21 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	typ, ok2 := it.SpecialItem(held)
 	if ok && ok2 {
 		if area.Overworld.KOTHs()[2].Vec3WithinOrEqualFloorXZ(h.p.Position()) {
-			Messagef(h.p, "item.use.citadel.disabled")
+			moyai.Messagef(h.p, "item.use.citadel.disabled")
 			return
 		}
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
-			Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
+			moyai.Messagef(h.p, "partner_item.cooldown", cd.Remaining().Seconds())
 			return
 		}
 		switch kind := typ.(type) {
 		case it.StormBreakerType:
 			if targetHandler.lastClass.Load() != nil {
-				Messagef(h.p, "ability.classes.disabled")
+				moyai.Messagef(h.p, "ability.classes.disabled")
 				break
 			}
 			if cd := h.coolDownSpecificAbilities.Key(it.StormBreakerType{}); cd.Active() {
-				Messagef(h.p, "stormbreaker.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "stormbreaker.cooldown", cd.Remaining().Seconds())
 				break
 			}
 			h.p.World().PlaySound(h.p.Position(), sound.ItemBreak{})
@@ -1480,18 +1480,18 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 			targetArmourHandler.stormBreak()
 		case it.ExoticBoneType:
 			if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-				Messagef(h.p, "bone.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "bone.cooldown", cd.Remaining().Seconds())
 				break
 			}
-			Messagef(target, "bone.target", h.p.Name())
-			Messagef(h.p, "bone.user", t.Name())
+			moyai.Messagef(target, "bone.target", h.p.Name())
+			moyai.Messagef(h.p, "bone.user", t.Name())
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
 			h.coolDownSpecificAbilities.Set(kind, time.Minute)
 			h.p.SetHeldItems(h.substractItem(held, 1), left)
 			targetHandler.coolDownBonedEffect.Set(time.Second * 10)
 		// case it.ScramblerType:
 		// 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		// 		Messagef(h.p, "scrambler.cooldown", cd.Remaining().Seconds())
+		// 		moyai.Messagef(h.p, "scrambler.cooldown", cd.Remaining().Seconds())
 		// 		break
 		// 	}
 		// 	var used []int
@@ -1512,20 +1512,20 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 		// 		target.Inventory().SetItem(j, it1)
 		// 		target.Inventory().SetItem(i, it2)
 		// 	}
-		// 	Messagef(target, "scrambler.target", h.p.Name())
-		// 	Messagef(h.p, "scrambler.user", t.Name())
+		// 	moyai.Messagef(target, "scrambler.target", h.p.Name())
+		// 	moyai.Messagef(h.p, "scrambler.user", t.Name())
 		// 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 		// 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 		// 	h.p.SetHeldItems(h.substractItem(held, 1), left)
 		case it.PearlDisablerType:
 			if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-				Messagef(h.p, "pearl_disabler.cooldown", cd.Remaining().Seconds())
+				moyai.Messagef(h.p, "pearl_disabler.cooldown", cd.Remaining().Seconds())
 				break
 			}
-			Messagef(target, "pearl_disabler.target", h.p.Name())
+			moyai.Messagef(target, "pearl_disabler.target", h.p.Name())
 			targetHandler.coolDownPearl.Set(time.Second * 15)
 
-			Messagef(h.p, "pearl_disabler.user", t.Name())
+			moyai.Messagef(h.p, "pearl_disabler.user", t.Name())
 			h.coolDownGlobalAbilities.Set(time.Second * 10)
 			h.coolDownSpecificAbilities.Set(kind, time.Minute)
 			h.p.SetHeldItems(h.substractItem(held, 1), left)

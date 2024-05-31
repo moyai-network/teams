@@ -2,14 +2,13 @@ package command
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
-
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/role"
 )
 
 // TeleportToPos is a command that teleports the user to a position.
@@ -38,7 +37,7 @@ type TeleportTargetsToPos struct {
 func (t TeleportToPos) Run(s cmd.Source, o *cmd.Output) {
 	p := s.(*player.Player)
 	p.Teleport(t.Position)
-	user.Messagef(p, "command.teleport.self", t.Position)
+	moyai.Messagef(p, "command.teleport.self", t.Position)
 }
 
 // Run ...
@@ -49,14 +48,14 @@ func (tp TeleportToTarget) Run(s cmd.Source, o *cmd.Output) {
 	}
 	t, ok := tp.Targets[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 	if p.World() != t.World() {
 		p.World().AddEntity(t)
 	}
 	p.Teleport(t.Position())
-	user.Messagef(p, "command.teleport.self", t.Name())
+	moyai.Messagef(p, "command.teleport.self", t.Name())
 }
 
 // Run ...

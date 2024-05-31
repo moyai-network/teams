@@ -4,8 +4,8 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // ClearLag clears all entitys on the floor.
@@ -31,7 +31,7 @@ func (c ClearLag) Run(s cmd.Source, o *cmd.Output) {
 		}
 	}
 
-	user.Messagef(p, "command.clearlag", itemCount)
+	moyai.Messagef(p, "command.clearlag", itemCount)
 }
 
 // Allow ...

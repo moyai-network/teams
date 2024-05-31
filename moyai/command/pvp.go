@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/user"
 )
@@ -27,8 +28,8 @@ func (c PvpEnable) Run(src cmd.Source, out *cmd.Output) {
 	if u.Teams.PVP.Active() {
 		user.UpdateState(p)
 		u.Teams.PVP.Reset()
-		user.Messagef(p, "command.pvp.enable")
+		moyai.Messagef(p, "command.pvp.enable")
 	} else {
-		user.Messagef(p, "command.pvp.enabled-already")
+		moyai.Messagef(p, "command.pvp.enabled-already")
 	}
 }

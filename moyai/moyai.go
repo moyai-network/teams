@@ -1,6 +1,9 @@
 package moyai
 
 import (
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/sirupsen/logrus"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
@@ -9,6 +12,16 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/mcdb"
 )
+
+func init() {
+	go func() {
+		for Overworld() == nil {
+			<-time.After(time.Millisecond)
+			continue
+		}
+		tickAirDrop(Overworld())
+	}()
+}
 
 var (
 	// srv is the server instance of the Moyai server.
@@ -31,6 +44,9 @@ func Worlds() []*world.World {
 }
 
 func Overworld() *world.World {
+	if srv == nil {
+		return nil
+	}
 	return srv.World()
 }
 
@@ -102,11 +118,28 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 		panic(err)
 	}
 	deathban = world.Config{
-		Provider: deathbanProv,
-		Dim:      world.Overworld,
-		Entities: reg,
+		Provider:        deathbanProv,
+		Dim:             world.Overworld,
+		Entities:        reg,
 		RandomTickSpeed: -1,
 	}.New()
 
 	return deathban
+}
+
+func Close() {
+	destroyAirDrop(srv.World(), lastDropPos)
+
+	time.Sleep(time.Millisecond * 500)
+	data.FlushCache()
+
+	sotw.Save()
+	err := Nether().Close()
+	if err != nil {
+		logrus.Fatalln("close nether: %v", err)
+	}
+	End().Close()
+	if err := srv.Close(); err != nil {
+		logrus.Fatalln("close server: %v", err)
+	}
 }

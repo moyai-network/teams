@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"strings"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // BanForm is a command that is used to ban a player through a punishment form.
@@ -94,7 +94,7 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output) {
 	u.Teams.Ban = punishment.Punishment{}
 	data.SaveUser(u)
 
-	user.Alertf(src, "staff.alert.unban", u.DisplayName)
+	moyai.Alertf(src, "staff.alert.unban", u.DisplayName)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unban")
 	o.Print(lang.Translatef(l, "command.ban.lift", u.DisplayName))
 }
@@ -144,8 +144,8 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 		lang.Translatef(l, "user.ban.description", reason, durafmt.ParseShort(length)),
 	}, "\n"))
 
-	user.Alertf(src, "staff.alert.ban", t.Name(), reason)
-	user.Broadcastf("command.ban.broadcast", s.Name(), t.Name(), reason)
+	moyai.Alertf(src, "staff.alert.ban", t.Name(), reason)
+	moyai.Broadcastf("command.ban.broadcast", s.Name(), t.Name(), reason)
 	//webhook.SendPunishment(s.Name(), t.Name(), reason, "Ban")
 	o.Print(lang.Translatef(l, "command.ban.success", t.Name(), reason))
 }
@@ -181,8 +181,8 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 	}
 	data.SaveUser(u)
 
-	user.Alertf(src, "staff.alert.ban", u.DisplayName, reason)
-	user.Broadcastf("command.ban.broadcast", s.Name(), u.DisplayName, reason)
+	moyai.Alertf(src, "staff.alert.ban", u.DisplayName, reason)
+	moyai.Broadcastf("command.ban.broadcast", s.Name(), u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Ban")
 	o.Print(lang.Translatef(l, "command.ban.success", u.DisplayName, reason))
 }

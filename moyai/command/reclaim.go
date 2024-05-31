@@ -40,7 +40,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	if u.Teams.Reclaimed {
-		user.Messagef(p, "user.reclaimed")
+		moyai.Messagef(p, "user.reclaimed")
 		return
 	}
 	u.Teams.Reclaimed = true
@@ -115,7 +115,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			itemNames = append(itemNames, text.Colourf("<red>%dx</red> %s", i.Count(), i.CustomName()))
 		}
 		nm := []rune(r.Name())
-		user.Broadcastf("user.reclaim", highest.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
+		moyai.Broadcastf("user.reclaim", highest.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
 	}
 	data.SaveUser(u)
 }

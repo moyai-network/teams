@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/user"
 	"time"
 )
 
@@ -35,12 +34,12 @@ func (c ChatMute) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if !moyai.GlobalChatEnabled() {
-		user.Messagef(p, "chat.global.already-muted")
+		moyai.Messagef(p, "chat.global.already-muted")
 		return
 	}
 	moyai.ToggleGlobalChat()
 
-	user.Messagef(p, "chat.global.mute")
+	moyai.Messagef(p, "chat.global.mute")
 }
 
 // Run ...
@@ -51,12 +50,12 @@ func (c ChatUnMute) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if moyai.GlobalChatEnabled() {
-		user.Messagef(p, "chat.global.already-unmuted")
+		moyai.Messagef(p, "chat.global.already-unmuted")
 		return
 	}
 	moyai.ToggleGlobalChat()
 
-	user.Messagef(p, "chat.global.unmute")
+	moyai.Messagef(p, "chat.global.unmute")
 
 }
 
@@ -68,5 +67,5 @@ func (c ChatCoolDown) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	moyai.UpdateChatCoolDown(time.Duration(c.CoolDown) * time.Second)
-	user.Messagef(p, "chat.cooldown.updated", c.CoolDown)
+	moyai.Messagef(p, "chat.cooldown.updated", c.CoolDown)
 }

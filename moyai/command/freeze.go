@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
@@ -21,21 +22,21 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if len(f.Targets) > 1 {
-		user.Messagef(p, "command.targets.exceed")
+		moyai.Messagef(p, "command.targets.exceed")
 		return
 	}
 	target, ok := f.Targets[0].(*player.Player)
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 	if s == target {
-		user.Messagef(p, "command.usage.self")
+		moyai.Messagef(p, "command.usage.self")
 		return
 	}
 	t, ok := user.Lookup(target.Name())
 	if !ok {
-		user.Messagef(p, "command.target.unknown")
+		moyai.Messagef(p, "command.target.unknown")
 		return
 	}
 	u, err := data.LoadUserFromName(t.Name())
@@ -43,12 +44,12 @@ func (f Freeze) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if u.Frozen {
-		//user.Alertf(s, "staff.alert.unfreeze", target.Name())
+		//moyai.Alertf(s, "staff.alert.unfreeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.unfreeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.unfrozen"))
 		t.SetMobile()
 	} else {
-		//user.Alertf(s, "staff.alert.freeze", target.Name())
+		//moyai.Alertf(s, "staff.alert.freeze", target.Name())
 		//o.Print(lang.Translatef(l, "command.freeze.freeze", target.Name()))
 		//t.Player().Message(lang.Translatef(t.Player().Locale(), "command.freeze.frozen"))
 		t.Immobile()

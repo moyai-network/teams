@@ -1,21 +1,14 @@
 package command
 
 import (
-	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/role"
 	"syscall"
 )
 
-type Stop struct {
-	srv *server.Server
-}
-
-func NewStop(srv *server.Server) *Stop {
-	return &Stop{srv: srv}
-}
+type Stop struct{}
 
 func (s Stop) Run(src cmd.Source, out *cmd.Output) {
 	if _, ok := src.(*player.Player); ok {
@@ -23,8 +16,7 @@ func (s Stop) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	data.FlushCache()
-	_ = s.srv.Close()
+	moyai.Close()
 	syscall.Exit(0)
 }
 

@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/moyai"
 	"time"
 
 	"github.com/moyai-network/teams/internal/lang"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Report is a command used to report other players.
@@ -45,8 +45,8 @@ func (r Report) Run(s cmd.Source, o *cmd.Output) {
 	u.Teams.Report.Set(time.Minute)
 	data.SaveUser(u)
 
-	user.Messagef(p, "command.report.success")
-	user.Alertf(s, "staff.alert.report", t.Name(), r.Reason)
+	moyai.Messagef(p, "command.report.success")
+	moyai.Alertf(s, "staff.alert.report", t.Name(), r.Reason)
 	// webhook.Send(webhook.Report, hook.Webhook{
 	// 	Embeds: []hook.Embed{{
 	// 		Title: "Report (Practice)",
