@@ -1,6 +1,12 @@
 package minecraft
 
 import (
+	"math/rand"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
 	"github.com/bedrock-gophers/inv/inv"
@@ -25,11 +31,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
-	"math/rand"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 // Run runs the Minecraft server.
@@ -55,6 +56,7 @@ func Run() error {
 	srv.Listen()
 
 	moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
+	moyai.ConfigureDeathban(config.Entities, "./assets/deathban2")
 	configureWorlds()
 
 	placeSpawners()

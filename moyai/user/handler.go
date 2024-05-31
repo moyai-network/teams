@@ -124,6 +124,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			})
 			moyai.Nether().AddEntity(p)
 			<-time.After(time.Second)
+		} else if h.p.World() == moyai.Deathban() {
+			<-time.After(time.Second)
+			moyai.Deathban().AddEntity(p)
+			p.SetGameMode(world.GameModeSurvival)
 		}
 		p.Teleport(h.p.Position())
 		_ = h.p.Close()
@@ -180,11 +184,16 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	u, _ := data.LoadUserFromName(p.Name())
 
 	if u.Teams.Dead {
-		p.Armour().Clear()
-		p.Inventory().Clear()
-		p.Teleport(p.World().Spawn().Vec3Middle())
-		p.Heal(20, effect.InstantHealingSource{})
-		u.Teams.Dead = false
+		if u.Teams.DeathBan.Active() {
+			p.Armour().Clear()
+			p.Inventory().Clear()
+			moyai.Deathban().AddEntity(p)
+			p.Teleport(mgl64.Vec3{0, 40, 0})
+		} else {
+			moyai.Overworld().AddEntity(p)
+			p.Teleport(mgl64.Vec3{0, 80, 0})
+			u.Teams.Dead = false
+		}
 	}
 
 	if u.Frozen {

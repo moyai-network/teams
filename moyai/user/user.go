@@ -195,6 +195,7 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	p.World().PlaySound(p.Position(), sound.Explosion{})
 	h.incrementDeath()
+	h.issueDeathban()
 	h.handleTeamMemberDeath()
 	h.cancelStormBreak()
 	h.spawnDeathNPC(src)
@@ -215,8 +216,8 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	sortArmourEffects(h)
 	sortClassEffects(h)
-	moyai.Overworld().AddEntity(p)
-	p.Teleport(mgl64.Vec3{0, 68, 0})
+	moyai.Deathban().AddEntity(p)
+	p.Teleport(mgl64.Vec3{0, 40, 0})
 }
 
 // cancelStormBreak cancels the storm breaker effect.
@@ -244,6 +245,17 @@ func (h *Handler) incrementDeath() {
 	}
 	victim.Teams.Stats.KillStreak = 0
 	data.SaveUser(victim)
+}
+
+// issueDeathban issues a deathban for the user.
+func (h *Handler) issueDeathban() {
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil {
+		return
+	}
+	u.Teams.Dead = true
+	u.Teams.DeathBan.Set(time.Minute * 10)
+	data.SaveUser(u)
 }
 
 // handleTeamMemberDeath handles the death of a team member.

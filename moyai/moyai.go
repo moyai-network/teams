@@ -17,6 +17,8 @@ var (
 	end *world.World
 	// nether is the world of the Nether dimension.
 	nether *world.World
+	// deathban is the world of the Deathban arena.
+	deathban *world.World
 
 	// lastBlackMarket is the time at which the last black market was opened.
 	lastBlackMarket time.Time
@@ -38,6 +40,10 @@ func End() *world.World {
 
 func Nether() *world.World {
 	return nether
+}
+
+func Deathban() *world.World {
+	return deathban
 }
 
 func Players() []*player.Player {
@@ -88,4 +94,19 @@ func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder strin
 	}.New()
 
 	return nether, end
+}
+
+func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
+	deathbanProv, err := mcdb.Open(folder)
+	if err != nil {
+		panic(err)
+	}
+	deathban = world.Config{
+		Provider: deathbanProv,
+		Dim:      world.Overworld,
+		Entities: reg,
+		RandomTickSpeed: -1,
+	}.New()
+
+	return deathban
 }
