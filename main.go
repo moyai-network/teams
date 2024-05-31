@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/moyai-network/teams/cmd/minecraft"
 	_ "net/http/pprof"
+
+	"github.com/moyai-network/teams/cmd/minecraft"
 )
 
 func main() {

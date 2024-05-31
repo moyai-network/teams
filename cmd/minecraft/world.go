@@ -2,6 +2,13 @@ package minecraft
 
 import (
 	"fmt"
+	"math"
+	"reflect"
+	"strings"
+	"time"
+	"unicode"
+	"unsafe"
+
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/bedrock-gophers/spawner/spawner"
 	"github.com/df-mc/dragonfly/server/block"
@@ -20,12 +27,6 @@ import (
 	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/menu"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"math"
-	"reflect"
-	"strings"
-	"time"
-	"unicode"
-	"unsafe"
 )
 
 var (
@@ -60,7 +61,7 @@ func configureWorlds() {
 		l.Move(w.Spawn().Vec3Middle())
 		l.Load(math.MaxInt)
 
-		inv.PlaceFakeContainer(w, cube.Pos{0, 255, 0})
+		inv.PlaceFakeContainer(w, cube.Pos{0, 127, 0})
 	}
 }
 
