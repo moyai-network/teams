@@ -150,6 +150,8 @@ func handleServerClose(srv *server.Server) {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
+		destroyAirDrop(srv.World(), lastDropPos)
+
 		time.Sleep(time.Millisecond * 500)
 		data.FlushCache()
 
@@ -163,7 +165,6 @@ func handleServerClose(srv *server.Server) {
 			logrus.Fatalln("close server: %v", err)
 		}
 
-		destroyAirDrop(srv.World(), lastDropPos)
 	}()
 }
 
