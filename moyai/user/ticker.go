@@ -318,9 +318,11 @@ func startTicker(h *Handler) {
 			}
 
 			if len(sb.Lines()) > 3 {
+				if lastScoreboard := h.lastScoreBoard.Load(); lastScoreboard == nil || !slices.Equal(lastScoreboard.Lines(), sb.Lines()) {
+					h.p.RemoveScoreboard()
+					h.p.SendScoreboard(sb)
+				}
 				h.lastScoreBoard.Store(sb)
-				h.p.RemoveScoreboard()
-				h.p.SendScoreboard(sb)
 			} else {
 				h.p.RemoveScoreboard()
 				h.lastScoreBoard.Store(nil)
