@@ -186,16 +186,17 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	u, _ := data.LoadUserFromName(p.Name())
 
 	if u.Teams.Dead {
+		p.Inventory().Clear()
+		p.Armour().Clear()
+
 		if u.Teams.DeathBan.Active() {
-			p.Armour().Clear()
-			p.Inventory().Clear()
 			moyai.Deathban().AddEntity(p)
 			p.Teleport(mgl64.Vec3{5, 13, 44})
 		} else {
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
-			u.Teams.Dead = false
 		}
+		u.Teams.Dead = false
 	}
 
 	if u.Frozen {

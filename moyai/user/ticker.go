@@ -139,8 +139,7 @@ func sortClassEffects(h *Handler) {
 
 func tickDeathban(h *Handler) {
 	u, _ := data.LoadUserFromName(h.p.Name())
-	if u.Teams.Dead && !u.Teams.DeathBan.Active() {
-		u.Teams.Dead = false
+	if !u.Teams.DeathBan.Active() {
 		u.Teams.DeathBan.Reset()
 		h.p.Armour().Clear()
 		h.p.Inventory().Clear()
