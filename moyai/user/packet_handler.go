@@ -76,6 +76,18 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			stack = append(stack, "minecraft:fog_the_end")
 		}
 
+		d := protocol.Option(protocol.CameraInstructionFade{
+			TimeData: protocol.Option(protocol.CameraFadeTimeData{
+				FadeInDuration:  0.25,
+				WaitDuration:    0.25,
+				FadeOutDuration: 0.25,
+			}),
+		})
+
+		_ = h.c.WritePacket(&packet.CameraInstruction{
+			Fade: d,
+		})
+
 		_ = h.c.WritePacket(&packet.PlayerFog{
 			Stack: stack,
 		})
