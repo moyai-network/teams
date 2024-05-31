@@ -9,6 +9,7 @@
         "area.enter": "<yellow>Now entering: %s</yellow>",
         "area.leave": "<yellow>Now leaving: %s</yellow>",
 
+        "airdrop.incoming": "<gold>[<redstone>Airdrop</redstone>]</gold> <red>An airdrop is incoming at %d, %d</red>",
         "blackmarket.opened": "<gold>[<redstone>Black Market</redstone>]</gold> <red>The black market has been opened for 10 minutes!</red>",
 
         "item.use.citadel.disabled": "<red>You may not use this item in Citadel.</red>",
