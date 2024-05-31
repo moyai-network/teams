@@ -253,7 +253,6 @@ func (h *Handler) issueDeathban() {
 	if err != nil {
 		return
 	}
-	u.Teams.Dead = true
 	u.Teams.DeathBan.Set(time.Minute * 10)
 	data.SaveUser(u)
 }
