@@ -95,6 +95,7 @@ func formatRewardItem(n int, requiredPlayTime time.Duration, playtime time.Durat
 
 	if playtime >= requiredPlayTime {
 		lores = append(lores, text.Colourf("<green>You may claim this prize now</green>"))
+		it = it.WithValue("claimable", true)
 	} else {
 		limit := 3
 		dur := requiredPlayTime - playtime
@@ -115,6 +116,10 @@ func (pr *Prizes) Submit(p *player.Player, it item.Stack) {
 		return
 	}
 	if dye.Colour == item.ColourGreen() {
+		return
+	}
+	_, ok = it.Value("claimable")
+	if !ok {
 		return
 	}
 	i, ok := it.Value("index")
