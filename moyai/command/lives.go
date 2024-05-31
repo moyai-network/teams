@@ -24,6 +24,7 @@ func (Lives) Run(src cmd.Source, _ *cmd.Output) {
 }
 
 type LivesGiveOnline struct {
+	Sub    cmd.SubCommand `cmd:"give"`
 	Target []cmd.Target
 	Count  int
 }
@@ -68,6 +69,7 @@ func (l LivesGiveOnline) Run(src cmd.Source, _ *cmd.Output) {
 }
 
 type LivesGiveOffline struct {
+	Sub    cmd.SubCommand `cmd:"give"`
 	Target string
 	Count  int
 }
