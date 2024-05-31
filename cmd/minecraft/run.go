@@ -149,7 +149,7 @@ func handleServerClose(srv *server.Server) {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
-		///moyai.Close()
+		moyai.Close()
 	}()
 }
 
