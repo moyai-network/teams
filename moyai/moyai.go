@@ -1,9 +1,9 @@
 package moyai
 
 import (
+	"github.com/moyai-network/teams/moyai/data"
 	"time"
 
-	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sirupsen/logrus"
 
@@ -130,9 +130,22 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 
 func Close() {
 	destroyAirDrop(srv.World(), lastDropPos)
+	for _, p := range Players() {
+		u, err := data.LoadUserFromName(p.Name())
+		if err != nil {
+			continue
+		}
+		h, ok := p.Handler().(userHandler)
+		if !ok {
+			continue
+		}
+		u.PlayTime += h.LogTime()
+		data.SaveUser(u)
+	}
+
+	data.FlushCache()
 
 	time.Sleep(time.Millisecond * 500)
-	data.FlushCache()
 
 	sotw.Save()
 	err := Nether().Close()
@@ -143,4 +156,9 @@ func Close() {
 	if err := srv.Close(); err != nil {
 		logrus.Fatalln("close server: %v", err)
 	}
+}
+
+type userHandler interface {
+	player.Handler
+	LogTime() time.Duration
 }
