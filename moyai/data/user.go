@@ -2,6 +2,7 @@ package data
 
 import (
 	"errors"
+	"github.com/moyai-network/teams/internal/sets"
 	"strings"
 	"sync"
 	"time"
@@ -170,6 +171,8 @@ type User struct {
 		Refill *cooldown.CoolDown
 		// SOTW is whether the user their SOTW timer enabled, or not.
 		SOTW bool
+		// ClaimedRewards is a set of all the claimed rewards
+		ClaimedRewards sets.Set[int]
 		// Reclaimed is whether the user has already used their reclaim perk.
 		Reclaimed bool
 		// PVP is the PVP timer of the user.
@@ -208,6 +211,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.PVP.Set(time.Hour + time.Second)
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
+	u.Teams.ClaimedRewards = sets.New[int]()
 
 	return u
 }
@@ -315,6 +319,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.PVP = cooldown.NewCoolDown()
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
+	u.Teams.ClaimedRewards = sets.New[int]()
 
 	err := result.Decode(&u)
 	if err != nil {

@@ -56,16 +56,17 @@ func SendPrizesMenu(p *player.Player) {
 	go func() {
 		for sub.open {
 			playtime := u.PlayTime + h.LogTime()
+			rew := u.Teams.ClaimedRewards
 
 			stacks[13] = item.NewStack(item.Compass{}, 1).WithCustomName(text.Colourf("<yellow>Playtime:</yellow>")).WithLore(text.Colourf("<purple>%s</purple>", durafmt.Parse(playtime).LimitFirstN(2)))
 
-			stacks[20] = formatRewardItem(1, time.Hour, playtime, false)
-			stacks[21] = formatRewardItem(1, time.Hour*3, playtime, false)
-			stacks[22] = formatRewardItem(1, time.Hour*5, playtime, false)
-			stacks[23] = formatRewardItem(1, time.Hour*7, playtime, false)
-			stacks[24] = formatRewardItem(1, time.Hour*10, playtime, false)
-			stacks[30] = formatRewardItem(1, time.Hour*15, playtime, false)
-			stacks[32] = formatRewardItem(1, time.Hour*24, playtime, false)
+			stacks[20] = formatRewardItem(1, time.Hour, playtime, rew.Contains(1))
+			stacks[21] = formatRewardItem(2, time.Hour*3, playtime, rew.Contains(2))
+			stacks[22] = formatRewardItem(3, time.Hour*5, playtime, rew.Contains(3))
+			stacks[23] = formatRewardItem(4, time.Hour*7, playtime, rew.Contains(4))
+			stacks[24] = formatRewardItem(5, time.Hour*10, playtime, rew.Contains(5))
+			stacks[30] = formatRewardItem(6, time.Hour*15, playtime, rew.Contains(6))
+			stacks[32] = formatRewardItem(7, time.Hour*24, playtime, rew.Contains(7))
 
 			m = m.WithStacks(stacks...)
 
@@ -81,7 +82,7 @@ func formatRewardItem(n int, requiredPlayTime time.Duration, playtime time.Durat
 		col = item.ColourGreen()
 	}
 
-	it := item.NewStack(item.Dye{Colour: col}, 1).WithCustomName(text.Colourf("<red>Reward #%d</red>", n))
+	it := item.NewStack(item.Dye{Colour: col}, 1).WithCustomName(text.Colourf("<red>Reward #%d</red>", n)).WithValue("index", n)
 	if claimed {
 		return it.WithLore(text.Colourf("<green>Claimed</green>"))
 	}
@@ -92,14 +93,42 @@ func formatRewardItem(n int, requiredPlayTime time.Duration, playtime time.Durat
 	if playtime >= requiredPlayTime {
 		lores = append(lores, text.Colourf("</grey>You may claim this prize now</green>"))
 	} else {
-		lores = append(lores, text.Colourf("<grey>You may claim this prize in</grey> <yellow>%s<yellow>", durafmt.Parse(requiredPlayTime-playtime).LimitFirstN(3)))
+		limit := 3
+		dur := requiredPlayTime - playtime
+		if dur < time.Hour {
+			limit = 2
+		}
+		lores = append(lores, text.Colourf("<grey>You may claim this prize in</grey> <yellow>%s<yellow>", durafmt.Parse(requiredPlayTime-playtime).LimitFirstN(limit)))
 	}
 
 	return it.WithLore(lores...)
 }
 
-func (*Prizes) Submit(p *player.Player, i item.Stack) {
+func (*Prizes) Submit(p *player.Player, it item.Stack) {
+	dye, ok := it.Item().(item.Dye)
+	if !ok {
+		return
+	}
+	if dye.Colour != item.ColourGreen() {
+		return
+	}
+	i, ok := it.Value("index")
+	if !ok {
+		return
+	}
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
+	in, ok := i.(int)
+	if !ok {
+		return
+	}
+	if u.Teams.ClaimedRewards.Contains(in) {
+		return
+	}
 
+	u.Teams.ClaimedRewards.Add(in)
 }
 func (pr *Prizes) Close(p *player.Player) {
 	pr.open = false

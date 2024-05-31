@@ -1350,7 +1350,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				return
 			}
 
-			if u.Teams.Dead && key == "deathban" {
+			if u.Teams.DeathBan.Active() && key == "deathban" {
 				kit.Apply(kit.Diamond{}, h.p)
 			}
 		}
