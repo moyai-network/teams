@@ -47,6 +47,7 @@ var (
 
 func configureWorlds() {
 	for _, w := range moyai.Worlds() {
+		w.Handle(&worldHandler{w: w})
 		w.SetDifficulty(world.DifficultyHard)
 		w.StopWeatherCycle()
 		w.SetDefaultGameMode(world.GameModeSurvival)

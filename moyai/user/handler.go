@@ -189,7 +189,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			p.Armour().Clear()
 			p.Inventory().Clear()
 			moyai.Deathban().AddEntity(p)
-			p.Teleport(mgl64.Vec3{5, 13,44})
+			p.Teleport(mgl64.Vec3{5, 13, 44})
 		} else {
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
@@ -1065,7 +1065,9 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}))
 		}
 	}
+	tm, teamErr := data.LoadTeamFromMemberName(h.p.Name())
 
+	teams, _ := data.LoadAllTeams()
 	if _, ok := i.Item().(item.Bucket); ok {
 		for _, a := range area.Protected(w) {
 			if a.Vec3WithinOrEqualXZ(pos.Vec3()) {
@@ -1073,6 +1075,14 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				return
 			}
 		}
+
+		for _, t := range teams {
+			if teamErr == nil && t.Name == tm.Name && t.Claim != (area.Area{}) && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				return
+			}
+		}
+		ctx.Cancel()
+		return
 	}
 
 	if _, ok := b.(block.ItemFrame); ok {
@@ -1107,8 +1117,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			if !ok {
 				return
 			}
-			tm, err := data.LoadTeamFromMemberName(h.p.Name())
-			if err != nil {
+			if teamErr != nil {
 				return
 			}
 
@@ -1142,7 +1151,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				}
 			}
 
-			teams, _ := data.LoadAllTeams()
 			for _, t := range teams {
 				c := t.Claim
 				if c != (area.Area{}) {
@@ -1187,7 +1195,6 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			return
 		}
 
-		teams, _ := data.LoadAllTeams()
 		for _, t := range teams {
 			c := t.Claim
 			if !t.Member(h.p.Name()) {
