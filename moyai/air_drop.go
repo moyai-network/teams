@@ -94,7 +94,7 @@ func fillAirDrop(inventory *inventory.Inventory) {
 
 func randomItem() item.Stack {
 	items := it.SpecialItems()
-	return item.NewStack(items[rand.Intn(len(items))].Item(), rand.Intn(5))
+	return it.NewSpecialItem(items[rand.Intn(len(items))], rand.Intn(5))
 }
 
 func findAirDropPosition(w *world.World) cube.Pos {
