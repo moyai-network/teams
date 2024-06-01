@@ -156,7 +156,9 @@ func formatNameTag(name string, t data.Team, col1, col2 string) string {
 	}
 	dtr := t.DTRString()
 
-	return text.Colourf("<%s>%s</%s>\n<gold>[</gold><%s>%s</%s> %s<gold>]</gold>", col1, name, col1, col2, t.DisplayName, col2, dtr)
+	return text.Colourf("<%s>[%s]</%s> %s\n<%s>%s</%s>", col2, t.DisplayName, col2, dtr, col1, name, col1)
+	
+	//return text.Colourf("<%s>%s</%s>\n<gold>[</gold><%s>%s</%s> %s<gold>]</gold>", col1, name, col1, col2, t.DisplayName, col2, dtr)
 }
 
 // removeFlag removes a flag from the entity data.
