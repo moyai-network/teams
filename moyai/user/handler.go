@@ -1209,6 +1209,10 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 	}
 
+	if _, ok := b.(block.Chest); ok && area.WarZone(w).Vec3WithinOrEqualXZ(pos.Vec3()) {
+		return
+	}
+
 	switch b.(type) {
 	case block.Anvil:
 		ctx.Cancel()
