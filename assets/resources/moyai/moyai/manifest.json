@@ -4,7 +4,7 @@
         "description": "Moyai Network",
         "name": "Moyai Network",
         "uuid": "fb9c4e98-f2bb-4b63-9433-8bb2040d8862",
-        "version": [1, 0, 0],
+        "version": [2, 0, 0],
         "min_engine_version": [1, 12, 1]
     },
     "modules": [
@@ -12,7 +12,7 @@
             "description": "",
             "type": "resources",
             "uuid": "f99a5e12-2e46-4b67-bacc-4c493800f2e2",
-            "version": [1, 0, 0]
+            "version": [2, 0, 0]
         }
     ]
 }
