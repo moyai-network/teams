@@ -31,7 +31,7 @@ var (
 	Blue = &Conquest{
 		name:        text.Colourf("<blue>Blue Zone</blue>"),
 		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{89, 436}, mgl64.Vec2{-95, 430}),
+		area:        area.NewArea(mgl64.Vec2{-89, 436}, mgl64.Vec2{-95, 430}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
