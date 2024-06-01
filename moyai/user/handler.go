@@ -188,13 +188,23 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	if u.Teams.DeathBan.Active() {
 		p.Inventory().Clear()
 		p.Armour().Clear()
+
+
+		u.Teams.Dead = false
+	}
+
+	if u.Teams.DeathBan.Active() {
+		p.Inventory().Clear()
+		p.Armour().Clear()
 		moyai.Deathban().AddEntity(p)
 		p.Teleport(mgl64.Vec3{5, 13, 44})
 	} else {
-		u.Teams.Dead = false
-		data.SaveUser(u)
-		moyai.Overworld().AddEntity(p)
-		p.Teleport(mgl64.Vec3{0, 80, 0})
+		if u.Teams.Dead {
+			u.Teams.Dead = false
+			data.SaveUser(u)
+			moyai.Overworld().AddEntity(p)
+			p.Teleport(mgl64.Vec3{0, 80, 0})
+		}
 	}
 
 	u.DisplayName = p.Name()
@@ -1369,8 +1379,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			if u.Teams.Dead || u.Teams.DeathBan.Active() {
 				u.Teams.Dead = false
-				u.Teams.Lives -= 1
 				u.Teams.DeathBan.Reset()
+				u.Teams.Lives -= 1
 				data.SaveUser(u)
 				moyai.Overworld().AddEntity(h.p)
 				h.p.Teleport(mgl64.Vec3{0, 80})
