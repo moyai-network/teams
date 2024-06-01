@@ -190,6 +190,9 @@ func (h *Handler) kill(src world.DamageSource) {
 	sortArmourEffects(h)
 	sortClassEffects(h)
 	moyai.Deathban().AddEntity(p)
+	unsafe.WritePacket(h.p, &packet.PlayerFog{
+		Stack: []string{"minecraft:fog_default"},
+	})
 	p.Teleport(mgl64.Vec3{5, 13, 44})
 }
 
