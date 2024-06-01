@@ -15,28 +15,65 @@ import (
 	"time"
 )
 
-var lastDropPos cube.Pos
+var (
+	lastDropPos          cube.Pos
+	parachuteWoolOffsets = []cube.Pos{
+		{2, 6, 0},
+		{3, 6, 0},
+		{3, 6, 1},
+		{3, 6, -1},
+
+		{-2, 6, 2},
+
+		{-2, 6, -2},
+	}
+
+	parachuteRootOffsets = []cube.Pos{
+		{0, 1, 0},
+		{0, 2, 0},
+		{1, 2, 0},
+		{0, 2, -1},
+		{0, 2, 1},
+
+		{-1, 2, -1},
+		{-1, 3, -1},
+		{-2, 3, -1},
+		{-2, 4, -1},
+		{-2, 4, -2},
+		{-2, 5, -2},
+
+		{-1, 2, 1},
+		{-1, 3, 1},
+		{-1, 4, 1},
+		{-1, 4, 2},
+		{-2, 4, 2},
+		{-2, 5, 2},
+
+		{1, 2, 0},
+		{1, 3, 0},
+		{1, 4, 0},
+		{2, 4, 0},
+		{2, 5, 0},
+	}
+)
 
 func tickAirDrop(w *world.World) {
 	for {
+		return
 		<-time.After(time.Minute * 10)
 		pos := findAirDropPosition(w)
-		Broadcastf("airdrop.incoming", pos.X(), pos.Z())
-		for _, p := range Players() {
-			p.PlaySound(sound.BarrelOpen{})
-			p.PlaySound(sound.FireworkHugeBlast{})
-			p.PlaySound(sound.FireworkLaunch{})
-			p.PlaySound(sound.Note{})
-		}
 		destroyAirDrop(w, lastDropPos)
 		dropAirDrop(w, pos)
 	}
 }
 
 func dropAirDrop(w *world.World, pos cube.Pos) {
+	Broadcastf("airdrop.incoming", pos.X(), pos.Z())
+
 	bl := generateAirDrop(w)
 	w.SetBlock(pos, bl, nil)
 	for _, p := range Players() {
+		p.Teleport(pos.Vec3Centre())
 		p.PlaySound(sound.BarrelClose{})
 		p.PlaySound(sound.FireworkBlast{})
 		p.PlaySound(sound.FireworkTwinkle{})
@@ -69,9 +106,58 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 			return
 		}
 
+		removeParachute(w, oldPos)
 		w.SetBlock(oldPos, block.Air{}, nil)
+
+		placeParachute(w, pos)
 		w.SetBlock(pos, bl, nil)
 	}
+}
+
+func removeParachute(w *world.World, pos cube.Pos) {
+	for _, root := range parachuteRoots(pos) {
+		if _, ok := w.Block(root).(block.WoodFence); !ok {
+			continue
+		}
+		w.SetBlock(root, block.Air{}, nil)
+	}
+	for _, wool := range parachuteWool(pos) {
+		if _, ok := w.Block(wool).(block.Wool); !ok {
+			continue
+		}
+		w.SetBlock(wool, block.Air{}, nil)
+	}
+}
+
+func placeParachute(w *world.World, pos cube.Pos) {
+	for _, root := range parachuteRoots(pos) {
+		if _, ok := w.Block(root).(block.Air); !ok {
+			continue
+		}
+		w.SetBlock(root, block.WoodFence{Wood: block.OakWood()}, nil)
+	}
+	for _, wool := range parachuteWool(pos) {
+		if _, ok := w.Block(wool).(block.Air); !ok {
+			continue
+		}
+		w.SetBlock(wool, block.Wool{Colour: item.ColourRed()}, nil)
+	}
+}
+
+func parachuteRoots(pos cube.Pos) []cube.Pos {
+	roots := make([]cube.Pos, len(parachuteRootOffsets))
+	for i, off := range parachuteRootOffsets {
+		roots[i] = pos.Add(off)
+	}
+	return roots
+}
+
+func parachuteWool(pos cube.Pos) []cube.Pos {
+	wool := make([]cube.Pos, len(parachuteWoolOffsets))
+	for i, off := range parachuteWoolOffsets {
+		wool[i] = pos.Add(off)
+	}
+	return wool
 }
 
 func generateAirDrop(w *world.World) block.Chest {
