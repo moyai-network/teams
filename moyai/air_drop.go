@@ -72,7 +72,7 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 	bl := generateAirDrop(w)
 	w.SetBlock(pos, bl, nil)
 	for _, p := range Players() {
-		p.Teleport(pos.Vec3Centre())
+		//p.Teleport(pos.Vec3Centre())
 		p.PlaySound(sound.BarrelClose{})
 		p.PlaySound(sound.FireworkBlast{})
 		p.PlaySound(sound.FireworkTwinkle{})
