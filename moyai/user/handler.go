@@ -190,7 +190,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		p.Inventory().Clear()
 		p.Armour().Clear()
 
-
 		u.Teams.Dead = false
 	}
 
@@ -1663,6 +1662,7 @@ func (h *Handler) HandleQuit() {
 				if err != nil {
 					return
 				}
+				u.Teams.DeathBan.Set(time.Minute * 10)
 				u.Teams.Dead = true
 				u.Teams.Stats.Deaths = 0
 				if u.Teams.Stats.KillStreak > u.Teams.Stats.BestKillStreak {
