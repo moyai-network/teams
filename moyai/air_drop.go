@@ -59,7 +59,6 @@ var (
 
 func tickAirDrop(w *world.World) {
 	for {
-		return
 		<-time.After(time.Minute * 10)
 		pos := findAirDropPosition(w)
 		destroyAirDrop(w, lastDropPos)
