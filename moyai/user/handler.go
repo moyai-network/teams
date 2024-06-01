@@ -1396,6 +1396,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				u.Teams.Lives -= 1
 				data.SaveUser(u)
 				moyai.Overworld().AddEntity(h.p)
+				h.p.Armour().Clear()
+				h.p.Inventory().Clear()
 				h.p.Teleport(mgl64.Vec3{0, 80})
 			}
 		}
