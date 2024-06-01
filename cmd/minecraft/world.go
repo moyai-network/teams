@@ -38,10 +38,11 @@ var (
 		{-11, 63, -26},
 	}
 	endermanSpawners = []cube.Pos{
-		{28, 63, -33},
-		{27, 63, -36},
-		{26, 63, -39},
-		{25, 63, -42},
+		{27, 28, 121},
+		{27, 28, 131},
+		{21, 28, 131},
+		{12, 28, 138},
+		{14, 28, 126},
 	}
 	blazeSpawners = []cube.Pos{
 		{-513, 83, -188},
@@ -130,18 +131,19 @@ func placeSlapper() {
 
 func placeSpawners() {
 	w := moyai.Overworld()
-	n := moyai.Nether()
+	nether := moyai.Nether()
+	end := moyai.End()
 	for _, pos := range cowSpawners {
 		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*30, 25, true)
 		w.SetBlock(pos, sp, nil)
 	}
 	for _, pos := range endermanSpawners {
-		sp := spawner.New(ent.NewEnderman, pos.Vec3Centre(), w, time.Second*5, 25, true)
+		sp := spawner.New(ent.NewEnderman, pos.Vec3Centre(), end, time.Second*5, 5, false)
 		w.SetBlock(pos, sp, nil)
 	}
 	for _, pos := range blazeSpawners {
-		sp := spawner.New(ent.NewBlaze, pos.Vec3Centre(), n, time.Second*5, 25, true)
-		n.SetBlock(pos, sp, nil)
+		sp := spawner.New(ent.NewBlaze, pos.Vec3Centre(), nether, time.Second*5, 25, true)
+		nether.SetBlock(pos, sp, nil)
 	}
 }
 
