@@ -185,18 +185,16 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	s := unsafe.Session(p)
 	u, _ := data.LoadUserFromName(p.Name())
 
-	if u.Teams.Dead {
+	if u.Teams.DeathBan.Active() {
 		p.Inventory().Clear()
 		p.Armour().Clear()
-
-		if u.Teams.DeathBan.Active() {
-			moyai.Deathban().AddEntity(p)
-			p.Teleport(mgl64.Vec3{5, 13, 44})
-		} else {
-			moyai.Overworld().AddEntity(p)
-			p.Teleport(mgl64.Vec3{0, 80, 0})
-		}
+		moyai.Deathban().AddEntity(p)
+		p.Teleport(mgl64.Vec3{5, 13, 44})
+	} else {
 		u.Teams.Dead = false
+		data.SaveUser(u)
+		moyai.Overworld().AddEntity(p)
+		p.Teleport(mgl64.Vec3{0, 80, 0})
 	}
 
 	u.DisplayName = p.Name()
@@ -1273,6 +1271,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		}
 
 		title := strings.ToLower(colour.StripMinecraftColour(lines[0]))
+		body := strings.ToLower(colour.StripMinecraftColour(lines[1]))
 		if strings.Contains(title, "[buy]") ||
 			strings.Contains(title, "[sell]") &&
 				(area.Spawn(h.p.World()).Vec3WithinOrEqualFloorXZ(h.p.Position())) {
@@ -1358,6 +1357,23 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 
 			if u.Teams.DeathBan.Active() && key == "deathban" {
 				kit.Apply(kit.Diamond{}, h.p)
+			}
+		} else if body == "have lives?" {
+			u, err := data.LoadUserFromName(h.p.Name())
+			if err != nil {
+				return
+			}
+			if u.Teams.Lives <= 0 {
+				moyai.Messagef(h.p, "lives.none")
+				return
+			}
+			if u.Teams.Dead || u.Teams.DeathBan.Active() {
+				u.Teams.Dead = false
+				u.Teams.Lives -= 1
+				u.Teams.DeathBan.Reset()
+				data.SaveUser(u)
+				moyai.Overworld().AddEntity(h.p)
+				h.p.Teleport(mgl64.Vec3{0, 80})
 			}
 		}
 	}
