@@ -33,6 +33,7 @@ import (
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/conquest"
 	"github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
@@ -825,6 +826,15 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				if pl, ok := k.Capturing(); ok && pl == h.p {
 					moyai.Messagef(attacker, "snowball.koth")
 					break
+				}
+			}
+
+			if ok := conquest.Running(); ok {
+				for _, c := range conquest.All() {
+					if pl, ok := c.Capturing(); ok && pl == h.p {
+						moyai.Messagef(attacker, "snowball.koth")
+						break
+					}
 				}
 			}
 

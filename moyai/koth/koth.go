@@ -81,7 +81,7 @@ var (
 	Hades = &KOTH{
 		name:        text.Colourf("<dark-red>Hades</dark-red>"),
 		dimension:   world.Nether,
-		area:        area.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, 496}),
+		area:        area.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, -496}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{200, -500},
 		duration: time.Minute * 10,

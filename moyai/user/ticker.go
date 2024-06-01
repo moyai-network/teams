@@ -269,7 +269,7 @@ func startTicker(h *Handler) {
 			if conquest.Running() {
 				_, _ = sb.WriteString("§4\uE000")
 				teams := conquest.OrderedTeamsByPoints()
-				f := "<grey>%s <yellow>(</yellow><green>%d</green><grey>/</grey><red>250</red><yellow>)</yellow></grey>"
+				f := "<grey>%s <yellow>(</yellow><green>%d</green><grey></grey><yellow>)</yellow></grey>"
 				top := []string{
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
 					fmt.Sprintf(f, "<grey>None</grey>", 0),
