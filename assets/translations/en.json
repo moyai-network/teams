@@ -94,7 +94,7 @@
         "user.cool-down": "<red>You're on %s cooldown for %.2fs</red>",
         "user.data.load.error": "<red>There was an error loading your data. Please notify staff.</red>",
         "user.message.mute": "<red>You may not send message while muted</red>",
-        "user.kill": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>was slain by</yellow> <red>%s</red><dark-red>[%d]</dark-red> using %s.",
+        "user.kill": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>was slain by</yellow> <red>%s</red><dark-red>[%d]</dark-red> <red>using</red> %s.",
         "user.killstreak": "<red>%s has a killstreak of <dark-red>%d</dark-red> kills</red>",
         "user.killstreak.award": "<green>You have been awarded key(s) for your killstreak!</green>",
         "user.suicide": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>killed himself</yellow>",
