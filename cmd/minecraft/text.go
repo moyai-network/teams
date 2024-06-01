@@ -24,7 +24,7 @@ func placeText(c moyai.Config) {
 			e.Close()
 		}
 	}
-	count := 5
+	count := 1
 	for i := 0; i < count; i++ {
 		for _, e := range []*entity.Ent{
 			entity.NewText(text.Colourf("<b><red>MoyaiHCF</red></b>"), mgl64.Vec3{spawn.X(), spawn.Y() + 2.5, spawn.Z()}),
