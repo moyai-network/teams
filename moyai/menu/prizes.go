@@ -82,7 +82,7 @@ func (pr *Prizes) sendPrizesMenu(u data.User, p *player.Player) {
 func formatRewardItem(n int, requiredPlayTime time.Duration, playtime time.Duration, claimed bool) item.Stack {
 	col := item.ColourGrey()
 	if claimed {
-		col = item.ColourGreen()
+		col = item.ColourLime()
 	}
 
 	it := item.NewStack(item.Dye{Colour: col}, 1).WithCustomName(text.Colourf("<red>Reward #%d</red>", n)).WithValue("index", n)
@@ -115,7 +115,7 @@ func (pr *Prizes) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	if dye.Colour == item.ColourGreen() {
+	if dye.Colour == item.ColourLime() {
 		return
 	}
 	_, ok = it.Value("claimable")
