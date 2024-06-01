@@ -1,6 +1,7 @@
 package moyai
 
 import (
+	"fmt"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/event"
@@ -22,10 +23,46 @@ var (
 		{3, 6, 0},
 		{3, 6, 1},
 		{3, 6, -1},
-
-		{-2, 6, 2},
-
+		{2, 6, -2},
+		{1, 6, -3},
+		{0, 6, -3},
+		{-1, 6, -3},
+		{-2, 6, -3},
 		{-2, 6, -2},
+		{-3, 6, -2},
+		{-3, 6, -1},
+		{-3, 6, 0},
+		{-3, 6, 1},
+		{-3, 6, 2},
+		{-2, 6, 2},
+		{-2, 6, 3},
+		{-1, 6, 3},
+		{0, 6, 3},
+		{1, 6, 3},
+		{2, 6, 2},
+
+		{2, 7, 1},
+		{2, 7, 0},
+		{2, 7, -1},
+		{1, 7, -2},
+		{0, 7, -2},
+		{-1, 7, -2},
+		{-2, 7, -1},
+		{-2, 7, 0},
+		{-2, 7, 1},
+		{-1, 7, 2},
+		{0, 7, 2},
+		{1, 7, 2},
+
+		{0, 8, 0},
+		{0, 8, -1},
+		{0, 8, 1},
+		{1, 8, -1},
+		{1, 8, 0},
+		{1, 8, 1},
+		{-1, 8, -1},
+		{-1, 8, 0},
+		{-1, 8, 1},
 	}
 
 	parachuteRootOffsets = []cube.Pos{
@@ -59,10 +96,11 @@ var (
 
 func tickAirDrop(w *world.World) {
 	for {
-		<-time.After(time.Minute * 10)
+		<-time.After(time.Second * 20)
 		pos := findAirDropPosition(w)
 		destroyAirDrop(w, lastDropPos)
 		dropAirDrop(w, pos)
+		return
 	}
 }
 
@@ -72,6 +110,8 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 	bl := generateAirDrop(w)
 	w.SetBlock(pos, bl, nil)
 	for _, p := range Players() {
+		p.Teleport(pos.Vec3())
+
 		p.PlaySound(sound.BarrelClose{})
 		p.PlaySound(sound.FireworkBlast{})
 		p.PlaySound(sound.FireworkTwinkle{})
@@ -153,6 +193,9 @@ func parachuteRoots(pos cube.Pos) []cube.Pos {
 func parachuteWool(pos cube.Pos) []cube.Pos {
 	wool := make([]cube.Pos, len(parachuteWoolOffsets))
 	for i, off := range parachuteWoolOffsets {
+		if pos.Y() == 3 {
+			fmt.Println(pos)
+		}
 		wool[i] = pos.Add(off)
 	}
 	return wool
