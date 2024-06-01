@@ -17,11 +17,8 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/role"
-	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
@@ -168,23 +165,11 @@ func readConfig() (moyai.Config, error) {
 func acceptFunc(store *tebex.Client, proxy bool, srv *server.Server) func(*player.Player) {
 	return func(p *player.Player) {
 		inv.RedirectPlayerPackets(p, func() {
-			time.Sleep(time.Millisecond * 500)
-			data.FlushCache()
-
-			sotw.Save()
-			_ = srv.Close()
+			moyai.Close()
 			os.Exit(1)
 		})
-
 		store.ExecuteCommands(p)
 
-		u, _ := data.LoadUserOrCreate(p.Name(), p.XUID())
-		if !u.Roles.Contains(role.Default{}) {
-			u.Roles.Add(role.Default{})
-		}
-		u.Roles.Add(role.Donor1{})
-
-		p.Message(lang.Translatef(u.Language, "discord.message"))
 		p.Handle(user.NewHandler(p, p.XUID()))
 		p.Armour().Handle(user.NewArmourHandler(p))
 		p.RemoveScoreboard()
@@ -194,7 +179,6 @@ func acceptFunc(store *tebex.Client, proxy bool, srv *server.Server) func(*playe
 		p.ShowCoordinates()
 		p.SetFood(20)
 
-		data.SaveUser(u)
 		in := p.Inventory()
 		for slot, i := range in.Slots() {
 			for _, sp := range it.SpecialItems() {

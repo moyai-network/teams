@@ -199,21 +199,26 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		u.Teams.Dead = false
 	}
 
+	u.DisplayName = p.Name()
+	u.Name = strings.ToLower(p.Name())
+	u.XUID = xuid
+	u.DeviceID = s.ClientData().DeviceID
+	u.SelfSignedID = s.ClientData().SelfSignedID
+	if !u.Roles.Contains(role.Default{}) {
+		u.Roles.Add(role.Default{})
+	}
+	u.Roles.Add(role.Donor1{})
+	p.Message(lang.Translatef(u.Language, "discord.message"))
+
+	data.SaveUser(u)
+
 	if u.Frozen {
 		p.SetImmobile()
 	}
 
-	u.DisplayName = p.Name()
-	u.Name = strings.ToLower(p.Name())
-	u.XUID = xuid
-
-	u.DeviceID = s.ClientData().DeviceID
-	u.SelfSignedID = s.ClientData().SelfSignedID
-
 	h.updateCurrentArea(p.Position(), u)
 	h.updateKOTHState(p.Position(), u)
 	UpdateVanishState(p, u)
-	data.SaveUser(u)
 
 	h.logTime = time.Now()
 
@@ -1574,11 +1579,15 @@ func (h *Handler) HandleQuit() {
 	h.close <- struct{}{}
 	p := h.p
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
 	u.PlayTime += time.Since(h.logTime)
 	if !u.Teams.PVP.Paused() {
 		u.Teams.PVP.TogglePause()
 	}
+	fmt.Println(u.Teams.Dead)
 	data.SaveUser(u)
 
 	_, sotwRunning := sotw.Running()

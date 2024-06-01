@@ -129,6 +129,7 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 }
 
 func Close() {
+	data.FlushCache()
 	destroyAirDrop(srv.World(), lastDropPos)
 	for _, p := range Players() {
 		u, err := data.LoadUserFromName(p.Name())
@@ -142,8 +143,6 @@ func Close() {
 		u.PlayTime += h.LogTime()
 		data.SaveUser(u)
 	}
-
-	data.FlushCache()
 
 	time.Sleep(time.Millisecond * 500)
 
