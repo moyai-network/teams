@@ -69,6 +69,9 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 
 	switch pkt := pk.(type) {
 	case *packet.ChangeDimension:
+		_ = h.c.WritePacket(&packet.StopSound{
+			StopAll: true,
+		})
 		var stack []string
 		if pkt.Dimension == 1 {
 			stack = append(stack, "minecraft:fog_hell")
