@@ -1,11 +1,12 @@
 package minecraft
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/moyai"
-	"math/rand"
-	"time"
 )
 
 // tickBlackMarket runs a ticker that checks every 15 minutes if the black market should be opened. The black
@@ -27,8 +28,8 @@ func tickBlackMarket(srv *server.Server) {
 				p.PlaySound(sound.FireworkHugeBlast{})
 				p.PlaySound(sound.FireworkLaunch{})
 				p.PlaySound(sound.Note{})
-				moyai.Broadcastf("blackmarket.opened")
 			}
+			moyai.Broadcastf("blackmarket.opened")
 		}
 	}
 }
