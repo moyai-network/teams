@@ -1,7 +1,6 @@
 package moyai
 
 import (
-	"fmt"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/event"
@@ -164,7 +163,6 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 		pos = pos.Add(cube.Pos{0, -1, 0})
 		if _, ok := w.Block(pos).(block.Air); !ok {
 			removeParachute(w, oldPos)
-			placeParachute2(w, oldPos)
 			fillAirDrop(bl.Inventory())
 
 			ch, ok := w.Block(oldPos).(block.Chest)
@@ -192,99 +190,23 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 	}
 }
 
-func placeParachute2(w *world.World, pos cube.Pos) {
-	for _, root := range parachuteRoots2(pos) {
-		if _, ok := w.Block(root).(block.Air); !ok {
-			continue
-		}
-		w.SetBlock(root, block.WoodFence{Wood: block.OakWood()}, nil)
-	}
-	for _, wool := range parachuteWool2(pos) {
-		if _, ok := w.Block(wool).(block.Air); !ok {
-			continue
-		}
-		w.SetBlock(wool, block.Wool{Colour: item.ColourRed()}, nil)
-	}
-}
-
-func removeParachute2(w *world.World, pos cube.Pos) {
-	for _, root := range parachuteRoots2(pos) {
-		if _, ok := w.Block(root).(block.WoodFence); !ok {
-			continue
-		}
-		w.SetBlock(root, block.Air{}, nil)
-	}
-	for _, wool := range parachuteWool2(pos) {
-		if _, ok := w.Block(wool).(block.Wool); !ok {
-			continue
-		}
-		w.SetBlock(wool, block.Air{}, nil)
-	}
-}
-
-func parachuteRoots2(pos cube.Pos) []cube.Pos {
-	roots := make([]cube.Pos, len(parachute2RootOffsets))
-	for i, off := range parachute2RootOffsets {
-		roots[i] = pos.Add(off)
-	}
-	return roots
-}
-
-func parachuteWool2(pos cube.Pos) []cube.Pos {
-	wool := make([]cube.Pos, len(parachute2WoolOffsets))
-	for i, off := range parachute2WoolOffsets {
-		wool[i] = pos.Add(off)
-	}
-	return wool
+func placeParachute(w *world.World, pos cube.Pos) {
+	placeParachuteBlock(parachuteRootOffsets, w, pos, block.WoodFence{Wood: block.OakWood()})
+	placeParachuteBlock(parachuteWoolOffsets, w, pos, block.Wool{Colour: item.ColourRed()})
 }
 
 func removeParachute(w *world.World, pos cube.Pos) {
-	for _, root := range parachuteRoots(pos) {
-		if _, ok := w.Block(root).(block.WoodFence); !ok {
-			continue
-		}
-		w.SetBlock(root, block.Air{}, nil)
-	}
-	for _, wool := range parachuteWool(pos) {
-		if _, ok := w.Block(wool).(block.Wool); !ok {
-			continue
-		}
-		w.SetBlock(wool, block.Air{}, nil)
-	}
+	placeParachuteBlock(parachuteRootOffsets, w, pos, block.Air{})
+	placeParachuteBlock(parachuteWoolOffsets, w, pos, block.Air{})
 }
 
-func placeParachute(w *world.World, pos cube.Pos) {
-	for _, root := range parachuteRoots(pos) {
-		if _, ok := w.Block(root).(block.Air); !ok {
+func placeParachuteBlock(offsets []cube.Pos, w *world.World, pos cube.Pos, bl world.Block) {
+	for _, off := range offsets {
+		if _, ok := w.Block(pos.Add(off)).(block.Air); !ok {
 			continue
 		}
-		w.SetBlock(root, block.WoodFence{Wood: block.OakWood()}, nil)
+		w.SetBlock(pos.Add(off), bl, nil)
 	}
-	for _, wool := range parachuteWool(pos) {
-		if _, ok := w.Block(wool).(block.Air); !ok {
-			continue
-		}
-		w.SetBlock(wool, block.Wool{Colour: item.ColourRed()}, nil)
-	}
-}
-
-func parachuteRoots(pos cube.Pos) []cube.Pos {
-	roots := make([]cube.Pos, len(parachuteRootOffsets))
-	for i, off := range parachuteRootOffsets {
-		roots[i] = pos.Add(off)
-	}
-	return roots
-}
-
-func parachuteWool(pos cube.Pos) []cube.Pos {
-	wool := make([]cube.Pos, len(parachuteWoolOffsets))
-	for i, off := range parachuteWoolOffsets {
-		if pos.Y() == 3 {
-			fmt.Println(pos)
-		}
-		wool[i] = pos.Add(off)
-	}
-	return wool
 }
 
 func generateAirDrop(w *world.World) block.Chest {
