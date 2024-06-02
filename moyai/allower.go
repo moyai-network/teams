@@ -5,6 +5,7 @@ import (
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/eotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 )
 
@@ -25,6 +26,9 @@ func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData)
 	}
 	if a.whitelisted && !u.Whitelisted {
 		return lang.Translatef(u.Language, "moyai.whitelisted"), false
+	}
+	if _, ok := eotw.Running(); ok {
+		return lang.Translatef(u.Language, "moyai.eotw"), false
 	}
 	// var users []data.User
 	// ssid, err := data.LoadUsersFromSelfSignedID(u.SelfSignedID)

@@ -130,7 +130,7 @@ func teleport(e *entity.Ent, target trace.Result) {
 			tlp.Teleport(target.Position())
 		}
 
-		tlp.Hurt(5, entity.FallDamageSource{})
+		//tlp.Hurt(5, entity.FallDamageSource{})
 	}
 	// p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
 	// usr, ok2 := user.Lookup(p.Name())

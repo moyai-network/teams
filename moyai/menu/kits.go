@@ -97,7 +97,11 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 		}
 		return
 	}
-	u.Teams.Kits.Set(name, time.Hour*4)
+	if u.Roles.Contains(role.Donor1{}, role.Donor2{}, role.Donor3{}, role.Donor4{}) || role.Staff(u.Roles.Highest()) {
+		u.Teams.Kits.Set(name, time.Hour*2)
+	} else {
+		u.Teams.Kits.Set(name, time.Hour*4)
+	}
 	data.SaveUser(u)
 
 	if menu, ok := NewKitsMenu(p); ok {
