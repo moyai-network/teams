@@ -1,6 +1,7 @@
 package moyai
 
 import (
+	_ "embed"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/event"
@@ -10,128 +11,30 @@ import (
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/moyai/area"
 	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math/rand"
 	"time"
 )
 
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func init() {
+	err := gophig.GetConfComplex("assets/air_drop/parachute_offset_fence_1.json", gophig.JSONMarshaler{}, &parachuteFenceOffsets)
+	checkErr(err)
+	err = gophig.GetConfComplex("assets/air_drop/parachute_offset_wool_1.json", gophig.JSONMarshaler{}, &parachuteWoolOffsets)
+	checkErr(err)
+}
+
 var (
-	lastDropPos          cube.Pos
-	parachuteWoolOffsets = []cube.Pos{
-		{2, 6, 0},
-		{3, 6, 0},
-		{3, 6, 1},
-		{3, 6, -1},
-		{2, 6, -2},
-		{1, 6, -3},
-		{0, 6, -3},
-		{-1, 6, -3},
-		{-2, 6, -3},
-		{-2, 6, -2},
-		{-3, 6, -2},
-		{-3, 6, -1},
-		{-3, 6, 0},
-		{-3, 6, 1},
-		{-3, 6, 2},
-		{-2, 6, 2},
-		{-2, 6, 3},
-		{-1, 6, 3},
-		{0, 6, 3},
-		{1, 6, 3},
-		{2, 6, 2},
+	lastDropPos cube.Pos
 
-		{2, 7, 1},
-		{2, 7, 0},
-		{2, 7, -1},
-		{1, 7, -2},
-		{0, 7, -2},
-		{-1, 7, -2},
-		{-2, 7, -1},
-		{-2, 7, 0},
-		{-2, 7, 1},
-		{-1, 7, 2},
-		{0, 7, 2},
-		{1, 7, 2},
-
-		{0, 8, 0},
-		{0, 8, -1},
-		{0, 8, 1},
-		{1, 8, -1},
-		{1, 8, 0},
-		{1, 8, 1},
-		{-1, 8, -1},
-		{-1, 8, 0},
-		{-1, 8, 1},
-	}
-
-	parachuteRootOffsets = []cube.Pos{
-		{0, 1, 0},
-		{0, 2, 0},
-		{1, 2, 0},
-		{0, 2, -1},
-		{0, 2, 1},
-
-		{-1, 2, -1},
-		{-1, 3, -1},
-		{-2, 3, -1},
-		{-2, 4, -1},
-		{-2, 4, -2},
-		{-2, 5, -2},
-
-		{-1, 2, 1},
-		{-1, 3, 1},
-		{-1, 4, 1},
-		{-1, 4, 2},
-		{-2, 4, 2},
-		{-2, 5, 2},
-
-		{1, 2, 0},
-		{1, 3, 0},
-		{1, 4, 0},
-		{2, 4, 0},
-		{2, 5, 0},
-	}
-
-	parachute2WoolOffsets = []cube.Pos{
-		{0, 3, 0},
-		{0, 3, 1},
-		{1, 3, 1},
-		{2, 3, 1},
-		{3, 3, 0},
-		{2, 3, -1},
-		{1, 3, -1},
-		{1, 3, -2},
-		{0, 3, -2},
-		{-2, 3, -1},
-		{-2, 3, 0},
-		{-2, 3, 1},
-		{-3, 3, 1},
-		{-2, 3, 2},
-		{-1, 3, 3},
-
-		{-1, 4, 0},
-		{-1, 4, 1},
-		{-1, 4, 2},
-		{-1, 4, -1},
-		{0, 4, -1},
-		{1, 4, 0},
-		{2, 4, 0},
-	}
-
-	parachute2RootOffsets = []cube.Pos{
-		{0, 1, 0},
-		{0, 2, 0},
-		{0, 2, -1},
-		{-1, 2, -1},
-		{-1, 3, -1},
-		{1, 2, 0},
-		{1, 3, 0},
-		{2, 3, 0},
-		{0, 2, 1},
-		{-1, 2, 1},
-		{-1, 3, 1},
-		{-1, 3, 2},
-	}
+	parachuteFenceOffsets []cube.Pos
+	parachuteWoolOffsets  []cube.Pos
 )
 
 func tickAirDrop(w *world.World) {
@@ -191,12 +94,12 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 }
 
 func placeParachute(w *world.World, pos cube.Pos) {
-	placeParachuteBlock(parachuteRootOffsets, w, pos, block.WoodFence{Wood: block.OakWood()})
+	placeParachuteBlock(parachuteFenceOffsets, w, pos, block.WoodFence{Wood: block.OakWood()})
 	placeParachuteBlock(parachuteWoolOffsets, w, pos, block.Wool{Colour: item.ColourRed()})
 }
 
 func removeParachute(w *world.World, pos cube.Pos) {
-	placeParachuteBlock(parachuteRootOffsets, w, pos, block.Air{})
+	placeParachuteBlock(parachuteFenceOffsets, w, pos, block.Air{})
 	placeParachuteBlock(parachuteWoolOffsets, w, pos, block.Air{})
 }
 
