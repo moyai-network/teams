@@ -4,7 +4,7 @@ import "github.com/df-mc/dragonfly/server"
 
 type Config struct {
 	server.UserConfig
-	Nether, End struct {
+	Nether, End, DeathBan struct {
 		Folder string
 	}
 

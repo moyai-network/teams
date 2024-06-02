@@ -18,6 +18,10 @@ Folder = "assets/worlds/nether"
 [End]
 Folder = "assets/worlds/end"
 
+[DeathBan]
+Folder = "assets/worlds/deathban"
+
+
 [Players]
 MaxCount = 0
 MaximumChunkRadius = 16

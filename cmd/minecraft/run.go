@@ -45,13 +45,13 @@ func Run() error {
 	config := configure(conf, log)
 
 	srv := moyai.NewServer(config)
-	handleServerClose(srv)
+	handleServerClose()
 
 	registerCommands()
 	srv.Listen()
 
 	moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
-	moyai.ConfigureDeathban(config.Entities, "./assets/worlds/deathban")
+	moyai.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
 	configureWorlds()
 
 	placeSpawners()
@@ -141,7 +141,7 @@ func loadStore(key string, log *logrus.Logger) *tebex.Client {
 }
 
 // handleServerClose handles the closing of the server.
-func handleServerClose(srv *server.Server) {
+func handleServerClose() {
 	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -162,7 +162,7 @@ func readConfig() (moyai.Config, error) {
 }
 
 // acceptFunc returns a function that is called when a player joins the server.
-func acceptFunc(store *tebex.Client, proxy bool, srv *server.Server) func(*player.Player) {
+func acceptFunc(store *tebex.Client) func(*player.Player) {
 	return func(p *player.Player) {
 		inv.RedirectPlayerPackets(p, func() {
 			moyai.Close()
