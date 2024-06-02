@@ -64,7 +64,7 @@ func Run() error {
 	go tickClearLag()
 
 	store := loadStore(conf.Moyai.Tebex, log)
-	for srv.Accept(acceptFunc(store, conf.Proxy.Enabled, srv)) {
+	for srv.Accept(acceptFunc(store)) {
 		// Do nothing.
 	}
 
