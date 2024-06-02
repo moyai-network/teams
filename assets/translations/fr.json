@@ -8,12 +8,21 @@
         "area.enter": "<yellow>Vous entrez: %s</yellow>",
         "area.leave": "<yellow>Vous quittez: %s</yellow>",
 
+        "airdrop.incoming": "<gold>[<redstone>Airdrop</redstone>]</gold> <red>Un airdrop arrive à %d, %d</red>",
+        "blackmarket.opened": "<gold>[<redstone>Marché Noir</redstone>]</gold> <red>Le marché noir est ouvert pour 10 minutes!</red>",
+
         "scoreboard.title": "<b><redstone>MOYAI</redstone></b> <dark-grey>(Aesir I)</dark-grey>",
         "scoreboard.kills": "<red>Kills: <grey>%d</grey></red>",
         "scoreboard.deaths": "<red>Morts: <grey>%d</grey></red>",
         "scoreboard.killstreak": "<red>Série de kills: <grey>%d</grey></red>",
         "scoreboard.deathban": "<red>Warzone: %s</red>",
         "scoreboard.koth.running": "<dark-red>%s<grey>:</grey> %s</dark-red>",
+        "scoreboard.conquest.running": "<dark-red>Conquest</dark-red>",
+        "scoreboard.conquest.first": "<gold>  1.</gold><grey> %s<grey>",
+        "scoreboard.conquest.second": "<iron>  2.</iron><grey> %s<grey>",
+        "scoreboard.conquest.third": "<copper>  3.</copper><grey> %s<grey>",
+        "scoreboard.conquest.claimed.first": "<red>■</red><grey>:</grey> %s  <blue>■</blue><grey>:</grey> %s",
+        "scoreboard.conquest.claimed.second": "<green>■</green><grey>:</grey> %s  <yellow>■</yellow><grey>:</grey> %s",
         "scoreboard.logout": "<red>Déconnexion<grey>:</grey> %.1fs</red>",
         "scoreboard.timer.sotw": "<green>SOTW<grey>:</grey> %s</green>",
         "scoreboard.timer.pvp": "<dark-green>Invincibilité<grey>:</grey> %s</dark-green>",
@@ -30,7 +39,31 @@
         "scoreboard.cooldown.golden.apple": "<gold>Pomme doré<grey>:</grey> %.1fs</gold>",
         "scoreboard.bard.energy": "<green>Energie du Bard<grey>:</grey> %.1f</green>",
         "scoreboard.mage.energy": "<amethyst>Energie du Mage<grey>:</grey> %.1f</amethyst>",
+        "scoreboard.teleportation.camp": "<dark-red>Camp<grey>:</grey> %.1fs</dark-red>",
+        "scoreboard.timer.eotw": "<red>EOTW<grey>:</grey> %s</red>",
         "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
+
+        "class.ability.use": "<yellow>Vous avez donné <green>%s %v</green> à <blue>%v</blue> coéquipiers</yellow>",
+        "class.ability.receive": "<yellow>Vous avez reçu <green>%s %v</green> de <blue>%v</blue> coéquipiers</yellow>",
+        "class.ability.receive.self": "<yellow>Vous avez reçu <green>%s %v</green> de vous-même</yellow>",
+        "class.energy.insufficient": "<red>Vous n'avez pas assez d'énergie pour utiliser cette capacité.</red>",
+        "class.ability.cooldown": "<red>Vous devez attendre %.1f secondes avant d'utiliser cette capacité à nouveau.</red>",
+
+        "ability.classes.disabled": "<red>Vous ne pouvez pas utiliser cette capacité sur les classes.</red>",
+
+        "command.key.give.received": "<yellow>Vous avez reçu <green>%dx clés.</green></yellow>",
+
+        "command.kit.cooldown": "<red>Vous ne pouvez pas utiliser ce kit pendant encore %v</red>",
+        "command.lives.not-enough": "<red>Vous n'avez pas %d vies à donner à %s.</red>",
+        "command.revive.not-enough": "<red>Vous n'avez pas assez de vies pour ressusciter %s.</red>",
+        "command.lives.give.sender": "<green>Vous avez donné %d vies à %s.</green>",
+        "command.lives.give.receiver": "<green>%s vous a donné %d vies.</green>",
+        "command.revive.sender": "<green>Vous avez ressuscité %s.</green>",
+        "command.revive.receiver": "<green>%s vous a ressuscité.</green>",
+        "command.lives": "<green>Vous avez %d vies.</green>",
+
+        "command.partner_package.give.success": "<yellow>%s a reçu <green>%dx Packages Partenaires.</green></yellow>",
+        "command.partner_package.give.received": "<yellow>Vous avez reçu <green>%dx Packages Partenaires.</green></yellow>",
 
         "chat.global.muted": "<red>The chat is currently muted.</red>",
         "chat.global.mute": "<green>You have muted the global chat.</green>",
@@ -40,10 +73,66 @@
         "chat.cooldown.updated": "<green>You have updated the chat cooldown to %d seconds.</green>",
         "chat.cooldown": "<red>You must wait %.2f seconds before sending another message.</red>",
 
+        "command.rename.too-short": "<red>Le nom que vous avez fourni est trop court.</red>",
+        "command.rename.too-long": "<red>Le nom que vous avez fourni est trop long.</red>",
+        "command.rename.no-item": "<red>Vous devez tenir un objet pour utiliser cette commande.</red>",
+        "command.restart.begins": "<green>Le redémarrage va commencer.</green>",
+        "command.restart.countdown": "\n<red><bold>[REDÉMARRAGE]</bold> Le serveur redémarrera dans <yellow>%v</yellow> secondes !</red>\n\n",
+
+        "command.team.homeless": "<red>L'équipe %s n'a pas de maison où se téléporter à proximité.</red>",
+
+        "command.tl": "<green>%s</green><grey>:</grey> <yellow>%d<grey>,</grey> %d<grey>,</grey> %d</yellow>",
+        "command.whisper.from": "<grey>[De</grey> %s<grey>]</grey> %s",
+        "command.whisper.to": "<grey>[A</grey> %s<grey>]</grey> %s",
+
+        "command.key.all.success": "<green>Les paquets partenaires ont été donnés avec succès à tous les joueurs en ligne.</green>",
+
+        "conquest.captured": "%s <green>a été capturé par</green> %s <green>(+10 points)</green>",
+        "conquest.won": "<yellow>%s</yellow> <green>a remporté la <blue>Conquête</blue> avec <yellow>%d</yellow> points</green>",
+
+        "elevator.no-block": "<red>Il n'y a aucun bloc au-dessus du panneau</red>",
+        "elevator.no-space": "<red>Il n'y a pas assez d'espace pour se téléporter</red>",
+
         "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>",
+
+        "eotw.commenced": "<green>L'EOTW commencera a commencé et se terminera dans une heure. Toutes les factions sont raidables !</green>",
+
+        "in.spawn": "<red>Vous devez être au point d'apparition pour utiliser ceci.</red>",
+        "item.use.citadel.disabled": "<red>Vous ne pouvez pas utiliser cet objet dans la Citadel.</red>",
+
+        "moyai.eotw": "<red>Moyai est en EOTW ; vous ne pouvez pas rejoindre !</red>",
+        "moyai.whitelisted": "<red>Le serveur est en liste blanche.</red>",
 
         "team.rename.success": "<green>You have renamed the team to %s</green>",
         "team.rename.success.broadcast": "<yellow>%s has renamed the team to <blue>%s</blue></yellow>",
-        "team.rename.already": "<red>You have already renamed your team.</red>"
+        "team.rename.already": "<red>You have already renamed your team.</red>",
+        "team.not-leader": "<red>Vous devez être le chef d'une équipe pour utiliser ceci.</red>",
+        "team.not-leader-or-captain": "<red>Vous devez être le chef ou le capitaine d'une équipe pour utiliser ceci.</red>",
+        "team.has-claim": "<red>Votre équipe a déjà une revendication.</red>",
+        "team.claim.select-before": "<red>Vous devez sélectionner les positions avant de revendiquer une zone.</red>",
+        "team.area.already-claimed": "<red>Cette zone est déjà revendiquée.</red>",
+        "team.area.too-close": "<red>Vous devez revendiquer au moins un bloc à distance des autres revendications.</red>",
+        "team.area.too-close.koth": "<red>Vous devez revendiquer au moins à 25 blocs des KOTHs.</red>",
+        "team.claim.set-position": "<green>Vous avez défini la position de la revendication %d à %v</green>",
+        "team.claim.cost": "<yellow>Coût de la revendication: <green>$%d</green></yellow>",
+        "team.claim.no-money": "<red>Vous n'avez pas assez d'argent dans la faction pour acheter cette revendication.</red>",
+        "team.claim.too-big": "<red>Cette revendication est trop grande. Les revendications ne peuvent avoir que jusqu'à 75x75 blocs.</red>",
+        "team.claim.none": "<red>Votre équipe n'a pas de revendication.</red>",
+        "team.claim.not-within": "<red>Vous devez être à l'intérieur de votre revendication pour utiliser ceci.</red>",
+        "newline.single": "\n",
+        "newline.double": "\n\n",
+        "newline.triple": "\n\n\n",
+
+        "team.save.fail": "<red>Impossible de sauvegarder l'équipe, veuillez contacter un membre du personnel.</red>",
+
+        "snowball.koth": "<red>Vous ne pouvez pas échanger de place avec quelqu'un capturant un KOTH</red>",
+        "snowball.far": "<red>Vous êtes trop loin de %s</red>",
+        "scrambler.target": "<red>Vous avez été brouillé par %s</red>",
+        "scrambler.user": "<green>Vous avez brouillé %s</green>",
+
+        "pearl_disabler.target": "<red>Vous avez été désactivé par perle par %s</red>",
+        "pearl_disabler.user": "<green>Vous avez désactivé la perle de %s</green>",
+
+        "lives.none": "<red>Vous n'avez pas de vies.</red>"
     }
 }

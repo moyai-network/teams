@@ -45,16 +45,16 @@
         "team.create.already": "<red>You're already in a team.</red>",
 
         "command.lives.not-enough": "<red>You do not have %d lives to give to %s.</red>",
-        "command.revive.not-enough": "<red>You do not have enough lives to revive %s.</red>",
         "command.lives.give.sender": "<green>You have given %d lives to %s.</green>",
         "command.lives.give.receiver": "<green>%s has given you %d lives.</green>",
+        "command.revive.not-enough": "<red>You do not have enough lives to revive %s.</red>",
         "command.revive.sender": "<green>You have revived %s.",
         "command.revive.receiver": "<green>%s revived you.",
         "command.lives": "<green>You have %d lives.</green>",
 
         "lives.none": "<red>You have no lives.</red>",
 
-        "command.kit.cooldown": "<red>You may not use this for another %v</red>",
+        "command.kit.cooldown": "<red>You may not use this kit for another %v</red>",
 
         "command.role.add": "<green>You added the role %s to %s for %s.</green>",
         "command.role.has": "<red>This player has already been assigned %s.</red>",
@@ -143,7 +143,7 @@
 
         "command.key.give.success": "<yellow>%s has been given <green>%dx Keys.</green></yellow>",
         "command.key.give.received": "<yellow>You have received <green>%dx Keys.</green></yellow>",
-        "commany.key.all.success": "<green>Successfully gave partner packages to all online players.</green>",
+        "command.key.all.success": "<green>Successfully gave partner packages to all online players.</green>",
 
         "command.whisper.from": "<grey>[From</grey> %s<grey>]</grey> %s",
         "command.whisper.to": "<grey>[To</grey> %s<grey>]</grey> %s",

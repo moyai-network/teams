@@ -14,8 +14,8 @@ def find_missing_keys(json1, json2):
 
 def main():
     # Paths to your JSON files
-    json_file1 = 'assets/translations/en.json'
-    json_file2 = 'assets/translations/es.json'
+    json_file1 = 'assets/translations/es.json'
+    json_file2 = 'assets/translations/fr.json'
 
     # Read the JSON files
     json_data1 = read_json(json_file1)
