@@ -12,6 +12,7 @@ import (
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/conquest"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/eotw"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 
@@ -204,6 +205,10 @@ func startTicker(h *Handler) {
 
 			if d, ok := sotw.Running(); ok && u.Teams.SOTW {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.sotw", parseDuration(time.Until(d))))
+			}
+
+			if d, ok := eotw.Running(); ok {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.eotw", parseDuration(time.Until(d))))
 			}
 
 			u, err := data.LoadUserFromName(h.p.Name())
