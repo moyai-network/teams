@@ -92,6 +92,47 @@ var (
 		{2, 4, 0},
 		{2, 5, 0},
 	}
+
+	parachute2WoolOffsets = []cube.Pos{
+		{0, 3, 0},
+		{0, 3, 1},
+		{1, 3, 1},
+		{2, 3, 1},
+		{3, 3, 0},
+		{2, 3, -1},
+		{1, 3, -1},
+		{1, 3, -2},
+		{0, 3, -2},
+		{-2, 3, -1},
+		{-2, 3, 0},
+		{-2, 3, 1},
+		{-3, 3, 1},
+		{-2, 3, 2},
+		{-1, 3, 3},
+
+		{-1, 4, 0},
+		{-1, 4, 1},
+		{-1, 4, 2},
+		{-1, 4, -1},
+		{0, 4, -1},
+		{1, 4, 0},
+		{2, 4, 0},
+	}
+
+	parachute2RootOffsets = []cube.Pos{
+		{0, 1, 0},
+		{0, 2, 0},
+		{0, 2, -1},
+		{-1, 2, -1},
+		{-1, 3, -1},
+		{1, 2, 0},
+		{1, 3, 0},
+		{2, 3, 0},
+		{0, 2, 1},
+		{-1, 2, 1},
+		{-1, 3, 1},
+		{-1, 3, 2},
+	}
 )
 
 func tickAirDrop(w *world.World) {
@@ -117,11 +158,13 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 	}
 
 	for {
-		<-time.After(time.Second)
+		<-time.After(time.Second / 4)
 
 		oldPos := pos
 		pos = pos.Add(cube.Pos{0, -1, 0})
 		if _, ok := w.Block(pos).(block.Air); !ok {
+			removeParachute(w, oldPos)
+			placeParachute2(w, oldPos)
 			fillAirDrop(bl.Inventory())
 
 			ch, ok := w.Block(oldPos).(block.Chest)
@@ -141,13 +184,58 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 			lastDropPos = oldPos
 			return
 		}
-
 		removeParachute(w, oldPos)
 		w.SetBlock(oldPos, block.Air{}, nil)
 
 		placeParachute(w, pos)
 		w.SetBlock(pos, bl, nil)
 	}
+}
+
+func placeParachute2(w *world.World, pos cube.Pos) {
+	for _, root := range parachuteRoots2(pos) {
+		if _, ok := w.Block(root).(block.Air); !ok {
+			continue
+		}
+		w.SetBlock(root, block.WoodFence{Wood: block.OakWood()}, nil)
+	}
+	for _, wool := range parachuteWool2(pos) {
+		if _, ok := w.Block(wool).(block.Air); !ok {
+			continue
+		}
+		w.SetBlock(wool, block.Wool{Colour: item.ColourRed()}, nil)
+	}
+}
+
+func removeParachute2(w *world.World, pos cube.Pos) {
+	for _, root := range parachuteRoots2(pos) {
+		if _, ok := w.Block(root).(block.WoodFence); !ok {
+			continue
+		}
+		w.SetBlock(root, block.Air{}, nil)
+	}
+	for _, wool := range parachuteWool2(pos) {
+		if _, ok := w.Block(wool).(block.Wool); !ok {
+			continue
+		}
+		w.SetBlock(wool, block.Air{}, nil)
+	}
+}
+
+func parachuteRoots2(pos cube.Pos) []cube.Pos {
+	roots := make([]cube.Pos, len(parachute2RootOffsets))
+	for i, off := range parachute2RootOffsets {
+		roots[i] = pos.Add(off)
+	}
+	return roots
+}
+
+func parachuteWool2(pos cube.Pos) []cube.Pos {
+	wool := make([]cube.Pos, len(parachute2WoolOffsets))
+	for i, off := range parachute2WoolOffsets {
+		wool[i] = pos.Add(off)
+	}
+	return wool
 }
 
 func removeParachute(w *world.World, pos cube.Pos) {
