@@ -42,12 +42,11 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 
 	if u.Vanished {
 		//moyai.Alertf(s, "staff.alert.vanish.off")
-		vanishMode, ok := mode.(vanishGameMode)
-		if !ok {
-			return
-		}
-		p.SetGameMode(vanishMode.lastMode)
 		moyai.Messagef(p, "command.vanish.disabled")
+		vanishMode, ok := mode.(vanishGameMode)
+		if ok {
+			p.SetGameMode(vanishMode.lastMode)
+		}
 	} else {
 		//moyai.Alertf(s, "staff.alert.vanish.on")
 		p.SetGameMode(vanishGameMode{lastMode: mode})
