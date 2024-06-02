@@ -1,8 +1,9 @@
 package cooldown
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // MappedCoolDown represents a cool-down mapped to a key.

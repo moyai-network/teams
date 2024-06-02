@@ -178,7 +178,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(text.Colourf("<gold><b>HCF</b></gold> <grey>- Map I</grey>"))
+			sb := scoreboard.New(text.Colourf("<red>Teams</red> <grey>- Map I</grey>"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
