@@ -157,11 +157,11 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 			c.StopCapturing(p)
 
 			pts := LookupTeamPoints(tm)
-			if pts >= 250 {
+			if pts >= 20 {
 				_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.won", tm.Name, pts))
 				for _, m := range tm.Members {
 					for _, p := range moyai.Players() {
-						if p.Name() == m.Name {
+						if p.Name() == m.DisplayName {
 							it.AddOrDrop(p, it.NewKey(it.KeyTypeConquest, 2))
 						}
 					}
