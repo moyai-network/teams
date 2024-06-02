@@ -911,6 +911,15 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			if tm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
 				tm = tm.WithPoints(tm.Points + 1)
+
+				if conquest.Running() {
+					for _, c := range conquest.All() {
+						if pl, ok := c.Capturing(); ok && pl == killer {
+							conquest.IncreaseTeamPoints(tm, 15)
+						}
+					}
+				}
+
 				data.SaveTeam(tm)
 			}
 			data.SaveUser(k)
@@ -1682,6 +1691,13 @@ func (h *Handler) HandleQuit() {
 				u.Teams.Stats.KillStreak = 0
 				if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithLastDeath(time.Now())
+					if conquest.Running() {
+						for _, c := range conquest.All() {
+							if pl, ok := c.Capturing(); ok && pl == h.p {
+								conquest.IncreaseTeamPoints(tm, 15)
+							}
+						}
+					}
 					data.SaveTeam(tm)
 				}
 				DropContents(h.p)

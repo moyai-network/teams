@@ -1,9 +1,10 @@
 package conquest
 
 import (
-	"github.com/moyai-network/teams/moyai/data"
 	"sort"
 	"sync"
+
+	"github.com/moyai-network/teams/moyai/data"
 )
 
 var (
@@ -21,7 +22,7 @@ func resetPoints() {
 }
 
 // increaseTeamPoints increases the points of a team by n.
-func increaseTeamPoints(team data.Team, n int) {
+func IncreaseTeamPoints(team data.Team, n int) {
 	pointsMu.Lock()
 	points[team.Name] += n
 	pointsMu.Unlock()
