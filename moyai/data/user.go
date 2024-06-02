@@ -153,6 +153,8 @@ type User struct {
 	LastMessageFrom string
 
 	Teams struct {
+		// DeathInventory is the inventory of the user when they died.
+		DeathInventory *Inventory `bson:"death_inventory"`
 		// ChatType is the type of chat the user is in.
 		ChatType int
 		// Balance is the balance in the user's bank.
@@ -212,6 +214,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()
+	u.Teams.DeathInventory = &Inventory{}
 
 	return u
 }
@@ -320,6 +323,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()
+	u.Teams.DeathInventory = &Inventory{}
 
 	err := result.Decode(&u)
 	if err != nil {

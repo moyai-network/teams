@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"math"
 	"math/rand"
 	"strings"
@@ -220,7 +221,22 @@ func (h *Handler) incrementDeath() {
 		victim.Teams.Stats.BestKillStreak = victim.Teams.Stats.KillStreak
 	}
 	victim.Teams.Stats.KillStreak = 0
+
+	held, off := h.p.HeldItems()
+	*victim.Teams.DeathInventory = inventoryData(held, off, h.p.Armour(), h.p.Inventory())
 	data.SaveUser(victim)
+}
+
+func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) data.Inventory {
+	return data.Inventory{
+		MainHandSlot: 0,
+		OffHand:      off,
+		Items:        i.Slots(),
+		Boots:        a.Boots(),
+		Leggings:     a.Leggings(),
+		Chestplate:   a.Chestplate(),
+		Helmet:       a.Helmet(),
+	}
 }
 
 // issueDeathban issues a deathban for the user.

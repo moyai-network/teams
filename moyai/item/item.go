@@ -22,6 +22,32 @@ func AddOrDrop(p *player.Player, it item.Stack) {
 	}
 }
 
+func AddArmorOrDrop(p *player.Player, it item.Stack) {
+	switch it.Item().(type) {
+	case item.Boots:
+		if !p.Armour().Boots().Empty() {
+			AddOrDrop(p, p.Armour().Boots())
+		}
+		p.Armour().SetBoots(it)
+	case item.Leggings:
+		if !p.Armour().Leggings().Empty() {
+			AddOrDrop(p, p.Armour().Leggings())
+		}
+
+		p.Armour().SetLeggings(it)
+	case item.Chestplate:
+		if !p.Armour().Chestplate().Empty() {
+			AddOrDrop(p, p.Armour().Chestplate())
+		}
+		p.Armour().SetChestplate(it)
+	case item.Helmet:
+		if !p.Armour().Helmet().Empty() {
+			AddOrDrop(p, p.Armour().Helmet())
+		}
+		p.Armour().SetHelmet(it)
+	}
+}
+
 func Drop(p *player.Player, it item.Stack) {
 	w, pos := p.World(), p.Position()
 	et := entity.NewItem(it, pos)
