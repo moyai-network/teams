@@ -99,8 +99,8 @@ func placeParachute(w *world.World, pos cube.Pos) {
 }
 
 func removeParachute(w *world.World, pos cube.Pos) {
-	placeParachuteBlock(parachuteFenceOffsets, w, pos, block.Air{})
-	placeParachuteBlock(parachuteWoolOffsets, w, pos, block.Air{})
+	removeParachuteBlock(parachuteFenceOffsets, w, pos)
+	removeParachuteBlock(parachuteWoolOffsets, w, pos)
 }
 
 func placeParachuteBlock(offsets []cube.Pos, w *world.World, pos cube.Pos, bl world.Block) {
@@ -110,6 +110,17 @@ func placeParachuteBlock(offsets []cube.Pos, w *world.World, pos cube.Pos, bl wo
 			continue
 		}
 		w.SetBlock(newPos, bl, nil)
+	}
+}
+
+func removeParachuteBlock(offsets []cube.Pos, w *world.World, pos cube.Pos) {
+	for _, off := range offsets {
+		newPos := pos.Add(off)
+		_, fence := w.Block(newPos).(block.WoodFence)
+		if _, wool := w.Block(newPos).(block.Wool); !fence && !wool {
+			continue
+		}
+		w.SetBlock(newPos, block.Air{}, nil)
 	}
 }
 
