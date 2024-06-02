@@ -202,10 +202,11 @@ func removeParachute(w *world.World, pos cube.Pos) {
 
 func placeParachuteBlock(offsets []cube.Pos, w *world.World, pos cube.Pos, bl world.Block) {
 	for _, off := range offsets {
-		if _, ok := w.Block(pos.Add(off)).(block.Air); !ok {
+		newPos := pos.Add(off)
+		if _, ok := w.Block(newPos).(block.Air); !ok {
 			continue
 		}
-		w.SetBlock(pos.Add(off), bl, nil)
+		w.SetBlock(newPos, bl, nil)
 	}
 }
 
