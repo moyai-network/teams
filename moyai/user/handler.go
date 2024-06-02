@@ -37,6 +37,7 @@ import (
 	"github.com/moyai-network/teams/moyai/crate"
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
+	"github.com/moyai-network/teams/moyai/eotw"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/kit"
 	"github.com/moyai-network/teams/moyai/koth"
@@ -959,7 +960,8 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 			for _, t := range teams {
 				if !t.Member(h.p.Name()) {
 					c := w.Block(sidePos)
-					if _, ok := c.(block.Chest); ok && t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(sidePos.Vec3()) {
+					_, eotw := eotw.Running()
+					if _, ok := c.(block.Chest); ok && !eotw && t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(sidePos.Vec3()) {
 						ctx.Cancel()
 					}
 				}
@@ -1007,7 +1009,8 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 
 	for _, t := range teams {
 		if !t.Member(h.p.Name()) {
-			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
+			_, eotw := eotw.Running()
+			if t.DTR > 0 && !eotw && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
@@ -1040,7 +1043,8 @@ func (h *Handler) HandleBlockBreak(ctx *event.Context, pos cube.Pos, drops *[]it
 	teams, _ := data.LoadAllTeams()
 	for _, t := range teams {
 		if !t.Member(h.p.Name()) {
-			if t.DTR > 0 && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
+			_, eotw := eotw.Running()
+			if t.DTR > 0 && !eotw && t.Claim.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				ctx.Cancel()
 				return
 			}
@@ -1226,7 +1230,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 		for _, t := range teams {
 			c := t.Claim
 			if !t.Member(h.p.Name()) {
-				if t.DTR > 0 && c.Vec3WithinOrEqualXZ(pos.Vec3()) {
+				_, eotw := eotw.Running()
+				if t.DTR > 0 && !eotw && c.Vec3WithinOrEqualXZ(pos.Vec3()) {
 					ctx.Cancel()
 					return
 				}
