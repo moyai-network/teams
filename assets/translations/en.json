@@ -457,6 +457,7 @@
         "command.pvp.enabled-already": "<red>You have already enabled PVP!</red>",
 
         "command.sotw.not-running": "<red>SOTW is currently not running.</red>",
+        "command.eotw.not-running": "<red>EOTW is currently not running.</red>",
 
         "cheat.aim.assist": "Aim Assist",
         "cheat.auto.clicker": "Auto Clicker",
@@ -512,6 +513,8 @@
         "sotw.ended": "<red>SOTW has ended!</red>",
         "sotw.disabled": "<red>Your SOTW timer has been disabled.</red>",
         "sotw.disabled.already": "<red>You already disabled your SOTW timer</red>",
+
+        "eotw.commenced": "<green>EOTW has commenced and will end in an hour. All factions are raidable!</green>",
 
         "proxy.error": "<red>Proxy Error: Please contact staff/developers at discord.gg/moyai</red>"
     }
