@@ -27,22 +27,25 @@ func AddArmorOrDrop(p *player.Player, it item.Stack) {
 	case item.Boots:
 		if !p.Armour().Boots().Empty() {
 			AddOrDrop(p, p.Armour().Boots())
+			break
 		}
 		p.Armour().SetBoots(it)
 	case item.Leggings:
 		if !p.Armour().Leggings().Empty() {
 			AddOrDrop(p, p.Armour().Leggings())
+			break
 		}
-
 		p.Armour().SetLeggings(it)
 	case item.Chestplate:
 		if !p.Armour().Chestplate().Empty() {
 			AddOrDrop(p, p.Armour().Chestplate())
+			break
 		}
 		p.Armour().SetChestplate(it)
 	case item.Helmet:
 		if !p.Armour().Helmet().Empty() {
 			AddOrDrop(p, p.Armour().Helmet())
+			break
 		}
 		p.Armour().SetHelmet(it)
 	}
