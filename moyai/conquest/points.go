@@ -33,9 +33,12 @@ func IncreaseTeamPoints(team data.Team, n int) {
 func OrderedTeamsByPoints() []data.Team {
 	pointsMu.Lock()
 	tms, _ := data.LoadAllTeams()
-	sort.Slice(tms, func(i, j int) bool {
-		return points[tms[i].Name] > points[tms[j].Name]
-	})
+    sort.SliceStable(tms, func(i, j int) bool {
+        if points[tms[i].Name] != points[tms[j].Name] {
+            return points[tms[i].Name] > points[tms[j].Name]
+        }
+        return tms[i].Name < tms[j].Name
+    })
 	pointsMu.Unlock()
 	return tms
 }
