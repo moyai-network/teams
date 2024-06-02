@@ -103,9 +103,9 @@
         "moyai.eotw": "<red>Moyai est en EOTW ; vous ne pouvez pas rejoindre !</red>",
         "moyai.whitelisted": "<red>Le serveur est en liste blanche.</red>",
 
-        "team.rename.success": "<green>You have renamed the team to %s</green>",
-        "team.rename.success.broadcast": "<yellow>%s has renamed the team to <blue>%s</blue></yellow>",
-        "team.rename.already": "<red>You have already renamed your team.</red>",
+        "team.rename.success": "<green>Vous avez renommé l'équipe en %s</green>",
+        "team.rename.success.broadcast": "<yellow>%s a renommé l'équipe en <blue>%s</blue></yellow>",
+        "team.rename.already": "<red>Vous avez déjà renommé votre équipe.</red>",
         "team.not-leader": "<red>Vous devez être le chef d'une équipe pour utiliser ceci.</red>",
         "team.not-leader-or-captain": "<red>Vous devez être le chef ou le capitaine d'une équipe pour utiliser ceci.</red>",
         "team.has-claim": "<red>Votre équipe a déjà une revendication.</red>",

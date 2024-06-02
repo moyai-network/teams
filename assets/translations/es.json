@@ -52,9 +52,9 @@
         "chat.cooldown.updated": "<green>Has actualizado el tiempo de reutilización del chat a %d segundos.</green>",
         "chat.cooldown": "<red>Tu debes esperar %.2f segundos antes de enviar otro mensaje.</red>",
 
-        "team.rename.success": "<green>You have renamed the team to %s</green>",
-        "team.rename.success.broadcast": "<yellow>%s has renamed the team to <blue>%s</blue></yellow>",
-        "team.rename.already": "<red>You have already renamed your team.</red>",
+        "team.rename.success": "<green>Has renombrado el equipo a %s</green>",
+        "team.rename.success.broadcast": "<yellow>%s ha renombrado el equipo a <blue>%s</blue></yellow>",
+        "team.rename.already": "<red>Ya has renombrado tu equipo anteriormente.</red>",
         "team.create.exists": "<red>Ya existe un equipo con ese nombre.</red>",
         "team.create.success": "<green>Has creado el equipo %s</green>",
         "team.create.success.broadcast": "<yellow>%s ha creado el equipo <blue>%s</blue></yellow>",
