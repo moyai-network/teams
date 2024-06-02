@@ -1,6 +1,10 @@
 package user
 
 import (
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/moyai-network/teams/internal/lang"
@@ -9,9 +13,6 @@ import (
 	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"regexp"
-	"strings"
-	"time"
 )
 
 // formatRegex is a regex used to clean color formatting on a string.
