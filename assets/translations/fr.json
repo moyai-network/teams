@@ -109,6 +109,7 @@
         "team.rename.success": "<green>Vous avez renomm\u00e9 l'\u00e9quipe en %s</green>",
         "team.rename.success.broadcast": "<yellow>%s a renomm\u00e9 l'\u00e9quipe en <blue>%s</blue></yellow>",
         "team.save.fail": "<red>Impossible de sauvegarder l'\u00e9quipe, veuillez contacter un membre du personnel.</red>",
-        "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>"
+        "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>",
+        "user.cool-down": "<red>Vous êtes en temps de récupération de %s pendant %.2fs</red>"
     }
 }
