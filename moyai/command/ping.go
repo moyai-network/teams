@@ -8,7 +8,7 @@ import (
 
 // Ping represents the Ping command.
 type Ping struct {
-	Target cmd.Optional[[]cmd.Target]
+	Target cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
 
 // Run ...

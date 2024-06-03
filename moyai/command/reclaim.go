@@ -40,11 +40,6 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if u.Teams.DeathBan.Active() {
-		moyai.Messagef(p, "deathban.cooldown")
-		return
-	}
-
 	if u.Teams.Reclaimed {
 		moyai.Messagef(p, "user.reclaimed")
 		return
