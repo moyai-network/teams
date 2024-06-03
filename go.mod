@@ -26,7 +26,7 @@ require (
 	github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d
 	github.com/bedrock-gophers/tebex v0.1.0
 	github.com/df-mc/npc v1.0.4
-	github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3
+	//github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7
 	github.com/samber/lo v1.39.0
 )

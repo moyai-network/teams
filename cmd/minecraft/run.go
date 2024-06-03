@@ -20,7 +20,6 @@ import (
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/user"
-	"github.com/oomph-ac/oomph"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -95,7 +94,7 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 
 // configurePacketListener configures the packet listener for the server.
 func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	if oomphEnabled {
+	/*if oomphEnabled {
 		ac := oomph.New(oomph.OomphSettings{
 			LocalAddress:  ":19133",
 			RemoteAddress: ":19132",
@@ -113,7 +112,7 @@ func configurePacketListener(conf *server.Config, oomphEnabled bool) {
 			}
 		}()
 		return
-	}
+	}*/
 	pk := intercept.NewPacketListener()
 	pk.Listen(conf, ":19132", []minecraft.Protocol{})
 
