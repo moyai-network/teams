@@ -262,6 +262,7 @@
         "conquest.captured": "%s <green>has been captured by</green> %s <green>(+10 points)</green>",
         "conquest.won": "<yellow>%s</yellow> <green>has won the <blue>Conquest</blue> with <yellow>%d</yellow> points</green>",
         "crate.key.require": "<red>You need a %s key to open this crate</red>",
+        "deathban.cooldown": "<red>You may not use this while on deathban.</red>",
         "discord.message": "<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>",
         "elevator.no-block": "<red>There is no block above the sign</red>",
         "elevator.no-space": "<red>There is not enough space to teleport</red>",

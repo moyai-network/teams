@@ -1,11 +1,12 @@
 package command
 
 import (
+	"strings"
+	"unicode"
+
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/role"
-	"strings"
-	"unicode"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
@@ -36,6 +37,11 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 
 	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
+		return
+	}
+
+	if u.Teams.DeathBan.Active() {
+		moyai.Messagef(p, "deathban.cooldown")
 		return
 	}
 
