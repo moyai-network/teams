@@ -25,10 +25,10 @@ func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData)
 		return lang.Translatef(data.Language{}, "user.data.load.error"), false
 	}
 	if a.whitelisted && !u.Whitelisted {
-		return lang.Translatef(u.Language, "moyai.whitelisted"), false
+		return lang.Translatef(*u.Language, "moyai.whitelisted"), false
 	}
 	if _, ok := eotw.Running(); ok {
-		return lang.Translatef(u.Language, "moyai.eotw"), false
+		return lang.Translatef(*u.Language, "moyai.eotw"), false
 	}
 	// var users []data.User
 	// ssid, err := data.LoadUsersFromSelfSignedID(u.SelfSignedID)

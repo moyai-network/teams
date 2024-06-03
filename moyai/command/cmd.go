@@ -20,7 +20,7 @@ func locale(s cmd.Source) data.Language {
 		if err != nil {
 			return l
 		}
-		return u.Language
+		return *u.Language
 	}
 	return l
 }

@@ -187,7 +187,7 @@ func startTicker(h *Handler) {
 				h.p.RemoveScoreboard()
 				continue
 			}
-			l := u.Language
+			l := *u.Language
 			db := u.Teams.DeathBan
 
 			if db.Active() {

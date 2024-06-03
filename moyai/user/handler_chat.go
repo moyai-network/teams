@@ -31,7 +31,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	r := u.Roles.Highest()
 
 	if !u.Teams.Mute.Expired() {
-		h.p.Message(lang.Translatef(u.Language, "user.message.mute"))
+		h.p.Message(lang.Translatef(*u.Language, "user.message.mute"))
 		return
 	}
 	tm, teamErr := data.LoadTeamFromMemberName(h.p.Name())

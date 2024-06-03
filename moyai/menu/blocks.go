@@ -60,7 +60,7 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 func buyBlock(p *player.Player, i item.Stack, cost float64) {
 	u, _ := data.LoadUserFromName(p.Name())
 	if u.Teams.Balance < cost {
-		p.Message(lang.Translatef(u.Language, "shop.balance.insufficient"))
+		p.Message(lang.Translatef(*u.Language, "shop.balance.insufficient"))
 		p.PlaySound(sound.Note{
 			Instrument: sound.Guitar(),
 			Pitch:      1,

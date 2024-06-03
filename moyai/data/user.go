@@ -2,10 +2,11 @@ package data
 
 import (
 	"errors"
-	"github.com/moyai-network/teams/internal/sets"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/moyai-network/teams/internal/sets"
 
 	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/punishment"
@@ -143,7 +144,7 @@ type User struct {
 
 	Roles    *role.Roles `bson:"roles"`
 	Tags     *tag.Tags   `bson:"tags"`
-	Language Language    `bson:"language"`
+	Language *Language    `bson:"language"`
 
 	// PlayTime is the total playtime of the user.
 	PlayTime time.Duration `bson:"playtime"`

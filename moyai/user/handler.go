@@ -217,7 +217,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		u.Roles.Add(role.Default{})
 	}
 	u.Roles.Add(role.Donor1{})
-	p.Message(lang.Translatef(u.Language, "discord.message"))
+	p.Message(lang.Translatef(*u.Language, "discord.message"))
 
 	data.SaveUser(u)
 
@@ -263,15 +263,15 @@ func (h *Handler) HandleStartBreak(ctx *event.Context, pos cube.Pos) {
 	typ, ok := it.SpecialItem(held)
 	if ok {
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
 			ctx.Cancel()
 			return
 		}
 		if spi := h.coolDownSpecificAbilities; spi.Active(typ) {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
 			ctx.Cancel()
 		} else {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.ready.partner_item.item", typ.Name()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.ready.partner_item.item", typ.Name()))
 			ctx.Cancel()
 		}
 	}
@@ -295,15 +295,15 @@ func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	typ, ok := it.SpecialItem(held)
 	if ok {
 		if cd := h.coolDownGlobalAbilities; cd.Active() {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.cooldown.partner_item", cd.Remaining().Seconds()))
 			ctx.Cancel()
 			return
 		}
 		if spi := h.coolDownSpecificAbilities; spi.Active(typ) {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.cooldown.partner_item.item", typ.Name(), spi.Remaining(typ).Seconds()))
 			ctx.Cancel()
 		} else {
-			p.SendJukeboxPopup(lang.Translatef(u.Language, "popup.ready.partner_item.item", typ.Name()))
+			p.SendJukeboxPopup(lang.Translatef(*u.Language, "popup.ready.partner_item.item", typ.Name()))
 			ctx.Cancel()
 		}
 	}

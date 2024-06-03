@@ -24,7 +24,7 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output) {
 
 	for l, t := range translations {
 		if t.Properties.Name == string(la.Name) {
-			u.Language = data.Language{
+			*u.Language = data.Language{
 				Tag: l,
 			}
 			data.SaveUser(u)

@@ -2,6 +2,7 @@ package moyai
 
 import (
 	"fmt"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
@@ -22,7 +23,7 @@ func Alertf(s cmd.Source, key string, args ...any) {
 	}
 	for _, t := range Players() {
 		if u, _ := data.LoadUserFromName(t.Name()); role.Staff(u.Roles.Highest()) {
-			t.Message(lang.Translatef(u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(u.Language, key), args...)))
+			t.Message(lang.Translatef(*u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(*u.Language, key), args...)))
 		}
 	}
 }
@@ -33,5 +34,5 @@ func Messagef(p *player.Player, key string, a ...interface{}) {
 		p.Message("An error occurred while loading your user data.")
 		return
 	}
-	p.Message(lang.Translatef(u.Language, key, a...))
+	p.Message(lang.Translatef(*u.Language, key, a...))
 }

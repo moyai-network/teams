@@ -2,12 +2,13 @@ package command
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai"
 	"regexp"
 	"slices"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai"
 
 	"github.com/moyai-network/teams/moyai/colour"
 
@@ -1157,10 +1158,10 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 	switch u.Teams.ChatType {
 	case 1:
 		u.Teams.ChatType = 0
-		p.Message(lang.Translatef(u.Language, "command.team.chat.global"))
+		p.Message(lang.Translatef(*u.Language, "command.team.chat.global"))
 	case 0:
 		u.Teams.ChatType = 1
-		p.Message(lang.Translatef(u.Language, "command.team.chat.team"))
+		p.Message(lang.Translatef(*u.Language, "command.team.chat.team"))
 	}
 	data.SaveUser(u)
 }
