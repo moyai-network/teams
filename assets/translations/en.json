@@ -76,7 +76,7 @@
         "command.chat.already": "<red>You already set your chat to %v.</red>",
         "command.chat.available": "<green>Available Chats: %v.</green>",
         "command.chat.switch": "<green>Switched to %v chat.</green>",
-        "command.claim.success": "<green>You have successfully claimed from</green> <yellow>%.0f <green>to</green> %.0f</yellow> <green>($%.0f)</green>.",
+        "command.claim.success": "<green>You have successfully claimed from</green> <yellow>%.0f <green>to</green> %.0f</yellow> <green>($%d)</green>.",
         "command.clear": "<green>You have successfully cleared your inventory.</green>",
         "command.clearlag": "<green>You have successfully cleared (%d) entitys</green>",
         "command.colour.invalid": "<red>That is not a valid colour.</red>",
