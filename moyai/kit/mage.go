@@ -39,6 +39,8 @@ func (m Mage) Items(*player.Player) [36]item.Stack {
 
 	items[2] = item.NewStack(item.Coal{}, 64)
 	items[3] = item.NewStack(item.RottenFlesh{}, 64)
+	items[4] = item.NewStack(item.GoldNugget{}, 64)
+	items[5] = item.NewStack(item.Gunpowder{}, 64)
 
 	if m.Free {
 		items[26] = item.NewStack(item.Potion{Type: potion.Invisibility()}, 1)

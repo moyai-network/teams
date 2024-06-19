@@ -439,8 +439,10 @@ var (
 	}
 
 	mageItemsUse = map[world.Item]effect.Effect{
-		item.Coal{}:        effect.New(effect.Slowness{}, 2, mageEffectDuration),
+		item.GoldNugget{}:        effect.New(effect.Slowness{}, 2, mageEffectDuration),
 		item.RottenFlesh{}: effect.New(effect.Weakness{}, 2, mageEffectDuration),
+		item.Coal{}: effect.New(effect.Wither{}, 2, mageEffectDuration),
+		item.Gunpowder{}: effect.New(effect.Poison{}, 2, mageEffectDuration),
 	}
 )
 
