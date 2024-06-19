@@ -1,0 +1,176 @@
+package command
+
+import (
+	"fmt"
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/hako/durafmt"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/eotw"
+	"github.com/moyai-network/teams/moyai/koth"
+	"github.com/moyai-network/teams/moyai/role"
+	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/sandertv/gophertunnel/minecraft/text"
+	"strings"
+	"time"
+)
+
+// KothList is a command that lists all KOTHs.
+type KothList struct {
+	Sub cmd.SubCommand `cmd:"list"`
+}
+
+// KothStart is a command that starts a KOTH.
+type KothStart struct {
+	donor1Allower
+	Sub  cmd.SubCommand `cmd:"start"`
+	KOTH kothList       `cmd:"koth"`
+}
+
+// KothStop is a command that stops a KOTH.
+type KothStop struct {
+	adminAllower
+	Sub cmd.SubCommand `cmd:"stop"`
+}
+
+// Run ...
+func (KothList) Run(s cmd.Source, o *cmd.Output) {
+	all := []string{
+		text.Colourf("<yellow>KOTHs</yellow><grey>:</grey>"),
+	}
+	for _, k := range koth.All() {
+		coords := k.Coordinates()
+		all = append(all, text.Colourf("%s<grey>:</grey> <yellow>%0.f, %0.f</yellow>", k.Name(), coords.X(), coords.Y()))
+	}
+	o.Print(strings.Join(all, "\n"))
+}
+
+// Run ...
+func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
+	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
+	p, ok := s.(*player.Player)
+	if !ok {
+		return
+	}
+
+	_, sotwRunning := sotw.Running()
+	if sotwRunning {
+		moyai.Messagef(p, "command.koth.sotw")
+		return
+	}
+	_, eotwRunning := eotw.Running()
+	if eotwRunning {
+		moyai.Messagef(p, "command.koth.eotw")
+		return
+	}
+
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
+
+	r := u.Roles.Highest()
+	name = r.Color(p.Name())
+	if u.Teams.KOTHStart.Active() {
+		moyai.Messagef(p, "command.koth.cooldown", durafmt.ParseShort(u.Teams.KOTHStart.Remaining()).LimitFirstN(2))
+		return
+	}
+
+	if _, ok := koth.Running(); ok {
+		moyai.Messagef(p, "command.koth.running")
+		return
+	}
+
+	ko, ok := koth.Lookup(string(k.KOTH))
+	if !ok {
+		moyai.Messagef(p, "command.koth.invalid")
+		return
+	}
+
+	ko.Start()
+	if !u.Roles.Contains(role.Admin{}, role.Operator{}, role.Manager{}) {
+		u.Teams.KOTHStart.Set(time.Hour * 48)
+	}
+
+	for _, u := range moyai.Players() {
+		if ko.Area().Vec3WithinOrEqualXZ(u.Position()) {
+			ko.StartCapturing(u)
+		}
+	}
+
+	coords := ko.Coordinates()
+	moyai.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
+	var st string
+	if ko == koth.Citadel || ko == koth.Hades {
+		st = fmt.Sprintf(`
+ §e█████████§r
+ §e█████████§r
+ §e█§6█§e█§6█§e█§6█§e█§6█§e█§r
+ §e█§6███████§e█§r
+ §e█§6█§b█§6█§b█§6█§b█§6█§e█§r §e%s§r
+ §e█§6███████§e█§r §6can be contested now!§r
+ §e█████████§r
+ §e█████████§r
+ §e█████████§r
+
+`, ko.Name())
+	} else {
+		st = fmt.Sprintf(`
+ §7█████████§r
+ §7██§4█§7███§4█§7██§r
+ §7██§4█§7██§4█§7███§r
+ §7██§4███§7████§r
+ §7██§4█§7██§4█§7███ §e%s KOTH§r
+ §7██§4█§7███§4█§7██§r §6can be contested now!§r
+ §7██§4█§7███§4█§7██§r
+ §7█████████§r
+`, ko.Name())
+	}
+
+	p.Message(text.Colourf(st))
+}
+
+// Run ...
+func (KothStop) Run(s cmd.Source, o *cmd.Output) {
+	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
+	p, ok := s.(*player.Player)
+	if ok {
+		if u, err := data.LoadUserFromName(p.Name()); err == nil {
+			r := u.Roles.Highest()
+			name = r.Color(p.Name())
+		}
+	}
+	if k, ok := koth.Running(); !ok {
+		moyai.Messagef(p, "command.koth.not.running")
+		return
+	} else {
+		k.Stop()
+		moyai.Broadcastf("koth.stop", name, k.Name())
+	}
+}
+
+type (
+	kothList string
+)
+
+// Type ...
+func (kothList) Type() string {
+	return "koth_list"
+}
+
+// Options ...
+func (kothList) Options(src cmd.Source) []string {
+	p, playerSrc := src.(*player.Player)
+	u, _ := data.LoadUserFromName(p.Name())
+
+	var opts []string
+	for _, k := range koth.All() {
+		if (k == koth.Citadel || k == koth.Hades) && (playerSrc && !u.Roles.Contains(role.Admin{}, role.Operator{}, role.Manager{})) {
+			continue
+		}
+		opts = append(opts, colour.StripMinecraftColour(strings.ToLower(k.Name())))
+	}
+	return opts
+}
