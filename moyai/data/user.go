@@ -2,6 +2,7 @@ package data
 
 import (
 	"errors"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -137,6 +138,9 @@ type User struct {
 	DisplayName string `bson:"display_name"`
 	Whitelisted bool   `bson:"whitelisted"`
 
+	DiscordID string `bson:"discord_id"`
+	LinkCode  string `bson:"link_code"`
+
 	StaffMode bool `bson:"staff_mode"`
 	Vanished  bool `bson:"vanished"`
 
@@ -243,6 +247,25 @@ func LoadUserOrCreate(name, xuid string) (User, error) {
 	return u, err
 }
 
+func LoadUserFromCode(code string) (User, error) {
+	if u, ok := userCached(func(u User) bool {
+		return u.LinkCode == code
+	}); ok {
+		return u, nil
+	}
+	return decodeSingleUserFromFilter(bson.M{"link_code": bson.M{"$eq": code}})
+}
+
+func LoadUserFromDiscordID(did string) (User, error) {
+	if u, ok := userCached(func(u User) bool {
+		return u.DiscordID == did
+	}); ok {
+		return u, nil
+	}
+	return decodeSingleUserFromFilter(bson.M{"discord_id": bson.M{"$eq": did}})
+
+}
+
 func LoadUserFromXUID(xuid string) (User, error) {
 	if u, ok := userCached(func(u User) bool {
 		return u.XUID == xuid
@@ -317,6 +340,11 @@ func SaveUser(u User) {
 	userMu.Lock()
 	users[u.XUID] = u
 	userMu.Unlock()
+
+	err := saveUserData(u)
+	if err != nil {
+		log.Println("Error saving user data:", err)
+	}
 }
 
 func decodeSingleUserFromFilter(filter any) (User, error) {

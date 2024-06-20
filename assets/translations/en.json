@@ -118,6 +118,8 @@
         "command.koth.invalid": "<red>Invalid KOTH.</red>",
         "command.koth.not-running": "<red>No KOTH is currently running.</red>",
         "command.koth.running": "<red>A KOTH is already running.</red>",
+        "command.link.already": "<red>You are already linked to a Discord account.</red>",
+        "command.link.code": "<green>Use /link %s on discord to link your account.</green>",
         "command.lives": "<green>You have %d lives.</green>",
         "command.lives.give.receiver": "<green>%s has given you %d lives.</green>",
         "command.lives.give.sender": "<green>You have given %d lives to %s.</green>",

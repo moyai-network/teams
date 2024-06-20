@@ -16,11 +16,6 @@ func FlushCache() {
 	userMu.Lock()
 	defer userMu.Unlock()
 	for _, u := range users {
-		err := saveUserData(u)
-		if err != nil {
-			log.Println("Error saving user data:", err)
-			return
-		}
 		if time.Since(u.lastSaved) > time.Minute*2 {
 			delete(users, u.XUID)
 		}
