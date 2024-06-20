@@ -108,6 +108,8 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
 	c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.gg/moyai for more info!</red>") + "§8"
+	c.JoinMessage = "<green>[+] %s</green>"
+	c.QuitMessage = "<red>[-] %s</red>"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
 
 	configurePacketListener(&c, conf.Oomph.Enabled)
