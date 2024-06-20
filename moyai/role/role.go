@@ -250,6 +250,8 @@ func (r *Roles) checkExpiry() {
 func init() {
 	Register(Operator{})
 	Register(Default{})
+	Register(Voter{})
+	Register(Nitro{})
 	Register(Khufu{})
 	Register(Menes{})
 	Register(Ramses{})

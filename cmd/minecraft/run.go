@@ -20,8 +20,10 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -61,6 +63,7 @@ func Run() error {
 	placeCrates()
 	placeShopSigns()
 
+	go tickVotes()
 	go tickBlackMarket(srv)
 	go tickClearLag()
 
@@ -77,6 +80,22 @@ func registerLanguages() {
 	lang.Register(language.English)
 	lang.Register(language.Spanish)
 	lang.Register(language.French)
+}
+
+// tickVotes ticks new votes every 5 minutes of all users.
+func tickVotes() {
+	t := time.NewTicker(time.Second * 5)
+	go func() {
+		for range t.C {
+			usrs := data.NewVoters()
+			for _, u := range usrs {
+				u.Roles.Add(role.Voter{})
+				u.Roles.Expire(role.Voter{}, time.Now().Add(time.Hour*24))
+				moyai.Broadcastf("vote.broadcast", u.DisplayName)
+				data.SaveUser(u)
+			}
+		}
+	}()
 }
 
 // configure initializes the server configuration.

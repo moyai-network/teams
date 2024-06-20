@@ -2,10 +2,11 @@ package data
 
 import (
 	"errors"
-	"github.com/go-gl/mathgl/mgl64"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-gl/mathgl/mgl64"
 
 	"github.com/moyai-network/teams/internal/sets"
 
@@ -153,6 +154,8 @@ type User struct {
 	Frozen bool `bson:"frozen"`
 	// LastMessageFrom is the name of the player that sent the user a message.
 	LastMessageFrom string
+	// LastVote is the last time the user voted.
+	LastVote time.Time
 
 	Teams struct {
 		// Position is the position of the user.

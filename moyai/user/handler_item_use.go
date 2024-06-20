@@ -271,7 +271,7 @@ func (h *Handler) handlePearlUse(ctx *event.Context) {
 		return
 	}
 
-	h.coolDownPearl.Set(time.Second * 15)
+	//h.coolDownPearl.Set(time.Second * 15)
 	h.lastPearlPos = h.p.Position()
 }
 
