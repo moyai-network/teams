@@ -30,7 +30,6 @@ func (Link) Run(src cmd.Source, out *cmd.Output) {
 	code := generateCode()
 	u.LinkCode = code
 	data.SaveUser(u)
-
 	moyai.Messagef(p, "command.link.code", code)
 }
 

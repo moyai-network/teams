@@ -2,7 +2,12 @@ package data
 
 import (
 	"errors"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -254,6 +259,40 @@ func LoadUserFromCode(code string) (User, error) {
 		return u, nil
 	}
 	return decodeSingleUserFromFilter(bson.M{"link_code": bson.M{"$eq": code}})
+}
+
+func LinkUser(code string, sender *discord.User) (User, error) {
+	id := sender.ID.String()
+	if _, err := LoadUserFromDiscordID(id); err == nil {
+		return User{}, errors.New("already linked")
+	}
+	u, err := LoadUserFromCode(code)
+	if err != nil || len(u.LinkCode) == 0 || len(u.DiscordID) > 0 {
+		return User{}, errors.New("invalid code")
+	}
+
+	u.DiscordID = id
+	u.LinkCode = ""
+
+	SaveUser(u)
+	return u, nil
+}
+
+func UnlinkUser(u User, s *state.State, gID discord.GuildID) error {
+	if len(u.DiscordID) == 0 {
+		return errors.New("not linked")
+	}
+	discordID, _ := strconv.Atoi(u.DiscordID)
+	u.DiscordID = ""
+
+	SaveUser(u)
+	_ = s.ModifyMember(gID, discord.UserID(discordID), api.ModifyMemberData{
+		Nick: option.NewString(""),
+	})
+
+	_ = s.RemoveRole(gID, discord.UserID(discordID), discord.RoleID(1209213713337548830), "Unlinking")
+	_ = s.AddRole(gID, discord.UserID(discordID), discord.RoleID(1198584931459272806), api.AddRoleData{AuditLogReason: "Unlinking"})
+	return nil
 }
 
 func LoadUserFromDiscordID(did string) (User, error) {

@@ -10,6 +10,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
+		cmd.New("link", text.Colourf("Link your discord account."), nil, command.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command.Revive{}),
 		cmd.New("prizes", "play time rewards", nil, command.Prizes{}),
 		cmd.New("lives", "lives management commands", nil, command.Lives{}, command.LivesGiveOnline{}, command.LivesGiveOffline{}),
@@ -94,7 +95,7 @@ func registerCommands() {
 		cmd.New("conquest", text.Colourf("Manage Conquest."), nil, command.ConquestStart{}, command.ConquestStop{}),
 		cmd.New("eotw", text.Colourf("EOTW management commands."), nil, command.EOTWStart{}, command.EOTWEnd{}),
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
-		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"),  []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
+		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"), []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
 	} {
 		cmd.Register(c)
 	}
