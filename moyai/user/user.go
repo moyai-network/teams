@@ -27,7 +27,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/df-mc/dragonfly/server/world/particle"
 	"github.com/go-gl/mathgl/mgl64"
 )
 
@@ -422,7 +421,7 @@ func (h *Handler) clearWall() {
 		if duration <= 0 {
 			delete(h.wallBlocks, p)
 			h.viewBlockUpdate(p, h.p.World().Block(p), 0)
-			h.p.ShowParticle(p.Vec3(), particle.BlockForceField{})
+			//h.p.ShowParticle(p.Vec3(), particle.BlockForceField{})
 			continue
 		}
 		h.wallBlocks[p] = duration - 0.1
