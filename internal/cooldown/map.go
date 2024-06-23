@@ -16,12 +16,18 @@ func NewMappedCoolDown[T comparable]() MappedCoolDown[T] {
 
 // Active returns true if the cool-down is active.
 func (m MappedCoolDown[T]) Active(key T) bool {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	coolDown, ok := m[key]
 	return ok && coolDown.Active()
 }
 
 // Set sets the cool-down.
 func (m MappedCoolDown[T]) Set(key T, d time.Duration) {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	coolDown := m.Key(key)
 	coolDown.Set(d)
 	m[key] = coolDown
@@ -29,6 +35,9 @@ func (m MappedCoolDown[T]) Set(key T, d time.Duration) {
 
 // Key returns the cool-down for the key.
 func (m MappedCoolDown[T]) Key(key T) *CoolDown {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	coolDown, ok := m[key]
 	if !ok {
 		newCD := NewCoolDown()
@@ -40,11 +49,17 @@ func (m MappedCoolDown[T]) Key(key T) *CoolDown {
 
 // Reset resets the cool-down.
 func (m MappedCoolDown[T]) Reset(key T) {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	delete(m, key)
 }
 
 // Remaining returns the remaining time of the cool-down.
 func (m MappedCoolDown[T]) Remaining(key T) time.Duration {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	coolDown, ok := m[key]
 	if !ok {
 		return 0
@@ -54,6 +69,9 @@ func (m MappedCoolDown[T]) Remaining(key T) time.Duration {
 
 // All returns all cool-downs.
 func (m MappedCoolDown[T]) All() (coolDowns []*CoolDown) {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	for _, coolDown := range m {
 		coolDowns = append(coolDowns, coolDown)
 	}
@@ -62,6 +80,9 @@ func (m MappedCoolDown[T]) All() (coolDowns []*CoolDown) {
 
 // MarshalBSON ...
 func (m MappedCoolDown[T]) MarshalBSON() ([]byte, error) {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	d := map[T]time.Time{}
 	for k, cd := range m {
 		d[k] = cd.expiration.Load()
@@ -71,14 +92,13 @@ func (m MappedCoolDown[T]) MarshalBSON() ([]byte, error) {
 
 // UnmarshalBSON ...
 func (m MappedCoolDown[T]) UnmarshalBSON(b []byte) error {
+	if m == nil {
+		m = make(MappedCoolDown[T])
+	}
 	d := map[T]time.Time{}
 	err := bson.Unmarshal(b, &d)
 	if err != nil {
 		return err
-	}
-
-	if m == nil {
-		m = make(MappedCoolDown[T])
 	}
 
 	for k, cd := range d {
