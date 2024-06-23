@@ -380,10 +380,12 @@ func SaveUser(u User) {
 	users[u.XUID] = u
 	userMu.Unlock()
 
-	err := saveUserData(u)
-	if err != nil {
-		log.Println("Error saving user data:", err)
-	}
+	go func() {
+		err := saveUserData(u)
+		if err != nil {
+			log.Println("Error saving user data:", err)
+		}
+	}()
 }
 
 func decodeSingleUserFromFilter(filter any) (User, error) {
