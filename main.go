@@ -1,12 +1,11 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/moyai-network/teams/cmd/discord"
 	"github.com/moyai-network/teams/cmd/konsole"
-	_ "net/http/pprof"
-
-	"github.com/joho/godotenv"
 	"github.com/moyai-network/teams/cmd/minecraft"
+	_ "net/http/pprof"
 )
 
 func init() {
