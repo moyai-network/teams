@@ -109,12 +109,17 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			return
 		}
 
+		tData, err := data.LoadUserFromName(t.Name())
+		if err != nil {
+			return
+		}
+
 		targetTeam, _ := data.LoadTeamFromMemberName(t.Name())
 		userTeam, _ := data.LoadTeamFromMemberName(u.Name)
 
 		var ta string
 
-		if t, ok := tag.ByName(u.Teams.Settings.Display.ActiveTag); ok {
+		if t, ok := tag.ByName(tData.Teams.Settings.Display.ActiveTag); ok {
 			ta = t.Format()
 		}
 
