@@ -15,7 +15,7 @@ func init() {
 
 func main() {
 	go func() {
-		_ = http.ListenAndServe("localhost:6969", nil)
+		_ = http.ListenAndServe(":6968", nil)
 	}()
 
 	discord.Run()
