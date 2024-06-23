@@ -1,6 +1,8 @@
 package user
 
 import (
+	"github.com/moyai-network/teams/moyai/conquest"
+	"github.com/moyai-network/teams/moyai/koth"
 	"math"
 	"math/rand"
 	"strings"
@@ -169,10 +171,13 @@ func (h *Handler) kill(src world.DamageSource) {
 	if err != nil {
 		return
 	}
+
 	p.World().PlaySound(p.Position(), sound.Explosion{})
 	if !u.Teams.DeathBan.Active() {
 		h.handleTeamMemberDeath()
 	}
+
+	h.stopCapturing()
 	h.incrementDeath()
 	h.issueDeathban()
 	h.cancelStormBreak()
@@ -199,6 +204,20 @@ func (h *Handler) kill(src world.DamageSource) {
 		Stack: []string{"minecraft:fog_default"},
 	})
 	p.Teleport(mgl64.Vec3{5, 13, 44})
+}
+
+// stopCapturing stops the user from capturing a koth or a point.
+func (h *Handler) stopCapturing() {
+	k, ok := koth.Running()
+	if ok {
+		k.StopCapturing(h.p)
+	}
+	ok = conquest.Running()
+	if ok {
+		for _, c := range conquest.All() {
+			c.StopCapturing(h.p)
+		}
+	}
 }
 
 // cancelStormBreak cancels the storm breaker effect.
