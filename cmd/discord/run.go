@@ -11,8 +11,6 @@ import (
 )
 
 func Run() {
-	return
-	// TODO: CREATE BOT
 	r := cmdroute.NewRouter()
 	s := state.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	r.Use(cmdroute.Deferrable(s, cmdroute.DeferOpts{}))

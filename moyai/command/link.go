@@ -26,10 +26,13 @@ func (Link) Run(src cmd.Source, out *cmd.Output) {
 		moyai.Messagef(p, "command.link.already")
 		return
 	}
+	code := u.LinkCode
+	if code == "" {
+		code = generateCode()
+		u.LinkCode = code
+		data.SaveUser(u)
+	}
 
-	code := generateCode()
-	u.LinkCode = code
-	data.SaveUser(u)
 	moyai.Messagef(p, "command.link.code", code)
 }
 
