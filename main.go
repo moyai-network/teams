@@ -5,6 +5,7 @@ import (
 	"github.com/moyai-network/teams/cmd/discord"
 	"github.com/moyai-network/teams/cmd/konsole"
 	"github.com/moyai-network/teams/cmd/minecraft"
+	"net/http"
 	_ "net/http/pprof"
 )
 
@@ -13,6 +14,10 @@ func init() {
 }
 
 func main() {
+	go func() {
+		_ = http.ListenAndServe("localhost:6969", nil)
+	}()
+
 	discord.Run()
 	konsole.Run()
 	err := minecraft.Run()

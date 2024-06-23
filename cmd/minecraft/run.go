@@ -3,7 +3,6 @@ package minecraft
 import (
 	"os"
 	"os/signal"
-	"runtime/pprof"
 	"syscall"
 	"time"
 
@@ -176,24 +175,10 @@ func loadStore(key string, log *logrus.Logger) *tebex.Client {
 
 // handleServerClose handles the closing of the server.
 func handleServerClose() {
-	_ = os.MkdirAll("pprof", 0777)
-	f, err := os.Create("pprof/cpu.prof" + time.Now().Format("2006-01-02-15-04-05"))
-	if err != nil {
-		panic(err)
-	}
-	go func() {
-		err := pprof.StartCPUProfile(f)
-		if err != nil {
-			panic(err)
-		}
-	}()
-
 	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-ch
-		pprof.StopCPUProfile()
-		_ = f.Close()
 		moyai.Close()
 	}()
 }
