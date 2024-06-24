@@ -161,6 +161,7 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output) {
 }
 
 type BalanceAddOffline struct {
+	operatorAllower
 	Sub    cmd.SubCommand `cmd:"add"`
 	Target string         `cmd:"target"`
 	Amount float64        `cmd:"amount"`
