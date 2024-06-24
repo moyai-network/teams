@@ -163,6 +163,7 @@ func tickDeathban(h *Handler) {
 // startTicker starts the user's tickers.
 func startTicker(h *Handler) {
 	t := time.NewTicker(100 * time.Millisecond)
+	defer t.Stop()
 
 	for {
 		select {
@@ -363,7 +364,6 @@ func startTicker(h *Handler) {
 				h.lastScoreBoard.Store(nil)
 			}
 		case <-h.close:
-			t.Stop()
 			return
 		}
 	}
@@ -439,10 +439,10 @@ var (
 	}
 
 	mageItemsUse = map[world.Item]effect.Effect{
-		item.GoldNugget{}:        effect.New(effect.Slowness{}, 2, mageEffectDuration),
+		item.GoldNugget{}:  effect.New(effect.Slowness{}, 2, mageEffectDuration),
 		item.RottenFlesh{}: effect.New(effect.Weakness{}, 2, mageEffectDuration),
-		item.Coal{}: effect.New(effect.Wither{}, 2, mageEffectDuration),
-		item.Gunpowder{}: effect.New(effect.Poison{}, 2, mageEffectDuration),
+		item.Coal{}:        effect.New(effect.Wither{}, 2, mageEffectDuration),
+		item.Gunpowder{}:   effect.New(effect.Poison{}, 2, mageEffectDuration),
 	}
 )
 

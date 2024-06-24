@@ -85,17 +85,15 @@ func registerLanguages() {
 // tickVotes ticks new votes every 5 minutes of all users.
 func tickVotes() {
 	t := time.NewTicker(time.Second * 5)
-	go func() {
-		for range t.C {
-			usrs := data.NewVoters()
-			for _, u := range usrs {
-				u.Roles.Add(role.Voter{})
-				u.Roles.Expire(role.Voter{}, time.Now().Add(time.Hour*24))
-				moyai.Broadcastf("vote.broadcast", u.DisplayName)
-				data.SaveUser(u)
-			}
+	for range t.C {
+		usrs := data.NewVoters()
+		for _, u := range usrs {
+			u.Roles.Add(role.Voter{})
+			u.Roles.Expire(role.Voter{}, time.Now().Add(time.Hour*24))
+			moyai.Broadcastf("vote.broadcast", u.DisplayName)
+			data.SaveUser(u)
 		}
-	}()
+	}
 }
 
 // configure initializes the server configuration.
