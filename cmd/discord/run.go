@@ -6,6 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/moyai-network/teams/cmd/discord/command"
+	"github.com/moyai-network/teams/moyai"
 	"log"
 	"os"
 )
@@ -36,4 +37,6 @@ func Run() {
 			log.Println("cannot connect:", err)
 		}
 	}()
+
+	moyai.SetDiscordState(s)
 }

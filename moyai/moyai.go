@@ -1,6 +1,7 @@
 package moyai
 
 import (
+	"github.com/diamondburned/arikawa/v3/state"
 	"time"
 
 	"github.com/moyai-network/teams/moyai/data"
@@ -26,6 +27,8 @@ func init() {
 }
 
 var (
+	// discordState is the discord state of the Moyai bot.
+	discordState *state.State
 	// srv is the server instance of the Moyai server.
 	srv *server.Server
 	// end is the world of the End dimension.
@@ -40,6 +43,14 @@ var (
 	// blackMarketOpened is the time at which the black market was last opened.
 	blackMarketOpened time.Time
 )
+
+func SetDiscordState(s *state.State) {
+	discordState = s
+}
+
+func DiscordState() *state.State {
+	return discordState
+}
 
 func Worlds() []*world.World {
 	return []*world.World{Overworld(), Nether(), End(), Deathban()}
