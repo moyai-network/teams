@@ -58,7 +58,6 @@ func (d Diamond) Armour(*player.Player) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, lvl)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 
-	invis := item.NewEnchantment(ench.Invisibility{}, 1)
 	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
 	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)
@@ -76,7 +75,7 @@ func (d Diamond) Armour(*player.Player) [4]item.Stack {
 	)
 
 	if !d.Free {
-		helmetEnchants = append(helmetEnchants, invis, nightVision)
+		helmetEnchants = append(helmetEnchants, nightVision)
 		chestplateEnchants = append(chestplateEnchants, fireRes)
 		leggingsEnchants = append(leggingsEnchants, recovery)
 		bootsEnchants = append(bootsEnchants, item.NewEnchantment(enchantment.FeatherFalling{}, 4))

@@ -1,6 +1,8 @@
 package kit
 
 import (
+	_ "unsafe"
+
 	"github.com/bedrock-gophers/nbtconv"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/enchantment"
@@ -11,7 +13,6 @@ import (
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	_ "unsafe"
 )
 
 // Kit contains all the items, armour, and effects obtained by a kit.
@@ -101,7 +102,6 @@ func armour(free bool, tiers [4]item.ArmourTier) [4]item.Stack {
 	protection := item.NewEnchantment(ench.Protection{}, lvl)
 	unbreaking := item.NewEnchantment(enchantment.Unbreaking{}, 3)
 
-	invis := item.NewEnchantment(ench.Invisibility{}, 1)
 	nightVision := item.NewEnchantment(ench.NightVision{}, 1)
 	fireRes := item.NewEnchantment(ench.FireResistance{}, 1)
 	recovery := item.NewEnchantment(ench.Recovery{}, 1)
@@ -119,7 +119,7 @@ func armour(free bool, tiers [4]item.ArmourTier) [4]item.Stack {
 	)
 
 	if !free {
-		helmetEnchants = append(helmetEnchants, invis, nightVision)
+		helmetEnchants = append(helmetEnchants, nightVision)
 		chestplateEnchants = append(chestplateEnchants, fireRes)
 		leggingsEnchants = append(leggingsEnchants, recovery)
 		bootsEnchants = append(bootsEnchants, item.NewEnchantment(enchantment.FeatherFalling{}, 4))
