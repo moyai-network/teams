@@ -60,14 +60,6 @@ func (h *PacketHandler) HandleClientPacket(ctx *event.Context, pk packet.Packet)
 }
 
 func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet) {
-	name := h.c.IdentityData().DisplayName
-
-	p, ok := Lookup(name)
-	if !ok {
-		return
-	}
-	u, _ := data.LoadUserFromName(p.Name())
-
 	switch pkt := pk.(type) {
 	case *packet.ChangeDimension:
 		_ = h.c.WritePacket(&packet.StopSound{
@@ -100,6 +92,13 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			ctx.Cancel()
 		}
 	case *packet.SetActorData:
+		name := h.c.IdentityData().DisplayName
+
+		p, ok := Lookup(name)
+		if !ok {
+			return
+		}
+		u, _ := data.LoadUserFromName(p.Name())
 		t, ok := lookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok {
 			break
