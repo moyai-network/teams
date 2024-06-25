@@ -148,11 +148,11 @@ func canAttack(pl, target *player.Player) bool {
 	t, _ := data.LoadUserFromName(target.Name())
 
 	_, sotwRunning := sotw.Running()
-	if u.Teams.PVP.Active() && !u.Teams.DeathBan.Active() || t.Teams.PVP.Active() && !t.Teams.DeathBan.Active() {
+	if u.Teams.PVP.Active() && !u.Teams.DeathBan.After(time.Now()) || t.Teams.PVP.Active() && !t.Teams.DeathBan.After(time.Now()) {
 		return false
 	}
 
-	if sotwRunning && (u.Teams.SOTW && !u.Teams.DeathBan.Active() || t.Teams.SOTW && !t.Teams.DeathBan.Active()) {
+	if sotwRunning && (u.Teams.SOTW && !u.Teams.DeathBan.After(time.Now()) || t.Teams.SOTW && !t.Teams.DeathBan.After(time.Now())) {
 		return false
 	}
 

@@ -2,6 +2,7 @@ package user
 
 import (
 	"strings"
+	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/event"
@@ -10,8 +11,8 @@ import (
 )
 
 var (
-	spawn = []string{}
-	combat = []string{}
+	spawn    = []string{}
+	combat   = []string{}
 	deathban = []string{
 		"reclaim",
 		"trim",
@@ -27,7 +28,7 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
 		return
 	}
 
-	if u.Teams.DeathBan.Active() {
+	if u.Teams.DeathBan.After(time.Now()) {
 		for _, d := range deathban {
 			names := []string{command.Name()}
 			names = append(names, command.Aliases()...)

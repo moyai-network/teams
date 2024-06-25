@@ -111,7 +111,7 @@ func (h *Handler) updateWalls(ctx *event.Context, newPos mgl64.Vec3, u data.User
 		}
 	}
 
-	if u.Teams.PVP.Active() && !u.Teams.DeathBan.Active() {
+	if u.Teams.PVP.Active() && !u.Teams.DeathBan.After(time.Now()) {
 		teams, _ := data.LoadAllTeams()
 		for _, a := range teams {
 			a := a.Claim
@@ -235,7 +235,7 @@ func (h *Handler) updateCurrentArea(newPos mgl64.Vec3, u data.User) {
 		}
 	}
 	for _, a := range append(area.Protected(w), areas...) {
-		if a.Vec3WithinOrEqualFloorXZ(newPos){
+		if a.Vec3WithinOrEqualFloorXZ(newPos) {
 			if ar != a {
 				if u.Teams.PVP.Active() {
 					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {

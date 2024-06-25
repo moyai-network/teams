@@ -184,7 +184,7 @@ type User struct {
 		// Lives is the amount of lives the user has left.
 		Lives int
 		// DeathBan is the death-ban cool-down.
-		DeathBan *cooldown.CoolDown
+		DeathBan time.Time
 		// Report is the report cool-down.
 		Report *cooldown.CoolDown
 		// Refill is the refill cool-down.
@@ -226,7 +226,6 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.KOTHStart = cooldown.NewCoolDown()
-	u.Teams.DeathBan = cooldown.NewCoolDown()
 	u.Teams.Report = cooldown.NewCoolDown()
 	u.Teams.Refill = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
@@ -399,7 +398,6 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.KOTHStart = cooldown.NewCoolDown()
-	u.Teams.DeathBan = cooldown.NewCoolDown()
 	u.Teams.Report = cooldown.NewCoolDown()
 	u.Teams.Refill = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()

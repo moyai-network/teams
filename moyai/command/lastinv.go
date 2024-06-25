@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -14,7 +15,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-type LastInv struct{
+type LastInv struct {
 	adminAllower
 	Target []cmd.Target `cmd:"target"`
 }
@@ -40,10 +41,18 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output) {
 	iv := inventory.New(54, nil)
 	for i, d := range d.Items {
 		var x int
-		if i <= 35 { x = -27 } 
-		if i <= 26 { x = -9 }
-		if i <= 17 { x = 9 }
-		if i <= 8 { x = 27 }
+		if i <= 35 {
+			x = -27
+		}
+		if i <= 26 {
+			x = -9
+		}
+		if i <= 17 {
+			x = 9
+		}
+		if i <= 8 {
+			x = 27
+		}
 		iv.SetItem(i+x, d)
 	}
 	iv.SetItem(45, d.Helmet)
@@ -53,7 +62,7 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output) {
 
 	rev := item.NewStack(item.EnchantedBook{}, 1).
 		WithCustomName(text.Colourf("<red>Last Inventory Info</red>")).
-		WithLore(text.Colourf("<red>Dead</red>: %t", t.Teams.DeathBan.Active()), text.Colourf("<green>Click to revive user with current inventory</green>"))
+		WithLore(text.Colourf("<red>Dead</red>: %t", t.Teams.DeathBan.After(time.Now())), text.Colourf("<green>Click to revive user with current inventory</green>"))
 
 	iv.SetItem(53, rev)
 
