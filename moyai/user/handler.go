@@ -3,8 +3,8 @@ package user
 import (
 	"fmt"
 	"github.com/diamondburned/arikawa/v3/discord"
-	"golang.org/x/exp/slices"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -207,31 +207,9 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		u.Roles.Add(role.Default{})
 	}
 
-	if len(u.DiscordID) > 0 {
-		userID, _ := strconv.Atoi(u.DiscordID)
-		rl, err := moyai.DiscordState().MemberRoles(discord.GuildID(1111055709300342826), discord.UserID(userID))
-		if err == nil && slices.ContainsFunc(rl, func(d discord.Role) bool {
-			return discord.RoleID(1113243316805447830) == d.ID
-		}) {
-			{
-				p.Message(text.Colourf("<green>Thank you for being a Nitro Booster!</green>"))
-				u.Roles.Add(role.Nitro{})
-			}
-		} else {
-			if u.Roles.Contains(role.Nitro{}) {
-				p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
-				u.Roles.Remove(role.Nitro{})
-			}
-		}
-	} else {
-		if u.Roles.Contains(role.Nitro{}) {
-			p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
-			u.Roles.Remove(role.Nitro{})
-		}
-	}
-
 	u.Roles.Add(role.Pharaoh{})
 	p.Message(lang.Translatef(*u.Language, "discord.message"))
+	h.handleBoosterRole(u)
 
 	data.SaveUser(u)
 
@@ -248,6 +226,28 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	UpdateState(h.p)
 	go startTicker(h)
 	return h
+}
+
+func (h *Handler) handleBoosterRole(u data.User) {
+	p := h.p
+
+	if len(u.DiscordID) > 0 {
+		userID, _ := strconv.Atoi(u.DiscordID)
+		rl, err := moyai.DiscordState().MemberRoles(discord.GuildID(1111055709300342826), discord.UserID(userID))
+		if err == nil && slices.ContainsFunc(rl, func(d discord.Role) bool {
+			return discord.RoleID(1113243316805447830) == d.ID
+		}) {
+			{
+				p.Message(text.Colourf("<green>Thank you for being a Nitro Booster!</green>"))
+				u.Roles.Add(role.Nitro{})
+				return
+			}
+		}
+	}
+	if u.Roles.Contains(role.Nitro{}) {
+		p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
+		u.Roles.Remove(role.Nitro{})
+	}
 }
 
 func (h *Handler) HandleFoodLoss(ctx *event.Context, _ int, _ *int) {
