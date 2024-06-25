@@ -118,6 +118,7 @@
         "command.koth.invalid": "<red>Invalid KOTH.</red>",
         "command.koth.not-running": "<red>No KOTH is currently running.</red>",
         "command.koth.running": "<red>A KOTH is already running.</red>",
+        "command.unlink.done": "<green>You have unlinked your discord account.</green>",
         "command.link.already": "<red>You are already linked to a Discord account.</red>",
         "command.link.code": "<green>Use /link %s on discord to link your account.</green>",
         "command.lives": "<green>You have %d lives.</green>",

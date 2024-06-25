@@ -3,11 +3,32 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"math/rand"
 	"strings"
 )
+
+type Unlink struct{}
+
+func (Unlink) Run(src cmd.Source, out *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
+	u, err := data.LoadUserFromXUID(p.XUID())
+	if err != nil {
+		moyai.Messagef(p, "user.data.load.error")
+		return
+	}
+
+	err = data.UnlinkUser(u, moyai.DiscordState(), discord.GuildID(1111055709300342826))
+	if err != nil {
+		return
+	}
+	moyai.Messagef(p, "command.unlink.done")
+}
 
 type Link struct{}
 
