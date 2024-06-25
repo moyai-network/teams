@@ -220,7 +220,7 @@ func (h *Handler) handleStormBreakerAbility(targetPlayer *player.Player, left it
 		return
 	}
 
-	h.triggerStormBreakerEffect(left)
+	h.triggerStormBreakerEffect(targetPlayer, left)
 }
 
 // handleEffectDisablerAbility handles the Effect Disabler special ability.
@@ -240,13 +240,13 @@ func (h *Handler) checkCoolDownSpecific(abilityType it.SpecialItemType) bool {
 }
 
 // triggerStormBreakerEffect triggers the Storm Breaker special ability effect.
-func (h *Handler) triggerStormBreakerEffect(left item.Stack) {
+func (h *Handler) triggerStormBreakerEffect(target *player.Player, left item.Stack) {
 	h.p.World().PlaySound(h.p.Position(), sound.ItemBreak{})
 	h.p.World().AddEntity(h.p.World().EntityRegistry().Config().Lightning(h.p.Position()))
 	h.coolDownSpecificAbilities.Set(it.StormBreakerType{}, time.Minute*2)
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 
-	targetArmourHandler, ok := h.targetPlayerArmourHandler()
+	targetArmourHandler, ok := h.targetPlayerArmourHandler(target)
 	if !ok {
 		return
 	}
@@ -256,8 +256,8 @@ func (h *Handler) triggerStormBreakerEffect(left item.Stack) {
 }
 
 // targetPlayerArmourHandler retrieves the armour handler of the target player.
-func (h *Handler) targetPlayerArmourHandler() (*ArmourHandler, bool) {
-	targetArmour := h.p.Armour().Inventory()
+func (h *Handler) targetPlayerArmourHandler(p *player.Player) (*ArmourHandler, bool) {
+	targetArmour := p.Armour().Inventory()
 	targetArmourHandler, ok := targetArmour.Handler().(*ArmourHandler)
 	return targetArmourHandler, ok
 }
