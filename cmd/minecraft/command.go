@@ -80,7 +80,7 @@ func registerCommands() {
 		cmd.New("koth", text.Colourf("Manage KOTHs."), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
 		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command.Ping{}),
-		//cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
+		cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
 		cmd.New("nick", text.Colourf("Change your nickname."), nil, command.Nick{}, command.NickReset{}),
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),

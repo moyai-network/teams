@@ -1,15 +1,21 @@
 package command
 
-/*type DataReset struct {
+import (
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/role"
+)
+
+type DataReset struct {
 	Kind dataKind `name:"kind"`
 }
 
 func (d DataReset) Run(src cmd.Source, _ *cmd.Output) {
 	switch d.Kind {
-	case "users":
-		data.ResetUsers()
-	case "teams":
-		data.ResetTeams()
+	case "all":
+		data.Reset()
+	case "partial":
+		data.PartialReset()
 	}
 }
 
@@ -27,5 +33,5 @@ func (dataKind) Type() string {
 
 // Options ...
 func (dataKind) Options(cmd.Source) []string {
-	return []string{"users", "teams"}
-}*/
+	return []string{"all", "partial"}
+}
