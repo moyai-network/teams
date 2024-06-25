@@ -273,6 +273,7 @@ func LinkUser(code string, sender *discord.User) (User, error) {
 	u.DiscordID = id
 	u.LinkCode = ""
 
+	u.Roles.Add(role.Nitro{})
 	SaveUser(u)
 	return u, nil
 }
