@@ -289,8 +289,7 @@ func UnlinkUser(u User, s *state.State, gID discord.GuildID) error {
 		Nick: option.NewString(""),
 	})
 
-	_ = s.RemoveRole(gID, discord.UserID(discordID), discord.RoleID(1209213713337548830), "Unlinking")
-	_ = s.AddRole(gID, discord.UserID(discordID), discord.RoleID(1198584931459272806), api.AddRoleData{AuditLogReason: "Unlinking"})
+	_ = s.RemoveRole(gID, discord.UserID(discordID), discord.RoleID(1255290630922436698), "Unlinking")
 	return nil
 }
 
