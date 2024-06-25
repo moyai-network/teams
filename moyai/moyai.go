@@ -37,6 +37,10 @@ var (
 	nether *world.World
 	// deathban is the world of the Deathban arena.
 	deathban *world.World
+	// force is the knockback force
+	force float64 = 0.394
+	// height is the knockback height
+	height float64 = 0.394
 
 	// lastBlackMarket is the time at which the last black market was opened.
 	lastBlackMarket time.Time
@@ -98,6 +102,22 @@ func BlackMarketOpened() time.Time {
 
 func SetBlackMarketOpened(t time.Time) {
 	blackMarketOpened = t
+}
+
+func Force() float64 {
+	return force
+}
+
+func SetForce(f float64) {
+	force = f
+}
+
+func Height() float64 {
+	return height
+}
+
+func SetHeight(f float64) {
+	height = f
 }
 
 func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder string) (*world.World, *world.World) {

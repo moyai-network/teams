@@ -96,6 +96,7 @@ func registerCommands() {
 		cmd.New("eotw", text.Colourf("EOTW management commands."), nil, command.EOTWStart{}, command.EOTWEnd{}),
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
 		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"), []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
+		cmd.New("knockback", text.Colourf("Change server KB"), []string{"kb"}, command.Knockback{}),
 	} {
 		cmd.Register(c)
 	}
