@@ -26,7 +26,7 @@ import (
 
 // HandleAttackEntity handles the attack on an entity.
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
-	*force, *height = 0.388, 0.4 // Default force and height values
+	*force, *height = moyai.Force(), moyai.Height()
 
 	targetPlayer, ok := e.(*player.Player)
 	if !ok || h.handleSpecialCases(targetPlayer, ctx) {

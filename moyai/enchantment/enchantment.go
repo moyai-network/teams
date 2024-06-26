@@ -23,6 +23,8 @@ func init() {
 func AddEnchantmentLore(i item.Stack) item.Stack {
 	var lores []string
 
+	lores = append(lores, i.Lore()...)
+
 	for _, e := range i.Enchantments() {
 		typ := e.Type()
 

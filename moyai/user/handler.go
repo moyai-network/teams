@@ -2,13 +2,14 @@ package user
 
 import (
 	"fmt"
-	"github.com/diamondburned/arikawa/v3/discord"
 	"math"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diamondburned/arikawa/v3/discord"
 
 	"github.com/moyai-network/teams/moyai"
 
