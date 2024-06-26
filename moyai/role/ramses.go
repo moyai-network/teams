@@ -7,7 +7,7 @@ type Ramses struct{}
 
 // Name returns the name of the role.
 func (Ramses) Name() string {
-	return "Ramses"
+	return "ramses"
 }
 
 // Chat returns the formatted chat message using the name and message provided.

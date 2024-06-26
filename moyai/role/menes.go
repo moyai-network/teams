@@ -7,7 +7,7 @@ type Menes struct{}
 
 // Name returns the name of the role.
 func (Menes) Name() string {
-	return "Menes"
+	return "menes"
 }
 
 // Chat returns the formatted chat message using the name and message provided.

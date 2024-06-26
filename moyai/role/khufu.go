@@ -7,7 +7,7 @@ type Khufu struct{}
 
 // Name returns the name of the role.
 func (Khufu) Name() string {
-	return "Khufu"
+	return "khufu"
 }
 
 // Chat returns the formatted chat message using the name and message provided.

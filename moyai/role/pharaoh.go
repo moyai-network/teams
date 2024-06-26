@@ -7,7 +7,7 @@ type Pharaoh struct{}
 
 // Name returns the name of the role.
 func (Pharaoh) Name() string {
-	return "Pharaoh"
+	return "pharaoh"
 }
 
 // Chat returns the formatted chat message using the name and message provided.

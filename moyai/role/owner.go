@@ -12,7 +12,7 @@ func (Owner) Name() string {
 
 // Chat returns the formatted chat message using the name and message provided.
 func (Owner) Chat(name, message string) string {
-	return text.Colourf("<grey>[<black>Owner</black>]</grey> <black>%s</black><dark-grey>:</dark-grey> <white>%s</white>", name, message)
+	return text.Colourf("<grey>[<dark-blue>Owner</dark-blue>]</grey> <dark-blue>%s</dark-blue><dark-grey>:</dark-grey> <blue>%s</blue>", name, message)
 }
 
 // Color returns the formatted name-Colour using the name provided.
