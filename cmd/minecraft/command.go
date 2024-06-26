@@ -57,7 +57,7 @@ func registerCommands() {
 		), cmd.New("whitelist", text.Colourf("Whitelist commands."), []string{"wl"}, command.WhiteListAdd{}, command.WhiteListRemove{}),
 		cmd.New("tl", text.Colourf("Send your location to teammates"), nil, command.TL{}),
 		cmd.New("balance", text.Colourf("Manage your balance."), []string{"bal"}, command.Balance{}, command.BalancePayOnline{}, command.BalancePayOffline{}, command.BalanceAdd{}, command.BalanceAddOffline{}),
-		cmd.New("colour", text.Colourf("Customize the colour of your archer."), nil, command.Colour{}),
+		cmd.New("colour", text.Colourf("Customize the colour of your archer."), []string{"color", "dye"}, command.Colour{}),
 		cmd.New("clear", text.Colourf("Clear your Inventory."), nil, command.Clear{}),
 		cmd.New("clearlag", text.Colourf("Clears all ground entitys."), nil, command.ClearLag{}),
 		cmd.New("logout", text.Colourf("Safely logout of PVP."), nil, command.Logout{}),
