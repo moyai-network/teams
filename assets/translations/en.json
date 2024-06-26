@@ -293,6 +293,8 @@
         "newline.double": "\n\n",
         "newline.single": "\n",
         "newline.triple": "\n\n\n",
+        "nick.changed": "<green>You have changed your nick to %s</green>",
+        "nick.reset": "<green>You have reset your nick</green>",
         "oomph.staff.alert": "<gold>[<redstone>Oomph</redstone>]</gold> <aqua>%v was flagged for %v (%v)</aqua> <grey>%v [x%v]</grey>",
         "partner_item.cooldown": "<red>You are on Partner Items cooldown for %.1f seconds</red>",
         "pearl_disabler.cooldown": "<red>You are on pearl disabler cooldown for %.1f seconds</red>",

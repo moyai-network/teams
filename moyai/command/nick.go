@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Nick is a command that allows the player to change their nickname.
@@ -14,7 +15,10 @@ type Nick struct {
 }
 
 // NickReset is a command that allows the player to reset their nickname.
-type NickReset struct{ adminAllower }
+type NickReset struct{
+	adminAllower 
+	Sub    cmd.SubCommand `cmd:"reset"`
+}
 
 // Run ...
 func (n Nick) Run(src cmd.Source, o *cmd.Output) {
@@ -29,6 +33,7 @@ func (n Nick) Run(src cmd.Source, o *cmd.Output) {
 	}
 	u.DisplayName = n.Name
 	data.SaveUser(u)
+	user.UpdateState(p)
 	moyai.Messagef(p, "nick.changed", n.Name)
 }
 

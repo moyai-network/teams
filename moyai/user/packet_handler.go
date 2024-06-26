@@ -130,20 +130,20 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			}
 			colour = "green"
 		}
-		meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, colour, colour, ta)
+		meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, colour, colour, ta)
 
 		if target.tagArcher.Active() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}
-			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "yellow", colour, ta)
+			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "yellow", colour, ta)
 		} else if (userTeam.Focus.Kind == data.FocusTypeTeam && strings.EqualFold(targetTeam.Name, userTeam.Focus.Value)) || (userTeam.Focus.Kind == data.FocusTypePlayer && strings.EqualFold(t.Name(), userTeam.Focus.Value)) {
-			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "dark-purple", colour, ta)
+			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "dark-purple", colour, ta)
 		}
 
 		tg, _ := data.LoadUserFromName(t.Name())
 		if _, ok := sotw.Running(); ok && u.Teams.SOTW || tg.Teams.PVP.Active() {
-			meta[protocol.EntityDataKeyName] = formatNameTag(t.Name(), targetTeam, "grey", colour, ta)
+			meta[protocol.EntityDataKeyName] = formatNameTag(tg.DisplayName, targetTeam, "grey", colour, ta)
 		}
 
 		if target.logger {
