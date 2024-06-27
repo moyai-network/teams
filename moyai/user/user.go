@@ -338,20 +338,27 @@ func (h *Handler) ShowArmor(visible bool) {
 		boots = p.Armour().Boots()
 	}
 
+	tm, tmErr := data.LoadTeamFromMemberName(p.Name())
 	for _, pl := range moyai.Players() {
-		if t, err := data.LoadTeamFromMemberName(p.Name()); err == nil {
-			if !t.Member(pl.Name()) {
-				s := unsafe.Session(pl)
-				unsafe.WritePacket(s, &packet.MobArmourEquipment{
-					EntityRuntimeID: session_entityRuntimeID(s, p),
-					Helmet:          instanceFromItem(s, helmet),
-					Chestplate:      instanceFromItem(s, chestplate),
-					Leggings:        instanceFromItem(s, leggings),
-					Boots:           instanceFromItem(s, boots),
-				})
+		s := unsafe.Session(pl)
+		if tmErr == nil {
+			if !tm.Member(pl.Name()) {
+				h.updateArmour(s, helmet, chestplate, leggings, boots)
 			}
+			continue
 		}
+		h.updateArmour(s, helmet, chestplate, leggings, boots)
 	}
+}
+
+func (h *Handler) updateArmour(s *session.Session, helmet item.Stack, chestplate item.Stack, leggings item.Stack, boots item.Stack) {
+	unsafe.WritePacket(s, &packet.MobArmourEquipment{
+		EntityRuntimeID: session_entityRuntimeID(s, h.p),
+		Helmet:          instanceFromItem(s, helmet),
+		Chestplate:      instanceFromItem(s, chestplate),
+		Leggings:        instanceFromItem(s, leggings),
+		Boots:           instanceFromItem(s, boots),
+	})
 }
 
 func (h *Handler) SendClaimPillar(pos cube.Pos) {
