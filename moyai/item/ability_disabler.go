@@ -9,7 +9,7 @@ import (
 type AbilityDisablerType struct{}
 
 func (AbilityDisablerType) Name() string {
-	return text.Colourf("<purple>Effect Disabler</purple>")
+	return text.Colourf("<purple>Ability Disabler</purple>")
 }
 
 func (AbilityDisablerType) Item() world.Item {

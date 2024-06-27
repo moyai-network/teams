@@ -86,6 +86,7 @@ type Handler struct {
 
 	tagCombat                 *cooldown.CoolDown
 	tagArcher                 *cooldown.CoolDown
+	coolDownComboAbility      *cooldown.CoolDown
 	coolDownBonedEffect       *cooldown.CoolDown
 	coolDownEffectDisabled    *cooldown.CoolDown
 	coolDownFocusMode         *cooldown.CoolDown
@@ -159,6 +160,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		coolDownEffectDisabled:    cooldown.NewCoolDown(),
 		coolDownFocusMode:         cooldown.NewCoolDown(),
 		coolDownItemUse:           cooldown.NewCoolDown(),
+		coolDownComboAbility:      cooldown.NewCoolDown(),
 		coolDownArcherRogueItem:   cooldown.NewMappedCoolDown[world.Item](),
 		coolDownBardItem:          cooldown.NewMappedCoolDown[world.Item](),
 		coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),

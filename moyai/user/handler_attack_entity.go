@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bedrock-gophers/inv/inv"
+	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
@@ -44,6 +45,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	h.handleRogueBackstab(ctx, targetPlayer, *force, *height)
 	h.handleSpecialItemAbility(ctx, targetPlayer, force, height)
 	h.setLastAttackerForCombat(targetPlayer)
+	h.applyComboAbility()
 }
 
 // handleRogueBackstab handles the backstab ability for the Rogue class.
@@ -272,6 +274,27 @@ func (h *Handler) applyEffectDisablerEffect(targetPlayer *player.Player, left it
 		targetHandler.coolDownEffectDisabled.Set(time.Second * 10)
 		h.p.Message(text.Colourf("<red>You have effect disabled %s for 10 seconds</red>", targetPlayer.Name()))
 		targetPlayer.Message(text.Colourf("<red>You have been effect disabled for 10 seconds by %s</red>", h.p.Name()))
+	}
+}
+
+// applyComboAbility applies an additional second of strength if has combo ability active.
+func (h *Handler) applyComboAbility() {
+	// check if strength effect last 15 seconds
+	effects := h.p.Effects()
+	currentDuration := time.Duration(0)
+	for _, e := range effects {
+		if e.Type() == (effect.Strength{}) {
+			currentDuration = e.Duration()
+			break
+		}
+	}
+
+	if currentDuration >= time.Second*15 {
+		return
+	}
+
+	if h.coolDownComboAbility.Active() {
+		h.p.AddEffect(effect.New(effect.Strength{}, 1, time.Second+currentDuration))
 	}
 }
 

@@ -230,6 +230,16 @@ func (h *Handler) handleSpecialItemUse(v it.SpecialItemType, held item.Stack, le
 		h.handleFocusModeAbility(kind, held, left)
 	case it.RocketType:
 		h.handleRocketAbility(kind)
+	case it.AbilityDisablerType:
+		h.handleAbilityDisablerAbility(kind, held, left)
+	case it.StrengthPowderType:
+		h.handleStrengthPowderAbility(kind, held, left)
+	case it.TankIngotType:
+		h.handleTankIngotAbility(kind, held, left)
+	case it.RageBrickType:
+		h.handleRageBrickAbility(kind, held, left)
+	case it.ComboAbilityType:
+		h.handleComboAbility(kind, held, left)
 	case it.PartnerPackageType:
 		h.handlePartnerPackage(ctx, held, left, cube.PosFromVec3(h.p.Position()))
 	case it.StaffRandomTeleportType:
@@ -412,7 +422,7 @@ func (h *Handler) handleFocusModeAbility(kind it.FocusModeType, held item.Stack,
 	}
 }
 
-// handleFocusModeAbility handles the Rocker ability
+// handleFocusModeAbility handles the Rocket ability
 func (h *Handler) handleRocketAbility(kind it.RocketType) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
 		h.p.Message(text.Colourf("<red>You are on Rocket cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
@@ -424,4 +434,83 @@ func (h *Handler) handleRocketAbility(kind it.RocketType) {
 
 	h.p.SetVelocity(mgl64.Vec3{0, 2.5})
 	h.p.World().PlaySound(h.p.Position(), sound.FireworkLaunch{})
+}
+
+// handleAbilityDisablerAbility handles the ability disabler ability
+func (h *Handler) handleAbilityDisablerAbility(kind it.AbilityDisablerType, held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Ability Disabler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	enemies := nearbyHurtable(h.p, 15)
+	for _, e := range enemies {
+		e.coolDownGlobalAbilities.Set(time.Second * 10)
+		e.p.Message(text.Colourf("<red>You have been ability disabled for 10 seconds by %s.</red>", h.p.Name()))
+	}
+}
+
+// handleAbilityDisablerAbility handles the ability disabler ability
+func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType,  held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Strength Powder cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*7))
+	h.p.Message(text.Colourf("§r§7> §eStrength Powder §6has been used"))
+}
+
+func (h *Handler) handleTankIngotAbility(kind it.TankIngotType, held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Tank Ingot cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	h.p.AddEffect(effect.New(effect.Resistance{}, 2, time.Second*7))
+	h.p.Message(text.Colourf("§r§7> §eTank Ingot §6has been used"))
+}
+
+func (h *Handler) handleRageBrickAbility(kind it.RageBrickType, held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Rage Brick cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	enemies := nearbyHurtable(h.p, 15)
+	lasts := time.Second * time.Duration(len(enemies))
+	h.p.AddEffect(effect.New(effect.Strength{}, 2, lasts))
+	h.p.Message(text.Colourf("§r§7> §eRage Brick §6has been used"))
+}
+
+func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Combo cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+	h.coolDownComboAbility.Set(time.Second * 10)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	h.p.Message(text.Colourf("§r§7> §eCombo §6has been used"))
 }
