@@ -17,7 +17,7 @@ func (CloseCallType) Item() world.Item {
 }
 
 func (CloseCallType) Lore() []string {
-	return []string{text.Colourf("<grey>Use while under 3 hearts to receive Regeneration VI and Strength II for 5 seconds.</grey>")}
+	return []string{text.Colourf("<grey>Use while under 3 hearts to receive Regeneration IV and Strength II for 5 seconds.</grey>")}
 }
 
 func (CloseCallType) Key() string {
