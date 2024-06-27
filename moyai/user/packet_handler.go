@@ -124,7 +124,7 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 
 		meta := protocol.EntityMetadata(pkt.EntityMetadata)
 		var colour = "red"
-		if compareTeams(targetTeam, userTeam) {
+		if compareTeams(targetTeam, userTeam) || p.Name() == t.Name() {
 			if meta.Flag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible) {
 				removeFlag(protocol.EntityDataKeyFlags, protocol.EntityDataFlagInvisible, meta)
 			}

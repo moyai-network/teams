@@ -36,7 +36,6 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output) {
 		moyai.Messagef(p, "command.target.unknown", tg.Name())
 		return
 	}
-
 	d := t.Teams.DeathInventory
 	iv := inventory.New(54, nil)
 	for i, d := range d.Items {
