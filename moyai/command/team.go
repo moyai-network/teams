@@ -207,6 +207,24 @@ type TeamCamp struct {
 	Team teamName
 }
 
+// TeamIncrementDTR is a command to increment DTR
+type TeamIncrementDTR struct {
+	Sub  cmd.SubCommand `cmd:"incdtr"`
+	Name teamName
+}
+
+// TeamDecrementDTR is a command to decrement DTR
+type TeamDecrementDTR struct {
+	Sub  cmd.SubCommand `cmd:"decdtr"`
+	Name teamName
+}
+
+// TeamResetRegen is a command to reset regeneration
+type TeamResetRegen struct {
+	Sub  cmd.SubCommand `cmd:"resetregen"`
+	Name teamName
+}
+
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
 	tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
 	if err != nil {
@@ -1363,6 +1381,59 @@ func safePosition(p *player.Player, pos cube.Pos, radius int) cube.Pos {
 	return cube.Pos{}
 }
 
+// Run ...
+func (t TeamIncrementDTR) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromName(string(t.Name))
+	if err != nil {
+		moyai.Messagef(p, "command.team.not.found", t.Name)
+		return
+	}
+	tm = tm.WithDTR(tm.DTR + 1.00)
+	data.SaveTeam(tm)
+
+	p.Message(text.Colourf("<green>Successfully incremented DTR by 1.00.</green>"))
+}
+
+// Run ...
+func (t TeamDecrementDTR) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromName(string(t.Name))
+	if err != nil {
+		moyai.Messagef(p, "command.team.not.found", t.Name)
+		return
+	}
+	tm = tm.WithDTR(tm.DTR - 1.00)
+	data.SaveTeam(tm)
+
+	p.Message(text.Colourf("<green>Successfully decremented DTR by 1.00.</green>"))
+}
+
+// Run ...
+func (t TeamResetRegen) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
+
+	tm, err := data.LoadTeamFromName(string(t.Name))
+	if err != nil {
+		moyai.Messagef(p, "command.team.not.found", t.Name)
+		return
+	}
+	tm = tm.WithLastDeath(time.Time{})
+	data.SaveTeam(tm)
+
+	p.Message(text.Colourf("<green>Successfully reset team regeneration.</green>"))
+}
 // Run ...
 func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
