@@ -8,6 +8,7 @@ import (
 )
 
 type Revive struct {
+	adminAllower
 	Target []cmd.Target `cmd:"target"`
 }
 
