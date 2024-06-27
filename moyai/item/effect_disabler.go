@@ -9,7 +9,7 @@ import (
 type EffectDisablerType struct{}
 
 func (EffectDisablerType) Name() string {
-	return text.Colourf("<gold>Effect Disabler</gold>")
+	return text.Colourf("<gold>xCqzzz's Effect Disabler</gold>")
 }
 
 func (EffectDisablerType) Item() world.Item {
