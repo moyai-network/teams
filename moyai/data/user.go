@@ -349,7 +349,7 @@ func LoadUsersFromSelfSignedID(ssid string) ([]User, error) {
 }
 
 func LoadUsersFromRole(r role.Role) ([]User, error) {
-	filter := bson.M{"roles": bson.M{"$elemMatch": bson.M{"$eq": r.Name()}}}
+	filter := bson.M{"roles.roles": bson.M{"$elemMatch": bson.M{"$eq": r.Name()}}}
 	return loadUsersFromFilter(filter)
 }
 
