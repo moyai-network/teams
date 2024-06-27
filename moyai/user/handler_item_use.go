@@ -132,6 +132,10 @@ func (h *Handler) handleBardItemUse(held item.Stack, sotwRunning bool, u data.Us
 		return
 	}
 
+	if _, ok := held.Item().(item.Firework); ok {
+		return
+	}
+
 	// Get the corresponding effect for the item.
 	if e, ok := BardEffectFromItem(held.Item()); ok {
 		// Check PvP and SOTW status.
