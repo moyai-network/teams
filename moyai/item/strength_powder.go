@@ -9,7 +9,7 @@ import (
 type StrengthPowderType struct{}
 
 func (StrengthPowderType) Name() string {
-	return text.Colourf("<red>Strength Powder</red>")
+	return text.Colourf("<red>DragonHawkWS's Strength Powder</red>")
 }
 
 func (StrengthPowderType) Item() world.Item {

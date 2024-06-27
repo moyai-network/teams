@@ -9,7 +9,7 @@ import (
 type BeserkAbilityType struct{}
 
 func (BeserkAbilityType) Name() string {
-	return text.Colourf("<red>Beserk Ability</red>")
+	return text.Colourf("<red>SpongPeb's Beserk Ability</red>")
 }
 
 func (BeserkAbilityType) Item() world.Item {
