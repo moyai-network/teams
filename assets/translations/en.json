@@ -278,6 +278,8 @@
         "elevator.no-space": "<red>There is not enough space to teleport</red>",
         "eotw.commenced": "<green>EOTW has commenced and will end in an hour. All factions are raidable!</green>",
         "gapple.cooldown": "<red>You are on golden apple cooldown.</red>",
+        "godapple.cooldown": "<red>You are on God apple cooldown.</red>",
+        "godapple.active": "<green>You have used a God apple; you are on cooldown for 4 hours.</green>",
         "in.spawn": "<red>You must be in spawn to use this.</red>",
         "invalid.username": "<red>You must be holding an item to use this.</red>",
         "item.use.citadel.disabled": "<red>You may not use this item in Citadel.</red>",

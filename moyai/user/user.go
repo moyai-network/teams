@@ -1,14 +1,15 @@
 package user
 
 import (
-	"github.com/moyai-network/teams/moyai/conquest"
-	"github.com/moyai-network/teams/moyai/koth"
 	"math"
 	"math/rand"
 	"strings"
 	"time"
 	"unicode"
 	_ "unsafe"
+
+	"github.com/moyai-network/teams/moyai/conquest"
+	"github.com/moyai-network/teams/moyai/koth"
 
 	"github.com/df-mc/dragonfly/server/item/inventory"
 

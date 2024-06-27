@@ -2,15 +2,16 @@ package data
 
 import (
 	"errors"
-	"github.com/diamondburned/arikawa/v3/api"
-	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/diamondburned/arikawa/v3/state"
-	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
 	"github.com/go-gl/mathgl/mgl64"
 
@@ -199,6 +200,8 @@ type User struct {
 		PVP *cooldown.CoolDown
 		// Create is the team create cooldown of the user.
 		Create *cooldown.CoolDown
+		// GodApple is cooldown for god apples.
+		GodApple *cooldown.CoolDown
 		// Ban is the ban of the user.
 		Ban punishment.Punishment
 		// Mute is the mute of the user.
@@ -228,6 +231,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.KOTHStart = cooldown.NewCoolDown()
 	u.Teams.Report = cooldown.NewCoolDown()
 	u.Teams.Refill = cooldown.NewCoolDown()
+	u.Teams.GodApple = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
 	u.Teams.PVP.Set(time.Hour + time.Second)
 	u.Teams.Create = cooldown.NewCoolDown()
