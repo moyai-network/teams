@@ -422,13 +422,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	p := h.p
 	*dmg = *dmg / 1.25
 	if h.tagArcher.Active() {
-		*dmg = *dmg + *dmg*0.15
+		*dmg = *dmg + *dmg*0.25
 	} else if h.coolDownFocusMode.Active() &&
 		!class.Compare(h.lastClass.Load(), class.Archer{}) &&
 		!class.Compare(h.lastClass.Load(), class.Mage{}) &&
 		!class.Compare(h.lastClass.Load(), class.Bard{}) &&
 		!class.Compare(h.lastClass.Load(), class.Rogue{}) {
-		*dmg = *dmg + *dmg*0.15
+		*dmg = *dmg + *dmg*0.25
 	}
 
 	u, err := data.LoadUserFromName(h.p.Name())
