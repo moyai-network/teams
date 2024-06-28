@@ -211,7 +211,6 @@ func (h *Handler) handleMageItemUse(held item.Stack, sotwRunning bool, u data.Us
 // handleSpecialItemUse handles the use of special items.
 func (h *Handler) handleSpecialItemUse(v it.SpecialItemType, held item.Stack, left item.Stack, ctx *event.Context) {
 	// Handle specific abilities for special items.
-	ctx.Cancel()
 	switch kind := v.(type) {
 	case it.TimeWarpType:
 		h.handleTimeWarpAbility(kind)
@@ -241,6 +240,7 @@ func (h *Handler) handleSpecialItemUse(v it.SpecialItemType, held item.Stack, le
 	case it.ComboAbilityType:
 		h.handleComboAbility(kind, held, left)
 	case it.PartnerPackageType:
+		ctx.Cancel()
 		h.handlePartnerPackage(ctx, held, left, cube.PosFromVec3(h.p.Position()))
 	case it.StaffRandomTeleportType:
 		h.handleRandomTeleport()
