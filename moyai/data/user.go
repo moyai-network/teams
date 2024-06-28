@@ -354,12 +354,20 @@ func LoadUsersFromRole(r role.Role) ([]User, error) {
 }
 
 func loadUsersFromFilter(filter any) ([]User, error) {
+	n, err := userCollection.CountDocuments(ctx(), filter)
+	if err != nil {
+		return nil, err
+	}
+	data := make([]User, n)
+	for i := range data {
+		data[i] = DefaultUser("", "")
+	}
+
 	cursor, err := userCollection.Find(ctx(), filter)
 	if err != nil {
 		return nil, err
 	}
 
-	var data []User
 	if err = cursor.All(ctx(), &data); err != nil {
 		return nil, err
 	}
