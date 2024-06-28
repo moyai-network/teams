@@ -30,15 +30,13 @@ var partnerEnchantments = []item.Enchantment{
 }
 
 func (partner) Rewards() []Reward {
-	return []Reward{
-		2: NewReward(it.NewSpecialItem(it.NinjaStarType{}, 1), 5),
-		3: NewReward(it.NewSpecialItem(it.PearlDisablerType{}, 1), 10),
-		//4:  NewReward(it.NewSpecialItem(it.SigilType{}, 1), 10),
-		4: NewReward(it.NewSpecialItem(it.FullInvisibilityType{}, 1), 10),
-		5: NewReward(it.NewSpecialItem(it.TimeWarpType{}, 1), 10),
-		6: NewReward(it.NewSpecialItem(it.ExoticBoneType{}, 1), 20),
-		//13: NewReward(it.NewSpecialItem(it.ScramblerType{}, 1), 20),
-		12: NewReward(it.NewSpecialItem(it.SwitcherBallType{}, 1), 20),
-		14: NewReward(it.NewSpecialItem(it.StormBreakerType{}, 1), 5),
+	rewards := make([]Reward, 23)
+	for i, p := range it.PartnerItems() {
+		if i == len(it.PartnerItems())-1 {
+			rewards[22] = NewReward(it.NewSpecialItem(p, 1), 5)
+		} else {
+			rewards[i] = NewReward(it.NewSpecialItem(p, 1), 10)
+		}
 	}
+	return rewards
 }

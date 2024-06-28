@@ -159,7 +159,6 @@ func RegisterPartnerItem(typ SpecialItemType) {
 
 func init() {
 	RegisterPartnerItem(SwitcherBallType{})
-	RegisterPartnerItem(NinjaStarType{})
 	RegisterPartnerItem(ExoticBoneType{})
 	RegisterPartnerItem(PearlDisablerType{})
 	RegisterPartnerItem(FullInvisibilityType{})
@@ -179,6 +178,7 @@ func init() {
 	RegisterPartnerItem(TankIngotType{})
 	RegisterPartnerItem(RageBrickType{})
 	RegisterPartnerItem(ComboAbilityType{})
+	RegisterPartnerItem(NinjaStarType{})
 	creative.RegisterItem(NewCrowBar())
 	creative.RegisterItem(NewPearlBow())
 
