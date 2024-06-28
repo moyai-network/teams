@@ -1,6 +1,7 @@
 package data
 
 import (
+	"log"
 	"math"
 	"strings"
 	"sync"
@@ -69,6 +70,13 @@ func SaveTeam(t Team) {
 	teamMu.Lock()
 	teams[t.Name] = t
 	teamMu.Unlock()
+
+	go func() {
+		err := saveTeamData(t)
+		if err != nil {
+			log.Println("Error saving user data:", err)
+		}
+	}()
 }
 
 type Team struct {
