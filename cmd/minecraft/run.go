@@ -116,25 +116,25 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 
 // configurePacketListener configures the packet listener for the server.
 func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	/*if oomphEnabled {
-		ac := oomph.New(oomph.OomphSettings{
-			LocalAddress:  ":19133",
-			RemoteAddress: ":19132",
-			RequirePacks:  true,
-		})
+	// /*if oomphEnabled {
+	// 	ac := oomph.New(oomph.OomphSettings{
+	// 		LocalAddress:  ":19133",
+	// 		RemoteAddress: ":19132",
+	// 		RequirePacks:  true,
+	// 	})
 
-		ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
-		go func() {
-			for {
-				_, err := ac.Accept()
-				if err != nil {
-					return
-				}
+	// 	ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
+	// 	go func() {
+	// 		for {
+	// 			_, err := ac.Accept()
+	// 			if err != nil {
+	// 				return
+	// 			}
 
-			}
-		}()
-		return
-	}*/
+	// 		}
+	// 	}()
+	// 	return
+	// }*/
 	pk := intercept.NewPacketListener()
 	pk.Listen(conf, ":19132", []minecraft.Protocol{
 		v486.New(),

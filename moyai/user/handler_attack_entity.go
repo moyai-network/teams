@@ -69,6 +69,7 @@ func (h *Handler) handleRogueBackstab(ctx *event.Context, t *player.Player, forc
 			})
 			t.KnockBack(h.p.Position(), force, height)
 
+			h.p.AddEffect(effect.New(effect.Slowness{}, 3, time.Second*5))
 			h.p.SetHeldItems(item.Stack{}, left)
 			cd.Set(time.Second * 10)
 		}
