@@ -17,10 +17,6 @@ type Revive struct {
 }
 
 func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
-	p, ok := src.(*player.Player)
-	if !ok {
-		return
-	}
 	target, ok := r.Target[0].(*player.Player)
 	if !ok {
 		return
@@ -38,7 +34,7 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
 		target.Teleport(mgl64.Vec3{0, 80, 0})
 	}
 
-	addDataInventory(p, *inv)
+	addDataInventory(target, *inv)
 
 	data.SaveUser(tg)}
 
