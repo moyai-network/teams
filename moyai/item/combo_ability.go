@@ -17,7 +17,7 @@ func (ComboAbilityType) Item() world.Item {
 }
 
 func (ComboAbilityType) Lore() []string {
-	return []string{text.Colourf("<grey>Begin a 10 second period where every hit on an opponent gives 1 second of Strength II (max of 15 seconds)</grey>")}
+	return []string{text.Colourf("<grey>Begin a 10 second period where every hit on an opponent gives 1 second of Strength II</grey>")}
 }
 
 func (ComboAbilityType) Key() string {
