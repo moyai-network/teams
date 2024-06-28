@@ -9,7 +9,7 @@ import (
 type CloseCallType struct{}
 
 func (CloseCallType) Name() string {
-	return text.Colourf("<gold>Close Call</gold>")
+	return text.Colourf("<gold>AUTOClICK's Close Call</gold>")
 }
 
 func (CloseCallType) Item() world.Item {

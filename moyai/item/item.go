@@ -172,7 +172,7 @@ func init() {
 	RegisterPartnerItem(FocusModeType{})
 	RegisterPartnerItem(RocketType{})
 	RegisterPartnerItem(ScramblerType{})
-	RegisterPartnerItem(PartnerPackageType{})
+	RegisterSpecialItem(PartnerPackageType{})
 	RegisterPartnerItem(AbilityDisablerType{})
 	RegisterPartnerItem(StrengthPowderType{})
 	RegisterPartnerItem(TankIngotType{})
