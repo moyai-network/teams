@@ -1,8 +1,9 @@
 package moyai
 
 import (
-	"github.com/diamondburned/arikawa/v3/state"
 	"time"
+
+	"github.com/diamondburned/arikawa/v3/state"
 
 	"github.com/moyai-network/teams/moyai/data"
 
@@ -161,7 +162,7 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 }
 
 func Close() {
-	//data.FlushCache()
+	data.FlushCache()
 	destroyAirDrop(srv.World(), lastDropPos)
 	for _, p := range Players() {
 		u, err := data.LoadUserFromName(p.Name())
