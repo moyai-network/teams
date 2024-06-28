@@ -166,6 +166,7 @@ func init() {
 	RegisterPartnerItem(EffectDisablerType{})
 	RegisterPartnerItem(BeserkAbilityType{})
 	RegisterPartnerItem(CloseCallType{})
+	RegisterPartnerItem(VampireAbilityType{})
 	//RegisterPartnerItem(SigilType{})
 	RegisterPartnerItem(TimeWarpType{})
 	RegisterPartnerItem(StormBreakerType{})

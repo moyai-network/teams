@@ -87,6 +87,7 @@ type Handler struct {
 	tagCombat                 *cooldown.CoolDown
 	tagArcher                 *cooldown.CoolDown
 	coolDownComboAbility      *cooldown.CoolDown
+	coolDownVampireAbility           *cooldown.CoolDown
 	coolDownBonedEffect       *cooldown.CoolDown
 	coolDownEffectDisabled    *cooldown.CoolDown
 	coolDownFocusMode         *cooldown.CoolDown
@@ -161,6 +162,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		coolDownFocusMode:         cooldown.NewCoolDown(),
 		coolDownItemUse:           cooldown.NewCoolDown(),
 		coolDownComboAbility:      cooldown.NewCoolDown(),
+		coolDownVampireAbility:           cooldown.NewCoolDown(),
 		coolDownArcherRogueItem:   cooldown.NewMappedCoolDown[world.Item](),
 		coolDownBardItem:          cooldown.NewMappedCoolDown[world.Item](),
 		coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),
@@ -626,6 +628,10 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	if canAttack(h.p, attacker) {
 		attacker.Handler().(*Handler).tagCombat.Set(time.Second * 20)
 		h.tagCombat.Set(time.Second * 20)
+
+		if attacker.Handler().(*Handler).coolDownVampireAbility.Active() {
+			attacker.Heal(*dmg * 0.5, effect.RegenerationHealingSource{})
+		}
 	}
 }
 

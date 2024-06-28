@@ -229,6 +229,8 @@ func (h *Handler) handleSpecialItemUse(v it.SpecialItemType, held item.Stack, le
 		h.handleFocusModeAbility(kind, held, left)
 	case it.RocketType:
 		h.handleRocketAbility(kind)
+	case it.VampireAbilityType:
+		h.handleVampireAbility(kind, held, left)
 	case it.AbilityDisablerType:
 		h.handleAbilityDisablerAbility(kind, held, left)
 	case it.StrengthPowderType:
@@ -503,7 +505,7 @@ func (h *Handler) handleRageBrickAbility(kind it.RageBrickType, held item.Stack,
 
 func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Combo cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		h.p.Message(text.Colourf("<red>You are on Combo Ability cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
 		return
 	}
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
@@ -512,5 +514,20 @@ func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, 
 
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
-	h.p.Message(text.Colourf("§r§7> §eCombo §6has been used"))
+	h.p.Message(text.Colourf("§r§7> §eCombo Ability §6has been used"))
+}
+
+func (h *Handler) handleVampireAbility(kind it.VampireAbilityType, held item.Stack, left item.Stack) {
+	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
+		h.p.Message(text.Colourf("<red>You are on Vampire Ability cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		return
+	}
+	h.coolDownGlobalAbilities.Set(time.Second * 10)
+	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
+	h.coolDownVampireAbility.Set(time.Second * 10)
+
+	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+
+	h.p.AddEffect(effect.New(effect.Haste{}, 2, time.Second*7))
+	h.p.Message(text.Colourf("§r§7> §eVampire Ability §6has been used"))
 }
