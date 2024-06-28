@@ -138,7 +138,7 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			}
 			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "yellow", colour, ta)
 		} else if (userTeam.Focus.Kind == data.FocusTypeTeam && strings.EqualFold(targetTeam.Name, userTeam.Focus.Value)) || (userTeam.Focus.Kind == data.FocusTypePlayer && strings.EqualFold(t.Name(), userTeam.Focus.Value)) {
-			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "dark-purple", colour, ta)
+			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "light-purple", colour, ta)
 		}
 
 		tg, _ := data.LoadUserFromName(t.Name())
