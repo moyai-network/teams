@@ -177,6 +177,10 @@ func (h *Handler) kill(src world.DamageSource) {
 		h.handleTeamMemberDeath()
 	}
 
+	if k, ok := koth.Running(); ok {
+		k.StopCapturing(p)
+	}
+
 	h.stopCapturing()
 	h.incrementDeath()
 	h.issueDeathban()

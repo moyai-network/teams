@@ -74,7 +74,7 @@ func SaveTeam(t Team) {
 	go func() {
 		err := saveTeamData(t)
 		if err != nil {
-			log.Println("Error saving user data:", err)
+			log.Println("Error saving team data:", err)
 		}
 	}()
 }
