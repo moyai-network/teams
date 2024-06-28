@@ -181,6 +181,12 @@ func (h *Handler) kill(src world.DamageSource) {
 		k.StopCapturing(p)
 	}
 
+	if conquest.Running() {
+		for _, c := range conquest.All() {
+			c.StopCapturing(p)
+		}
+	}
+
 	h.stopCapturing()
 	h.incrementDeath()
 	h.issueDeathban()
