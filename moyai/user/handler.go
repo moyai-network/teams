@@ -662,6 +662,9 @@ func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Blo
 		h.lastPlacedSignPos = pos
 	case block.EnderChest:
 		held, _ := h.p.HeldItems()
+		if _, ok := held.Value("partner_package"); !ok {
+			break
+		}
 		if _, ok := held.Value("PARTNER_PACKAGE"); !ok {
 			break
 		}

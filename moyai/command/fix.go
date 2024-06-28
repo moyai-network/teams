@@ -14,6 +14,7 @@ type Fix struct {
 
 // FixAll is a command that allows the player to fix all items in their inventory or another player's hand.
 type FixAll struct {
+	Sub cmd.SubCommand `cmd:"all"`
 	Player cmd.Optional[[]cmd.Target] `cmd:"player"`
 }
 
