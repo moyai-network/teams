@@ -1,8 +1,12 @@
 package command
 
 import (
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	it "github.com/moyai-network/teams/moyai/item"
 )
@@ -27,10 +31,16 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
 	}
 	tg.Teams.Stats.Deaths--
 	inv := tg.Teams.DeathInventory
+
+	if tg.Teams.DeathBan.After(time.Now()) {
+		tg.Teams.DeathBan = time.Time{}
+		moyai.Overworld().AddEntity(target)
+		target.Teleport(mgl64.Vec3{0, 80, 0})
+	}
+
 	addDataInventory(p, *inv)
 
-	data.SaveUser(tg)
-}
+	data.SaveUser(tg)}
 
 func addDataInventory(p *player.Player, inv data.Inventory) {
 	for _, i := range inv.Items {

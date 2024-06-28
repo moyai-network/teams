@@ -1412,6 +1412,7 @@ func (t TeamDecrementDTR) Run(src cmd.Source, _ *cmd.Output) {
 		return
 	}
 	tm = tm.WithDTR(tm.DTR - 1.00)
+	tm = tm.WithLastDeath(time.Now())
 	data.SaveTeam(tm)
 
 	p.Message(text.Colourf("<green>Successfully decremented DTR by 1.00.</green>"))

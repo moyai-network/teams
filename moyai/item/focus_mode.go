@@ -9,7 +9,7 @@ import (
 type FocusModeType struct{}
 
 func (FocusModeType) Name() string {
-	return text.Colourf("<gold>Focus Mode</gold>")
+	return text.Colourf("<gold>soraalex's Focus Mode</gold>")
 }
 
 func (FocusModeType) Item() world.Item {
