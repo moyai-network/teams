@@ -357,7 +357,7 @@ func (h *Handler) handleCloseCallAbility(kind it.CloseCallType, held item.Stack,
 
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
-	if h.p.Health() <= 6 {
+	if h.p.Health() <= 8 {
 		h.p.AddEffect(effect.New(effect.Regeneration{}, 6, time.Second*5))
 		h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*5))
 		h.p.Message(text.Colourf("<green>Close Call has been used.</green>"))
