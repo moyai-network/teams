@@ -12,7 +12,10 @@ import (
 
 var (
 	spawn    = []string{}
-	combat   = []string{}
+	combat   = []string{
+		"ec",
+		"logout",
+	}
 	deathban = []string{
 		"reclaim",
 		"trim",
@@ -26,6 +29,19 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
 	u, err := data.LoadUserFromName(h.p.Name())
 	if err != nil {
 		return
+	}
+
+	if h.tagCombat.Active() {
+		for _, c := range combat {
+			names := []string{command.Name()}
+			names = append(names, command.Aliases()...)
+			for _, n := range names {
+				if strings.EqualFold(c, n) {
+					moyai.Messagef(h.p, "command.error.combat-tagged")
+					ctx.Cancel()
+				}
+			}
+		}
 	}
 
 	if u.Teams.DeathBan.After(time.Now()) {
