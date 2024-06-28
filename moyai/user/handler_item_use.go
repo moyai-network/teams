@@ -70,7 +70,11 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 			ctx.Cancel()
 			return
 		}
-		h.handleSpecialItemUse(v, held, left, ctx)
+		if h.coolDownGlobalAbilities.Active() {
+			moyai.Messagef(h.p, "partner_item.cooldown", h.coolDownGlobalAbilities.Remaining().Seconds())
+		} else {
+			h.handleSpecialItemUse(v, held, left, ctx)
+		}
 	}
 }
 
@@ -92,7 +96,11 @@ func (h *Handler) handlePartnerPackage(ctx *event.Context, held item.Stack, left
 	}
 
 	ctx.Cancel()
-	h.p.SetHeldItems(held.Grow(-1), left)
+	if held.Count() == 1 {
+		h.p.SetHeldItems(item.Stack{}, left)
+	} else {
+		h.p.SetHeldItems(held.Grow(-1), left)
+	}
 	it.AddOrDrop(h.p, i)
 
 	w.AddEntity(entity.NewFirework(pos.Vec3(), cube.Rotation{90, 90}, item.Firework{
