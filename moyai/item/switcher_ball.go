@@ -39,7 +39,7 @@ func (s SwitcherBall) MaxCount() int {
 
 // Use ...
 func (s SwitcherBall) Use(w *world.World, user item.User, ctx *item.UseContext) bool {
-	e := NewSwitcherBall(entity.EyePosition(user), user.Rotation().Vec3().Mul(1.5), user)
+	e := NewSwitcherBall(entity.EyePosition(user), user.Rotation().Vec3().Mul(2), user)
 	w.AddEntity(e)
 
 	w.PlaySound(user.Position(), sound.ItemThrow{})
