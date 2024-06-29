@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/df-mc/dragonfly/server/player"
 	"math"
 	"strings"
 	"time"
@@ -147,15 +148,15 @@ func sortClassEffects(h *Handler) {
 	}
 }
 
-func tickDeathban(h *Handler) {
-	u, _ := data.LoadUserFromName(h.p.Name())
-	if !u.Teams.DeathBan.After(time.Now()) && u.Teams.Dead {
+func tickDeathban(p *player.Player, u data.User) {
+	if !u.Teams.DeathBan.After(time.Now()) && u.Teams.DeathBanned {
 		u.Teams.DeathBan = time.Time{}
+		u.Teams.DeathBanned = false
 		data.SaveUser(u)
-		h.p.Armour().Clear()
-		h.p.Inventory().Clear()
-		moyai.Overworld().AddEntity(h.p)
-		h.p.Teleport(mgl64.Vec3{0, 80})
+		p.Armour().Clear()
+		p.Inventory().Clear()
+		moyai.Overworld().AddEntity(p)
+		p.Teleport(mgl64.Vec3{0, 80})
 	}
 }
 
@@ -169,7 +170,6 @@ func startTicker(h *Handler) {
 		case <-t.C:
 			sortClassEffects(h)
 			sortArmourEffects(h)
-			tickDeathban(h)
 
 			switch h.lastClass.Load().(type) {
 			case class.Bard:
@@ -214,6 +214,8 @@ func startTicker(h *Handler) {
 				h.p.RemoveScoreboard()
 				continue
 			}
+
+			tickDeathban(h.p, u)
 			l := *u.Language
 			db := u.Teams.DeathBan
 

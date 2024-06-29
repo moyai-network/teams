@@ -186,6 +186,8 @@ type User struct {
 		Lives int
 		// DeathBan is the death-ban cool-down.
 		DeathBan time.Time
+		// DeathBanned is whether the user is/was death-banned.
+		DeathBanned bool
 		// Report is the report cool-down.
 		Report *cooldown.CoolDown
 		// Refill is the refill cool-down.
@@ -208,7 +210,7 @@ type User struct {
 		Mute punishment.Punishment
 		// Dead is the live status of the logger.
 		// If true, the user should be cleared.
-		Dead bool
+		//Dead bool
 		// Stats contains the stats of the user.
 		Stats Stats `bson:"stats"`
 

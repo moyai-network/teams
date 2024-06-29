@@ -278,7 +278,8 @@ func (h *Handler) issueDeathban() {
 	if err != nil {
 		return
 	}
-	u.Teams.DeathBan = time.Now().Add(time.Minute * 10)
+	u.Teams.DeathBan = time.Now().Add(time.Minute * 20)
+	u.Teams.DeathBanned = true
 
 	data.SaveUser(u)
 }

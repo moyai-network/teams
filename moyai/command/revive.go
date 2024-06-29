@@ -30,13 +30,15 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
 
 	if tg.Teams.DeathBan.After(time.Now()) {
 		tg.Teams.DeathBan = time.Time{}
+		tg.Teams.DeathBanned = false
 		moyai.Overworld().AddEntity(target)
 		target.Teleport(mgl64.Vec3{0, 80, 0})
 	}
 
 	addDataInventory(target, *inv)
 
-	data.SaveUser(tg)}
+	data.SaveUser(tg)
+}
 
 func addDataInventory(p *player.Player, inv data.Inventory) {
 	for _, i := range inv.Items {

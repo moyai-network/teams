@@ -230,6 +230,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 			if u.Teams.DeathBan.After(time.Now()) {
 				u.Teams.DeathBan = time.Time{}
+				u.Teams.DeathBanned = false
 				u.Teams.Lives -= 1
 				data.SaveUser(u)
 				moyai.Overworld().AddEntity(h.p)

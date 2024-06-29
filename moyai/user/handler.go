@@ -87,7 +87,7 @@ type Handler struct {
 	tagCombat                 *cooldown.CoolDown
 	tagArcher                 *cooldown.CoolDown
 	coolDownComboAbility      *cooldown.CoolDown
-	coolDownVampireAbility           *cooldown.CoolDown
+	coolDownVampireAbility    *cooldown.CoolDown
 	coolDownBonedEffect       *cooldown.CoolDown
 	coolDownEffectDisabled    *cooldown.CoolDown
 	coolDownFocusMode         *cooldown.CoolDown
@@ -162,7 +162,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		coolDownFocusMode:         cooldown.NewCoolDown(),
 		coolDownItemUse:           cooldown.NewCoolDown(),
 		coolDownComboAbility:      cooldown.NewCoolDown(),
-		coolDownVampireAbility:           cooldown.NewCoolDown(),
+		coolDownVampireAbility:    cooldown.NewCoolDown(),
 		coolDownArcherRogueItem:   cooldown.NewMappedCoolDown[world.Item](),
 		coolDownBardItem:          cooldown.NewMappedCoolDown[world.Item](),
 		coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),
@@ -195,9 +195,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 		moyai.Deathban().AddEntity(p)
 		p.Teleport(mgl64.Vec3{5, 13, 44})
 	} else {
-		if u.Teams.Dead {
-			u.Teams.Dead = false
-			data.SaveUser(u)
+		if u.Teams.DeathBanned {
+			u.Teams.DeathBanned = false
+			p.Inventory().Clear()
+			p.Armour().Clear()
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
 		}
@@ -217,7 +218,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	h.handleBoosterRole(u)
 
 	data.SaveUser(u)
-
 	if u.Frozen {
 		p.SetImmobile()
 	}
@@ -227,7 +227,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	UpdateVanishState(p, u)
 
 	h.logTime = time.Now()
-
 	UpdateState(h.p)
 	go startTicker(h)
 	return h
@@ -630,7 +629,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		h.tagCombat.Set(time.Second * 20)
 
 		if attacker.Handler().(*Handler).coolDownVampireAbility.Active() {
-			attacker.Heal(*dmg * 0.5, effect.RegenerationHealingSource{})
+			attacker.Heal(*dmg*0.5, effect.RegenerationHealingSource{})
 		}
 	}
 }
@@ -702,7 +701,6 @@ func (h *Handler) HandleQuit() {
 	if !u.Teams.PVP.Paused() {
 		u.Teams.PVP.TogglePause()
 	}
-	fmt.Println(u.Teams.Dead)
 	data.SaveUser(u)
 
 	_, sotwRunning := sotw.Running()
@@ -743,8 +741,8 @@ func (h *Handler) HandleQuit() {
 					return
 				}
 				u.Teams.DeathBan = time.Now().Add(time.Minute * 20)
-				u.Teams.Dead = true
-				u.Teams.Stats.Deaths = 0
+				u.Teams.DeathBanned = true
+				u.Teams.Stats.Deaths += 1
 				if u.Teams.Stats.KillStreak > u.Teams.Stats.BestKillStreak {
 					u.Teams.Stats.BestKillStreak = u.Teams.Stats.KillStreak
 				}

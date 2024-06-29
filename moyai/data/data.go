@@ -70,7 +70,7 @@ func PartialReset() {
 		u.Frozen = false
 		u.Teams.Lives = 0
 		u.Teams.ChatType = 0
-		u.Teams.Dead = false
+		u.Teams.DeathBanned = false
 		u.Teams.Reclaimed = false
 		u.Teams.SOTW = true
 		u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
