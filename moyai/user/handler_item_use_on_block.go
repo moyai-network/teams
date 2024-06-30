@@ -232,6 +232,10 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				u.Teams.DeathBan = time.Time{}
 				u.Teams.DeathBanned = false
 				u.Teams.Lives -= 1
+				u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+				if !u.Teams.PVP.Paused() {
+					u.Teams.PVP.TogglePause()
+				}
 				data.SaveUser(u)
 				moyai.Overworld().AddEntity(h.p)
 				h.p.Armour().Clear()
