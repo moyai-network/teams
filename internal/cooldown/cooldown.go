@@ -58,6 +58,9 @@ func (c *CoolDown) Active() bool {
 	if c == nil {
 		return false
 	}
+	if c.paused.Load() {
+		return c.remainingAtPause.Load() > 0
+	}
 	return c.expiration.Load().After(time.Now())
 }
 
