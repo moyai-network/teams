@@ -152,6 +152,11 @@ func tickDeathban(p *player.Player, u data.User) {
 	if !u.Teams.DeathBan.After(time.Now()) && u.Teams.DeathBanned {
 		u.Teams.DeathBan = time.Time{}
 		u.Teams.DeathBanned = false
+		u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+		if !u.Teams.PVP.Paused() {
+			u.Teams.PVP.TogglePause()
+		}
+
 		data.SaveUser(u)
 		p.Armour().Clear()
 		p.Inventory().Clear()

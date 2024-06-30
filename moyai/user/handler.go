@@ -197,6 +197,11 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	} else {
 		if u.Teams.DeathBanned {
 			u.Teams.DeathBanned = false
+			u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+			if !u.Teams.PVP.Paused() {
+				u.Teams.PVP.TogglePause()
+			}
+
 			p.Inventory().Clear()
 			p.Armour().Clear()
 			moyai.Overworld().AddEntity(p)
