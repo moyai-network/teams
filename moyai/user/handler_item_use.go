@@ -1,6 +1,7 @@
 package user
 
 import (
+	"math"
 	"math/rand"
 	"time"
 
@@ -284,7 +285,7 @@ func (h *Handler) handleRandomTeleport() {
 // handlePearlUse handles the use of ender pearls.`
 func (h *Handler) handlePearlUse(ctx *event.Context) {
 	if cd := h.coolDownPearl; cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on ender pearl cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "pearl.cooldown", cd.Remaining().Seconds())
 		ctx.Cancel()
 		return
 	}
@@ -297,6 +298,30 @@ func (h *Handler) handlePearlUse(ctx *event.Context) {
 
 	h.coolDownPearl.Set(time.Second * 15)
 	h.lastPearlPos = h.p.Position()
+
+	go h.handlePearlExperienceBar()
+}
+
+func (h *Handler) handlePearlExperienceBar() {
+	t := time.NewTicker(time.Millisecond * 50)
+	for range t.C {
+		if !h.coolDownPearl.Active() {
+			h.p.RemoveExperience(math.MaxInt)
+			t.Stop()
+			return
+		}
+		h.p.SetExperienceLevel(int(h.coolDownPearl.Remaining().Seconds()))
+		p := float64(h.coolDownPearl.Remaining()) / float64(time.Second*15)
+		if p > 1 {
+			p = 1
+		}
+
+		if p < 0 {
+			p = 0
+		}
+
+		h.p.SetExperienceProgress(p)
+	}
 }
 
 // handleTimeWarpAbility handles the Time Warp ability.
@@ -306,10 +331,10 @@ func (h *Handler) handleTimeWarpAbility(kind it.TimeWarpType) {
 		return
 	}
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Time Warp cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Time Warp", cd.Remaining().Seconds())
 		return
 	}
-	h.p.Message(text.Colourf("<green>Ongoing in 2 seconds...</green>"))
+	moyai.Messagef(h.p, "partner_item.used", "Time Warp")
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*1)
 	time.AfterFunc(time.Second*2, func() {
@@ -323,7 +348,7 @@ func (h *Handler) handleTimeWarpAbility(kind it.TimeWarpType) {
 // handleSwitcherBallAbility handles the Switcher Ball ability.
 func (h *Handler) handleSwitcherBallAbility(kind it.SwitcherBallType, ctx *event.Context) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on snowball cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Switcher Ball", cd.Remaining().Seconds())
 		ctx.Cancel()
 		return
 	}
@@ -334,7 +359,7 @@ func (h *Handler) handleSwitcherBallAbility(kind it.SwitcherBallType, ctx *event
 // handleFullInvisibilityAbility handles the Full Invisibility ability.
 func (h *Handler) handleFullInvisibilityAbility(kind it.FullInvisibilityType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Full Invisibility cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Full Invisibility", cd.Remaining().Seconds())
 		return
 	}
 	h.ShowArmor(false)
@@ -342,13 +367,13 @@ func (h *Handler) handleFullInvisibilityAbility(kind it.FullInvisibilityType, he
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
-	h.p.Message(text.Colourf("§r§7> §eFull Invisibility §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Full Invisibility")
 }
 
 // handleCloseCallAbility handles the Close Call ability.
 func (h *Handler) handleCloseCallAbility(kind it.CloseCallType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Close Call cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Close Call", cd.Remaining().Seconds())
 		return
 	}
 
@@ -360,16 +385,15 @@ func (h *Handler) handleCloseCallAbility(kind it.CloseCallType, held item.Stack,
 	if h.p.Health() <= 8 {
 		h.p.AddEffect(effect.New(effect.Regeneration{}, 6, time.Second*5))
 		h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*5))
-		h.p.Message(text.Colourf("<green>Close Call has been used.</green>"))
-	} else {
-		h.p.Message(text.Colourf("<red>You are not below 3 hearts; Close call has been wasted.</red>"))
+		h.p.Message()
+		moyai.Messagef(h.p, "partner_item.used", "Close Call")
 	}
 }
 
 // handleBeserkAbility handles the Beserk Ability.
 func (h *Handler) handleBeserkAbility(kind it.BeserkAbilityType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Beserk Ability cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Beserk Ability", cd.Remaining().Seconds())
 		return
 	}
 
@@ -381,23 +405,23 @@ func (h *Handler) handleBeserkAbility(kind it.BeserkAbilityType, held item.Stack
 	h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*12))
 	h.p.AddEffect(effect.New(effect.Resistance{}, 3, time.Second*12))
 	h.p.AddEffect(effect.New(effect.Regeneration{}, 3, time.Second*12))
-	h.p.Message(text.Colourf("<green>Beserk Ability has been used.</green>"))
+	moyai.Messagef(h.p, "partner_item.used", "Beserk Ability")
 }
 
 // handleNinjaStarAbility handles the Ninja Star ability.
 func (h *Handler) handleNinjaStarAbility(kind it.NinjaStarType) {
 	lastAttacker, ok := h.lastAttacker()
 	if !ok {
-		h.p.Message(text.Colourf("<red>No last valid hit found</red>"))
+		moyai.Messagef(h.p, "partner_item.last_hit")
 		return
 	}
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Ninja Star cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Ninja Star", cd.Remaining().Seconds())
 		return
 	}
 
-	h.p.Message(text.Colourf("<red>Ongoing to %s in 5 seconds...</red>", lastAttacker.Name()))
-	lastAttacker.Message(text.Colourf("<red>%s is teleporting to your in 5 seconds...</red>", h.p.Name()))
+	moyai.Messagef(h.p, "partner_item.used.teleporting", "Ninja Star", lastAttacker.Name())
+	moyai.Messagef(lastAttacker, "ninja_star.teleporting", h.p.Name())
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 
@@ -417,7 +441,7 @@ func (h *Handler) handleFocusModeAbility(kind it.FocusModeType, held item.Stack,
 		return
 	}
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Focus Mode cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Focus Mode", cd.Remaining().Seconds())
 		return
 	}
 
@@ -427,15 +451,15 @@ func (h *Handler) handleFocusModeAbility(kind it.FocusModeType, held item.Stack,
 	if t, ok := lastAttacker.Handler().(*Handler); ok {
 		t.coolDownFocusMode.Set(time.Second * 10)
 		h.p.SetHeldItems(substractItem(h.p, held, 1), left)
-		h.p.Message(text.Colourf("<green>Focus Mode has been used on %s.</green>", t.p.Name()))
-		t.p.Message(text.Colourf("<green>%s has used Focus Mode on you.</green>", h.p.Name()))
+		moyai.Messagef(h.p, "partner_item.used.on", "Focus Mode", t.p.Name())
+		moyai.Messagef(t.p, "focus_mode.used", h.p)
 	}
 }
 
 // handleFocusModeAbility handles the Rocket ability
 func (h *Handler) handleRocketAbility(kind it.RocketType) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Rocket cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Rocket", cd.Remaining().Seconds())
 		return
 	}
 
@@ -449,7 +473,7 @@ func (h *Handler) handleRocketAbility(kind it.RocketType) {
 // handleAbilityDisablerAbility handles the ability disabler ability
 func (h *Handler) handleAbilityDisablerAbility(kind it.AbilityDisablerType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Ability Disabler cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Ability Disabler", cd.Remaining().Seconds())
 		return
 	}
 
@@ -461,14 +485,16 @@ func (h *Handler) handleAbilityDisablerAbility(kind it.AbilityDisablerType, held
 	enemies := nearbyHurtable(h.p, 15)
 	for _, e := range enemies {
 		e.coolDownGlobalAbilities.Set(time.Second * 10)
-		e.p.Message(text.Colourf("<red>You have been ability disabled for 10 seconds by %s.</red>", h.p.Name()))
+		moyai.Messagef(e.p, "ability_disabler.used", h.p.Name())
 	}
+
+	moyai.Messagef(h.p, "partner_item.used", "Ability Disabler")
 }
 
 // handleAbilityDisablerAbility handles the ability disabler ability
 func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType,  held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Strength Powder cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Strength Powder", cd.Remaining().Seconds())
 		return
 	}
 
@@ -478,12 +504,12 @@ func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType,  held 
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*7))
-	h.p.Message(text.Colourf("§r§7> §eStrength Powder §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Strength Powder")
 }
 
 func (h *Handler) handleTankIngotAbility(kind it.TankIngotType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Tank Ingot cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Tank Ingot", cd.Remaining().Seconds())
 		return
 	}
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
@@ -492,12 +518,12 @@ func (h *Handler) handleTankIngotAbility(kind it.TankIngotType, held item.Stack,
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Resistance{}, 2, time.Second*7))
-	h.p.Message(text.Colourf("§r§7> §eTank Ingot §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Tank Ingot")
 }
 
 func (h *Handler) handleRageBrickAbility(kind it.RageBrickType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Rage Brick cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Rage Brick", cd.Remaining().Seconds())
 		return
 	}
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
@@ -508,12 +534,12 @@ func (h *Handler) handleRageBrickAbility(kind it.RageBrickType, held item.Stack,
 	enemies := nearbyHurtable(h.p, 15)
 	lasts := time.Second * time.Duration(len(enemies))
 	h.p.AddEffect(effect.New(effect.Strength{}, 2, lasts))
-	h.p.Message(text.Colourf("§r§7> §eRage Brick §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Rage Brick")
 }
 
 func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Combo Ability cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Combo Ability", cd.Remaining().Seconds())
 		return
 	}
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
@@ -522,12 +548,12 @@ func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, 
 
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
-	h.p.Message(text.Colourf("§r§7> §eCombo Ability §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Combo Ability")
 }
 
 func (h *Handler) handleVampireAbility(kind it.VampireAbilityType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
-		h.p.Message(text.Colourf("<red>You are on Vampire Ability cooldown for %.1f seconds</red>", cd.Remaining().Seconds()))
+		moyai.Messagef(h.p, "partner_item.item.cooldown", "Vampire Ability", cd.Remaining().Seconds())
 		return
 	}
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
@@ -537,5 +563,5 @@ func (h *Handler) handleVampireAbility(kind it.VampireAbilityType, held item.Sta
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Haste{}, 2, time.Second*7))
-	h.p.Message(text.Colourf("§r§7> §eVampire Ability §6has been used"))
+	moyai.Messagef(h.p, "partner_item.used", "Vampire Ability")
 }
