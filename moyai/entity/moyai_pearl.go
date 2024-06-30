@@ -273,11 +273,6 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	b := e.World().Block(pos)
 	name, properties := b.EncodeBlock()
 
-	// if validBlock(b) && validBlock(e.World().Block(pos.Add(cube.Pos{0, 1, 0}))) {
-	// 	// fmt.Println("Valid Block Pearl")
-	// 	return pos.Vec3(), true
-	// }
-
 	if underPos, underOk := validUnderPearl(e, target, direction); underOk {
 		// // fmt.Println("Under Pearl")
 		return underPos, true
@@ -319,6 +314,11 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	if taliPos, ok := validTaliPearl(e, target, direction); ok {
 		return taliPos, true
 	}
+
+	// if validBlock(b) && validBlock(e.World().Block(pos.Add(cube.Pos{0, 1, 0}))) {
+	// 	// fmt.Println("Valid Block Pearl")
+	// 	return pos.Vec3(), true
+	// }
 
 	return pos.Vec3(), false
 }
