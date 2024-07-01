@@ -1,7 +1,6 @@
 package user
 
 import (
-	"math"
 	"math/rand"
 	"time"
 
@@ -299,10 +298,10 @@ func (h *Handler) handlePearlUse(ctx *event.Context) {
 	h.coolDownPearl.Set(time.Second * 15)
 	h.lastPearlPos = h.p.Position()
 
-	go h.handlePearlExperienceBar()
+	//go h.handlePearlExperienceBar()
 }
 
-func (h *Handler) handlePearlExperienceBar() {
+/*func (h *Handler) handlePearlExperienceBar() {
 	t := time.NewTicker(time.Millisecond * 50)
 	for range t.C {
 		if !h.coolDownPearl.Active() {
@@ -322,7 +321,7 @@ func (h *Handler) handlePearlExperienceBar() {
 
 		h.p.SetExperienceProgress(p)
 	}
-}
+}*/
 
 // handleTimeWarpAbility handles the Time Warp ability.
 func (h *Handler) handleTimeWarpAbility(kind it.TimeWarpType) {
@@ -492,7 +491,7 @@ func (h *Handler) handleAbilityDisablerAbility(kind it.AbilityDisablerType, held
 }
 
 // handleAbilityDisablerAbility handles the ability disabler ability
-func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType,  held item.Stack, left item.Stack) {
+func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType, held item.Stack, left item.Stack) {
 	if cd := h.coolDownSpecificAbilities.Key(kind); cd.Active() {
 		moyai.Messagef(h.p, "partner_item.item.cooldown", "Strength Powder", cd.Remaining().Seconds())
 		return
