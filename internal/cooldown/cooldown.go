@@ -85,7 +85,7 @@ func (c *CoolDown) Reset() {
 }
 
 type coolDownData struct {
-	Duration         time.Duration
+	Expiration       time.Time
 	Paused           bool
 	RemainingAtPause time.Duration
 }
@@ -97,7 +97,7 @@ func (c *CoolDown) UnmarshalBSON(b []byte) error {
 	}
 	d := coolDownData{}
 	err := bson.Unmarshal(b, &d)
-	c.expiration = *atomic.NewValue(time.Now().Add(d.Duration))
+	c.expiration = *atomic.NewValue(d.Expiration)
 	c.paused.Store(d.Paused)
 	c.remainingAtPause.Store(d.RemainingAtPause)
 	return err
@@ -109,7 +109,7 @@ func (c *CoolDown) MarshalBSON() ([]byte, error) {
 		return bson.Marshal(&coolDownData{})
 	}
 	d := coolDownData{
-		Duration:         time.Until(c.expiration.Load()),
+		Expiration:       c.expiration.Load(),
 		Paused:           c.paused.Load(),
 		RemainingAtPause: c.remainingAtPause.Load(),
 	}
