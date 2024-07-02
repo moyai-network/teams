@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae
+	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.16
 	github.com/diamondburned/arikawa/v3 v3.3.6
@@ -12,6 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/joho/godotenv v1.5.1
+	github.com/oomph-ac/oomph v0.0.0-20240701145620-5cc16242dab8
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.38.0
@@ -38,12 +40,13 @@ require (
 )
 
 require (
-	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
 	github.com/df-mc/goleveldb v1.1.9 // indirect
 	github.com/df-mc/worldupgrader v1.0.15 // indirect
+	github.com/disgoorg/json v1.1.0 // indirect
+	github.com/elliotchance/orderedmap/v2 v2.2.0 // indirect
 	github.com/ethaniccc/float32-cube v0.0.0-20230113135104-a65c4cb545c8 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
@@ -53,14 +56,15 @@ require (
 	github.com/gorilla/schema v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
-	github.com/oomph-ac/oomph v0.0.0-20240301233928-3b3c746d93fd // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
+	github.com/petermattis/goid v0.0.0-20240327183114-c42a807a84ba // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sandertv/go-raknet v1.14.0 // indirect
+	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
@@ -73,14 +77,12 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
 
 replace github.com/flonja/multiversion => github.com/moyai-network/bifrost v0.0.0-20240608171226-6ddb00c8c9d4
 
-replace github.com/sandertv/gophertunnel => github.com/flonja/tedac-gophertunnel v0.0.12-0.20240616150731-0f0d2885ac57
+replace github.com/sandertv/gophertunnel v1.38.0 => github.com/oomph-ac/gophertunnel v0.0.0-20240616183157-9a90927ebb22
 
 replace github.com/sandertv/go-raknet => github.com/GameParrot/tedac-raknet v0.0.4
 

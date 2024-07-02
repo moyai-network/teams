@@ -1,12 +1,14 @@
 package minecraft
 
 import (
-	"github.com/bedrock-gophers/role/role"
-	"github.com/moyai-network/teams/moyai/roles"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/bedrock-gophers/role/role"
+	"github.com/moyai-network/teams/moyai/roles"
+	"github.com/oomph-ac/oomph"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
@@ -15,7 +17,6 @@ import (
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
-	v486 "github.com/flonja/multiversion/protocols/v486"
 
 	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
 
@@ -121,28 +122,32 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 
 // configurePacketListener configures the packet listener for the server.
 func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	// /*if oomphEnabled {
-	// 	ac := oomph.New(oomph.OomphSettings{
-	// 		LocalAddress:  ":19133",
-	// 		RemoteAddress: ":19132",
-	// 		RequirePacks:  true,
-	// 	})
+	if oomphEnabled {
+		ac := oomph.New(oomph.OomphSettings{
+			LocalAddress:  ":19132",
+			RemoteAddress: ":19133",
+			RequirePacks:  true,
+		})
 
-	// 	ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
-	// 	go func() {
-	// 		for {
-	// 			_, err := ac.Accept()
-	// 			if err != nil {
-	// 				return
-	// 			}
+		ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
+		go func() {
+			for {
+				p, err := ac.Accept()
+				if err != nil {
+					return
+				}
 
-	// 		}
-	// 	}()
-	// 	return
-	// }*/
+				p.Player.SetLog(ac.Log)
+				p.Player.MovementMode = 1
+
+				// TODO: Handle events
+			}
+		}()
+		return
+	}
 	pk := intercept.NewPacketListener()
 	pk.Listen(conf, ":19132", []minecraft.Protocol{
-		v486.New(),
+		//v486.New(),
 		// v582.New(),
 		// v589.New(),
 		// v594.New(),
