@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/moyai-network/teams/moyai"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/punishment"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 )
 
 // MuteForm is a command that is used to mute an online player through a punishment form.
@@ -210,7 +210,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output) {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Roles.Contains(role.Operator{}) {
+	if u.Roles.Contains(rls.Operator()) {
 		out.Error(lang.Translatef(l, "command.mute.operator"))
 		return
 	}
@@ -249,7 +249,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if u.Roles.Contains(role.Operator{}) {
+	if u.Roles.Contains(rls.Operator()) {
 		out.Error(lang.Translatef(l, "command.mute.operator"))
 		return
 	}

@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 )
 
 // Fix is a command that allows the player to fix the item in their hand or another player's hand.
@@ -14,7 +14,7 @@ type Fix struct {
 
 // FixAll is a command that allows the player to fix all items in their inventory or another player's hand.
 type FixAll struct {
-	Sub cmd.SubCommand `cmd:"all"`
+	Sub    cmd.SubCommand             `cmd:"all"`
 	Player cmd.Optional[[]cmd.Target] `cmd:"player"`
 }
 
@@ -80,10 +80,10 @@ func (f FixAll) Run(s cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (Fix) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Khufu{})
+	return allow(s, false, rls.Khufu())
 }
 
 // Allow ...
 func (FixAll) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Ramses{})
+	return allow(s, false, rls.Ramses())
 }

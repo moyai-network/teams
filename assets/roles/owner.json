@@ -1,0 +1,6 @@
+{
+	"name": "owner",
+	"colour": "dark-blue",
+	"inherits": "admin",
+	"tier": 16
+}

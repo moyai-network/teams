@@ -153,7 +153,7 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 				return
 			}
 			IncreaseTeamPoints(tm, 10)
-			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Color(u.DisplayName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
 			c.StopCapturing(p)
 
 			pts := LookupTeamPoints(tm)

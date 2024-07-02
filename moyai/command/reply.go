@@ -6,9 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strings"
 )
 
@@ -57,16 +55,10 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}*/
 
-	uColour, uMsg := text.Colourf("<white>%s</white>", u.DisplayName), text.Colourf("<white>%s</white>", msg)
-	tColour, tMsg := text.Colourf("<white>%s</white>", t.DisplayName), text.Colourf("<white>%s</white>", msg)
-	if _, ok := u.Roles.Highest().(role.Default); !ok {
-		uMsg = t.Roles.Highest().Color(msg)
-		uColour = u.Roles.Highest().Color(u.DisplayName)
-	}
-	if _, ok := t.Roles.Highest().(role.Default); !ok {
-		tMsg = u.Roles.Highest().Color(msg)
-		tColour = t.Roles.Highest().Color(t.DisplayName)
-	}
+	uMsg := t.Roles.Highest().Coloured(msg)
+	uColour := u.Roles.Highest().Coloured(u.DisplayName)
+	tMsg := u.Roles.Highest().Coloured(msg)
+	tColour := t.Roles.Highest().Coloured(t.DisplayName)
 
 	t.LastMessageFrom = u.Name
 	data.SaveUser(t)

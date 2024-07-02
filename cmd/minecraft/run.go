@@ -1,6 +1,8 @@
 package minecraft
 
 import (
+	"github.com/bedrock-gophers/role/role"
+	"github.com/moyai-network/teams/moyai/roles"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,14 +18,13 @@ import (
 	v486 "github.com/flonja/multiversion/protocols/v486"
 
 	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
-	// v486 "github.com/flonja/multiversion/protocols/v486"
+
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	ent "github.com/moyai-network/teams/moyai/entity"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -34,6 +35,10 @@ import (
 
 // Run runs the Minecraft server.
 func Run() error {
+	err := role.Load("assets/roles")
+	if err != nil {
+		return err
+	}
 	registerLanguages()
 
 	log := logrus.New()
@@ -88,8 +93,8 @@ func tickVotes() {
 	for range t.C {
 		usrs := data.NewVoters()
 		for _, u := range usrs {
-			u.Roles.Add(role.Voter{})
-			u.Roles.Expire(role.Voter{}, time.Now().Add(time.Hour*24))
+			u.Roles.Add(roles.Voter())
+			u.Roles.Expire(roles.Voter(), time.Now().Add(time.Hour*24))
 			moyai.Broadcastf("vote.broadcast", u.DisplayName)
 			data.SaveUser(u)
 		}

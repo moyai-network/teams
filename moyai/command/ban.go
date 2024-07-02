@@ -2,13 +2,13 @@ package command
 
 import (
 	"github.com/moyai-network/teams/moyai"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/punishment"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -131,7 +131,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output) {
 	if err != nil {
 		return
 	}
-	if u.Roles.Contains(role.Operator{}) {
+	if u.Roles.Contains(rls.Operator()) {
 		o.Error(lang.Translatef(l, "command.ban.operator"))
 		return
 	}
@@ -168,7 +168,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	if u.Roles.Contains(role.Operator{}) {
+	if u.Roles.Contains(rls.Operator()) {
 		o.Error(lang.Translatef(l, "command.ban.operator"))
 		return
 	}

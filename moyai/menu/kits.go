@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
 
@@ -15,7 +16,6 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
 	"github.com/moyai-network/teams/moyai/kit"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -65,7 +65,7 @@ func NewKitsMenu(p *player.Player) (inv.Menu, bool) {
 		lore := text.Colourf("<green>Available</green>")
 		name := colour.StripMinecraftColour(stack.CustomName())
 
-		if _, ok := stack.Value("free"); !ok && u.Roles.Highest() == (role.Default{}) {
+		if _, ok := stack.Value("free"); !ok && !roles.Premium(u.Roles.Highest()) {
 			lore = text.Colourf("<red>Obtain at moyai.tebex.io</red>")
 		} else {
 			kits := u.Teams.Kits
@@ -97,7 +97,7 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 		}
 		return
 	}
-	if u.Roles.Contains(role.Khufu{}, role.Ramses{}, role.Menes{}, role.Pharaoh{}) || role.Staff(u.Roles.Highest()) {
+	if roles.Premium(u.Roles.Highest()) {
 		u.Teams.Kits.Set(name, time.Hour*2)
 	} else {
 		u.Teams.Kits.Set(name, time.Hour*4)
@@ -109,7 +109,7 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	}
 
 	var free bool
-	if _, free = it.Value("free"); !free && u.Roles.Highest() == (role.Default{}) {
+	if _, free = it.Value("free"); !free && !roles.Premium(u.Roles.Highest()) {
 		return
 	}
 	name = strings.TrimPrefix(name, "Free ")

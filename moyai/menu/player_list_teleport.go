@@ -7,7 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	"github.com/moyai-network/teams/moyai/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -27,7 +27,7 @@ func SendPlayerListTeleportMenu(p *player.Player) {
 
 func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(u data.User, p *player.Player) {
 	rl := u.Roles.Highest()
-	if !role.Staff(rl) {
+	if !roles.Staff(rl) {
 		return
 	}
 

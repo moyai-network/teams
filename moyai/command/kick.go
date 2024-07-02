@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"golang.org/x/text/language"
 )
 
@@ -20,7 +20,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	l, single := locale(s), true
 	if len(k.Targets) > 1 {
 		if p, ok := s.(*player.Player); ok {
-			if u, err := data.LoadUserFromName(p.Name()); err == nil && !u.Roles.Contains(role.Operator{}) {
+			if u, err := data.LoadUserFromName(p.Name()); err == nil && !u.Roles.Contains(rls.Operator()) {
 				o.Error(lang.Translatef(l, "command.targets.exceed"))
 				return
 			}
@@ -32,7 +32,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output) {
 	for _, p := range k.Targets {
 		if p, ok := p.(*player.Player); ok {
 			u, err := data.LoadUserFromName(p.Name())
-			if err != nil || u.Roles.Contains(role.Operator{}) {
+			if err != nil || u.Roles.Contains(rls.Operator()) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue
 			}

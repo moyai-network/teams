@@ -2,6 +2,7 @@ package data
 
 import (
 	"errors"
+	"github.com/moyai-network/teams/moyai/roles"
 	"log"
 	"strconv"
 	"strings"
@@ -17,9 +18,9 @@ import (
 
 	"github.com/moyai-network/teams/internal/sets"
 
+	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/punishment"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/tag"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -279,7 +280,7 @@ func LinkUser(code string, sender *discord.User) (User, error) {
 	u.DiscordID = id
 	u.LinkCode = ""
 
-	u.Roles.Add(role.Nitro{})
+	u.Roles.Add(roles.Nitro())
 	SaveUser(u)
 	return u, nil
 }

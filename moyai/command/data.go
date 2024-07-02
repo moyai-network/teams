@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 )
 
 type DataReset struct {
@@ -21,7 +21,7 @@ func (d DataReset) Run(src cmd.Source, _ *cmd.Output) {
 
 // Allow ...
 func (DataReset) Allow(src cmd.Source) bool {
-	return allow(src, true, role.Operator{})
+	return allow(src, true, rls.Operator())
 }
 
 type dataKind string

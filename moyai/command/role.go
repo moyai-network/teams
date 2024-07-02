@@ -1,10 +1,11 @@
 package command
 
 import (
+	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/timeutil"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
 
@@ -81,7 +82,7 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		if isPlayer && tP != p && t.Roles.Contains(role.Operator{}) {
+		if isPlayer && tP != p && t.Roles.Contains(rls.Operator()) {
 			o.Error(lang.Translatef(l, "command.role.modify.other"))
 			return
 		}
@@ -100,12 +101,12 @@ func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
-		if !u.Roles.Contains(role.Operator{}) {
+		if !u.Roles.Contains(rls.Operator()) {
 			if strings.EqualFold(p.XUID(), t.XUID) {
 				o.Error(lang.Translatef(l, "command.role.modify.self"))
 				return
 			}
-			if role.Tier(u.Roles.Highest()) < role.Tier(r) {
+			if u.Roles.Highest().Tier() < r.Tier() {
 				o.Error(lang.Translatef(l, "command.role.higher"))
 				return
 			}
@@ -176,7 +177,7 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			o.Error(lang.Translatef(l, "command.target.unknown"))
 			return
 		}
-		if isPlayer && tP != p && t.Roles.Contains(role.Operator{}) {
+		if isPlayer && tP != p && t.Roles.Contains(rls.Operator()) {
 			o.Error(lang.Translatef(l, "command.role.modify.other"))
 			return
 		}
@@ -195,12 +196,12 @@ func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
-		if !u.Roles.Contains(role.Operator{}) {
+		if !u.Roles.Contains(rls.Operator()) {
 			if strings.EqualFold(p.XUID(), t.XUID) {
 				o.Error(lang.Translatef(l, "command.role.modify.self"))
 				return
 			}
-			if role.Tier(u.Roles.Highest()) < role.Tier(r) {
+			if u.Roles.Highest().Tier() < r.Tier() {
 				o.Error(lang.Translatef(l, "command.role.higher"))
 				return
 			}
@@ -233,11 +234,11 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
-		if role.Tier(u.Roles.Highest()) < role.Tier(r) {
+		if u.Roles.Highest().Tier() < r.Tier() {
 			o.Error(lang.Translatef(l, "command.role.higher"))
 			return
 		}
-		if t.Roles.Contains(role.Operator{}) {
+		if t.Roles.Contains(rls.Operator()) {
 			o.Error(lang.Translatef(l, "command.role.modify.other"))
 			return
 		}
@@ -281,11 +282,11 @@ func (d RoleRemoveOffline) Run(s cmd.Source, o *cmd.Output) {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
-		if role.Tier(u.Roles.Highest()) < role.Tier(r) {
+		if u.Roles.Highest().Tier() < r.Tier() {
 			o.Error(lang.Translatef(l, "command.role.higher"))
 			return
 		}
-		if t.Roles.Contains(role.Operator{}) {
+		if t.Roles.Contains(rls.Operator()) {
 			o.Error(lang.Translatef(l, "command.role.modify.other"))
 			return
 		}
@@ -341,11 +342,11 @@ func (roles) Options(s cmd.Source) (roles []string) {
 	if disallow {
 		u, err := data.LoadUserFromName(p.Name())
 		if err == nil {
-			disallow = !u.Roles.Contains(role.Operator{})
+			disallow = !u.Roles.Contains(rls.Operator())
 		}
 	}
 	for _, r := range role.All() {
-		if _, ok := r.(role.Operator); ok && disallow {
+		if r == rls.Operator() && disallow {
 			continue
 		}
 		roles = append(roles, r.Name())

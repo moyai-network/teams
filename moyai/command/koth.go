@@ -10,7 +10,7 @@ import (
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/eotw"
 	"github.com/moyai-network/teams/moyai/koth"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strings"
@@ -72,7 +72,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	r := u.Roles.Highest()
-	name = r.Color(p.Name())
+	name = r.Coloured(p.Name())
 	if u.Teams.KOTHStart.Active() {
 		moyai.Messagef(p, "command.koth.cooldown", durafmt.ParseShort(u.Teams.KOTHStart.Remaining()).LimitFirstN(2))
 		return
@@ -90,7 +90,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	ko.Start()
-	if !u.Roles.Contains(role.Admin{}, role.Operator{}, role.Manager{}) {
+	if !u.Roles.Contains(rls.Operator(), rls.Admin(), rls.Manager()) {
 		u.Teams.KOTHStart.Set(time.Hour * 48)
 	}
 
@@ -139,7 +139,7 @@ func (KothStop) Run(s cmd.Source, o *cmd.Output) {
 	if ok {
 		if u, err := data.LoadUserFromName(p.Name()); err == nil {
 			r := u.Roles.Highest()
-			name = r.Color(p.Name())
+			name = r.Coloured(p.Name())
 		}
 	}
 	if k, ok := koth.Running(); !ok {
@@ -167,7 +167,7 @@ func (kothList) Options(src cmd.Source) []string {
 
 	var opts []string
 	for _, k := range koth.All() {
-		if (k == koth.Citadel || k == koth.Hades) && (playerSrc && !u.Roles.Contains(role.Admin{}, role.Operator{}, role.Manager{})) {
+		if (k == koth.Citadel || k == koth.Hades) && (playerSrc && !u.Roles.Contains(rls.Operator(), rls.Admin(), rls.Manager())) {
 			continue
 		}
 		opts = append(opts, colour.StripMinecraftColour(strings.ToLower(k.Name())))

@@ -4,13 +4,11 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // Whisper is a command that allows a player to send a private message to another player.
@@ -59,16 +57,10 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}*/
 
-	uTag, uMsg := text.Colourf("<white>%s</white>", u.DisplayName), text.Colourf("<white>%s</white>", msg)
-	tTag, tMsg := text.Colourf("<white>%s</white>", t.DisplayName), text.Colourf("<white>%s</white>", msg)
-	if _, ok := u.Roles.Highest().(role.Default); !ok {
-		uMsg = t.Roles.Highest().Color(msg)
-		uTag = u.Roles.Highest().Color(u.DisplayName)
-	}
-	if _, ok := t.Roles.Highest().(role.Default); !ok {
-		tMsg = u.Roles.Highest().Color(msg)
-		tTag = t.Roles.Highest().Color(t.DisplayName)
-	}
+	uMsg := t.Roles.Highest().Coloured(msg)
+	uTag := u.Roles.Highest().Coloured(u.DisplayName)
+	tMsg := u.Roles.Highest().Coloured(msg)
+	tTag := t.Roles.Highest().Coloured(t.DisplayName)
 
 	t.LastMessageFrom = u.Name
 	data.SaveUser(t)

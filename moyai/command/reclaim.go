@@ -1,12 +1,12 @@
 package command
 
 import (
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"unicode"
 
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
@@ -48,7 +48,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 
 	highest := u.Roles.Highest()
 	for _, r := range u.Roles.All() {
-		if r == (role.Operator{}) {
+		if r == (rls.Operator()) {
 			continue
 		}
 
@@ -56,48 +56,48 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 		var lives int
 
 		switch r {
-		case role.Default{}:
+		case rls.Default():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 3))
 			items = append(items, it.NewKey(it.KeyTypePartner, 3))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 2))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 3))
-		case role.Trial{}:
+		case rls.Trial():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 3))
 			items = append(items, it.NewKey(it.KeyTypePartner, 4))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 3))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 4))
 			lives = 3
-		case role.Khufu{}:
+		case rls.Khufu():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 4))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 10))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 5))
 			items = append(items, it.NewKey(it.KeyTypePartner, 3))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 1))
 			lives = 30
-		case role.Ramses{}:
+		case rls.Ramses():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 5))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 15))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 10))
 			items = append(items, it.NewKey(it.KeyTypePartner, 6))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 2))
 			lives = 45
-		case role.Menes{}, role.Mod{}, role.Trial{}:
+		case rls.Menes(), rls.Mod(), rls.Trial():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 7))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 20))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 15))
 			items = append(items, it.NewKey(it.KeyTypePartner, 12))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 4))
 			lives = 60
-		case role.Pharaoh{}:
+		case rls.Pharaoh():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 9))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 30))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 20))
 			items = append(items, it.NewKey(it.KeyTypePartner, 18))
 			items = append(items, it.NewKey(it.KeyTypePharaoh, 8))
 			lives = 75
-		case role.Manager{}, role.Admin{}, role.Owner{}:
+		case rls.Manager(), rls.Admin(), rls.Owner():
 			items = append(items, it.NewSpecialItem(it.PartnerPackageType{}, 10))
 			items = append(items, it.NewKey(it.KeyTypeRamses, 30))
 			items = append(items, it.NewKey(it.KeyTypeMenes, 20))
@@ -116,7 +116,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 			itemNames = append(itemNames, text.Colourf("<red>%dx</red> %s", i.Count(), i.CustomName()))
 		}
 		nm := []rune(r.Name())
-		moyai.Broadcastf("user.reclaim", highest.Color(p.Name()), r.Color(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
+		moyai.Broadcastf("user.reclaim", highest.Coloured(p.Name()), r.Coloured(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
 	}
 	data.SaveUser(u)
 }
@@ -136,5 +136,5 @@ func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
 
 // Allow ...
 func (ReclaimReset) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Operator{})
+	return allow(s, true, rls.Operator())
 }

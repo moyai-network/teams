@@ -1,10 +1,11 @@
 package command
 
 import (
+	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )
@@ -38,7 +39,7 @@ func allow(src cmd.Source, console bool, roles ...role.Role) bool {
 	if err != nil {
 		return false
 	}
-	return u.Roles.Contains(append(roles, role.Operator{})...)
+	return u.Roles.Contains(append(roles, rls.Operator())...)
 }
 
 // names returns a list of formatted names from a list of users. If tag is true a tag will be shown next to the name

@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/roles"
 	"math"
 	"slices"
 	"strconv"
@@ -38,7 +39,6 @@ import (
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/koth"
 	"github.com/moyai-network/teams/moyai/process"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -214,11 +214,12 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	u.XUID = xuid
 	u.DeviceID = s.ClientData().DeviceID
 	u.SelfSignedID = s.ClientData().SelfSignedID
-	if !u.Roles.Contains(role.Default{}) {
-		u.Roles.Add(role.Default{})
+
+	if !u.Roles.Contains(roles.Default()) {
+		u.Roles.Add(roles.Default())
 	}
 
-	u.Roles.Add(role.Pharaoh{})
+	u.Roles.Add(roles.Pharaoh())
 	p.Message(lang.Translatef(*u.Language, "discord.message"))
 	h.handleBoosterRole(u)
 
@@ -248,14 +249,14 @@ func (h *Handler) handleBoosterRole(u data.User) {
 		}) {
 			{
 				p.Message(text.Colourf("<green>Thank you for being a Nitro Booster!</green>"))
-				u.Roles.Add(role.Nitro{})
+				u.Roles.Add(roles.Nitro())
 				return
 			}
 		}
 	}
-	if u.Roles.Contains(role.Nitro{}) {
+	if u.Roles.Contains(roles.Nitro()) {
 		p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
-		u.Roles.Remove(role.Nitro{})
+		u.Roles.Remove(roles.Nitro())
 	}
 }
 
@@ -362,7 +363,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 			return
 		}
 
-		if !u.Roles.Contains(role.Admin{}) {
+		if !u.Roles.Contains(roles.Admin()) {
 			h.p.World().SetBlock(h.lastPlacedSignPos, block.Air{}, nil)
 			return
 		}
@@ -402,7 +403,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 			return
 		}
 
-		if !u.Roles.Contains(role.Admin{}) {
+		if !u.Roles.Contains(roles.Admin()) {
 			h.p.World().SetBlock(h.lastPlacedSignPos, block.Air{}, nil)
 			return
 		}

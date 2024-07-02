@@ -16,7 +16,6 @@ import (
 	"github.com/moyai-network/teams/internal/timeutil"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/team"
 
 	"github.com/df-mc/dragonfly/server/block"
@@ -171,11 +170,13 @@ type TeamStuck struct {
 }
 
 type TeamDelete struct {
+	adminAllower
 	Sub  cmd.SubCommand `cmd:"delete"`
 	Name teamName       `cmd:"name"`
 }
 
 type TeamSetDTR struct {
+	adminAllower
 	Sub  cmd.SubCommand `cmd:"setdtr"`
 	Name teamName       `cmd:"name"`
 	DTR  float64        `cmd:"dtr"`
@@ -1435,6 +1436,7 @@ func (t TeamResetRegen) Run(src cmd.Source, _ *cmd.Output) {
 
 	p.Message(text.Colourf("<green>Successfully reset team regeneration.</green>"))
 }
+
 // Run ...
 func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
@@ -1470,14 +1472,6 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 
 	moyai.Messagef(p, "team.rename.success", tm.DisplayName)
 	team.Broadcastf(tm, "team.rename.success.broadcast", p.Name(), tm.DisplayName)
-}
-
-func (TeamDelete) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
-}
-
-func (TeamSetDTR) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
 }
 
 type (

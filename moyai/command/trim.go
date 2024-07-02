@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 )
 
 // Trim is a command that allows the player to add trims to their armor
@@ -36,7 +36,7 @@ func (t Trim) Run(src cmd.Source, out *cmd.Output) {
 
 // Allow ...
 func (Trim) Allow(src cmd.Source) bool {
-	return allow(src, false, role.Khufu{})
+	return allow(src, false, rls.Khufu())
 }
 
 // Run ...

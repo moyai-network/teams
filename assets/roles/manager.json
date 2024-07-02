@@ -1,0 +1,6 @@
+{
+	"name": "manager",
+	"colour": "dark-red",
+	"inherits": "admin",
+	"tier": 15
+}

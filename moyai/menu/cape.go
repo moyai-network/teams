@@ -9,7 +9,7 @@ import (
 	"github.com/moyai-network/teams/moyai/cape"
 	"github.com/moyai-network/teams/moyai/colour"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	"github.com/moyai-network/teams/moyai/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -31,7 +31,7 @@ func NewCape(p *player.Player) inv.Menu {
 		}
 		col := item.ColourGreen()
 		name := text.Colourf("<green>%s</green>", c.Name())
-		if !u.Roles.Contains(role.Khufu{}) && c.Premium() {
+		if !roles.Premium(u.Roles.Highest()) && c.Premium() {
 			col = item.ColourRed()
 			name = text.Colourf("<red>%s</red>", c.Name())
 		}

@@ -6,7 +6,7 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/cape"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 	"github.com/samber/lo"
 )
 
@@ -57,7 +57,7 @@ func (capes) Options(s cmd.Source) (capes []string) {
 	}
 
 	all := cape.All()
-	if u.Roles.Contains(role.Khufu{}) {
+	if rls.Premium(u.Roles.Highest()) {
 		names := lo.Map(all, func(c cape.Cape, _ int) string {
 			return c.Name()
 		})

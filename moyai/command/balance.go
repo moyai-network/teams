@@ -70,8 +70,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(target)
 
-	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), 0)
-	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), 0)
+	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Coloured(p.Name()), 0)
+	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Coloured(t.Name()), 0)
 }
 
 type BalancePayOffline struct {
@@ -117,7 +117,7 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output) {
 	data.SaveUser(u)
 	data.SaveUser(t)
 
-	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
+	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Coloured(t.DisplayName), b.Amount)
 }
 
 type BalanceAdd struct {
@@ -156,8 +156,8 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output) {
 
 	data.SaveUser(target)
 
-	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Color(p.Name()), b.Amount)
-	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Color(t.Name()), b.Amount)
+	moyai.Messagef(t, "command.add.receiver", u.Roles.Highest().Coloured(p.Name()), b.Amount)
+	moyai.Messagef(p, "command.add.sender", target.Roles.Highest().Coloured(t.Name()), b.Amount)
 }
 
 type BalanceAddOffline struct {
@@ -188,5 +188,5 @@ func (b BalanceAddOffline) Run(src cmd.Source, out *cmd.Output) {
 
 	data.SaveUser(t)
 
-	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Color(t.DisplayName), b.Amount)
+	moyai.Messagef(p, "command.add.sender", t.Roles.Highest().Coloured(t.DisplayName), b.Amount)
 }

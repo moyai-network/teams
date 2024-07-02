@@ -8,11 +8,12 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
+	rls "github.com/moyai-network/teams/moyai/roles"
 )
 
 // TeleportToPos is a command that teleports the user to a position.
 type TeleportToPos struct {
+	adminAllower
 	Position mgl64.Vec3 `cmd:"destination"`
 }
 
@@ -24,12 +25,14 @@ type TeleportToTarget struct {
 
 // TeleportTargetsToTarget is a command that teleports player(s) to another player.
 type TeleportTargetsToTarget struct {
+	adminAllower
 	Targets  []cmd.Target `cmd:"target"`
 	Position []cmd.Target `cmd:"destination"`
 }
 
 // TeleportTargetsToPos is a command that teleports player(s) to a position.
 type TeleportTargetsToPos struct {
+	adminAllower
 	Targets  []cmd.Target `cmd:"target"`
 	Position mgl64.Vec3   `cmd:"destination"`
 }
@@ -73,7 +76,7 @@ func (tp TeleportTargetsToTarget) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if len(tp.Targets) > 1 && !u.Roles.Contains(role.Operator{}) {
+	if len(tp.Targets) > 1 && !u.Roles.Contains(rls.Operator()) {
 		o.Print(lang.Translatef(l, "command.teleport.operator"))
 		return
 	}
@@ -104,26 +107,11 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	if len(t.Targets) > 1 && !u.Roles.Contains(role.Operator{}) {
+	if len(t.Targets) > 1 && !u.Roles.Contains(rls.Operator()) {
 		o.Print(lang.Translatef(l, "command.teleport.operator"))
 		return
 	}
 	o.Print(lang.Translatef(l, "command.teleport.target", teleportTargets(t.Targets, t.Position, p)), t.Position)
-}
-
-// Allow ...
-func (TeleportToPos) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Admin{})
-}
-
-// Allow ...
-func (TeleportTargetsToTarget) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Admin{})
-}
-
-// Allow ...
-func (TeleportTargetsToPos) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Admin{})
 }
 
 // teleportTargets teleports a list of targets to a specified position and world. If the world is nil, it will only

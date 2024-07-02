@@ -6,7 +6,6 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/conquest"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -15,11 +14,13 @@ import (
 
 // ConquestStart is a command that starts a KOTH.
 type ConquestStart struct {
+	adminAllower
 	Sub cmd.SubCommand `cmd:"start"`
 }
 
 // ConquestStop is a command that stops a KOTH.
 type ConquestStop struct {
+	adminAllower
 	Sub cmd.SubCommand `cmd:"stop"`
 }
 
@@ -30,7 +31,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output) {
 	if ok {
 		if u, err := data.LoadUserFromName(p.Name()); err == nil {
 			r := u.Roles.Highest()
-			name = r.Color(p.Name())
+			name = r.Coloured(p.Name())
 		}
 	}
 	if conquest.Running() {
@@ -72,7 +73,7 @@ func (ConquestStop) Run(s cmd.Source, o *cmd.Output) {
 	if ok {
 		if u, err := data.LoadUserFromName(p.Name()); err == nil {
 			r := u.Roles.Highest()
-			name = r.Color(p.Name())
+			name = r.Coloured(p.Name())
 		}
 	}
 	if !conquest.Running() {
@@ -81,14 +82,4 @@ func (ConquestStop) Run(s cmd.Source, o *cmd.Output) {
 		conquest.Stop()
 		moyai.Broadcastf("koth.stop", name, "Conquest")
 	}
-}
-
-// Allow ...
-func (ConquestStart) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
-}
-
-// Allow ...
-func (ConquestStop) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Admin{})
 }

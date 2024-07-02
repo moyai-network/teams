@@ -1,16 +1,17 @@
 package user
 
 import (
+	"github.com/moyai-network/teams/moyai/roles"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/role"
 	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -42,13 +43,13 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 	switch u.Teams.ChatType {
 	case 0:
-		if msg[0] == '!' && role.Staff(r) {
+		if msg[0] == '!' && roles.Staff(r) {
 			h.staffMessage(msg, r)
 			return
 		}
 		h.globalMessage(msg, u, r, tm)
 	case 1:
-		if msg[0] == '!' && role.Staff(r) {
+		if msg[0] == '!' && roles.Staff(r) {
 			h.staffMessage(msg, r)
 			return
 		}
@@ -75,7 +76,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 func (h *Handler) staffMessage(msg string, r role.Role) {
 	for _, s := range moyai.Players() {
-		if us, err := data.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && role.Staff(us.Roles.Highest()) {
+		if us, err := data.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && roles.Staff(us.Roles.Highest()) {
 			moyai.Messagef(s, "staff.chat", r.Name(), h.p.Name(), strings.TrimPrefix(msg, "!"))
 		}
 	}
@@ -86,7 +87,7 @@ func (h *Handler) globalMessage(msg string, u data.User, r role.Role, tm data.Te
 		moyai.Messagef(h.p, "chat.global.muted")
 		return
 	}
-	if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() && !u.Roles.Contains(role.Admin{}) {
+	if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() && !u.Roles.Contains(roles.Admin()) {
 		moyai.Messagef(h.p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(moyai.ChatCoolDown())).Seconds())
 		return
 	}
@@ -96,9 +97,12 @@ func (h *Handler) globalMessage(msg string, u data.User, r role.Role, tm data.Te
 		displayName = u.DisplayName + " " + t.Format()
 	}
 
+	highestRole := u.Roles.Highest()
+	chatMessage := text.Colourf("%s<dark-grey>:</dark-grey> <white>%s</white>", highestRole.Coloured(displayName), msg)
+
 	if len(tm.Name) > 0 {
-		formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
-		formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, r.Chat(displayName, msg))
+		formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, chatMessage)
+		formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, chatMessage)
 
 		for _, t := range moyai.Players() {
 			if tm.Member(t.Name()) {
@@ -109,6 +113,6 @@ func (h *Handler) globalMessage(msg string, u data.User, r role.Role, tm data.Te
 		}
 		chat.StdoutSubscriber{}.Message(formatEnemy)
 	} else {
-		_, _ = chat.Global.WriteString(r.Chat(displayName, msg))
+		_, _ = chat.Global.WriteString(chatMessage)
 	}
 }

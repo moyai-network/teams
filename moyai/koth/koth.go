@@ -84,7 +84,7 @@ var (
 		area:        area.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, -496}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{200, -500},
-		duration: time.Minute * 10,
+		duration:    time.Minute * 10,
 	}
 	End = &KOTH{
 		name:        text.Colourf("<purple>End</purple>"),
@@ -201,7 +201,7 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 			tm.KOTHWins++
 			data.SaveTeam(tm)
 
-			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Color(u.DisplayName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
 			it.AddOrDrop(p, it.NewKey(it.KeyTypeKOTH, 2))
 		case <-k.cancel:
 			k.capturing = nil
