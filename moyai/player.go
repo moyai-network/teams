@@ -2,8 +2,8 @@ package moyai
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/moyai/roles"
 
-	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
@@ -22,15 +22,10 @@ func Alertf(s cmd.Source, key string, args ...any) {
 		return
 	}
 	for _, t := range Players() {
-		if u, _ := data.LoadUserFromName(t.Name()); staffRole(u.Roles.Highest()) {
+		if u, _ := data.LoadUserFromName(t.Name()); roles.Staff(u.Roles.Highest()) {
 			t.Message(lang.Translatef(*u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(*u.Language, key), args...)))
 		}
 	}
-}
-
-func staffRole(rl role.Role) bool {
-	trialTier := role.ByNameMust("trial").Tier()
-	return rl.Tier() >= trialTier
 }
 
 func Messagef(p *player.Player, key string, a ...interface{}) {
