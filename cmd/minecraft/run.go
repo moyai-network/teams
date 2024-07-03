@@ -9,6 +9,7 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/moyai/roles"
 	"github.com/oomph-ac/oomph"
+	"github.com/oomph-ac/oomph/handler"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
@@ -137,8 +138,9 @@ func configurePacketListener(conf *server.Config, oomphEnabled bool) {
 					return
 				}
 
-				p.Player.SetLog(ac.Log)
-				p.Player.MovementMode = 1
+				p.Player.SetLog(logrus.New())
+				p.Player.MovementMode = 0
+				p.Player.Handler(handler.HandlerIDMovement).(*handler.MovementHandler).CorrectionThreshold = 100000000
 
 				// TODO: Handle events
 			}

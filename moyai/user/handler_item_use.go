@@ -119,6 +119,9 @@ func (h *Handler) handlePartnerPackage(ctx *event.Context, held item.Stack, left
 // handleArcherRogueItemUse handles the use of items by Archer or Rogue class.
 func (h *Handler) handleArcherRogueItemUse(held item.Stack, left item.Stack) {
 	// Get the corresponding effect for the item.
+	if _, ok := held.Item().(item.Firework); ok {
+		return
+	}
 	if e, ok := ArcherRogueEffectFromItem(held.Item()); ok {
 		// Check cooldown for the item.
 		if cd := h.coolDownArcherRogueItem.Key(held.Item()); cd.Active() {
