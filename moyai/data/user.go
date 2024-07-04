@@ -2,8 +2,8 @@ package data
 
 import (
 	"errors"
+	"fmt"
 	"github.com/moyai-network/teams/moyai/roles"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -139,6 +139,20 @@ func DefaultSettings() Settings {
 	return s
 }
 
+type playerData struct {
+	Inventory *Inventory
+	Position  mgl64.Vec3
+	GameMode  int
+}
+
+func defaultPlayerData() playerData {
+	return playerData{
+		Inventory: &Inventory{},
+		Position:  mgl64.Vec3{},
+		GameMode:  0,
+	}
+}
+
 type User struct {
 	XUID        string `bson:"xuid"`
 	Name        string `bson:"name"`
@@ -167,10 +181,10 @@ type User struct {
 	LastMessageFrom string
 	// LastVote is the last time the user voted.
 	LastVote time.Time
+	// PlayerData is the data of the player.
+	PlayerData playerData `bson:"player_data"`
 
 	Teams struct {
-		// Position is the position of the user.
-		Position mgl64.Vec3
 		// DeathInventory is the inventory of the user when they died.
 		DeathInventory *Inventory `bson:"death_inventory"`
 		// ChatType is the type of chat the user is in.
@@ -242,6 +256,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()
 	u.Teams.DeathInventory = &Inventory{}
+	u.PlayerData = defaultPlayerData()
 	u.Language = &Language{}
 
 	return u
@@ -394,13 +409,17 @@ func SaveUser(u User) {
 	userMu.Lock()
 	users[u.XUID] = u
 	userMu.Unlock()
+}
 
-	go func() {
-		err := saveUserData(u)
-		if err != nil {
-			log.Println("Error saving user data:", err)
-		}
-	}()
+func FlushUser(u User) {
+	userMu.Lock()
+	delete(users, u.XUID)
+	userMu.Unlock()
+
+	err := saveUserData(u)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func decodeSingleUserFromFilter(filter any) (User, error) {
@@ -423,6 +442,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.ClaimedRewards = sets.New[int]()
 	u.Teams.DeathInventory = &Inventory{}
 	u.Language = &Language{}
+	u.PlayerData = defaultPlayerData()
 
 	err := result.Decode(&u)
 	if err != nil {

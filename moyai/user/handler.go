@@ -188,10 +188,11 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	s := unsafe.Session(p)
 	u, _ := data.LoadUserFromName(p.Name())
+	inv, arm := p.Inventory(), p.Armour()
+	inv.Clear()
+	arm.Clear()
 
 	if u.Teams.DeathBan.Active() {
-		p.Inventory().Clear()
-		p.Armour().Clear()
 		moyai.Deathban().AddEntity(p)
 		p.Teleport(mgl64.Vec3{5, 13, 44})
 	} else {
@@ -202,10 +203,13 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 				u.Teams.PVP.TogglePause()
 			}
 
-			p.Inventory().Clear()
-			p.Armour().Clear()
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
+		} else {
+			u.PlayerData.Inventory.Apply(p)
+			p.Teleport(u.PlayerData.Position)
+			mode, _ := world.GameModeByID(u.PlayerData.GameMode)
+			p.SetGameMode(mode)
 		}
 	}
 
@@ -707,7 +711,14 @@ func (h *Handler) HandleQuit() {
 	if !u.Teams.PVP.Paused() {
 		u.Teams.PVP.TogglePause()
 	}
+
+	held, off := p.HeldItems()
+	*u.PlayerData.Inventory = inventoryData(held, off, p.Armour(), p.Inventory())
+	u.PlayerData.Position = p.Position()
+	u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
+
 	data.SaveUser(u)
+	data.FlushUser(u)
 
 	_, sotwRunning := sotw.Running()
 	if !h.gracefulLogout && h.p.GameMode() != world.GameModeCreative && !u.Teams.PVP.Active() {
@@ -738,6 +749,13 @@ func (h *Handler) HandleQuit() {
 		go func() {
 			select {
 			case <-time.After(time.Second * 30):
+				u, err := data.LoadUserFromName(h.p.Name())
+				if err != nil {
+					return
+				}
+				u.PlayerData.Position = h.p.Position()
+				data.SaveUser(u)
+				data.FlushUser(u)
 				break
 			case <-h.close:
 				break
@@ -746,6 +764,7 @@ func (h *Handler) HandleQuit() {
 				if err != nil {
 					return
 				}
+				*u.PlayerData.Inventory = data.Inventory{}
 				u.Teams.DeathBan.Set(time.Minute * 20)
 				u.Teams.DeathBanned = true
 				u.Teams.Stats.Deaths += 1
@@ -766,6 +785,7 @@ func (h *Handler) HandleQuit() {
 				}
 				DropContents(h.p)
 				data.SaveUser(u)
+				data.FlushUser(u)
 			}
 			_ = h.p.Close()
 		}()

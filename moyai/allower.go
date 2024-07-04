@@ -29,6 +29,7 @@ func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData)
 		fmt.Printf("Failed to load user: %v\n", err)
 		return lang.Translatef(data.Language{}, "user.data.load.error"), false
 	}
+
 	if a.whitelisted && !u.Whitelisted {
 		return lang.Translatef(*u.Language, "moyai.whitelisted"), false
 	}

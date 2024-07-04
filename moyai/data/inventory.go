@@ -25,7 +25,7 @@ type Inventory struct {
 }
 
 // Apply applies the inventory to the player's inventory, armor and held items.
-func (i Inventory) Apply(p *player.Player) {
+func (i *Inventory) Apply(p *player.Player) {
 	inv, arm := p.Inventory(), p.Armour()
 	inv.Clear()
 	arm.Clear()
@@ -46,18 +46,18 @@ func (i Inventory) Apply(p *player.Player) {
 }
 
 // MarshalBSON ...
-func (i Inventory) MarshalBSON() ([]byte, error) {
-	jsonInventoryData := invToData(i)
+func (i *Inventory) MarshalBSON() ([]byte, error) {
+	jsonInventoryData := invToData(*i)
 	return bson.Marshal(jsonInventoryData)
 }
 
 // UnmarshalBSON ...
-func (i Inventory) UnmarshalBSON(b []byte) error {
+func (i *Inventory) UnmarshalBSON(b []byte) error {
 	var jsonInventoryData inventoryData
 	if err := bson.Unmarshal(b, &jsonInventoryData); err != nil {
 		return err
 	}
-	return dataToInv(jsonInventoryData, &i)
+	return dataToInv(jsonInventoryData, i)
 }
 
 func dataToInv(data inventoryData, inv *Inventory) error {
