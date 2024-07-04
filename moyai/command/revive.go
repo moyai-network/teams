@@ -28,11 +28,11 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
 	tg.Teams.Stats.Deaths--
 	inv := tg.Teams.DeathInventory
 
-	if tg.Teams.DeathBan.After(time.Now()) {
+	if tg.Teams.DeathBan.Active() {
 		moyai.Overworld().AddEntity(target)
 		target.Teleport(mgl64.Vec3{0, 80, 0})
 
-		tg.Teams.DeathBan = time.Time{}
+		tg.Teams.DeathBan.Reset()
 		tg.Teams.DeathBanned = false
 
 		tg.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))

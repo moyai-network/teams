@@ -1,18 +1,16 @@
 package user
 
 import (
-	"strings"
-	"time"
-
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
+	"strings"
 )
 
 var (
-	spawn    = []string{}
-	combat   = []string{
+	spawn  = []string{}
+	combat = []string{
 		"ec",
 		"logout",
 	}
@@ -44,7 +42,7 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
 		}
 	}
 
-	if u.Teams.DeathBan.After(time.Now()) {
+	if u.Teams.DeathBan.Active() {
 		for _, d := range deathban {
 			names := []string{command.Name()}
 			names = append(names, command.Aliases()...)

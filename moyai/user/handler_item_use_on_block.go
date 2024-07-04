@@ -214,7 +214,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				return
 			}
 
-			if u.Teams.DeathBan.After(time.Now()) && key == "deathban" {
+			if u.Teams.DeathBan.Active() && key == "deathban" {
 				kit.Apply(kit.Diamond{}, h.p)
 			}
 			return
@@ -228,8 +228,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				moyai.Messagef(h.p, "lives.none")
 				return
 			}
-			if u.Teams.DeathBan.After(time.Now()) {
-				u.Teams.DeathBan = time.Time{}
+			if u.Teams.DeathBan.Active() {
+				u.Teams.DeathBan.Reset()
 				u.Teams.DeathBanned = false
 				u.Teams.Lives -= 1
 				u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))

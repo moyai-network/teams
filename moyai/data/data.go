@@ -75,7 +75,7 @@ func PartialReset() {
 		u.Teams.SOTW = true
 		u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 		u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
-		u.Teams.DeathBan = time.Time{}
+		u.Teams.DeathBan = cooldown.NewCoolDown()
 		u.Teams.Report = cooldown.NewCoolDown()
 		u.Teams.Refill = cooldown.NewCoolDown()
 		u.Teams.PVP = cooldown.NewCoolDown()

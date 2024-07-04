@@ -111,7 +111,7 @@ func (h *Handler) updateWalls(ctx *event.Context, newPos mgl64.Vec3, u data.User
 		}
 	}
 
-	if u.Teams.PVP.Active() && !u.Teams.DeathBan.After(time.Now()) {
+	if u.Teams.PVP.Active() && !u.Teams.DeathBan.Active() {
 		teams, _ := data.LoadAllTeams()
 		for _, a := range teams {
 			a := a.Claim

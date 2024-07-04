@@ -189,7 +189,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	s := unsafe.Session(p)
 	u, _ := data.LoadUserFromName(p.Name())
 
-	if u.Teams.DeathBan.After(time.Now()) {
+	if u.Teams.DeathBan.Active() {
 		p.Inventory().Clear()
 		p.Armour().Clear()
 		moyai.Deathban().AddEntity(p)
@@ -449,7 +449,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		return
 	}
 
-	if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.After(time.Now())) {
+	if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active()) {
 		ctx.Cancel()
 		return
 	}
@@ -468,7 +468,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 	switch s := src.(type) {
 	case entity.FallDamageSource:
 		u, err := data.LoadUserFromName(h.p.Name())
-		if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.After(time.Now())) {
+		if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active()) {
 			ctx.Cancel()
 			return
 		}
@@ -582,8 +582,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			if err != nil {
 				return
 			}
-			if k.Teams.DeathBan.After(time.Now()) {
-				k.Teams.DeathBan = k.Teams.DeathBan.Add(time.Minute)
+			if k.Teams.DeathBan.Active() {
+				k.Teams.DeathBan.Set(k.Teams.DeathBan.Remaining() + time.Minute*10)
 				return
 			}
 			k.Teams.Stats.Kills += 1
@@ -746,7 +746,7 @@ func (h *Handler) HandleQuit() {
 				if err != nil {
 					return
 				}
-				u.Teams.DeathBan = time.Now().Add(time.Minute * 20)
+				u.Teams.DeathBan.Set(time.Minute * 20)
 				u.Teams.DeathBanned = true
 				u.Teams.Stats.Deaths += 1
 				if u.Teams.Stats.KillStreak > u.Teams.Stats.BestKillStreak {

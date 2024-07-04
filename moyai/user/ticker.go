@@ -149,8 +149,8 @@ func sortClassEffects(h *Handler) {
 }
 
 func tickDeathban(p *player.Player, u data.User) {
-	if !u.Teams.DeathBan.After(time.Now()) && u.Teams.DeathBanned {
-		u.Teams.DeathBan = time.Time{}
+	if !u.Teams.DeathBan.Active() && u.Teams.DeathBanned {
+		u.Teams.DeathBan.Reset()
 		u.Teams.DeathBanned = false
 		u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
 		if !u.Teams.PVP.Paused() {
@@ -222,13 +222,12 @@ func startTicker(h *Handler) {
 
 			tickDeathban(h.p, u)
 			l := *u.Language
-			db := u.Teams.DeathBan
 
-			if db.After(time.Now()) {
-				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.deathban", parseDuration(time.Until(db))))
+			if u.Teams.DeathBan.Active() {
+				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.deathban", parseDuration(u.Teams.DeathBan.Remaining())))
 			}
 
-			if k, ok := koth.Running(); ok && !db.After(time.Now()) {
+			if k, ok := koth.Running(); ok && !u.Teams.DeathBan.Active() {
 				t := time.Until(k.Time())
 				if _, ok := k.Capturing(); !ok {
 					t = k.Duration()
@@ -250,7 +249,7 @@ func startTicker(h *Handler) {
 				return
 			}
 
-			if d := u.Teams.PVP; d.Active() && !db.After(time.Now()) {
+			if d := u.Teams.PVP; d.Active() && !u.Teams.DeathBan.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
 			if lo := h.processLogout; !lo.Expired() && lo.Ongoing() {
@@ -263,7 +262,7 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.teleportation.camp", time.Until(h.processCamp.Expiration()).Seconds()))
 			}
 
-			if tg := h.tagCombat; tg.Active() && !db.After(time.Now()) {
+			if tg := h.tagCombat; tg.Active() && !u.Teams.DeathBan.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.tag.spawn", tg.Remaining().Seconds()))
 			}
 			if h := h.processHome; !h.Expired() && h.Ongoing() {
@@ -293,7 +292,7 @@ func startTicker(h *Handler) {
 			if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
 				focus := tm.Focus
 				if focus.Kind == data.FocusTypeTeam {
-					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !db.After(time.Now()) {
+					if ft, err := data.LoadTeamFromName(focus.Value); err == nil && !u.Teams.DeathBan.Active() {
 						_, _ = sb.WriteString("§c\uE000")
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 						if hm := ft.Home; hm != (mgl64.Vec3{}) {

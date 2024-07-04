@@ -2,8 +2,6 @@ package command
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/event"
@@ -61,7 +59,7 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output) {
 
 	rev := item.NewStack(item.EnchantedBook{}, 1).
 		WithCustomName(text.Colourf("<red>Last Inventory Info</red>")).
-		WithLore(text.Colourf("<red>Dead</red>: %t", t.Teams.DeathBan.After(time.Now())), text.Colourf("<green>Click to revive user with current inventory</green>"))
+		WithLore(text.Colourf("<red>Dead</red>: %t", t.Teams.DeathBan.Active()), text.Colourf("<green>Click to revive user with current inventory</green>"))
 
 	iv.SetItem(53, rev)
 

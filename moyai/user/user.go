@@ -173,7 +173,7 @@ func (h *Handler) kill(src world.DamageSource) {
 	}
 
 	p.World().PlaySound(p.Position(), sound.Explosion{})
-	if !u.Teams.DeathBan.After(time.Now()) {
+	if !u.Teams.DeathBan.Active() {
 		h.handleTeamMemberDeath()
 	}
 
@@ -274,7 +274,7 @@ func (h *Handler) issueDeathban() {
 	if err != nil {
 		return
 	}
-	u.Teams.DeathBan = time.Now().Add(time.Minute * 20)
+	u.Teams.DeathBan.Set(time.Minute * 20)
 	u.Teams.DeathBanned = true
 
 	data.SaveUser(u)
