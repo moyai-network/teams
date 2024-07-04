@@ -45,6 +45,22 @@ func (i *Inventory) Apply(p *player.Player) {
 	p.SetHeldItems(held, i.OffHand)
 }
 
+// InventoryData returns the inventory data of the player.
+func InventoryData(p *player.Player) Inventory {
+	_, off := p.HeldItems()
+	a := p.Armour()
+	i := p.Inventory()
+	return Inventory{
+		MainHandSlot: 0,
+		OffHand:      off,
+		Items:        i.Slots(),
+		Boots:        a.Boots(),
+		Leggings:     a.Leggings(),
+		Chestplate:   a.Chestplate(),
+		Helmet:       a.Helmet(),
+	}
+}
+
 // MarshalBSON ...
 func (i *Inventory) MarshalBSON() ([]byte, error) {
 	jsonInventoryData := invToData(*i)

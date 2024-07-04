@@ -206,6 +206,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
 		} else {
+			u.StaffMode = false
 			u.PlayerData.Inventory.Apply(p)
 			p.Teleport(u.PlayerData.Position)
 			mode, _ := world.GameModeByID(u.PlayerData.GameMode)
@@ -712,10 +713,11 @@ func (h *Handler) HandleQuit() {
 		u.Teams.PVP.TogglePause()
 	}
 
-	held, off := p.HeldItems()
-	*u.PlayerData.Inventory = inventoryData(held, off, p.Armour(), p.Inventory())
-	u.PlayerData.Position = p.Position()
-	u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
+	if !u.StaffMode {
+		*u.PlayerData.Inventory = data.InventoryData(p)
+		u.PlayerData.Position = p.Position()
+		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
+	}
 
 	data.SaveUser(u)
 	data.FlushUser(u)

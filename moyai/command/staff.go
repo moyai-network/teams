@@ -50,9 +50,16 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 		p.Armour().Clear()
 		kit.Apply(kit.Staff{}, p)
 		p.Inventory().Handle(user.StaffInventoryHandler{})
+
+		*u.PlayerData.Inventory = data.InventoryData(p)
+		u.PlayerData.Position = p.Position()
+		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
 	} else {
 		p.Inventory().Handle(inventory.NopHandler{})
-		// TODO: restore inventory
+		u.PlayerData.Inventory.Apply(p)
+		p.Teleport(u.PlayerData.Position)
+		mode, _ = world.GameModeByID(u.PlayerData.GameMode)
+		p.SetGameMode(mode)
 	}
 
 	data.SaveUser(u)
