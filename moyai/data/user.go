@@ -3,11 +3,12 @@ package data
 import (
 	"errors"
 	"fmt"
-	"github.com/moyai-network/teams/moyai/roles"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -457,7 +458,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 }
 
 func init() {
-	t := time.NewTicker(60 * time.Minute)
+	t := time.NewTicker(5 * time.Minute)
 	go func() {
 		for range t.C {
 			FlushCache()
