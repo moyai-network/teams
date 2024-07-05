@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/moyai-network/teams/moyai"
 	"strings"
 
 	"github.com/diamondburned/arikawa/v3/api"
@@ -23,5 +24,11 @@ func (h *Handler) link(ctx context.Context, d cmdroute.CommandData) *api.Interac
 		Nick: option.NewString(u.DisplayName),
 	})
 	_ = h.s.AddRole(h.guildID, userID, discord.RoleID(1255290630922436698), api.AddRoleData{AuditLogReason: "Linking"})
+
+	for _, p := range moyai.Players() {
+		if p.Name() == u.DisplayName {
+			moyai.Messagef(p, "discord.linked", d.Event.Sender().Username)
+		}
+	}
 	return h.success(fmt.Sprintf("Your MC Account (**%s**) has been linked to the Discord!", strings.ReplaceAll(u.DisplayName, "_", " ")))
 }

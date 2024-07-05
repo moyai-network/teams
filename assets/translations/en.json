@@ -274,6 +274,7 @@
         "crate.key.require": "<red>You need a %s key to open this crate</red>",
         "deathban.cooldown": "<red>You may not use this while on deathban.</red>",
         "discord.message": "<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.gg/moyai</yellow>",
+        "discord.linked": "<green>You have linked your account to %s</green>",
         "elevator.no-block": "<red>There is no block above the sign</red>",
         "elevator.no-space": "<red>There is not enough space to teleport</red>",
         "eotw.commenced": "<green>EOTW has commenced and will end in an hour. All factions are raidable!</green>",
