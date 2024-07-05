@@ -46,14 +46,14 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 	u.StaffMode = !u.StaffMode
 
 	if u.StaffMode {
+		*u.PlayerData.Inventory = data.InventoryData(p)
+		u.PlayerData.Position = p.Position()
+		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
+
 		p.Inventory().Clear()
 		p.Armour().Clear()
 		kit.Apply(kit.Staff{}, p)
 		p.Inventory().Handle(user.StaffInventoryHandler{})
-
-		*u.PlayerData.Inventory = data.InventoryData(p)
-		u.PlayerData.Position = p.Position()
-		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
 	} else {
 		p.Inventory().Handle(inventory.NopHandler{})
 		u.PlayerData.Inventory.Apply(p)
