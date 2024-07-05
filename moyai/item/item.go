@@ -168,7 +168,7 @@ func init() {
 	RegisterPartnerItem(VampireAbilityType{})
 	//RegisterPartnerItem(SigilType{})
 	RegisterPartnerItem(TimeWarpType{})
-	RegisterPartnerItem(StormBreakerType{})
+	//RegisterPartnerItem(StormBreakerType{})
 	RegisterPartnerItem(FocusModeType{})
 	RegisterPartnerItem(RocketType{})
 	RegisterPartnerItem(ScramblerType{})
