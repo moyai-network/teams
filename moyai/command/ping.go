@@ -13,13 +13,15 @@ type Ping struct {
 
 // Run ...
 func (p Ping) Run(src cmd.Source, out *cmd.Output) {
-	var t []cmd.Target
-	pl, ok := src.(*player.Player)
-	t = append(t, pl)
-	if !ok {
-		t = p.Target.LoadOr(t)
+	var t cmd.Target
+	pl, _ := src.(*player.Player)
+	if ta, ok := p.Target.Load(); ok { 
+		t = ta[0]
+	} else {
+		t = pl
 	}
-	if pl, ok := t[0].(*player.Player); ok {
-		moyai.Messagef(pl, "command.ping.output", pl.Name(), (pl.Latency() * 2).Milliseconds())
+
+	if p, ok := t.(*player.Player); ok {
+		moyai.Messagef(p, "command.ping.output", p.Name(), (p.Latency() * 2).Milliseconds())
 	}
 }

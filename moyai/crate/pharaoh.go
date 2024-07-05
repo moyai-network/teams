@@ -15,7 +15,7 @@ import (
 type pharaoh struct{}
 
 func (pharaoh) Name() string {
-	return text.Colourf("<black>Pharaoh</black>")
+	return text.Colourf("<dark-red>Pharaoh</dark-red>")
 }
 
 func (pharaoh) Position() mgl64.Vec3 {

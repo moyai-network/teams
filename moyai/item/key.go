@@ -41,7 +41,7 @@ func NewKey(keyType int, n int) item.Stack {
 		customName = text.Colourf("<red>KOTH Crate Key</red>")
 	case KeyTypePharaoh:
 		value = "crate-key_Pharaoh"
-		customName = text.Colourf("<black>Pharaoh Crate Key</black>")
+		customName = text.Colourf("<dark-red>Pharaoh Crate Key</dark-red>")
 	case KeyTypePartner:
 		value = "crate-key_Partner"
 		customName = text.Colourf("<green>Partner Crate Key</green>")
