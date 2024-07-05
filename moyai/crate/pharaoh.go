@@ -27,8 +27,8 @@ func (pharaoh) Facing() cube.Face {
 }
 
 var pharaohEnchantments = []item.Enchantment{
-	item.NewEnchantment(ench.Protection{}, 3),
-	item.NewEnchantment(enchantment.Unbreaking{}, 3),
+	item.NewEnchantment(ench.Protection{}, 2),
+	item.NewEnchantment(enchantment.Unbreaking{}, 2),
 }
 
 func (pharaoh) Rewards() []Reward {
