@@ -240,11 +240,6 @@ func startTicker(h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.eotw", parseDuration(time.Until(d))))
 			}
 
-			u, err := data.LoadUserFromName(h.p.Name())
-			if err != nil {
-				return
-			}
-
 			if d := u.Teams.PVP; d.Active() && !u.Teams.DeathBan.Active() {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.timer.pvp", parseDuration(d.Remaining())))
 			}
