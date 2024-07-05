@@ -2,13 +2,14 @@ package user
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai/roles"
 	"math"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/diamondburned/arikawa/v3/discord"
 
@@ -132,6 +133,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			p.SetGameMode(world.GameModeSurvival)
 		}
 		p.Teleport(h.p.Position())
+		currentHealth := p.Health()
+		p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
 		_ = h.p.Close()
 	}
 
