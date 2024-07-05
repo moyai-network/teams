@@ -133,7 +133,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 			p.SetGameMode(world.GameModeSurvival)
 		}
 		p.Teleport(h.p.Position())
-		currentHealth := p.Health()
+		currentHealth := h.p.Health()
 		p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
 		_ = h.p.Close()
 	}
@@ -782,7 +782,7 @@ func (h *Handler) HandleQuit() {
 					if conquest.Running() {
 						for _, c := range conquest.All() {
 							if pl, ok := c.Capturing(); ok && pl == h.p {
-								conquest.IncreaseTeamPoints(tm, 15)
+								conquest.IncreaseTeamPoints(tm, -15)
 							}
 						}
 					}
