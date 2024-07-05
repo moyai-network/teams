@@ -27,7 +27,7 @@ func SendPlayerListTeleportMenu(p *player.Player) {
 
 func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(u data.User, p *player.Player) {
 	rl := u.Roles.Highest()
-	if !roles.Staff(rl) {
+	if !roles.Staff(rl) && !u.Roles.Contains(roles.Operator()) {
 		return
 	}
 
