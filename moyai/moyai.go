@@ -39,9 +39,9 @@ var (
 	// deathban is the world of the Deathban arena.
 	deathban *world.World
 	// force is the knockback force
-	force float64 = 0.394
+	force float64 = 0.4
 	// height is the knockback height
-	height float64 = 0.394
+	height float64 = 0.4
 
 	// lastBlackMarket is the time at which the last black market was opened.
 	lastBlackMarket time.Time
