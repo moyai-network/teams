@@ -27,22 +27,6 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	mode := p.GameMode()
-
-	if u.Vanished {
-		//moyai.Alertf(s, "staff.alert.vanish.off")
-		vanishMode, ok := mode.(vanishGameMode)
-		if !ok {
-			p.SetGameMode(world.GameModeCreative)
-		} else {
-			p.SetGameMode(vanishMode.lastMode)
-		}
-		moyai.Messagef(p, "command.vanish.disabled")
-	} else {
-		//moyai.Alertf(s, "staff.alert.vanish.on")
-		p.SetGameMode(vanishGameMode{lastMode: mode})
-		moyai.Messagef(p, "command.vanish.enabled")
-		u.Vanished = true
-	}
 	u.StaffMode = !u.StaffMode
 
 	if u.StaffMode {
@@ -50,11 +34,27 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 		u.PlayerData.Position = p.Position()
 		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
 
+		if !u.Vanished {
+			p.SetGameMode(vanishGameMode{lastMode: mode})
+			moyai.Messagef(p, "command.vanish.enabled")
+			u.Vanished = true
+		}
+
 		p.Inventory().Clear()
 		p.Armour().Clear()
 		kit.Apply(kit.Staff{}, p)
 		p.Inventory().Handle(user.StaffInventoryHandler{})
 	} else {
+		if u.Vanished {
+			vanishMode, ok := mode.(vanishGameMode)
+			if !ok {
+				p.SetGameMode(world.GameModeCreative)
+			} else {
+				p.SetGameMode(vanishMode.lastMode)
+			}
+			moyai.Messagef(p, "command.vanish.disabled")
+		}
+
 		p.Inventory().Handle(inventory.NopHandler{})
 		u.PlayerData.Inventory.Apply(p)
 		p.Teleport(u.PlayerData.Position)
