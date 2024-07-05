@@ -534,7 +534,9 @@ func PlayTime(p *player.Player) time.Duration {
 // addEffects adds a list of effects to the user.
 func addEffects(p *player.Player, effects ...effect.Effect) {
 	for _, e := range effects {
-		p.AddEffect(e)
+		if !hasEffectLevel(p, e) {
+			p.AddEffect(e)
+		}
 	}
 }
 

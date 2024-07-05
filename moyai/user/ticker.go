@@ -77,11 +77,7 @@ func sortArmourEffects(h *Handler) {
 			}
 		}
 	}
-
-	for _, e := range effects {
-		h.p.AddEffect(e)
-	}
-
+	addEffects(h.p, effects...)
 	var lastEffects []effect.Effect
 
 	for _, i := range lastArmour {
@@ -210,7 +206,7 @@ func startTicker(h *Handler) {
 				}
 			}
 
-			sb := scoreboard.New(text.Colourf("<red>Teams</red> <grey>- Map I</grey>"))
+			sb := scoreboard.New(text.Colourf("<red>Clans</red> <grey>- Map I</grey>"))
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
