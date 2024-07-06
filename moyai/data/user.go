@@ -141,16 +141,18 @@ func DefaultSettings() Settings {
 }
 
 type playerData struct {
-	Inventory *Inventory
-	Position  mgl64.Vec3
-	GameMode  int
+	Inventory  *Inventory
+	EnderChest [36]Stack
+	Position   mgl64.Vec3
+	GameMode   int
 }
 
 func defaultPlayerData() playerData {
 	return playerData{
-		Inventory: &Inventory{},
-		Position:  mgl64.Vec3{},
-		GameMode:  0,
+		Inventory:  &Inventory{},
+		EnderChest: [36]Stack{},
+		Position:   mgl64.Vec3{},
+		GameMode:   0,
 	}
 }
 

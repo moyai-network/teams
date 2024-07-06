@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"math"
 	"slices"
 	"strconv"
@@ -65,7 +66,8 @@ var (
 
 type Handler struct {
 	player.NopHandler
-	p *player.Player
+	p  *player.Player
+	ec *inventory.Inventory
 
 	logTime           time.Time
 	claimSelectionPos [2]mgl64.Vec3
@@ -152,6 +154,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	h := &Handler{
 		p:          p,
+		ec:         inventory.New(36, func(slot int, before, after item.Stack) {}),
 		wallBlocks: map[cube.Pos]float64{},
 
 		tagCombat:                 cooldown.NewCoolDown(),
@@ -191,6 +194,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	s := unsafe.Session(p)
 	u, _ := data.LoadUserFromName(p.Name())
+	for sl, i := range u.PlayerData.EnderChest {
+		st, _ := i.ToStack()
+		_ = h.ec.SetItem(sl, st)
+	}
 	inv, arm := p.Inventory(), p.Armour()
 	inv.Clear()
 	arm.Clear()
@@ -244,6 +251,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	UpdateState(h.p)
 	go startTicker(h)
 	return h
+}
+
+func (h *Handler) EnderChestInventory() *inventory.Inventory {
+	return h.ec
 }
 
 func (h *Handler) handleBoosterRole(u data.User) {
@@ -720,6 +731,11 @@ func (h *Handler) HandleQuit() {
 		*u.PlayerData.Inventory = data.InventoryData(p)
 		u.PlayerData.Position = p.Position()
 		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
+	}
+
+	u.PlayerData.EnderChest = [36]data.Stack{}
+	for s, i := range h.ec.Slots() {
+		u.PlayerData.EnderChest[s] = data.StackToData(i)
 	}
 
 	data.SaveUser(u)

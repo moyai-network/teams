@@ -79,43 +79,43 @@ func (i *Inventory) UnmarshalBSON(b []byte) error {
 func dataToInv(data inventoryData, inv *Inventory) error {
 	inv.Items = make([]item.Stack, len(data.Items))
 	for i, d := range data.Items {
-		stack, err := d.toStack()
+		stack, err := d.ToStack()
 		if err != nil {
 			return err
 		}
 		inv.Items[i] = stack
 	}
-	inv.Boots, _ = data.Boots.toStack()
-	inv.Leggings, _ = data.Leggings.toStack()
-	inv.Chestplate, _ = data.Chestplate.toStack()
-	inv.Helmet, _ = data.Helmet.toStack()
-	inv.OffHand, _ = data.OffHand.toStack()
+	inv.Boots, _ = data.Boots.ToStack()
+	inv.Leggings, _ = data.Leggings.ToStack()
+	inv.Chestplate, _ = data.Chestplate.ToStack()
+	inv.Helmet, _ = data.Helmet.ToStack()
+	inv.OffHand, _ = data.OffHand.ToStack()
 	inv.MainHandSlot = data.MainHandSlot
 	return nil
 }
 
 func invToData(inv Inventory) inventoryData {
 	data := inventoryData{
-		Items:        make([]itemData, len(inv.Items)),
-		Boots:        stackToData(inv.Boots),
-		Leggings:     stackToData(inv.Leggings),
-		Chestplate:   stackToData(inv.Chestplate),
-		Helmet:       stackToData(inv.Helmet),
-		OffHand:      stackToData(inv.OffHand),
+		Items:        make([]Stack, len(inv.Items)),
+		Boots:        StackToData(inv.Boots),
+		Leggings:     StackToData(inv.Leggings),
+		Chestplate:   StackToData(inv.Chestplate),
+		Helmet:       StackToData(inv.Helmet),
+		OffHand:      StackToData(inv.OffHand),
 		MainHandSlot: inv.MainHandSlot,
 	}
 	for i, stack := range inv.Items {
-		data.Items[i] = stackToData(stack)
+		data.Items[i] = StackToData(stack)
 	}
 	return data
 }
 
-func stackToData(stack item.Stack) itemData {
+func StackToData(stack item.Stack) Stack {
 	if stack.Empty() {
-		return itemData{}
+		return Stack{}
 	}
 	name, meta := stack.Item().EncodeItem()
-	return itemData{
+	return Stack{
 		Name:         name,
 		Meta:         meta,
 		Count:        stack.Count(),
@@ -140,16 +140,16 @@ func enchantsToData(enchants []item.Enchantment) []enchantmentData {
 }
 
 type inventoryData struct {
-	Items        []itemData
-	Boots        itemData
-	Leggings     itemData
-	Chestplate   itemData
-	Helmet       itemData
-	OffHand      itemData
+	Items        []Stack
+	Boots        Stack
+	Leggings     Stack
+	Chestplate   Stack
+	Helmet       Stack
+	OffHand      Stack
 	MainHandSlot uint32
 }
 
-type itemData struct {
+type Stack struct {
 	Name  string
 	Meta  int16
 	Count int
@@ -162,7 +162,7 @@ type itemData struct {
 	Enchantments []enchantmentData
 }
 
-func (i itemData) toStack() (item.Stack, error) {
+func (i Stack) ToStack() (item.Stack, error) {
 	it, ok := world.ItemByName(i.Name, i.Meta)
 	if !ok {
 		return item.Stack{}, nil
