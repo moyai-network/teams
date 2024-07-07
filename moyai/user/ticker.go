@@ -409,55 +409,64 @@ var (
 	archerRogueEffectDuration = time.Second * 6
 	bardEffectDuration        = time.Second * 6
 	mageEffectDuration        = time.Second * 3
-
-	archerRogueItemsUse = map[world.Item]effect.Effect{
-		item.Sugar{}:   effect.New(effect.Speed{}, 5, archerRogueEffectDuration),
-		item.Feather{}: effect.New(effect.JumpBoost{}, 5, archerRogueEffectDuration),
-	}
-
-	bardItemsUse = map[world.Item]effect.Effect{
-		item.BlazePowder{}: effect.New(effect.Strength{}, 2, bardEffectDuration),
-		item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
-		item.Sugar{}:       effect.New(effect.Speed{}, 3, bardEffectDuration),
-		item.GhastTear{}:   effect.New(effect.Regeneration{}, 3, bardEffectDuration),
-		item.IronIngot{}:   effect.New(effect.Resistance{}, 3, bardEffectDuration),
-		item.Feather{}:     effect.New(effect.JumpBoost{}, 4, bardEffectDuration),
-	}
-
-	bardItemsHold = map[world.Item]effect.Effect{
-		item.MagmaCream{}:  effect.New(effect.FireResistance{}, 1, bardEffectDuration),
-		item.BlazePowder{}: effect.New(effect.Strength{}, 1, bardEffectDuration),
-		item.Feather{}:     effect.New(effect.JumpBoost{}, 3, bardEffectDuration),
-		item.Sugar{}:       effect.New(effect.Speed{}, 2, bardEffectDuration),
-		item.GhastTear{}:   effect.New(effect.Regeneration{}, 1, bardEffectDuration),
-		item.IronIngot{}:   effect.New(effect.Resistance{}, 1, bardEffectDuration),
-		item.Feather{}:     effect.New(effect.JumpBoost{}, 2, bardEffectDuration),
-	}
-
-	mageItemsUse = map[world.Item]effect.Effect{
-		item.GoldNugget{}:  effect.New(effect.Slowness{}, 2, mageEffectDuration),
-		item.RottenFlesh{}: effect.New(effect.Weakness{}, 2, mageEffectDuration),
-		item.Coal{}:        effect.New(effect.Wither{}, 2, mageEffectDuration),
-		item.Gunpowder{}:   effect.New(effect.Poison{}, 2, mageEffectDuration),
-	}
 )
 
 func ArcherRogueEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := archerRogueItemsUse[i]
-	return e, ok
+	switch i.(type) {
+	case item.Sugar:
+		return effect.New(effect.Speed{}, 5, archerRogueEffectDuration), true
+	case item.Feather:
+		return effect.New(effect.JumpBoost{}, 5, archerRogueEffectDuration), true
+	}
+	return effect.Effect{}, false
 }
 
 func BardEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := bardItemsUse[i]
-	return e, ok
+	switch i.(type) {
+	case item.MagmaCream:
+		return effect.New(effect.FireResistance{}, 1, bardEffectDuration), true
+	case item.BlazePowder:
+		return effect.New(effect.Strength{}, 1, bardEffectDuration), true
+	case item.Feather:
+		return effect.New(effect.JumpBoost{}, 3, bardEffectDuration), true
+	case item.Sugar:
+		return effect.New(effect.Speed{}, 2, bardEffectDuration), true
+	case item.GhastTear:
+		return effect.New(effect.Regeneration{}, 1, bardEffectDuration), true
+	case item.IronIngot:
+		return effect.New(effect.Resistance{}, 1, bardEffectDuration), true
+	}
+	return effect.Effect{}, false
 }
 
 func BardHoldEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := bardItemsHold[i]
-	return e, ok
+	switch i.(type) {
+	case item.MagmaCream:
+		return effect.New(effect.FireResistance{}, 1, bardEffectDuration), true
+	case item.BlazePowder:
+		return effect.New(effect.Strength{}, 1, bardEffectDuration), true
+	case item.Feather:
+		return effect.New(effect.JumpBoost{}, 3, bardEffectDuration), true
+	case item.Sugar:
+		return effect.New(effect.Speed{}, 2, bardEffectDuration), true
+	case item.GhastTear:
+		return effect.New(effect.Regeneration{}, 1, bardEffectDuration), true
+	case item.IronIngot:
+		return effect.New(effect.Resistance{}, 1, bardEffectDuration), true
+	}
+	return effect.Effect{}, false
 }
 
 func MageEffectFromItem(i world.Item) (effect.Effect, bool) {
-	e, ok := mageItemsUse[i]
-	return e, ok
+	switch i.(type) {
+	case item.GoldNugget:
+		return effect.New(effect.Slowness{}, 2, mageEffectDuration), true
+	case item.RottenFlesh:
+		return effect.New(effect.Weakness{}, 2, mageEffectDuration), true
+	case item.Coal:
+		return effect.New(effect.Wither{}, 2, mageEffectDuration), true
+	case item.Gunpowder:
+		return effect.New(effect.Poison{}, 2, mageEffectDuration), true
+	}
+	return effect.Effect{}, false
 }
