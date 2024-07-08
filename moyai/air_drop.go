@@ -62,6 +62,13 @@ var (
 	parachuteWoolOffsets5  []cube.Pos
 )
 
+func tickWorldSave(w *world.World) {
+	for {
+		<-time.After(time.Minute * 1)
+		w.Save()
+	}
+}
+
 func tickAirDrop(w *world.World) {
 	for {
 		<-time.After(time.Second * 10)

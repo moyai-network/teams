@@ -25,6 +25,13 @@ func init() {
 		}
 		tickAirDrop(Overworld())
 	}()
+	go func ()  {
+		for Overworld() == nil {
+			<-time.After(time.Millisecond)
+			continue
+		}
+		tickWorldSave(Overworld())
+	}()
 }
 
 var (
@@ -185,6 +192,7 @@ func Close() {
 		logrus.Fatalln("close nether: %v", err)
 	}
 	End().Close()
+	srv.World().Close()
 	if err := srv.Close(); err != nil {
 		logrus.Fatalln("close server: %v", err)
 	}

@@ -87,8 +87,8 @@ github.com/montanaflynn/stats v0.7.1 h1:etflOAAHORrCC44V+aR6Ftzort912ZU+YLiSTuV8
 github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
 github.com/moyai-network/bifrost v0.0.0-20240608171226-6ddb00c8c9d4 h1:AMYnV3GtrNRNIo4XWTQvPUWIPlreu1J+6hoyuLGcQvE=
 github.com/moyai-network/bifrost v0.0.0-20240608171226-6ddb00c8c9d4/go.mod h1:2vpB9n7vmtrI5ZbB6XdxA7M8V21x5LucIkFT83B72Z8=
-github.com/moyai-network/libellule v0.0.0-20240617141553-a54e6d7f7553 h1:ppYJ8kvL4MP3qxNjQ27xVzmHw1sd42b7kReeIAf/hb8=
-github.com/moyai-network/libellule v0.0.0-20240617141553-a54e6d7f7553/go.mod h1:UX+YPQvGWdZj5PL2th3uIeeWNs0ZmF9aYl8eQQjhHm4=
+github.com/moyai-network/libellule v0.0.0-20240708140004-0569f0b643c2 h1:jbk3cpmUy42T+6kxYqe0s6TXO8UljvJZjnv8fdFv2Xo=
+github.com/moyai-network/libellule v0.0.0-20240708140004-0569f0b643c2/go.mod h1:UX+YPQvGWdZj5PL2th3uIeeWNs0ZmF9aYl8eQQjhHm4=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0 h1:8o5gBQn4ZA3NBA9DlTujCj2a4w0tqWrPVjDwhzkgTIs=
 github.com/muhammadmuzzammil1998/jsonc v1.0.0/go.mod h1:saF2fIVw4banK0H4+/EuqfFLpRnoy5S+ECwTOCcRcSU=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=

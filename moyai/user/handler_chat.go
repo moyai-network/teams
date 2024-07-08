@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/moyai-network/teams/moyai/roles"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/event"
