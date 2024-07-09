@@ -49,10 +49,9 @@ func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
 	for _, t := range moyai.Players() {
 		keyType := keyToType(string(k.Key))
 		it.AddOrDrop(t, it.NewKey(keyType, k.Count))
-		t.Message("command.key.give.received", k.Count)
 	}
 
-	moyai.Alertf(s, "command.key.all.success", k.Count)
+	moyai.Broadcastf("command.key.all.success", k.Count)
 }
 
 type key string

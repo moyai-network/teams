@@ -5,7 +5,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai"
 	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // PartnerPackage is a command that allows admins to give players partner packages
@@ -37,15 +36,13 @@ func (pp PartnerPackage) Run(s cmd.Source, o *cmd.Output) {
 
 	moyai.Messagef(p, "command.partner_package.give.success", t.Name(), pp.Count)
 	it.AddOrDrop(p, it.NewSpecialItem(it.PartnerPackageType{}, pp.Count))
-	t.Message("command.partner_package.give.received", pp.Count)
 }
 
 // Run ...
 func (pa PartnerPackageAll) Run(s cmd.Source, o *cmd.Output) {
 	for _, t := range moyai.Players() {
 		it.AddOrDrop(t, it.NewSpecialItem(it.PartnerPackageType{}, pa.Count))
-		t.Message("command.partner_package.give.received", pa.Count)
 	}
 
-	o.Print(text.Colourf("<green>Successfully gave partner packages to all online players.</green>"))
+	moyai.Broadcastf("command.partner_package.give.success.all")
 }

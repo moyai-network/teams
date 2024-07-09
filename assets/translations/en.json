@@ -137,6 +137,7 @@
         "command.online.users": "<yellow>%v online</yellow> <grey>-</grey> %v",
         "command.partner_package.give.received": "<yellow>You have received <green>%dx Partner Packages.</green></yellow>",
         "command.partner_package.give.success": "<yellow>%s has been given <green>%dx Partner Packages.</green></yellow>",
+        "command.partner_package.give.success.all": "<green>Successfully gave partner packages to all online players.</green>",
         "command.pay.insufficient": "<red>You do not have enough money.</red>",
         "command.pay.negative": "<red>You cannot pay a negative amount.</red>",
         "command.pay.self": "<red>You cannot pay yourself.</red>",
