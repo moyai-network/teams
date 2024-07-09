@@ -71,7 +71,7 @@ func Run() error {
 	placeShopSigns()
 
 	go tickVotes()
-	go tickBlackMarket(srv)
+	//go tickBlackMarket(srv)
 	go tickClearLag()
 
 	store := loadStore(conf.Moyai.Tebex, log)
