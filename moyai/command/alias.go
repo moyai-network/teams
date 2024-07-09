@@ -1,8 +1,9 @@
 package command
 
 import (
-	"github.com/moyai-network/teams/moyai"
 	"strings"
+
+	"github.com/moyai-network/teams/moyai"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"

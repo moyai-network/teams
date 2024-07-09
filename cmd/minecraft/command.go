@@ -10,6 +10,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
+		cmd.New("alias", text.Colourf("Find aliases of a player."), nil, command.AliasOffline{}, command.AliasOnline{}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command.Revive{}),
