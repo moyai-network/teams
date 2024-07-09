@@ -1,9 +1,11 @@
 package command
 
 import (
-	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"unicode"
+
+	"github.com/moyai-network/teams/internal/lang"
+	rls "github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
@@ -22,6 +24,7 @@ type Reclaim struct{}
 // ReclaimReset is a command that allows admins to reset the reclaim cooldown.
 type ReclaimReset struct {
 	Sub cmd.SubCommand `cmd:"reset"`
+	Targets cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
 
 func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
@@ -122,15 +125,40 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output) {
 }
 
 // Run ...
-func (ReclaimReset) Run(_ cmd.Source, _ *cmd.Output) {
-	for _, p := range moyai.Players() {
-		u, err := data.LoadUserFromName(p.Name())
+func (r ReclaimReset) Run(s cmd.Source, o *cmd.Output) {
+	targets := r.Targets.LoadOr(nil)
+	if len(targets) > 1 {
+		o.Error(lang.Translatef(data.Language{}, "command.targets.exceed"))
+		return
+	}
+	if len(targets) == 1 {
+		target, ok := targets[0].(*player.Player)
+		if !ok {
+			o.Error(lang.Translatef(data.Language{}, "command.target.unknown"))
+			return
+		}
+
+		u, err := data.LoadUserFromName(target.Name())
 		if err != nil {
-			continue
+			o.Error(lang.Translatef(data.Language{}, "command.target.unknown"))
+			return
 		}
 
 		u.Teams.Reclaimed = false
 		data.SaveUser(u)
+		return
+	}
+
+	if p, ok := s.(*player.Player); ok {
+		u, err := data.LoadUserFromName(p.Name())
+		if err != nil {
+			o.Error(lang.Translatef(data.Language{}, "command.target.unknown"))
+			return
+		}
+
+		u.Teams.Reclaimed = false
+		data.SaveUser(u)
+		return
 	}
 }
 

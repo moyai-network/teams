@@ -3,25 +3,35 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/data"
 )
 
 // Ping represents the Ping command.
 type Ping struct {
-	Target cmd.Optional[[]cmd.Target] `cmd:"target"`
+	Targets cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
 
 // Run ...
-func (p Ping) Run(src cmd.Source, out *cmd.Output) {
-	var t cmd.Target
-	pl, _ := src.(*player.Player)
-	if ta, ok := p.Target.Load(); ok { 
-		t = ta[0]
-	} else {
-		t = pl
+func (p Ping) Run(s cmd.Source, o *cmd.Output) {
+	targets := p.Targets.LoadOr(nil)
+	if len(targets) > 1 {
+		o.Error(lang.Translatef(data.Language{}, "command.targets.exceed"))
+		return
 	}
 
-	if p, ok := t.(*player.Player); ok {
+	if len(targets) == 1 {
+		target, ok := targets[0].(*player.Player)
+		if !ok {
+			o.Error(lang.Translatef(data.Language{}, "command.target.unknown"))
+			return
+		}
+		moyai.Messagef(target, "command.ping.output", target.Name(), (target.Latency() * 2).Milliseconds())
+		return
+	}
+
+	if p, ok := s.(*player.Player); ok {
 		moyai.Messagef(p, "command.ping.output", p.Name(), (p.Latency() * 2).Milliseconds())
 	}
 }
