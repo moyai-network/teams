@@ -30,10 +30,7 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 	u.StaffMode = !u.StaffMode
 
 	if u.StaffMode {
-		*u.PlayerData.Inventory = data.InventoryData(p)
-		u.PlayerData.Position = p.Position()
-		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
-
+		_ = moyai.PlayerProvider().SavePlayer(p)
 		if !u.Vanished {
 			p.SetGameMode(vanishGameMode{lastMode: mode})
 			moyai.Messagef(p, "command.vanish.enabled")
@@ -56,10 +53,23 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output) {
 		}
 
 		p.Inventory().Handle(inventory.NopHandler{})
-		u.PlayerData.Inventory.Apply(p)
-		p.Teleport(u.PlayerData.Position)
-		mode, _ = world.GameModeByID(u.PlayerData.GameMode)
-		p.SetGameMode(mode)
+		dat, err := moyai.LoadPlayerData(p.UUID())
+		if err != nil {
+			return
+		}
+		p.Teleport(dat.Position)
+		p.SetGameMode(dat.GameMode)
+
+		newInv := dat.Inventory
+		p.Inventory().Clear()
+		p.Armour().Clear()
+		p.Armour().Set(newInv.Helmet, newInv.Chestplate, newInv.Leggings, newInv.Boots)
+		for slot, it := range newInv.Items {
+			if it.Empty() {
+				continue
+			}
+			_ = p.Inventory().SetItem(slot, it)
+		}
 	}
 
 	data.SaveUser(u)

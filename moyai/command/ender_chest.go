@@ -4,7 +4,6 @@ import (
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/moyai/user"
 )
 
 // Enderchest is a command to open a players enderchest
@@ -17,10 +16,5 @@ func (e Enderchest) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	h, ok := p.Handler().(*user.Handler)
-	if !ok {
-		return
-	}
-
-	inv.SendMenu(p, inv.NewCustomMenu("Ender Chest", inv.ContainerEnderChest{}, h.EnderChestInventory(), nil))
+	inv.SendMenu(p, inv.NewCustomMenu("Ender Chest", inv.ContainerEnderChest{}, p.EnderChestInventory(), nil))
 }

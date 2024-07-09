@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/item/inventory"
+	"github.com/google/uuid"
 	"math"
 	"slices"
 	"strconv"
@@ -66,8 +67,9 @@ var (
 
 type Handler struct {
 	player.NopHandler
-	p  *player.Player
-	ec *inventory.Inventory
+
+	p    *player.Player
+	uuid uuid.UUID
 
 	logTime           time.Time
 	claimSelectionPos [2]mgl64.Vec3
@@ -154,7 +156,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	h := &Handler{
 		p:          p,
-		ec:         inventory.New(36, func(slot int, before, after item.Stack) {}),
+		uuid:       p.UUID(),
 		wallBlocks: map[cube.Pos]float64{},
 
 		tagCombat:                 cooldown.NewCoolDown(),
@@ -194,14 +196,8 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 	s := unsafe.Session(p)
 	u, _ := data.LoadUserFromName(p.Name())
-	for sl, i := range u.PlayerData.EnderChest {
-		st, _ := i.ToStack()
-		_ = h.ec.SetItem(sl, st)
-	}
-	inv, arm := p.Inventory(), p.Armour()
-	inv.Clear()
-	arm.Clear()
 
+	u.StaffMode = false
 	if u.Teams.DeathBan.Active() {
 		moyai.Deathban().AddEntity(p)
 		p.Teleport(mgl64.Vec3{5, 13, 44})
@@ -215,12 +211,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 
 			moyai.Overworld().AddEntity(p)
 			p.Teleport(mgl64.Vec3{0, 80, 0})
-		} else {
-			u.StaffMode = false
-			u.PlayerData.Inventory.Apply(p)
-			p.Teleport(u.PlayerData.Position)
-			mode, _ := world.GameModeByID(u.PlayerData.GameMode)
-			p.SetGameMode(mode)
 		}
 	}
 
@@ -251,10 +241,6 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	UpdateState(h.p)
 	go startTicker(h)
 	return h
-}
-
-func (h *Handler) EnderChestInventory() *inventory.Inventory {
-	return h.ec
 }
 
 func (h *Handler) handleBoosterRole(u data.User) {
@@ -644,9 +630,6 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 		} else {
 			_, _ = chat.Global.WriteString(lang.Translatef(data.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
 		}
-		if h.logger {
-			h.death <- struct{}{}
-		}
 	}
 
 	if canAttack(h.p, attacker) {
@@ -726,16 +709,8 @@ func (h *Handler) HandleQuit() {
 	if !u.Teams.PVP.Paused() {
 		u.Teams.PVP.TogglePause()
 	}
-
-	if !u.StaffMode {
-		*u.PlayerData.Inventory = data.InventoryData(p)
-		u.PlayerData.Position = p.Position()
-		u.PlayerData.GameMode, _ = world.GameModeID(p.GameMode())
-	}
-
-	u.PlayerData.EnderChest = [36]data.Stack{}
-	for s, i := range h.ec.Slots() {
-		u.PlayerData.EnderChest[s] = data.StackToData(i)
+	if u.StaffMode {
+		restorePlayerData(h.p)
 	}
 
 	data.SaveUser(u)
@@ -770,43 +745,17 @@ func (h *Handler) HandleQuit() {
 		go func() {
 			select {
 			case <-time.After(time.Second * 30):
-				u, err := data.LoadUserFromName(h.p.Name())
+				u, err = data.LoadUserFromName(h.p.Name())
 				if err != nil {
 					return
 				}
-				u.PlayerData.Position = h.p.Position()
 				data.SaveUser(u)
 				data.FlushUser(u)
 				break
 			case <-h.close:
 				break
 			case <-h.death:
-				u, err := data.LoadUserFromName(h.p.Name())
-				if err != nil {
-					return
-				}
-				*u.PlayerData.Inventory = data.Inventory{}
-				u.Teams.DeathBan.Set(time.Minute * 20)
-				u.Teams.DeathBanned = true
-				u.Teams.Stats.Deaths += 1
-				if u.Teams.Stats.KillStreak > u.Teams.Stats.BestKillStreak {
-					u.Teams.Stats.BestKillStreak = u.Teams.Stats.KillStreak
-				}
-				u.Teams.Stats.KillStreak = 0
-				if tm, err := data.LoadTeamFromMemberName(h.p.Name()); err == nil {
-					tm = tm.WithDTR(tm.DTR - 1).WithPoints(tm.Points - 1).WithLastDeath(time.Now())
-					if conquest.Running() {
-						for _, c := range conquest.All() {
-							if pl, ok := c.Capturing(); ok && pl == h.p {
-								conquest.IncreaseTeamPoints(tm, -15)
-							}
-						}
-					}
-					data.SaveTeam(tm)
-				}
-				DropContents(h.p)
-				data.SaveUser(u)
-				data.FlushUser(u)
+				break
 			}
 			_ = h.p.Close()
 		}()
@@ -854,4 +803,25 @@ func attackerFromSource(src world.DamageSource) (world.Entity, bool) {
 		return s.Attacker, true
 	}
 	return nil, false
+}
+
+func restorePlayerData(p *player.Player) {
+	p.Inventory().Handle(inventory.NopHandler{})
+	dat, err := moyai.LoadPlayerData(p.UUID())
+	if err != nil {
+		return
+	}
+	p.Teleport(dat.Position)
+	p.SetGameMode(dat.GameMode)
+
+	newInv := dat.Inventory
+	p.Inventory().Clear()
+	p.Armour().Clear()
+	p.Armour().Set(newInv.Helmet, newInv.Chestplate, newInv.Leggings, newInv.Boots)
+	for slot, itm := range newInv.Items {
+		if itm.Empty() {
+			continue
+		}
+		_ = p.Inventory().SetItem(slot, itm)
+	}
 }

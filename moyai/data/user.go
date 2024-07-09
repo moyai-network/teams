@@ -15,8 +15,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
-	"github.com/go-gl/mathgl/mgl64"
-
 	"github.com/moyai-network/teams/internal/sets"
 
 	"github.com/bedrock-gophers/role/role"
@@ -140,22 +138,6 @@ func DefaultSettings() Settings {
 	return s
 }
 
-type playerData struct {
-	Inventory  *Inventory
-	EnderChest [36]Stack
-	Position   mgl64.Vec3
-	GameMode   int
-}
-
-func defaultPlayerData() playerData {
-	return playerData{
-		Inventory:  &Inventory{},
-		EnderChest: [36]Stack{},
-		Position:   mgl64.Vec3{},
-		GameMode:   0,
-	}
-}
-
 type User struct {
 	XUID        string `bson:"xuid"`
 	Name        string `bson:"name"`
@@ -184,8 +166,6 @@ type User struct {
 	LastMessageFrom string
 	// LastVote is the last time the user voted.
 	LastVote time.Time
-	// PlayerData is the data of the player.
-	PlayerData playerData `bson:"player_data"`
 
 	Teams struct {
 		// DeathInventory is the inventory of the user when they died.
@@ -259,7 +239,6 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()
 	u.Teams.DeathInventory = &Inventory{}
-	u.PlayerData = defaultPlayerData()
 	u.Language = &Language{}
 
 	return u
@@ -445,7 +424,6 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	u.Teams.ClaimedRewards = sets.New[int]()
 	u.Teams.DeathInventory = &Inventory{}
 	u.Language = &Language{}
-	u.PlayerData = defaultPlayerData()
 
 	err := result.Decode(&u)
 	if err != nil {

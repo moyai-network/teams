@@ -1,6 +1,9 @@
 package moyai
 
 import (
+	"fmt"
+	"github.com/bedrock-gophers/provider/provider"
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/state"
@@ -24,7 +27,7 @@ func init() {
 			continue
 		}
 		go tickAirDrop(Overworld())
-		go tickWorldSave(Overworld())
+		go tickAutomaticSave(Overworld())
 	}()
 }
 
@@ -33,6 +36,8 @@ var (
 	discordState *state.State
 	// srv is the server instance of the Moyai server.
 	srv *server.Server
+	// playerProvider is the player provider of the Moyai server.
+	playerProvider *provider.Provider
 	// end is the world of the End dimension.
 	end *world.World
 	// nether is the world of the Nether dimension.
@@ -85,7 +90,33 @@ func Players() []*player.Player {
 	return srv.Players()
 }
 
+func PlayerProvider() *provider.Provider {
+	return playerProvider
+}
+
+func LoadPlayerData(uuid uuid.UUID) (player.Data, error) {
+	dat, err := playerProvider.Load(uuid, func(dimension world.Dimension) *world.World {
+		switch dimension {
+		case world.Overworld:
+			return Overworld()
+		case world.Nether:
+			return Nether()
+		case world.End:
+			return End()
+		}
+		return nil
+	})
+	return dat, err
+}
+
 func NewServer(config server.Config) *server.Server {
+	providerSettings := provider.DefaultSettings()
+	providerSettings.FlushRate = time.Minute * 10
+	providerSettings.SaveEffects = false
+	fmt.Println(providerSettings.AutoSave)
+
+	playerProvider = provider.NewProvider(providerSettings)
+	config.PlayerProvider = playerProvider
 	srv = config.New()
 	return srv
 }
@@ -192,10 +223,25 @@ func Close() {
 	}
 }
 
-func tickWorldSave(w *world.World) {
+func tickAutomaticSave(w *world.World) {
 	for {
 		<-time.After(time.Minute * 1)
 		w.Save()
+		for _, p := range Players() {
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				fmt.Println("load user: ", err)
+				continue
+			}
+			if u.StaffMode {
+				continue
+			}
+
+			err = playerProvider.SavePlayer(p)
+			if err != nil {
+				fmt.Printf("save player: %v\n", err)
+			}
+		}
 	}
 }
 

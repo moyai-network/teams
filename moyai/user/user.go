@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"strings"
@@ -198,6 +199,8 @@ func (h *Handler) kill(src world.DamageSource) {
 	unsafe.Session(h.p).EmptyUIInventory()
 
 	DropContents(p)
+	p.Inventory().Clear()
+	p.Armour().Clear()
 	p.SetHeldItems(item.Stack{}, item.Stack{})
 	p.ResetFallDistance()
 	p.Heal(20, effect.InstantHealingSource{})
@@ -213,7 +216,38 @@ func (h *Handler) kill(src world.DamageSource) {
 	unsafe.WritePacket(h.p, &packet.PlayerFog{
 		Stack: []string{"minecraft:fog_default"},
 	})
+
 	p.Teleport(mgl64.Vec3{5, 13, 44})
+	h.savePlayerData()
+	if h.logger {
+		h.death <- struct{}{}
+	}
+}
+
+func (h *Handler) savePlayerData() {
+	dat, err := moyai.LoadPlayerData(h.uuid)
+	if err != nil {
+		fmt.Println("error loading player data: ", err)
+		return
+	}
+	var i, a = h.p.Inventory(), h.p.Armour()
+	_, off := h.p.HeldItems()
+	dat.Inventory = player.InventoryData{
+		MainHandSlot: 0,
+		OffHand:      off,
+		Items:        i.Slots(),
+		Boots:        a.Boots(),
+		Leggings:     a.Leggings(),
+		Chestplate:   a.Chestplate(),
+		Helmet:       a.Helmet(),
+	}
+	dat.Position = h.p.Position()
+
+	err = moyai.PlayerProvider().Save(h.uuid, dat)
+	if err != nil {
+		fmt.Println("error saving player data: ", err)
+		return
+	}
 }
 
 // stopCapturing stops the user from capturing a koth or a point.
