@@ -1,11 +1,12 @@
 package user
 
 import (
+	"strings"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"strings"
 )
 
 var (
@@ -13,6 +14,7 @@ var (
 	combat = []string{
 		"ec",
 		"logout",
+		"pv",
 	}
 	deathban = []string{
 		"reclaim",
