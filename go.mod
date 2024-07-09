@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/joho/godotenv v1.5.1
-	github.com/oomph-ac/oomph v0.0.0-20240701145620-5cc16242dab8
+	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.38.0
