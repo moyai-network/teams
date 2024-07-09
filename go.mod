@@ -40,7 +40,7 @@ require (
 )
 
 require (
-	github.com/bedrock-gophers/provider v0.0.0-20240707022414-e2f9dfe8da89 // indirect
+	github.com/bedrock-gophers/provider v0.0.0-20240709041358-962a0a4f2335 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
