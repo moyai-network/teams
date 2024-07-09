@@ -23,14 +23,8 @@ func init() {
 			<-time.After(time.Millisecond)
 			continue
 		}
-		tickAirDrop(Overworld())
-	}()
-	go func ()  {
-		for Overworld() == nil {
-			<-time.After(time.Millisecond)
-			continue
-		}
-		tickWorldSave(Overworld())
+		go tickAirDrop(Overworld())
+		go tickWorldSave(Overworld())
 	}()
 }
 
@@ -195,6 +189,13 @@ func Close() {
 	srv.World().Close()
 	if err := srv.Close(); err != nil {
 		logrus.Fatalln("close server: %v", err)
+	}
+}
+
+func tickWorldSave(w *world.World) {
+	for {
+		<-time.After(time.Minute * 1)
+		w.Save()
 	}
 }
 
