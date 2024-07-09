@@ -15,6 +15,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/inventory"
 
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
@@ -322,6 +323,13 @@ func (h *Handler) handleTeamMemberDeath() {
 			tm = tm.WithPoints(tm.Points - 1)
 		}
 		data.SaveTeam(tm)
+
+		for _, member := range tm.Members {
+			if m, ok := Lookup(member.Name); ok {
+				u, _ := data.LoadUserFromName(m.Name())
+				m.Message(lang.Translatef(*u.Language, "team.member.death", h.p.Name(), tm.DTR))
+			}
+		}
 	}
 }
 

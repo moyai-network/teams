@@ -2,10 +2,11 @@ package user
 
 import (
 	"fmt"
-	"github.com/df-mc/dragonfly/server/player"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/df-mc/dragonfly/server/player"
 
 	"github.com/df-mc/dragonfly/server/block"
 
@@ -210,7 +211,10 @@ func startTicker(h *Handler) {
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
-			u, _ := data.LoadUserFromName(h.p.Name())
+			u, err := data.LoadUserFromName(h.p.Name())
+			if err != nil {
+				continue
+			}
 			if u.Teams.Settings.Display.ScoreboardDisabled {
 				h.p.RemoveScoreboard()
 				continue

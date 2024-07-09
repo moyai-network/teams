@@ -451,7 +451,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 	tm = tm.WithDTR(tm.DTR + 1.01)
 	data.SaveTeam(tm)
 
-	team.Broadcastf(tm, "team.join.broadcast", p.Name())
+	team.Broadcastf(tm, "team.member.join", p.Name(), tm.DTR)
 }
 
 // Run ...
@@ -634,12 +634,7 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 
 	tm = tm.WithoutMember(p.Name())
 	tm = tm.WithDTR(tm.DTR - 1.01)
-	for _, m := range tm.Members {
-		if mem, ok := user.Lookup(m.Name); ok {
-			user.UpdateState(mem)
-			moyai.Messagef(mem, "command.team.leave.user.left")
-		}
-	}
+	team.Broadcastf(tm, "team.member.leave", p.Name(), tm.DTR)
 	data.SaveTeam(tm)
 }
 

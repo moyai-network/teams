@@ -2,9 +2,10 @@ package moyai
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/bedrock-gophers/provider/provider"
 	"github.com/google/uuid"
-	"time"
 
 	"github.com/diamondburned/arikawa/v3/state"
 
