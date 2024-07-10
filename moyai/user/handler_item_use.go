@@ -519,7 +519,7 @@ func (h *Handler) handleTankIngotAbility(kind it.TankIngotType, held item.Stack,
 
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 
-	h.p.AddEffect(effect.New(effect.Resistance{}, 2, time.Second*7))
+	h.p.AddEffect(effect.New(effect.Resistance{}, 3, time.Second*7))
 	moyai.Messagef(h.p, "partner_item.used", "Tank Ingot")
 }
 
