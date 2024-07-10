@@ -226,7 +226,7 @@ func Close() {
 
 func tickAutomaticSave(w *world.World) {
 	for {
-		<-time.After(time.Minute * 1)
+		<-time.After(time.Second * 10)
 		w.Save()
 		for _, p := range Players() {
 			u, err := data.LoadUserFromName(p.Name())
