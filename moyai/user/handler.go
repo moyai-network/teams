@@ -588,7 +588,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				return
 			}
 			if k.Teams.DeathBan.Active() {
-				k.Teams.DeathBan.Set(k.Teams.DeathBan.Remaining() + time.Minute*10)
+				k.Teams.DeathBan.Set(k.Teams.DeathBan.Remaining() - time.Minute*2)
 				return
 			}
 			k.Teams.Stats.Kills += 1
