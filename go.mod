@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae
+	github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.16
@@ -16,7 +17,7 @@ require (
 	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
-	github.com/sandertv/gophertunnel v1.38.0
+	github.com/sandertv/gophertunnel v1.39.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
 	go.mongodb.org/mongo-driver v1.15.0
@@ -40,7 +41,6 @@ require (
 )
 
 require (
-	github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
@@ -64,7 +64,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/petermattis/goid v0.0.0-20240327183114-c42a807a84ba // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/sandertv/go-raknet v1.14.0 // indirect
+	github.com/sandertv/go-raknet v1.14.1 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
@@ -83,8 +83,8 @@ require (
 
 replace github.com/flonja/multiversion => github.com/moyai-network/bifrost v0.0.0-20240608171226-6ddb00c8c9d4
 
-replace github.com/sandertv/gophertunnel v1.38.0 => github.com/oomph-ac/gophertunnel v0.0.0-20240616183157-9a90927ebb22
+replace github.com/sandertv/gophertunnel v1.39.0 => github.com/oomph-ac/gophertunnel v0.0.0-20240709220654-778fca76bb1b
 
 replace github.com/sandertv/go-raknet => github.com/GameParrot/tedac-raknet v0.0.4
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240708140004-0569f0b643c2
+replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240710143453-2e72862ea3f6
