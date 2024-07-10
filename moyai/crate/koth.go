@@ -30,15 +30,41 @@ var kothEnchantments = []item.Enchantment{
 
 func (koth) Rewards() []Reward {
 	return []Reward{
-		11: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		0: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Helmet</dark-red>")), 20),
-		12: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		1: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Chestplate</dark-red>")), 20),
-		13: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		9: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.Recovery{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Leggings</dark-red>")), 20),
-		14: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		10: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<dark-red>KOTH Boots</dark-red>")), 20),
-		15: NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
+		2: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Helmet</dark-red>")), 20),
+		3: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Chestplate</dark-red>")), 20),
+		11: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Recovery{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Leggings</dark-red>")), 20),
+		12: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierLeather{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<dark-red>KOTH Boots</dark-red>")), 20),
+		4: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Helmet</dark-red>")), 20),
+		5: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Chestplate</dark-red>")), 20),
+		13: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Recovery{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Leggings</dark-red>")), 20),
+		14: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierGold{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<dark-red>KOTH Boots</dark-red>")), 20),
+		6: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Helmet</dark-red>")), 20),
+		7: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Chestplate</dark-red>")), 20),
+		15: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Recovery{}, 1))...).WithCustomName(text.Colourf("<dark-red>KOTH Leggings</dark-red>")), 20),
+		16: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierChain{}}, 1).WithEnchantments(
+			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<dark-red>KOTH Boots</dark-red>")), 20),
+		8: NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
 			item.NewEnchantment(ench.Sharpness{}, 3), item.NewEnchantment(enchantment.Unbreaking{}, 3), item.NewEnchantment(enchantment.FireAspect{}, 2)).WithCustomName(text.Colourf("<dark-red>KOTH Fire</dark-red>")), 20),
+		17: NewReward(item.NewStack(item.Bow{}, 1).WithEnchantments(
+			item.NewEnchantment(enchantment.Power{}, 3), item.NewEnchantment(enchantment.Unbreaking{}, 3), item.NewEnchantment(enchantment.Flame{}, 2)).WithCustomName(text.Colourf("<dark-red>KOTH Bow</dark-red>")), 20),
 	}
 }

@@ -1,11 +1,12 @@
 package crate
 
 import (
+	"math/rand"
+
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/moyai/colour"
-	"math/rand"
 )
 
 // Crate represents a crate utilized to Reward users.
@@ -81,6 +82,7 @@ func Register(c Crate) {
 }
 
 func init() {
+	Register(conquest{})
 	Register(koth{})
 	Register(partner{})
 	Register(pharaoh{})
