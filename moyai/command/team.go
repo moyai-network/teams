@@ -286,11 +286,21 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 		}
 		h.SendAirPillar(pos0)
 		h.SendAirPillar(pos1)
-		max := a.Max()
-		if dist := math.Sqrt(math.Pow(float64(p.Position().X())-float64(max[0]), 2) + math.Pow(float64(p.Position().Z())-float64(max[1]), 2)); dist < 30 {
+		playerPos := p.Position()
+		distX0 := math.Abs(playerPos.X() - float64(pos0.X()))
+		distZ0 := math.Abs(playerPos.Z() - float64(pos0.Z()))
+		distX1 := math.Abs(playerPos.X() - float64(pos1.X()))
+		distZ1 := math.Abs(playerPos.Z() - float64(pos1.Z()))
+
+		if distX0 < 30 || distZ0 < 30  || distX1 < 30 || distZ1 < 30 {
 			h.SendClaimPillar(pos0)
 			h.SendClaimPillar(pos1)
-			moyai.Messagef(p, "command.team.map.display", a.Name(), int(dist))
+			least := math.Min(distX0, distZ0)
+			least = math.Min(least, math.Min(distX1, distZ1))
+			if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(playerPos.X()), float64(playerPos.Z())}) {
+				least = 0
+			}
+			moyai.Messagef(p, "command.team.map.display", a.Name(), int(least))
 		}
 	}
 }
