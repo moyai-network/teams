@@ -205,7 +205,6 @@ func findAirDropPosition(w *world.World) cube.Pos {
 		for _, r := range roads {
 			if r.Vec3WithinOrEqualFloorXZ(pos.Vec3Centre()) {
 				valid = false
-				break
 			}
 		}
 		if !spawn.Vec3WithinOrEqualFloorXZ(pos.Vec3Centre()) && valid {
