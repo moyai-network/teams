@@ -390,7 +390,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if len(tm.Members) == 6 {
+	if len(tm.Members) == 7 {
 		moyai.Messagef(p, "command.team.join.full")
 		return
 	}
@@ -445,7 +445,7 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	if len(tm.Members) == 6 {
+	if len(tm.Members) == 7 {
 		moyai.Messagef(p, "command.team.join.full")
 		return
 	}
