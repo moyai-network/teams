@@ -200,7 +200,15 @@ func findAirDropPosition(w *world.World) cube.Pos {
 		x := warzone.Min().X() + (warzone.Max().X()-warzone.Min().X())*rand.Float64()
 		z := warzone.Min().Y() + (warzone.Max().Y()-warzone.Min().Y())*rand.Float64()
 		pos := cube.Pos{int(x), 255, int(z)}
-		if !spawn.Vec3WithinOrEqualFloorXZ(pos.Vec3Centre()) {
+		roads := area.Roads(w)
+		valid := true
+		for _, r := range roads {
+			if r.Vec3WithinOrEqualFloorXZ(pos.Vec3Centre()) {
+				valid = false
+				break
+			}
+		}
+		if !spawn.Vec3WithinOrEqualFloorXZ(pos.Vec3Centre()) && valid {
 			return pos
 		}
 	}
