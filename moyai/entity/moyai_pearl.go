@@ -177,7 +177,7 @@ func teleport(e *entity.Ent, target trace.Result) {
 		p.Hurt(5, entity.FallDamageSource{})
 	} else {
 		usr.Pearl().Reset()
-		p.SendPopup(text.Colourf("<red>Pearl Refunded"))
+		p.SendPopup(text.Colourf("<red>Pearl Refunded</red>"))
 		if !p.GameMode().CreativeInventory() {
 			_, _ = p.Inventory().AddItem(item.NewStack(item.EnderPearl{}, 1))
 		}

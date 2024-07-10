@@ -26,13 +26,13 @@ func (conquest) Facing() cube.Face {
 
 func (conquest) Rewards() []Reward {
 	return []Reward{
-		0: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		11: NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.NightVision{}, 1), item.NewEnchantment(ench.Invisibility{}, 1))...).WithCustomName(text.Colourf("<blue>KOTH Helmet</blue>")), 20),
-		1: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		12: NewReward(item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.FireResistance{}, 1))...).WithCustomName(text.Colourf("<blue>Conquest Chestplate</blue>")), 20),
-		2: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		13: NewReward(item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.Recovery{}, 1))...).WithCustomName(text.Colourf("<blue>Conquest Leggings</blue>")), 20),
-		4: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
+		14: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<blue>Conquest Boots</blue>")), 20),
 		15: NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
 			item.NewEnchantment(ench.Sharpness{}, 4), item.NewEnchantment(enchantment.Unbreaking{}, 3)).WithCustomName(text.Colourf("<blue>Conquest Sharp</blue>")), 10),

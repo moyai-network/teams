@@ -18,7 +18,6 @@ import (
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/chat"
 
 	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
 
@@ -48,7 +47,7 @@ func Run() error {
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
 	log.Level = logrus.DebugLevel
 
-	chat.Global.Subscribe(chat.StdoutSubscriber{})
+	// chat.Global.Subscribe(chat.StdoutSubscriber{})
 
 	console.Enable(log)
 	conf, err := readConfig()

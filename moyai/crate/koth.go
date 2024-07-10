@@ -65,6 +65,6 @@ func (koth) Rewards() []Reward {
 		8: NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
 			item.NewEnchantment(ench.Sharpness{}, 3), item.NewEnchantment(enchantment.Unbreaking{}, 3), item.NewEnchantment(enchantment.FireAspect{}, 2)).WithCustomName(text.Colourf("<dark-red>KOTH Fire</dark-red>")), 20),
 		17: NewReward(item.NewStack(item.Bow{}, 1).WithEnchantments(
-			item.NewEnchantment(enchantment.Power{}, 3), item.NewEnchantment(enchantment.Unbreaking{}, 3), item.NewEnchantment(enchantment.Flame{}, 2)).WithCustomName(text.Colourf("<dark-red>KOTH Bow</dark-red>")), 20),
+			item.NewEnchantment(enchantment.Power{}, 3), item.NewEnchantment(enchantment.Unbreaking{}, 3), item.NewEnchantment(enchantment.Flame{}, 2), item.NewEnchantment(enchantment.Infinity{}, 1)).WithCustomName(text.Colourf("<dark-red>KOTH Bow</dark-red>")), 20),
 	}
 }
