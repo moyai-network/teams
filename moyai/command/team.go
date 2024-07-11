@@ -284,17 +284,24 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 			int(p.Position().Y()),
 			int(a.Min()[1]),
 		}
+		pos2 := cube.Pos{pos0.X(), pos0.Y(), pos1.Z()}
+		pos3 := cube.Pos{pos1.X(), pos0.Y(), pos0.Z()}
 		h.SendAirPillar(pos0)
 		h.SendAirPillar(pos1)
+		h.SendAirPillar(pos2)
+		h.SendAirPillar(pos3)
 		playerPos := p.Position()
 		distX0 := math.Abs(playerPos.X() - float64(pos0.X()))
 		distZ0 := math.Abs(playerPos.Z() - float64(pos0.Z()))
 		distX1 := math.Abs(playerPos.X() - float64(pos1.X()))
 		distZ1 := math.Abs(playerPos.Z() - float64(pos1.Z()))
 
+		// TODO: FIX THIS DISTANCE CALCULATION
 		if distX0 < 30 || distZ0 < 30  || distX1 < 30 || distZ1 < 30 {
 			h.SendClaimPillar(pos0)
 			h.SendClaimPillar(pos1)
+			h.SendClaimPillar(pos2)
+			h.SendClaimPillar(pos3)
 			least := math.Min(distX0, distZ0)
 			least = math.Min(least, math.Min(distX1, distZ1))
 			if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(playerPos.X()), float64(playerPos.Z())}) {

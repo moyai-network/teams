@@ -412,10 +412,10 @@ func (h *Handler) updateArmour(s *session.Session, helmet item.Stack, chestplate
 }
 
 func (h *Handler) SendClaimPillar(pos cube.Pos) {
-	for y := pos.Y(); y <= pos.Y()+25; y++ {
+	for y := pos.Y(); y <= pos.Y()+50; y++ {
 		delta := y - pos.Y()
 		var b world.Block
-		if delta == 3 || delta == 4 {
+		if delta % 4 == 0 {
 			b = block.Diamond{}
 		} else {
 			b = block.Glass{}
