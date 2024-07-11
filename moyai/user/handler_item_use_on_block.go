@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -233,6 +234,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 				u.Teams.DeathBanned = false
 				u.Teams.Lives -= 1
 				u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+				fmt.Println("HandleItemUseOnBlock: pvp timer set to an hour for", h.p.Name())
 				if !u.Teams.PVP.Paused() {
 					u.Teams.PVP.TogglePause()
 				}

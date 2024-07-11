@@ -235,6 +235,7 @@ func DefaultUser(name, xuid string) User {
 	u.Teams.DeathBan = cooldown.NewCoolDown()
 	u.Teams.PVP = cooldown.NewCoolDown()
 	u.Teams.PVP.Set(time.Hour + time.Second)
+	fmt.Println("DefaultUser: pvp timer set to an hour for", name)
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()

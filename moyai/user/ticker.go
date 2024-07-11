@@ -150,6 +150,7 @@ func tickDeathban(p *player.Player, u data.User) {
 		u.Teams.DeathBan.Reset()
 		u.Teams.DeathBanned = false
 		u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+		fmt.Println("tickDeathban: pvp timer set to an hour for", p.Name())
 		if !u.Teams.PVP.Paused() {
 			u.Teams.PVP.TogglePause()
 		}

@@ -26,7 +26,9 @@ func (c *CoolDown) TogglePause() {
 	}
 	if !c.paused.Load() {
 		c.remainingAtPause.Store(c.Remaining())
+		c.expiration = *atomic.NewValue(time.Time{})
 	} else {
+		c.remainingAtPause.Store(0)
 		c.expiration = *atomic.NewValue(time.Now().Add(c.remainingAtPause.Load()))
 	}
 
