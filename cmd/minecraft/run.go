@@ -127,7 +127,7 @@ func startBroadcats() {
 	}
 
 	var cursor int
-	t := time.NewTicker(time.Minute * 5)
+	t := time.NewTicker(time.Minute * 4)
 	defer t.Stop()
 	for range t.C {
 		message := broadcasts[cursor]
@@ -201,7 +201,7 @@ var chatGameWords = []string{
 
 // startChatGame starts the chat game.
 func startChatGame() {
-	t := time.NewTicker(time.Minute * 5)
+	t := time.NewTicker(time.Minute * 6)
 	for range t.C {
 		cursor := rand.Intn(len(chatGameWords))
 		word := chatGameWords[cursor]
