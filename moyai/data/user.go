@@ -248,6 +248,7 @@ func DefaultUser(name, xuid string) User {
 func LoadUserOrCreate(name, xuid string) (User, error) {
 	u, err := LoadUserFromXUID(xuid)
 	if errors.Is(err, mongo.ErrNoDocuments) {
+		fmt.Println("LoadUserOrCreate: no user found")
 		u = DefaultUser(name, xuid)
 		userMu.Lock()
 		users[u.XUID] = u

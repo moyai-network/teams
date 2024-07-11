@@ -214,6 +214,7 @@ func startTicker(h *Handler) {
 
 			u, err := data.LoadUserFromName(h.p.Name())
 			if err != nil {
+				fmt.Println("ticker.LoadUserFromName: error: ", err)
 				continue
 			}
 			if u.Teams.Settings.Display.ScoreboardDisabled {
