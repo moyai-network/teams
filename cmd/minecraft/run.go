@@ -3,6 +3,7 @@ package minecraft
 import (
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -76,6 +77,9 @@ func Run() error {
 	//go tickBlackMarket(srv)
 	go tickClearLag()
 
+	go startBroadcats()
+	go startPlayerBroadcasts()
+
 	store := loadStore(conf.Moyai.Tebex, log)
 	for srv.Accept(acceptFunc(store)) {
 		// Do nothing.
@@ -102,6 +106,63 @@ func tickVotes() {
 			moyai.Broadcastf("vote.broadcast", u.DisplayName)
 			data.SaveUser(u)
 		}
+	}
+}
+
+// startBroadcats starts the broadcasts.
+func startBroadcats() {
+	broadcasts := [...]string{
+		"moyai.broadcast.discord",
+		"moyai.broadcast.store",
+		"moyai.broadcast.emojis",
+		"moyai.broadcast.settings",
+		"moyai.broadcast.feedback",
+		//"moyai.broadcast.report",
+		"moyai.broadcast.rules",
+		"moyai.broadcast.vote",
+	}
+
+	var cursor int
+	t := time.NewTicker(time.Minute * 5)
+	defer t.Stop()
+	for range t.C {
+		message := broadcasts[cursor]
+		for _, p := range moyai.Players() {
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				continue
+			}
+			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.notice", lang.Translate(*u.Language, message)))
+		}
+		if cursor++; cursor == len(broadcasts) {
+			cursor = 0
+		}
+	}
+}
+
+// startPlayerBroadcasts starts the player broadcasts.
+func startPlayerBroadcasts() {
+	t := time.NewTicker(time.Minute * 5)
+	for range t.C {
+		players := moyai.Players()
+		var plus []string
+		for _, p := range players {
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				continue
+			}
+			if roles.Premium(u.Roles.Highest()) {
+				plus = append(plus, p.Name())
+			}
+		}
+
+		for _, p := range players {
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				continue
+			}
+			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.plus", len(plus), strings.Join(plus, ", ")))
+		}	
 	}
 }
 
