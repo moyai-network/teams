@@ -35,6 +35,6 @@ func (conquest) Rewards() []Reward {
 		14: NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(kothEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<blue>Conquest Boots</blue>")), 20),
 		15: NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
-			item.NewEnchantment(ench.Sharpness{}, 4), item.NewEnchantment(enchantment.Unbreaking{}, 3)).WithCustomName(text.Colourf("<blue>Conquest Sharp</blue>")), 10),
+			item.NewEnchantment(ench.Sharpness{}, 4), item.NewEnchantment(enchantment.Unbreaking{}, 3)).WithCustomName(text.Colourf("<blue>Conquest Sharp</blue>")), 5),
 	}
 }
