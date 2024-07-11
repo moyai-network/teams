@@ -17,7 +17,10 @@ func NewPotionSplashColors(p *player.Player) inv.Menu {
 	m := inv.NewMenu(PotionSplashColor{}, "Potion Color", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return m
+	}
 
 	stacks[9] = item.NewStack(item.Dye{Colour: item.ColourLightGrey()}, 1).WithCustomName(text.Colourf("<iron>Invisible<iron>"))
 	stacks[10] = item.NewStack(item.Dye{Colour: item.ColourRed()}, 1).WithCustomName(text.Colourf("<red>Red</red>"))

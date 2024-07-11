@@ -98,9 +98,9 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 		if !ok {
 			return
 		}
-		u, _ := data.LoadUserFromName(p.Name())
+		u, err := data.LoadUserFromName(p.Name())
 		t, ok := lookupRuntimeID(p, pkt.EntityRuntimeID)
-		if !ok {
+		if !ok || err != nil {
 			break
 		}
 		target, ok := t.Handler().(*Handler)

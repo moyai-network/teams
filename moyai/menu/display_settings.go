@@ -16,7 +16,10 @@ func NewDisplaySettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(DisplaySettings{}, "Display Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return m
+	}
 
 	stacks[12] = item.NewStack(item.Dye{Colour: item.ColourBlue()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>Scoreboard</dark-aqua>")).

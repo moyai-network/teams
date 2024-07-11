@@ -19,7 +19,10 @@ func NewCape(p *player.Player) inv.Menu {
 	m := inv.NewMenu(Cape{}, "Cape", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return m
+	}
 
 	for i, c := range cape.All() {
 		if u.Teams.Settings.Advanced.Cape == c.Name() {

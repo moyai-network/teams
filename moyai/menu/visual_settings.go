@@ -15,7 +15,10 @@ func NewVisualSettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(VisualSettings{}, "Visual Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return m
+	}
 
 	stacks[12] = item.NewStack(item.Dye{Colour: item.ColourBlue()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>Lightning</dark-aqua>")).

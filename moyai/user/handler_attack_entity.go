@@ -147,8 +147,12 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	u, _ := data.LoadUserFromName(pl.Name())
-	t, _ := data.LoadUserFromName(target.Name())
+	u, err := data.LoadUserFromName(pl.Name())
+	t, err2 := data.LoadUserFromName(target.Name())
+
+	if err != nil || err2 != nil {
+		return true
+	}
 
 	_, sotwRunning := sotw.Running()
 	if u.Teams.PVP.Active() && !u.Teams.DeathBan.Active() || t.Teams.PVP.Active() && !t.Teams.DeathBan.Active() {

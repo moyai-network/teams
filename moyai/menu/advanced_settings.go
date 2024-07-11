@@ -18,7 +18,10 @@ func NewAdvancedSettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(AdvancedSettings{}, "Advanced Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return m
+	}
 
 	var ca string
 	if u.Teams.Settings.Advanced.Cape == "" {
