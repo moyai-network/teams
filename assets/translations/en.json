@@ -302,6 +302,8 @@
         "moyai.broadcast.settings": "Did you know you can run <red>/settings</red> at any time to customize your experience with many options, features, and cosmetics!",
         "moyai.broadcast.store": "Looking for access to exclusive extras, features, and cosmetics? Check out our store at <red>https://store.moyai.club</red>!",
         "moyai.broadcast.vote": "Want to support Moyai? You can vote at <red>https://vote.moyai.club</red> to support us while also receiving free <red>Rewards!</red>",
+        "moyai.broadcast.chatgame": "\n<dark-green>[<red>Chat Games</red>]</dark-green> <yellow>Guess the scrambled word to earn a reward! <dark-green>%s</dark-green></yellow>\n\n\n",
+        "moyai.broadcast.chatgame.guessed": "\n<dark-green>[<red>Chat Games</red>]</dark-green> <dark-green>%s</dark-green> <yellow>has guessed the word! It was <dark-green>%s</dark-green></yellow>\n\n\n",
         "moyai.eotw": "<red>Moyai is in EOTW; you may not join!</red>",
         "moyai.whitelisted": "<red>The server is whitelisted.</red>",
         "newline.double": "\n\n",

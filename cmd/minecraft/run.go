@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
@@ -80,6 +81,8 @@ func Run() error {
 
 	go startBroadcats()
 	go startPlayerBroadcasts()
+
+	go startChatGame()
 
 	store := loadStore(conf.Moyai.Tebex, log)
 	for srv.Accept(acceptFunc(store)) {
@@ -163,6 +166,63 @@ func startPlayerBroadcasts() {
 				continue
 			}
 			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.plus", len(plus), strings.Join(plus, ", ")))
+		}
+	}
+}
+
+var chatGameWords = []string{
+	"moyai",
+	"beacon",
+	"diamond",
+	"nether",
+	"ender",
+	"dragon",
+	"blaze",
+	"wither",
+	"creeper",
+	"spider",
+	"zombie",
+	"skeleton",
+	"pig",
+	"sheep",
+	"cow",
+	"chicken",
+	"squid",
+	"wolf",
+	"villager",
+	"rabbit",
+	"guardian",
+	"shulker",
+	"sword",
+	"shield",
+	"bow",
+	"carrot",
+}
+
+// startChatGame starts the chat game.
+func startChatGame() {
+	t := time.NewTicker(time.Minute * 5)
+	for range t.C {
+		cursor := rand.Intn(len(chatGameWords))
+		word := chatGameWords[cursor]
+
+		scramble := func(word string) string {
+			runes := []rune(word)
+			for i := 0; i < len(runes); i++ {
+				j := rand.Intn(len(runes))
+				runes[i], runes[j] = runes[j], runes[i]
+			}
+			return string(runes)
+		}
+
+		scrambled := scramble(word)
+		moyai.SetChatGameWord(word)
+		for _, p := range moyai.Players() {
+			u, err := data.LoadUserFromName(p.Name())
+			if err != nil {
+				continue
+			}
+			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.chatgame", scrambled))
 		}
 	}
 }

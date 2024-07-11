@@ -54,6 +54,9 @@ var (
 	lastBlackMarket time.Time
 	// blackMarketOpened is the time at which the black market was last opened.
 	blackMarketOpened time.Time
+
+	// chatGameWord is the word to guess in the chat game.
+	chatGameWord string = ""
 )
 
 func SetDiscordState(s *state.State) {
@@ -152,6 +155,14 @@ func Height() float64 {
 
 func SetHeight(f float64) {
 	height = f
+}
+
+func ChatGameWord() string {
+	return chatGameWord
+}
+
+func SetChatGameWord(w string) {
+	chatGameWord = w
 }
 
 func ConfigureDimensions(reg world.EntityRegistry, netherFolder, endFolder string) (*world.World, *world.World) {
