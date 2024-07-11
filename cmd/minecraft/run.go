@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"strings"
@@ -162,7 +163,7 @@ func startPlayerBroadcasts() {
 				continue
 			}
 			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.plus", len(plus), strings.Join(plus, ", ")))
-		}	
+		}
 	}
 }
 
@@ -276,8 +277,9 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
 		})
 		store.ExecuteCommands(p)
 
-		h := user.NewHandler(p, p.XUID())
-		if h == nil {
+		h, err := user.NewHandler(p, p.XUID())
+		if err != nil {
+			fmt.Printf("new handler: %v\n", err)
 			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.gg/moyai</red>"))
 			return
 		}

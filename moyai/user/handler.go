@@ -118,7 +118,7 @@ type Handler struct {
 	death chan struct{}
 }
 
-func NewHandler(p *player.Player, xuid string) *Handler {
+func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 	if h, ok := logger(p); ok {
 		if h.p.World().Dimension() == world.End {
 			moyai.End().AddEntity(p)
@@ -198,7 +198,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	s := unsafe.Session(p)
 	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	u.StaffMode = false
@@ -244,7 +244,7 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	h.logTime = time.Now()
 	UpdateState(h.p)
 	go startTicker(h)
-	return h
+	return h, nil
 }
 
 func (h *Handler) handleBoosterRole(u data.User) {
