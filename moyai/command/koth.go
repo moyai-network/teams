@@ -2,6 +2,9 @@ package command
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
@@ -13,8 +16,6 @@ import (
 	rls "github.com/moyai-network/teams/moyai/roles"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"strings"
-	"time"
 )
 
 // KothList is a command that lists all KOTHs.
@@ -163,7 +164,10 @@ func (kothList) Type() string {
 // Options ...
 func (kothList) Options(src cmd.Source) []string {
 	p, playerSrc := src.(*player.Player)
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return []string{}
+	}
 
 	var opts []string
 	for _, k := range koth.All() {

@@ -276,7 +276,12 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
 		})
 		store.ExecuteCommands(p)
 
-		p.Handle(user.NewHandler(p, p.XUID()))
+		h := user.NewHandler(p, p.XUID())
+		if h == nil {
+			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.gg/moyai</red>"))
+			return
+		}
+		p.Handle(h)
 		p.Armour().Handle(user.NewArmourHandler(p))
 		p.RemoveScoreboard()
 		for _, ef := range p.Effects() {

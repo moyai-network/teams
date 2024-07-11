@@ -196,7 +196,10 @@ func NewHandler(p *player.Player, xuid string) *Handler {
 	UpdateState(p)
 
 	s := unsafe.Session(p)
-	u, _ := data.LoadUserFromName(p.Name())
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return nil
+	}
 
 	u.StaffMode = false
 	if u.Teams.DeathBan.Active() {
