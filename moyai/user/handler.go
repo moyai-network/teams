@@ -602,11 +602,13 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 
 			if tm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
 				tm = tm.WithPoints(tm.Points + 1)
-
 				if conquest.Running() {
-					for _, c := range conquest.All() {
-						if pl, ok := c.Capturing(); ok && pl == killer {
+					for _, k := range area.KOTHs(h.p.World()) {
+						if k.Name() == "Conquest" && k.Vec3WithinOrEqualXZ(h.p.Position()) {
 							conquest.IncreaseTeamPoints(tm, 15)
+							if otherTm, err := data.LoadTeamFromMemberName(killer.Name()); err == nil {
+								conquest.IncreaseTeamPoints(otherTm, -15)
+							}
 						}
 					}
 				}
