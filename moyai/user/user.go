@@ -425,7 +425,7 @@ func (h *Handler) SendClaimPillar(pos cube.Pos) {
 }
 
 func (h *Handler) SendAirPillar(pos cube.Pos) {
-	for y := pos.Y(); y <= pos.Y()+25; y++ {
+	for y := pos.Y(); y <= pos.Y()+50; y++ {
 		h.viewBlockUpdate(cube.Pos{pos.X(), y, pos.Z()}, block.Air{}, 0)
 	}
 }

@@ -52,6 +52,7 @@ func registerCommands() {
 			command.TeamRally{},
 			command.TeamUnRally{},
 			command.TeamMap{},
+			command.TeamClearMap{},
 			command.TeamSetDTR{},
 			command.TeamDelete{},
 			command.TeamCamp{},

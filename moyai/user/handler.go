@@ -2,14 +2,15 @@ package user
 
 import (
 	"fmt"
-	"github.com/df-mc/dragonfly/server/item/inventory"
-	"github.com/google/uuid"
 	"math"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/df-mc/dragonfly/server/item/inventory"
+	"github.com/google/uuid"
 
 	"github.com/moyai-network/teams/moyai/roles"
 

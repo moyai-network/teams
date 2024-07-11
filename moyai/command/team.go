@@ -186,6 +186,10 @@ type TeamMap struct {
 	Sub cmd.SubCommand `cmd:"map"`
 }
 
+type TeamClearMap struct {
+	Sub cmd.SubCommand `cmd:"clearmap"`
+}
+
 // TeamRally is a command that enables waypoint to rally.
 type TeamRally struct {
 	Sub cmd.SubCommand `cmd:"rally"`
@@ -309,6 +313,42 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 			}
 			moyai.Messagef(p, "command.team.map.display", a.Name(), int(least))
 		}
+	}
+}
+
+func (t TeamClearMap) Run(s cmd.Source, out *cmd.Output) {
+	p, _ := s.(*player.Player)
+	h, _ := p.Handler().(*user.Handler)
+
+	areas := make([]area.NamedArea, 0)
+	teams, err := data.LoadAllTeams()
+	if err != nil {
+		moyai.Messagef(p, "command.team.load.fail")
+		return
+	}
+	for _, t := range teams {
+		areas = append(areas, area.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
+	}
+
+	// check all areas, if the player is within 50 blocks of one, send pillars
+	for _, a := range areas {
+		pos0 := cube.Pos{
+			int(a.Max()[0]),
+			int(p.Position().Y()),
+			int(a.Max()[1]),
+		}
+
+		pos1 := cube.Pos{
+			int(a.Min()[0]),
+			int(p.Position().Y()),
+			int(a.Min()[1]),
+		}
+		pos2 := cube.Pos{pos0.X(), pos0.Y(), pos1.Z()}
+		pos3 := cube.Pos{pos1.X(), pos0.Y(), pos0.Z()}
+		h.SendAirPillar(pos0)
+		h.SendAirPillar(pos1)
+		h.SendAirPillar(pos2)
+		h.SendAirPillar(pos3)
 	}
 }
 
