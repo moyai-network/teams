@@ -64,7 +64,7 @@ var (
 
 func tickAirDrop(w *world.World) {
 	for {
-		<-time.After(time.Second * 10)
+		<-time.After(time.Hour)
 		pos := findAirDropPosition(w)
 		destroyAirDrop(w, lastDropPos)
 		dropAirDrop(w, pos)
@@ -85,7 +85,7 @@ func dropAirDrop(w *world.World, pos cube.Pos) {
 	}
 
 	for {
-		<-time.After(time.Second / 4)
+		<-time.After(time.Second)
 
 		oldPos := pos
 		pos = pos.Add(cube.Pos{0, -1, 0})
