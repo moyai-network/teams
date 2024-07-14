@@ -51,10 +51,6 @@ func Reset() {
 }
 
 func PartialReset() {
-	userMu.Lock()
-	users = map[string]User{}
-	userMu.Unlock()
-
 	teamMu.Lock()
 	defer teamMu.Unlock()
 	teams = map[string]Team{}
@@ -89,9 +85,12 @@ func PartialReset() {
 		err = saveUserData(u)
 		if err != nil {
 			log.Println("Error saving user data:", err)
-
 		}
 	}
+
+	userMu.Lock()
+	users = map[string]User{}
+	userMu.Unlock()
 
 	_, err = teamCollection.DeleteMany(ctx(), bson.M{})
 	if err != nil {
