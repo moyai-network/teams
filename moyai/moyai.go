@@ -219,6 +219,8 @@ func Close() {
 		}
 		u.PlayTime += h.LogTime()
 		data.SaveUser(u)
+
+		p.Disconnect("Server is shutting down.")
 	}
 
 	time.Sleep(time.Millisecond * 500)

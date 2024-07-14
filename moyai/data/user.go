@@ -368,7 +368,7 @@ func loadUsersFromFilter(filter any) ([]User, error) {
 	}
 	data := make([]User, n)
 	for i := range data {
-		data[i] = DefaultUser("", "")
+		data[i] = DefaultUser("loadUsersFromFilter", "")
 	}
 
 	if err = cursor.All(ctx(), &data); err != nil {
