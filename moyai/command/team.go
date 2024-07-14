@@ -913,7 +913,11 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 		moyai.Messagef(p, "team.has-claim")
 		return
 	}
-	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true))
+	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true).WithLore(
+		text.Colourf("<green>1. <yellow>Right click one position</yellow></green>"), 
+		text.Colourf("<green>2. <yellow>Right click another position while shifting</yellow></green>"),
+		text.Colourf("<green>3. <yellow>Left click the air to confirm the claim</yellow></green>"),
+	))
 }
 
 // Run ...
