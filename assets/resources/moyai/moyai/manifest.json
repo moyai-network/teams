@@ -3,7 +3,7 @@
     "header": {
         "description": "Moyai Network",
         "name": "Moyai Network",
-        "uuid": "fb9c4e98-f2bb-4b63-9433-8bb2040d8862",
+        "uuid": "eb9c4e98-f2bb-4b63-9433-8bb2040d8862",
         "version": [3, 0, 0],
         "min_engine_version": [1, 12, 1]
     },

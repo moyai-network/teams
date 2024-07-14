@@ -39,7 +39,7 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	h.cancelProcesses(newPos)
 	h.updateWalls(ctx, newPos, u)
-	h.updateCompass()
+	//h.updateCompass()
 
 	if h.waypoint != nil && h.waypoint.active {
 		h.updateWaypointPosition()

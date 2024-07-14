@@ -1,0 +1,75 @@
+{
+    "namespace": "hud",
+
+    "hud_content": {
+        "type": "panel",
+        "$hud_size": ["100%", "100%"],
+        "$hud_player_rend_desktop_offset|default": [15, 15],
+        "variables": [
+            {
+                "requires": "($is_holographic and not $is_living_room_mode)",
+                "$hud_player_rend_desktop_offset": [100, 50]
+            },
+            {
+                "requires": "($compress_hud_width)",
+                "$hud_size": ["90%", "100%"]
+            }
+        ],
+        "size": "$hud_size",
+        "controls": [
+            {
+                "root_panel@hud.root_panel": {}
+            },
+            {
+                "camera_renderer@camera_renderer": {}
+            },
+            {
+                "cardinal_point_panel": {
+                    "type": "panel",
+                    "size": [200, 20],
+                    "offset": "$hud_offset",
+                    "$hud_offset": [0, -20],
+                    "anchor_to": "top_middle",
+                    "anchor_from": "top_middle",
+                    "variables": [
+                        { "requires": "$touch", "$hud_offset": [0, 0] }
+                    ],
+                    "controls": [
+                        {
+                            "cardinal_point_pointer": {
+                                "type": "image",
+                                "offset": [0, 20.5],
+                                "size": [4, 17],
+                                "texture": "uida/resources/cardinal_point/cardinal_point_stretch",
+                                "layer": 3
+                            }
+                        },
+                        {
+                            "cardinal_point": {
+                                "type": "custom",
+                                "renderer": "paper_doll_renderer",
+                                "anchor_to": "top_middle",
+                                "anchor_from": "top_middle",
+                                "offset": [-990.5, -5],
+                                "size": [39, 39],
+                                "layer": 2
+                            }
+                        },
+                        {
+                            "background": {
+                                "type": "image",
+                                "anchor_to": "top_middle",
+                                "anchor_from": "top_middle",
+                                "offset": [-0.5, 23.5],
+                                "size": [142, 17],
+                                "texture": "uida/resources/cardinal_point/cardinal_point_bg",
+                                "alpha": 1,
+                                "layer": 0
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
