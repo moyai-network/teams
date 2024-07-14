@@ -375,15 +375,15 @@ func loadUsersFromFilter(filter any) ([]User, error) {
 		return nil, err
 	}
 
+	userMu.Lock()
 	for i, u := range data {
-		userMu.Lock()
 		if _, ok := users[u.XUID]; ok {
 			data[i] = users[u.XUID]
 		} else {
 			users[u.XUID] = u
 		}
-		userMu.Unlock()
 	}
+	userMu.Unlock()
 
 	return data, nil
 }

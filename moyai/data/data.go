@@ -52,8 +52,9 @@ func Reset() {
 
 func PartialReset() {
 	userMu.Lock()
-	defer userMu.Unlock()
 	users = map[string]User{}
+	userMu.Unlock()
+
 	teamMu.Lock()
 	defer teamMu.Unlock()
 	teams = map[string]Team{}
