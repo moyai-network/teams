@@ -146,9 +146,21 @@ type TeamWithdraw struct {
 	Balance float64        `cmd:"balance"`
 }
 
+// TeamW is a alias for the TeamWithdraw command.
+type TeamW struct {
+	Sub     cmd.SubCommand `cmd:"w"`
+	Balance float64        `cmd:"balance"`
+}
+
 // TeamDeposit is a command used to deposit money into a team.
 type TeamDeposit struct {
 	Sub     cmd.SubCommand `cmd:"deposit"`
+	Balance float64        `cmd:"balance"`
+}
+
+// TeamD is a alias for the TeamDeposit command.
+type TeamD struct {
+	Sub     cmd.SubCommand `cmd:"d"`
 	Balance float64        `cmd:"balance"`
 }
 
@@ -158,9 +170,21 @@ type TeamWithdrawAll struct {
 	All cmd.SubCommand `cmd:"all"`
 }
 
+// TeamW is a alias for the TeamWithdrawAll command.
+type TeamWAll struct {
+	Sub cmd.SubCommand `cmd:"w"`
+	All cmd.SubCommand `cmd:"all"`
+}
+
 // TeamDepositAll is a command used to deposit all of a user's money into a team.
 type TeamDepositAll struct {
 	Sub cmd.SubCommand `cmd:"deposit"`
+	All cmd.SubCommand `cmd:"all"`
+}
+
+// TeamDAllis a alias for the TeamDepositAll command.
+type TeamDAll struct {
+	Sub cmd.SubCommand `cmd:"d"`
 	All cmd.SubCommand `cmd:"all"`
 }
 
@@ -1065,6 +1089,11 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 
 	for _, m := range team.OnlineMembers(targetTeam) {
 		user.UpdateState(m)
+		// if targetTeam.Home != (mgl64.Vec3{}) {
+		// 	if h, ok := m.Handler().(*user.Handler); ok {
+		// 		h.SetWayPoint(user.NewWayPoint(targetTeam.DisplayName, targetTeam.Home))
+		// 	}
+		// }
 	}
 
 	team.Broadcastf(tm, "command.team.focus", targetTeam.DisplayName)
@@ -1096,6 +1125,9 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 		if err == nil {
 			for _, m := range team.OnlineMembers(targetTeam) {
 				user.UpdateState(m)
+				// if h, ok := m.Handler().(*user.Handler); ok {
+				// 	h.RemoveWaypoint()
+				// }
 			}
 		}
 	} else if focus.Kind == data.FocusTypePlayer {
@@ -1216,6 +1248,12 @@ func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
 	moyai.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
 }
 
+func (t TeamW) Run(s cmd.Source, o *cmd.Output) {
+	TeamWithdraw{
+		Balance: t.Balance,
+	}.Run(s, o)
+}
+
 // Run ...
 func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	p, ok := s.(*player.Player)
@@ -1252,6 +1290,12 @@ func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveUser(u)
 
 	moyai.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
+}
+
+func (t TeamD) Run(s cmd.Source, o *cmd.Output) {
+	TeamDeposit{
+		Balance: t.Balance,
+	}.Run(s, o)
 }
 
 // Run ...
@@ -1291,6 +1335,12 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output) {
 	moyai.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
 }
 
+func (t TeamWAll) Run(s cmd.Source, o *cmd.Output) {
+	TeamWithdrawAll{
+		All: t.All,
+	}.Run(s, o)
+}
+
 // Run ...
 func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	p, ok := s.(*player.Player)
@@ -1321,6 +1371,12 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output) {
 	data.SaveUser(u)
 
 	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.Name))
+}
+
+func (t TeamDAll) Run(s cmd.Source, o *cmd.Output) {
+	TeamDepositAll{
+		All: t.All,
+	}.Run(s, o)
 }
 
 // Run ...

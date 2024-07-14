@@ -560,7 +560,7 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 				h.p.Hurt(damage, NoArmourAttackEntitySource{
 					Attacker: h.p,
 				})
-				h.p.KnockBack(attacker.Position(), 0.394, 0.394)
+				h.p.KnockBack(attacker.Position(), 0.4, 0.4)
 
 				attacker.Message(lang.Translatef(data.Language{}, "archer.tag", math.Round(dist), damage/2))
 			}
