@@ -32,10 +32,14 @@ var partnerEnchantments = []item.Enchantment{
 func (partner) Rewards() []Reward {
 	rewards := make([]Reward, 23)
 	for i, p := range it.PartnerItems() {
-		if i == len(it.PartnerItems())-1 {
-			rewards[22] = NewReward(it.NewSpecialItem(p, 1), 5)
+		chance := 10
+		if p == (it.NinjaStarType{}) {
+			chance = 5
+		} 
+		if i >= 9 {
+			rewards[i+3] = NewReward(it.NewSpecialItem(p, 1), chance)
 		} else {
-			rewards[i] = NewReward(it.NewSpecialItem(p, 1), 10)
+			rewards[i] = NewReward(it.NewSpecialItem(p, 1), chance)
 		}
 	}
 	return rewards

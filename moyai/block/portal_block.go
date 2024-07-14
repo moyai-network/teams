@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/model"
 	"github.com/df-mc/dragonfly/server/world"
-	"math/rand"
 )
 
 func init() {
@@ -30,7 +29,7 @@ func (f EndPortalBlock) EncodeBlock() (name string, properties map[string]any) {
 }
 
 func (f EndPortalBlock) Hash() uint64 {
-	return rand.Uint64()
+	return 100000000000
 }
 
 func (f EndPortalBlock) Model() world.BlockModel {
