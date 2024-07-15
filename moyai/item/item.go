@@ -176,18 +176,12 @@ func PartnerItems() []SpecialItemType {
 	return partnerItems
 }
 
-// RegisterSpecialItem registers a special item type to be used in the game.
-func RegisterSpecialItem(typ SpecialItemType) {
+// registerSpecialItem registers a special item type to be used in the game.
+func registerSpecialItem(typ SpecialItemType) {
 	itemMu.Lock()
 	defer itemMu.Unlock()
 	creative.RegisterItem(NewSpecialItem(typ, 1))
 	specialItems = append(specialItems, typ)
-}
-
-// RegisterPartnerItem registers a partner item type to be used in the game.
-func RegisterPartnerItem(typ SpecialItemType) {
-	creative.RegisterItem(NewSpecialItem(typ, 1))
-	partnerItems = append(partnerItems, typ)
 }
 
 func RefreshPartnerItems() {
@@ -204,9 +198,14 @@ func RefreshPartnerItems() {
 	for _, v := range allPartnerItems {
 		if slices.Contains(disabledPartnerItems, v.Key()) {
 			fmt.Println("WARN: disabled partner item: " + v.Key())
+			slices.DeleteFunc(creative.Items(), func(stack item.Stack) bool {
+				_, ok := stack.Value(v.Key())
+				return ok
+			})
 			continue
 		}
-		RegisterPartnerItem(v)
+		creative.RegisterItem(NewSpecialItem(v, 1))
+		partnerItems = append(partnerItems, v)
 	}
 
 	fmt.Printf("INFO: Registered %d partner items\n", len(partnerItems))
@@ -217,13 +216,13 @@ func init() {
 	creative.RegisterItem(NewCrowBar())
 	//creative.RegisterItem(NewPearlBow())
 
-	RegisterSpecialItem(PartnerPackageType{})
-	RegisterSpecialItem(StaffRandomTeleportType{})
-	RegisterSpecialItem(StaffFreezeBlockType{})
-	RegisterSpecialItem(StaffKnockBackStickType{})
-	RegisterSpecialItem(StaffTeleportStickType{})
-	RegisterSpecialItem(StaffVanishType{})
-	RegisterSpecialItem(StaffUnVanishType{})
+	registerSpecialItem(PartnerPackageType{})
+	registerSpecialItem(StaffRandomTeleportType{})
+	registerSpecialItem(StaffFreezeBlockType{})
+	registerSpecialItem(StaffKnockBackStickType{})
+	registerSpecialItem(StaffTeleportStickType{})
+	registerSpecialItem(StaffVanishType{})
+	registerSpecialItem(StaffUnVanishType{})
 }
 
 // DisplayName returns the name of the item.
