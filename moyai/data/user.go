@@ -251,7 +251,6 @@ func DefaultUser(name, xuid string) User {
 	if !u.Teams.PVP.Paused() {
 		u.Teams.PVP.TogglePause()
 	}
-	fmt.Println("DefaultUser: pvp timer set to an hour for", name)
 	u.Teams.Create = cooldown.NewCoolDown()
 	u.Teams.Stats = Stats{}
 	u.Teams.ClaimedRewards = sets.New[int]()
