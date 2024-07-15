@@ -30,7 +30,7 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
 	if err != nil {
 		return
 	}
-	names := append([]string{command.Name()}, command.Aliases()...)
+	names := append(command.Aliases(), command.Name())
 
 	if h.tagCombat.Active() && containsAny(combat, names...) {
 		moyai.Messagef(h.p, "command.error.combat-tagged")
