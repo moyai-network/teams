@@ -501,20 +501,26 @@ func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output) {
 
 // Run ...
 func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output) {
-	p := src.(*player.Player)
+	p, ok := src.(*player.Player)
+	if !ok {
+		return
+	}
 
+	// Check if player is already in a team
 	_, err := data.LoadTeamFromMemberName(p.Name())
 	if err == nil {
 		moyai.Messagef(p, "team.join.error")
 		return
 	}
 
+	// Load the team to join
 	tm, err := data.LoadTeamFromName(string(t.Team))
 	if err != nil {
 		moyai.Messagef(p, "command.team.not.found")
 		return
 	}
 
+	// Check if the team is frozen or at full capacity
 	if tm.Frozen() {
 		moyai.Messagef(p, "command.team.dtr")
 		return
@@ -525,6 +531,7 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output) {
 		return
 	}
 
+	// Load user data and reset any existing invitations
 	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
@@ -532,10 +539,12 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output) {
 	u.Teams.Invitations.Reset(tm.Name)
 	data.SaveUser(u)
 
+	// Add player to the team and update team DTR
 	tm = tm.WithMembers(append(tm.Members, data.DefaultMember(p.XUID(), p.Name()))...)
 	tm = tm.WithDTR(tm.DTR + 1.01)
 	data.SaveTeam(tm)
 
+	// Broadcast team join event
 	team.Broadcastf(tm, "team.member.join", p.Name(), tm.DTR)
 }
 
@@ -547,8 +556,12 @@ func (t TeamInformation) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	n, _ := t.Name.Load()
-	name := string(n)
-	if strings.TrimSpace(name) == "" {
+	name := strings.TrimSpace(string(n))
+
+	var anyFound bool
+
+	// Check if the specified name is empty
+	if name == "" {
 		tm, err := data.LoadTeamFromMemberName(p.Name())
 		if err != nil {
 			moyai.Messagef(p, "user.team-less")
@@ -558,20 +571,21 @@ func (t TeamInformation) Run(src cmd.Source, out *cmd.Output) {
 		out.Print(teamInformationFormat(tm))
 		return
 	}
-	var anyFound bool
 
-	tm, err := data.LoadTeamFromName(strings.ToLower(name))
+	// Attempt to load team by name or member name
+	tm, err := data.LoadTeamFromName(name)
 	if err == nil {
 		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
-	tm, err = data.LoadTeamFromMemberName(strings.ToLower(name))
+	tm, err = data.LoadTeamFromMemberName(name)
 	if err == nil {
 		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
+	// If no team was found, send a message to the player
 	if !anyFound {
 		moyai.Messagef(p, "command.team.info.not.found", name)
 		return
@@ -586,8 +600,12 @@ func (t TeamWho) Run(src cmd.Source, out *cmd.Output) {
 	}
 
 	n, _ := t.Name.Load()
-	name := string(n)
-	if strings.TrimSpace(name) == "" {
+	name := strings.TrimSpace(string(n))
+
+	var anyFound bool
+
+	// Check if the specified name is empty
+	if name == "" {
 		tm, err := data.LoadTeamFromMemberName(p.Name())
 		if err != nil {
 			moyai.Messagef(p, "user.team-less")
@@ -596,8 +614,8 @@ func (t TeamWho) Run(src cmd.Source, out *cmd.Output) {
 		out.Print(teamInformationFormat(tm))
 		return
 	}
-	var anyFound bool
 
+	// Attempt to load team by name or member name
 	tm, err := data.LoadTeamFromName(strings.ToLower(name))
 	if err == nil {
 		out.Print(teamInformationFormat(tm))
@@ -610,6 +628,7 @@ func (t TeamWho) Run(src cmd.Source, out *cmd.Output) {
 		anyFound = true
 	}
 
+	// If no team was found, send a message to the player
 	if !anyFound {
 		moyai.Messagef(p, "command.team.info.not.found", name)
 		return
@@ -627,14 +646,15 @@ func (t TeamRally) Run(src cmd.Source, _ *cmd.Output) {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
-	online := team.OnlineMembers(tm)
-	for _, o := range online {
-		pos := p.Position()
-		if h, ok := o.Handler().(*user.Handler); ok {
-			h.SetWayPoint(user.NewWayPoint("Rally", pos))
-			moyai.Messagef(o, "command.team.rallying", p.Name(), int(p.Position().X()), int(p.Position().Y()), int(p.Position().Z()))
-		}
 
+	online := team.OnlineMembers(tm)
+	playerPos := p.Position()
+
+	for _, o := range online {
+		if h, ok := o.Handler().(*user.Handler); ok {
+			h.SetWayPoint(user.NewWayPoint("Rally", playerPos))
+			moyai.Messagef(o, "command.team.rallying", p.Name(), int(playerPos.X()), int(playerPos.Y()), int(playerPos.Z()))
+		}
 	}
 }
 
@@ -649,12 +669,13 @@ func (t TeamUnRally) Run(src cmd.Source, _ *cmd.Output) {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
 	online := team.OnlineMembers(tm)
+
 	for _, o := range online {
 		if h, ok := o.Handler().(*user.Handler); ok {
 			h.RemoveWaypoint()
 		}
-
 	}
 }
 
@@ -686,7 +707,6 @@ func (t TeamDisband) Run(src cmd.Source, _ *cmd.Output) {
 	data.DisbandTeam(tm)
 }
 
-// Run ...
 func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
@@ -715,26 +735,32 @@ func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output) {
 	data.SaveTeam(tm)
 }
 
-// Run ...
 func (t TeamKick) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
 
+	// Load the team of the player issuing the command
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
+	// Check if the player has permission to kick
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		moyai.Messagef(p, "command.team.kick.missing.permission")
 		return
 	}
+
+	// Check if the target member is the player themselves
 	if strings.EqualFold(p.Name(), string(t.Member)) {
 		moyai.Messagef(p, "command.team.kick.self")
 		return
 	}
+
+	// Check if the target member is a leader or captain
 	if tm.Leader(string(t.Member)) {
 		moyai.Messagef(p, "command.team.kick.leader")
 		return
@@ -743,23 +769,30 @@ func (t TeamKick) Run(src cmd.Source, _ *cmd.Output) {
 		moyai.Messagef(p, "command.team.kick.captain")
 		return
 	}
+
+	// Check if the target member exists in the team
 	if !tm.Member(string(t.Member)) {
 		moyai.Messagef(p, "command.team.kick.not.found", string(t.Member))
 		return
 	}
 
+	// Check if the team is frozen
 	if tm.Frozen() {
 		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
+	// Kick the member from the team
 	us, ok := user.Lookup(string(t.Member))
 	if ok {
 		moyai.Messagef(us, "command.team.kick.user.kicked", tm.DisplayName)
 	}
+
 	tm = tm.WithoutMember(string(t.Member))
 	tm = tm.WithDTR(tm.DTR - 1.01)
 	data.SaveTeam(tm)
+
+	// Update state and notify kicked member
 	for _, m := range tm.Members {
 		if mem, ok := user.Lookup(m.Name); ok {
 			user.UpdateState(mem)
@@ -768,82 +801,111 @@ func (t TeamKick) Run(src cmd.Source, _ *cmd.Output) {
 	}
 }
 
-// Run ...
 func (t TeamPromote) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
 
+	// Load the team of the player issuing the command
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
+	// Check if the player has permission to promote
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		moyai.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
+
+	// Check if the target member is the player themselves
 	if strings.EqualFold(p.Name(), string(t.Member)) {
 		moyai.Messagef(p, "command.team.promote.self")
 		return
 	}
-	if tm.Leader(p.Name()) {
+
+	// Check if the player is trying to promote a leader
+	if tm.Leader(string(t.Member)) {
 		moyai.Messagef(p, "command.team.promote.leader")
 		return
 	}
+
+	// Check if the player is trying to promote a captain who is already a captain
 	if tm.Captain(p.Name()) && tm.Captain(string(t.Member)) {
 		moyai.Messagef(p, "command.team.promote.captain")
 		return
 	}
+
+	// Check if the target member exists in the team
 	if !tm.Member(string(t.Member)) {
 		moyai.Messagef(p, "command.team.member.not.found", string(t.Member))
 		return
 	}
 
+	// Promote the member and save the team
 	tm = tm.Promote(string(t.Member))
 	data.SaveTeam(tm)
+
+	// Determine the rank name for broadcasting
 	rankName := "Captain"
 	if tm.Leader(string(t.Member)) {
 		rankName = "Leader"
 	}
+
+	// Broadcast promotion message to the team
 	team.Broadcastf(tm, "command.team.promote.user.promoted", string(t.Member), rankName)
 }
 
-// Run ...
 func (t TeamDemote) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
 
+	// Load the team of the player issuing the command
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
+	// Check if the player has permission to demote
 	if !tm.Leader(p.Name()) {
 		moyai.Messagef(p, "command.team.demote.missing.permission")
 		return
 	}
+
+	// Check if the target member is the player themselves
 	if strings.EqualFold(string(t.Member), p.Name()) {
 		moyai.Messagef(p, "command.team.demote.self")
 		return
 	}
+
+	// Check if the target member is already a leader
 	if !tm.Leader(string(t.Member)) {
 		moyai.Messagef(p, "command.team.demote.leader")
 		return
 	}
+
+	// Check if the target member exists in the team
 	if !tm.Member(string(t.Member)) {
 		moyai.Messagef(p, "command.team.member.not.found", string(t.Member))
 		return
 	}
+
+	// Check if the target member is neither captain nor leader
 	if !tm.Captain(string(t.Member)) && !tm.Leader(string(t.Member)) {
 		moyai.Messagef(p, "command.team.demote.member")
 		return
 	}
+
+	// Demote the member and save the team
 	tm.Demote(string(t.Member))
 	data.SaveTeam(tm)
+
+	// Broadcast demotion message to the team
 	team.Broadcastf(tm, "command.team.demote.user.demoted", string(t.Member), "Member")
 }
 
@@ -891,19 +953,23 @@ func (t TeamClaim) Run(src cmd.Source, _ *cmd.Output) {
 	if !ok {
 		return
 	}
+
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		moyai.Messagef(p, "command.team.promote.missing.permission")
 		return
 	}
-	if cl := tm.Claim; cl != (area.Area{}) {
+
+	if tm.Claim != (area.Area{}) {
 		moyai.Messagef(p, "team.has-claim")
 		return
 	}
+
 	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true).WithLore(
 		text.Colourf("<green>1. <yellow>Right click one position</yellow></green>"),
 		text.Colourf("<green>2. <yellow>Right click another position while shifting</yellow></green>"),
@@ -917,15 +983,18 @@ func (t TeamUnClaim) Run(src cmd.Source, _ *cmd.Output) {
 	if !ok {
 		return
 	}
+
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
 	if !tm.Leader(p.Name()) {
 		moyai.Messagef(p, "team.not-leader")
 		return
 	}
+
 	tm = tm.WithClaim(area.Area{}).WithHome(mgl64.Vec3{})
 	data.SaveTeam(tm)
 	moyai.Messagef(p, "command.unclaim.success")
@@ -937,24 +1006,29 @@ func (t TeamSetHome) Run(src cmd.Source, _ *cmd.Output) {
 	if !ok {
 		return
 	}
+
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
 		return
 	}
+
 	cl := tm.Claim
 	if cl == (area.Area{}) {
 		moyai.Messagef(p, "team.claim.none")
 		return
 	}
+
 	if !cl.Vec3WithinOrEqualXZ(p.Position()) {
 		moyai.Messagef(p, "team.claim.not-within")
 		return
 	}
+
 	if !tm.Leader(p.Name()) && !tm.Captain(p.Name()) {
 		moyai.Messagef(p, "team.not-leader-or-captain")
 		return
 	}
+
 	tm = tm.WithHome(p.Position())
 	data.SaveTeam(tm)
 	moyai.Messagef(p, "command.team.home.set")
@@ -966,6 +1040,7 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
 	if !ok {
 		return
 	}
+
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
@@ -976,6 +1051,7 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
 	if !ok {
 		return
 	}
+
 	if h.Combat().Active() {
 		moyai.Messagef(p, "user.teleport.combat")
 		return
@@ -986,29 +1062,32 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
 		return
 	}
 
-	hm := tm.Home
-	if hm == (mgl64.Vec3{}) {
+	if tm.Home == (mgl64.Vec3{}) {
 		moyai.Messagef(p, "command.team.home.none")
 		return
 	}
+
 	if area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
-		p.Teleport(hm)
+		p.Teleport(tm.Home)
 		return
 	}
 
+	// Adjust teleport duration based on nearby claimed areas
 	dur := time.Second * 10
 	teams, err := data.LoadAllTeams()
 	if err != nil {
 		moyai.Messagef(p, "command.team.load.fail")
+		return
 	}
 
-	for _, t := range teams {
-		if t.Claim.Vec3WithinOrEqualXZ(p.Position()) && t.Name != tm.Name {
+	for _, otherTeam := range teams {
+		if otherTeam.Claim.Vec3WithinOrEqualXZ(p.Position()) && otherTeam.Name != tm.Name {
 			dur = time.Second * 20
 			break
 		}
 	}
-	h.Home().Teleport(p, dur, hm)
+
+	h.Home().Teleport(p, dur, tm.Home)
 }
 
 // Run ...
@@ -1021,41 +1100,51 @@ func (t TeamList) Run(src cmd.Source, _ *cmd.Output) {
 	teams, err := data.LoadAllTeams()
 	if err != nil {
 		moyai.Messagef(p, "command.team.load.fail")
+		return
 	}
 
+	// Sort teams by online member count descending, then by DTR ascending
 	sort.Slice(teams, func(i, j int) bool {
-		return len(team.OnlineMembers(teams[i])) > len(team.OnlineMembers(teams[j]))
-	})
-	sort.Slice(teams, func(i, j int) bool {
+		if len(team.OnlineMembers(teams[i])) != len(team.OnlineMembers(teams[j])) {
+			return len(team.OnlineMembers(teams[i])) > len(team.OnlineMembers(teams[j]))
+		}
 		return teams[i].DTR < teams[j].DTR
 	})
 
+	// Filter out teams with DTR <= 0
+	filteredTeams := make([]data.Team, 0, len(teams))
 	for _, tm := range teams {
-		if tm.DTR <= 0 {
-			teams = append(teams[:0], teams[1:]...)
+		if tm.DTR > 0 {
+			filteredTeams = append(filteredTeams, tm)
 		}
 	}
 
-	var list string
-	list += text.Colourf("        <yellow>Team List</yellow>\n")
-	list += "\uE000\n"
-	userTeam, err := data.LoadTeamFromMemberName(p.Name())
+	var list strings.Builder
+	list.WriteString(text.Colourf("        <yellow>Team List</yellow>\n"))
+	list.WriteString("\uE000\n")
 
-	for i, tm := range teams {
+	userTeam, _ := data.LoadTeamFromMemberName(p.Name())
+
+	for i, tm := range filteredTeams {
 		if i > 9 {
 			break
 		}
 
 		onlineCount := len(team.OnlineMembers(tm))
 		dtr := tm.DTRString()
-		if err == nil && userTeam.Name == tm.Name {
-			list += text.Colourf(" <grey>%d. <green>%src</green> (<green>%d/%d</green>)</grey> %src\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
+
+		var lineFormat string
+		if userTeam.Name != "" && userTeam.Name == tm.Name {
+			lineFormat = " <grey>%d. <green>%src</green> (<green>%d/%d</green>) %s</grey>\n"
 		} else {
-			list += text.Colourf(" <grey>%d. <red>%src</red> (<green>%d/%d</green>)</grey> %src\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
+			lineFormat = " <grey>%d. <red>%src</red> (<green>%d/%d</green>) %s</grey>\n"
 		}
+
+		list.WriteString(text.Colourf(lineFormat, i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr))
 	}
-	list += "\uE000"
-	p.Message(list)
+
+	list.WriteString("\uE000")
+	p.Message(list.String())
 }
 
 // Run ...
