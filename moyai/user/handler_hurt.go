@@ -26,14 +26,13 @@ import (
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	p := h.p
 	*dmg = *dmg / 1.25
-	if h.tagArcher.Active() {
-		*dmg = *dmg + *dmg*0.25
-	} else if h.coolDownFocusMode.Active() &&
+	
+	if h.tagArcher.Active() || (h.coolDownFocusMode.Active() &&
 		!class.Compare(h.lastClass.Load(), class.Archer{}) &&
 		!class.Compare(h.lastClass.Load(), class.Mage{}) &&
 		!class.Compare(h.lastClass.Load(), class.Bard{}) &&
-		!class.Compare(h.lastClass.Load(), class.Rogue{}) {
-		*dmg = *dmg + *dmg*0.25
+		!class.Compare(h.lastClass.Load(), class.Rogue{})) {
+		applyDamageBoost(dmg, 0.25)
 	}
 
 	u, err := data.LoadUserFromName(h.p.Name())
@@ -235,4 +234,8 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 			attacker.Heal(*dmg*0.5, effect.RegenerationHealingSource{})
 		}
 	}
+}
+
+func applyDamageBoost(dmg *float64, boost float64) {
+	*dmg = *dmg + *dmg*boost
 }
