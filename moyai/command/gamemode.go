@@ -1,8 +1,9 @@
 package command
 
 import (
-	"github.com/moyai-network/teams/moyai"
 	"strings"
+
+	"github.com/moyai-network/teams/moyai"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -21,7 +22,7 @@ func (g GameMode) Run(src cmd.Source, _ *cmd.Output) {
 	var name string
 	var mode world.GameMode
 	switch strings.ToLower(string(g.GameMode)) {
-	case "survival", "0", "src":
+	case "survival", "0", "s":
 		name, mode = "survival", world.GameModeSurvival
 	case "creative", "1", "c":
 		name, mode = "creative", world.GameModeCreative

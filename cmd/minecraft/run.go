@@ -2,13 +2,14 @@ package minecraft
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/tag/tag"
 	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/bedrock-gophers/tag/tag"
 
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/moyai/roles"
