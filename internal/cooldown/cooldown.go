@@ -8,13 +8,12 @@ import (
 
 // CoolDown represents a time cooldown.
 type CoolDown struct {
-	expiration atomic.Value[time.Time]
-
+	expiration       atomic.Value[time.Time] // time.Time
 	paused           atomic.Bool
-	remainingAtPause atomic.Value[time.Duration]
+	remainingAtPause atomic.Value[time.Duration] // time.Duration
 }
 
-// NewCoolDown returns a new process.
+// NewCoolDown returns a new CoolDown instance.
 func NewCoolDown() *CoolDown {
 	return &CoolDown{}
 }
@@ -24,15 +23,19 @@ func (c *CoolDown) TogglePause() {
 	if c == nil {
 		return
 	}
-	if !c.paused.Load() {
-		c.remainingAtPause.Store(c.Remaining())
-		c.expiration = *atomic.NewValue(time.Time{})
-	} else {
-		c.remainingAtPause.Store(0)
-		c.expiration = *atomic.NewValue(time.Now().Add(c.remainingAtPause.Load()))
-	}
 
-	c.paused.Toggle()
+	currentPaused := c.paused.Load()
+	c.paused.Store(!currentPaused)
+
+	if currentPaused { // If currently paused, resume
+		remaining := c.remainingAtPause.Load()
+		c.expiration.Store(time.Now().Add(remaining))
+		c.remainingAtPause.Store(0)
+	} else { // If currently active, pause
+		remaining := time.Until(c.expiration.Load())
+		c.remainingAtPause.Store(remaining)
+		c.expiration.Store(time.Time{}) // Clear expiration on pause
+	}
 }
 
 // Paused returns true if the cooldown is paused.
@@ -43,7 +46,7 @@ func (c *CoolDown) Paused() bool {
 	return c.paused.Load()
 }
 
-// Set sets the player the cooldown.
+// Set sets the cooldown duration.
 func (c *CoolDown) Set(dur time.Duration) {
 	if c == nil {
 		return
@@ -52,7 +55,8 @@ func (c *CoolDown) Set(dur time.Duration) {
 		c.remainingAtPause.Store(dur)
 		return
 	}
-	c.expiration = *atomic.NewValue(time.Now().Add(dur))
+
+	c.expiration.Store(time.Now().Add(dur))
 }
 
 // Active returns true if the cooldown is currently active.
@@ -66,6 +70,7 @@ func (c *CoolDown) Active() bool {
 	return c.expiration.Load().After(time.Now())
 }
 
+// Remaining returns the remaining cooldown duration.
 func (c *CoolDown) Remaining() time.Duration {
 	if c == nil {
 		return 0
@@ -73,7 +78,8 @@ func (c *CoolDown) Remaining() time.Duration {
 	if c.paused.Load() {
 		return c.remainingAtPause.Load()
 	}
-	return time.Until(c.expiration.Load())
+	exp := c.expiration.Load()
+	return time.Until(exp)
 }
 
 // Reset resets the cooldown.
@@ -83,7 +89,7 @@ func (c *CoolDown) Reset() {
 	}
 	c.paused.Store(false)
 	c.remainingAtPause.Store(0)
-	c.expiration = *atomic.NewValue(time.Time{})
+	c.expiration.Store(time.Time{}) // Clear expiration
 }
 
 type coolDownData struct {
