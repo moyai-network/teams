@@ -16,6 +16,12 @@ import (
 	_ "unsafe"
 )
 
+const (
+	WaypointRally = iota
+	WaypointFocus
+	WaypointKOTH
+)
+
 var (
 	waypointMu sync.Mutex
 	waypoints  = map[uuid.UUID]*player.Player{}
