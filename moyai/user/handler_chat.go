@@ -2,6 +2,8 @@ package user
 
 import (
 	"github.com/bedrock-gophers/tag/tag"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"regexp"
 	"strings"
 	"time"
@@ -19,8 +21,11 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-// formatRegex is a regex used to clean color formatting on a string.
-var formatRegex = regexp.MustCompile(`§[\da-gk-or]`)
+var (
+	// formatRegex is a regex used to clean color formatting on a string.
+	formatRegex  = regexp.MustCompile(`§[\da-gk-or]`)
+	englishCaser = cases.Title(language.English)
+)
 
 // HandleChat ...
 func (h *Handler) HandleChat(ctx *event.Context, message *string) {
@@ -111,7 +116,7 @@ func (h *Handler) globalMessage(msg string, u data.User, r role.Role, tm data.Te
 	chatMessage := text.Colourf("%s<dark-grey>:</dark-grey> <white>%s</white>", highestRole.Coloured(displayName), msg)
 
 	if highestRole.Tier() > roles.Default().Tier() {
-		roleFormat := text.Colourf("<dark-grey>[%s]</dark-grey>", highestRole.Coloured(r.Name()))
+		roleFormat := text.Colourf("<dark-grey>[</dark-grey>%s<dark-grey>]</dark-grey>", highestRole.Coloured(englishCaser.String(r.Name())))
 		chatMessage = roleFormat + " " + chatMessage
 	}
 
