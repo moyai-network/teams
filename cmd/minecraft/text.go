@@ -10,10 +10,10 @@ import (
 func placeText(c moyai.Config) {
 	w := moyai.Overworld()
 	spawn := mgl64.Vec3{0.5, 68, 5}
-	crate := mgl64.Vec3{5.5, 68, 15.5}
-	kit := mgl64.Vec3{-7, 67, 38.5}
-	shop := mgl64.Vec3{13, 62, 60}
-	adv := mgl64.Vec3{0, 62, 81}
+	crate := mgl64.Vec3{0.5, 70, 17}
+	kit := mgl64.Vec3{7, 69.5, 47.5}
+	shop := mgl64.Vec3{21.5, 69, 0.5}
+	adv := mgl64.Vec3{0, 71, 75}
 	for _, e := range moyai.Overworld().Entities() {
 		if _, ok := e.Type().(entity.TextType); ok {
 			e.Close()
@@ -77,5 +77,4 @@ func placeText(c moyai.Config) {
 			w.AddEntity(e)
 		}
 	}
-
 }

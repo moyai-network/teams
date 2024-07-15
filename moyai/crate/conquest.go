@@ -16,11 +16,11 @@ func (conquest) Name() string {
 }
 
 func (conquest) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 67, 24}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{-7, 71, 28}).Vec3Middle()
 }
 
 func (conquest) Facing() cube.Face {
-	return cube.FaceWest
+	return cube.FaceEast
 }
 
 

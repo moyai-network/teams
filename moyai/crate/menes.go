@@ -18,7 +18,7 @@ func (menes) Name() string {
 }
 
 func (menes) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 65, 35}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{8, 71, 25}).Vec3Middle()
 }
 
 func (menes) Facing() cube.Face {

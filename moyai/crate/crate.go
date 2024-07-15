@@ -84,6 +84,7 @@ func Register(c Crate) {
 func init() {
 	Register(conquest{})
 	Register(koth{})
+	Register(seasonal{})
 	Register(partner{})
 	Register(pharaoh{})
 	Register(menes{})

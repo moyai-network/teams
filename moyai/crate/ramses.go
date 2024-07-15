@@ -18,7 +18,7 @@ func (ramses) Name() string {
 }
 
 func (ramses) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{9, 65, 39}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{7, 71, 22}).Vec3Middle()
 }
 
 func (ramses) Facing() cube.Face {

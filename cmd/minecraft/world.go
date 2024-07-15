@@ -147,14 +147,14 @@ func placeSlapper() {
 		Name:       text.Colourf("<green>Click to use kits</green>"),
 		Skin:       skin.Skin{},
 		Scale:      1,
-		Yaw:        215,
+		Yaw:        120,
 		MainHand:   item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 1)),
 		Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 		Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 		Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
 
-		Position: mgl64.Vec3{-7, 65, 38.5},
+		Position: mgl64.Vec3{7, 67, 47.5},
 	}, w, func(p *player.Player) {
 		if men, ok := menu.NewKitsMenu(p); ok {
 			inv.SendMenu(p, men)

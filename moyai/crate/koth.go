@@ -16,7 +16,7 @@ func (koth) Name() string {
 }
 
 func (koth) Position() mgl64.Vec3 {
-	return cube.PosFromVec3(mgl64.Vec3{-14, 65, 22}).Vec3Middle()
+	return cube.PosFromVec3(mgl64.Vec3{-7, 71, 22}).Vec3Middle()
 }
 
 func (koth) Facing() cube.Face {

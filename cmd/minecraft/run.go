@@ -88,6 +88,8 @@ func Run() error {
 	go startBroadcats()
 	go startPlayerBroadcasts()
 
+	go startLeaderboard()
+
 	go startChatGame()
 
 	store := loadStore(conf.Moyai.Tebex, log)
