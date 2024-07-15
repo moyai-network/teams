@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/roles"
@@ -12,8 +13,7 @@ import (
 	"time"
 )
 
-func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, newText string) {
-	//ctx.Cancel()
+func (h *Handler) HandleSignEdit(ctx *event.Context, pos cube.Pos, frontSide bool, oldText, newText string) {
 	if !frontSide {
 		return
 	}
@@ -24,7 +24,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 	}
 
 	teams, _ := data.LoadAllTeams()
-	if posWithinProtectedArea(h.p, h.lastPlacedSignPos, teams) {
+	if posWithinProtectedArea(h.p, pos, teams) {
 		return
 	}
 
@@ -49,9 +49,9 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 			return
 		}
 		time.AfterFunc(time.Millisecond, func() {
-			b := h.p.World().Block(h.lastPlacedSignPos)
+			b := h.p.World().Block(pos)
 			if s, ok := b.(block.Sign); ok {
-				h.p.World().SetBlock(h.lastPlacedSignPos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+				h.p.World().SetBlock(pos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
 					Text:       strings.Join(newLines, "\n"),
 					BaseColour: s.Front.BaseColour,
 					Glowing:    false,
@@ -64,7 +64,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		}
 
 		if !u.Roles.Contains(roles.Admin()) {
-			h.p.World().SetBlock(h.lastPlacedSignPos, block.Air{}, nil)
+			h.p.World().SetBlock(pos, block.Air{}, nil)
 			return
 		}
 
@@ -88,9 +88,9 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		newLines = append(newLines, fmt.Sprintf("$%d", price))
 
 		time.AfterFunc(time.Millisecond, func() {
-			b := h.p.World().Block(h.lastPlacedSignPos)
+			b := h.p.World().Block(pos)
 			if s, ok := b.(block.Sign); ok {
-				h.p.World().SetBlock(h.lastPlacedSignPos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+				h.p.World().SetBlock(pos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
 					Text:       strings.Join(newLines, "\n"),
 					BaseColour: s.Front.BaseColour,
 					Glowing:    false,
@@ -104,7 +104,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		}
 
 		if !u.Roles.Contains(roles.Admin()) {
-			h.p.World().SetBlock(h.lastPlacedSignPos, block.Air{}, nil)
+			h.p.World().SetBlock(pos, block.Air{}, nil)
 			return
 		}
 
@@ -113,9 +113,9 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, frontSide bool, oldText, ne
 		newLines = append(newLines, text.Colourf("%s", lines[1]))
 
 		time.AfterFunc(time.Millisecond, func() {
-			b := h.p.World().Block(h.lastPlacedSignPos)
+			b := h.p.World().Block(pos)
 			if s, ok := b.(block.Sign); ok {
-				h.p.World().SetBlock(h.lastPlacedSignPos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
+				h.p.World().SetBlock(pos, block.Sign{Wood: s.Wood, Attach: s.Attach, Waxed: s.Waxed, Front: block.SignText{
 					Text:       strings.Join(newLines, "\n"),
 					BaseColour: s.Front.BaseColour,
 					Glowing:    false,

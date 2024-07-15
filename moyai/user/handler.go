@@ -70,15 +70,14 @@ type Handler struct {
 	wallBlocks   map[cube.Pos]float64
 	wallBlocksMu sync.Mutex
 
-	lastPlacedSignPos cube.Pos
-	lastArmour        atomic.Value[[4]item.Stack]
-	lastClass         atomic.Value[class.Class]
-	lastScoreBoard    atomic.Value[*scoreboard.Scoreboard]
-	lastArea          atomic.Value[area.NamedArea]
-	lastAttackerName  atomic.Value[string]
-	lastAttackTime    atomic.Value[time.Time]
-	lastPearlPos      mgl64.Vec3
-	lastMessage       atomic.Value[time.Time]
+	lastArmour       atomic.Value[[4]item.Stack]
+	lastClass        atomic.Value[class.Class]
+	lastScoreBoard   atomic.Value[*scoreboard.Scoreboard]
+	lastArea         atomic.Value[area.NamedArea]
+	lastAttackerName atomic.Value[string]
+	lastAttackTime   atomic.Value[time.Time]
+	lastPearlPos     mgl64.Vec3
+	lastMessage      atomic.Value[time.Time]
 
 	tagCombat                 *cooldown.CoolDown
 	tagArcher                 *cooldown.CoolDown
