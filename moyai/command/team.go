@@ -285,8 +285,8 @@ func (t TeamDelete) Run(s cmd.Source, o *cmd.Output) {
 	}
 }
 
-func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
-	p, _ := s.(*player.Player)
+func (t TeamMap) Run(src cmd.Source, _ *cmd.Output) {
+	p, _ := src.(*player.Player)
 	h, _ := p.Handler().(*user.Handler)
 
 	areas := make([]area.NamedArea, 0)
@@ -340,8 +340,8 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 	}
 }
 
-func (t TeamClearMap) Run(s cmd.Source, out *cmd.Output) {
-	p, _ := s.(*player.Player)
+func (t TeamClearMap) Run(src cmd.Source, _ *cmd.Output) {
+	p, _ := src.(*player.Player)
 	h, _ := p.Handler().(*user.Handler)
 
 	areas := make([]area.NamedArea, 0)
@@ -376,8 +376,8 @@ func (t TeamClearMap) Run(s cmd.Source, out *cmd.Output) {
 	}
 }
 
-// Run ...
-func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
+// Run executes the TeamCreate command.
+func (t TeamCreate) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return
@@ -387,8 +387,7 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	tm, err := data.LoadTeamFromMemberName(p.Name())
-	if err == nil {
+	if teamExists(p) {
 		moyai.Messagef(p, "team.create.already")
 		return
 	}
@@ -408,14 +407,23 @@ func (t TeamCreate) Run(src cmd.Source, out *cmd.Output) {
 		return
 	}
 
-	tm = data.DefaultTeam(t.Name).WithMembers(data.DefaultMember(p.XUID(), p.Name()).WithRank(3))
-	data.SaveTeam(tm)
-
+	tm := createTeam(p, t.Name)
 	u.Teams.Create.Set(time.Minute * 3)
 	data.SaveUser(u)
 
 	moyai.Messagef(p, "team.create.success", tm.DisplayName)
 	moyai.Broadcastf("team.create.success.broadcast", p.Name(), tm.DisplayName)
+}
+
+func teamExists(p *player.Player) bool {
+	_, err := data.LoadTeamFromMemberName(p.Name())
+	return err == nil
+}
+
+func createTeam(p *player.Player, name string) data.Team {
+	tm := data.DefaultTeam(name).WithMembers(data.DefaultMember(p.XUID(), p.Name()).WithRank(3))
+	data.SaveTeam(tm)
+	return tm
 }
 
 func validateTeamName(p *player.Player, name string) bool {
@@ -436,20 +444,17 @@ func validateTeamName(p *player.Player, name string) bool {
 	return true
 }
 
-// Run ...
-func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
+func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
+
 	target, ok := t.Target[0].(*player.Player)
-	if !ok {
+	if !ok || target == p {
 		return
 	}
-	if target == p {
-		moyai.Messagef(p, "team.invite.self")
-		return
-	}
+
 	tm, err := data.LoadTeamFromMemberName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.team-less")
@@ -480,7 +485,6 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 	if err == nil {
 		moyai.Messagef(p, "team.invite.has-team")
 		return
-
 	}
 
 	if targetUser.Teams.Invitations.Active(tm.Name) {
@@ -496,7 +500,7 @@ func (t TeamInvite) Run(src cmd.Source, out *cmd.Output) {
 }
 
 // Run ...
-func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
+func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output) {
 	p := src.(*player.Player)
 
 	_, err := data.LoadTeamFromMemberName(p.Name())
@@ -536,8 +540,8 @@ func (t TeamJoin) Run(src cmd.Source, out *cmd.Output) {
 }
 
 // Run ...
-func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamInformation) Run(src cmd.Source, out *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -550,20 +554,21 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 			moyai.Messagef(p, "user.team-less")
 			return
 		}
-		o.Print(teamInformationFormat(tm))
+
+		out.Print(teamInformationFormat(tm))
 		return
 	}
 	var anyFound bool
 
 	tm, err := data.LoadTeamFromName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm))
+		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
 	tm, err = data.LoadTeamFromMemberName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm))
+		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
@@ -574,8 +579,8 @@ func (t TeamInformation) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamWho) Run(src cmd.Source, out *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -588,20 +593,20 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 			moyai.Messagef(p, "user.team-less")
 			return
 		}
-		o.Print(teamInformationFormat(tm))
+		out.Print(teamInformationFormat(tm))
 		return
 	}
 	var anyFound bool
 
 	tm, err := data.LoadTeamFromName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm))
+		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
 	tm, err = data.LoadTeamFromMemberName(strings.ToLower(name))
 	if err == nil {
-		o.Print(teamInformationFormat(tm))
+		out.Print(teamInformationFormat(tm))
 		anyFound = true
 	}
 
@@ -611,8 +616,8 @@ func (t TeamWho) Run(s cmd.Source, o *cmd.Output) {
 	}
 }
 
-func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamRally) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -633,8 +638,8 @@ func (t TeamRally) Run(s cmd.Source, o *cmd.Output) {
 	}
 }
 
-func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamUnRally) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -654,9 +659,8 @@ func (t TeamUnRally) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	p, ok := s.(*player.Player)
+func (t TeamDisband) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -664,35 +668,27 @@ func (t TeamDisband) Run(s cmd.Source, o *cmd.Output) {
 	name := p.Name()
 	tm, err := data.LoadTeamFromMemberName(name)
 	if err != nil {
-		o.Error(lang.Translatef(l, "user.team-less"))
+		moyai.Messagef(p, "user.team-less")
 		return
 	}
 
 	if !tm.Leader(name) {
-		o.Error(lang.Translatef(l, "command.team.disband.must.leader"))
+		moyai.Messagef(p, "command.team.disband.must.leader")
 		return
 	}
 
 	if tm.Frozen() {
-		o.Error(lang.Translatef(l, "command.team.dtr"))
+		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
-	players := tm.Members
+	team.Broadcastf(tm, "command.team.disband.disbanded", p.Name())
 	data.DisbandTeam(tm)
-
-	for _, m := range players {
-		if mem, ok := user.Lookup(m.Name); ok {
-			user.UpdateState(mem)
-			moyai.Messagef(mem, "command.team.disband.disbanded", p.Name())
-		}
-	}
 }
 
 // Run ...
-func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	p, ok := s.(*player.Player)
+func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -704,12 +700,12 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	if tm.Leader(p.Name()) {
-		o.Error(lang.Translatef(l, "command.team.leave.leader"))
+		moyai.Messagef(p, "command.team.leave.leader")
 		return
 	}
 
 	if tm.Frozen() {
-		o.Error(lang.Translatef(l, "command.team.dtr"))
+		moyai.Messagef(p, "command.team.dtr")
 		return
 	}
 
@@ -720,8 +716,8 @@ func (t TeamLeave) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamKick) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -773,8 +769,8 @@ func (t TeamKick) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamPromote) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -807,10 +803,6 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 
 	tm = tm.Promote(string(t.Member))
 	data.SaveTeam(tm)
-	if err != nil {
-		moyai.Messagef(p, "team.save.fail")
-		return
-	}
 	rankName := "Captain"
 	if tm.Leader(string(t.Member)) {
 		rankName = "Leader"
@@ -819,9 +811,8 @@ func (t TeamPromote) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	p, ok := s.(*player.Player)
+func (t TeamDemote) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -832,23 +823,23 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if !tm.Leader(p.Name()) {
-		o.Error(lang.Translatef(l, "command.team.demote.missing.permission"))
+		moyai.Messagef(p, "command.team.demote.missing.permission")
 		return
 	}
 	if strings.EqualFold(string(t.Member), p.Name()) {
-		o.Error(lang.Translatef(l, "command.team.demote.self"))
+		moyai.Messagef(p, "command.team.demote.self")
 		return
 	}
 	if !tm.Leader(string(t.Member)) {
-		o.Error(lang.Translatef(l, "command.team.demote.leader"))
+		moyai.Messagef(p, "command.team.demote.leader")
 		return
 	}
 	if !tm.Member(string(t.Member)) {
-		o.Error(lang.Translatef(l, "command.team.member.not.found", string(t.Member)))
+		moyai.Messagef(p, "command.team.member.not.found", string(t.Member))
 		return
 	}
 	if !tm.Captain(string(t.Member)) && !tm.Leader(string(t.Member)) {
-		o.Error(lang.Translatef(l, "command.team.demote.member"))
+		moyai.Messagef(p, "command.team.demote.member")
 		return
 	}
 	tm.Demote(string(t.Member))
@@ -857,8 +848,8 @@ func (t TeamDemote) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamTop) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -884,10 +875,10 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 		if i > 9 {
 			break
 		}
-		if ok && userTeam.Name == tm.Name {
-			top += text.Colourf(" <grey>%d. <green>%s</green> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
+		if userTeam.Name == tm.Name {
+			top += text.Colourf(" <grey>%d. <green>%src</green> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
 		} else {
-			top += text.Colourf(" <grey>%d. <red>%s</red> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
+			top += text.Colourf(" <grey>%d. <red>%src</red> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
 		}
 	}
 	top += "\uE000"
@@ -895,8 +886,8 @@ func (t TeamTop) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamClaim) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -921,8 +912,8 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamUnClaim) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -941,8 +932,8 @@ func (t TeamUnClaim) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamSetHome) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -970,8 +961,8 @@ func (t TeamSetHome) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1021,8 +1012,8 @@ func (t TeamHome) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamList) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1058,9 +1049,9 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 		onlineCount := len(team.OnlineMembers(tm))
 		dtr := tm.DTRString()
 		if err == nil && userTeam.Name == tm.Name {
-			list += text.Colourf(" <grey>%d. <green>%s</green> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
+			list += text.Colourf(" <grey>%d. <green>%src</green> (<green>%d/%d</green>)</grey> %src\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
 		} else {
-			list += text.Colourf(" <grey>%d. <red>%s</red> (<green>%d/%d</green>)</grey> %s\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
+			list += text.Colourf(" <grey>%d. <red>%src</red> (<green>%d/%d</green>)</grey> %src\n", i+1, tm.DisplayName, onlineCount, len(tm.Members), dtr)
 		}
 	}
 	list += "\uE000"
@@ -1068,8 +1059,8 @@ func (t TeamList) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamFocusTeam) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1104,8 +1095,8 @@ func (t TeamFocusTeam) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1151,9 +1142,8 @@ func (t TeamUnFocus) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
-	p, ok := s.(*player.Player)
+func (t TeamFocusPlayer) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1163,7 +1153,7 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	if len(t.Target) > 1 {
-		o.Error(lang.Translatef(l, "command.targets.exceed"))
+		moyai.Messagef(p, "command.targets.exceed")
 		return
 	}
 	target, ok := t.Target[0].(*player.Player)
@@ -1189,8 +1179,8 @@ func (t TeamFocusPlayer) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamChat) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1211,8 +1201,8 @@ func (t TeamChat) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamWithdraw) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamWithdraw) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
@@ -1259,8 +1249,8 @@ func (t TeamW) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (t TeamDeposit) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
+func (t TeamDeposit) Run(src cmd.Source, _ *cmd.Output) {
+	p, ok := src.(*player.Player)
 	if !ok {
 		return
 	}
