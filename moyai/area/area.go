@@ -227,7 +227,7 @@ var (
 		koths: []NamedArea{
 			NewNamedArea(mgl64.Vec2{575, 425}, mgl64.Vec2{425, 575}, text.Colourf("<red>Oasis</red>")),
 			NewNamedArea(mgl64.Vec2{575, -575}, mgl64.Vec2{425, -425}, text.Colourf("<gold>Shrine</gold>")),
-			NewNamedArea(mgl64.Vec2{-425, 425}, mgl64.Vec2{-585, 575}, text.Colourf("<amethyst>Citadel</amethyst>")), 
+			NewNamedArea(mgl64.Vec2{-425, 425}, mgl64.Vec2{-585, 575}, text.Colourf("<amethyst>Kingdom</amethyst>")), 
 			NewNamedArea(mgl64.Vec2{-575, -575}, mgl64.Vec2{-425, -425}, text.Colourf("<dark-green>Garden</dark-green>")), 
 		},
 	}
@@ -245,7 +245,7 @@ var (
 			NewNamedArea(mgl64.Vec2{-554, -58}, mgl64.Vec2{-396, -216}, text.Colourf("<gold>Glowstone City</gold>")),
 			NewNamedArea(mgl64.Vec2{-33, 375}, mgl64.Vec2{-283, 625}, text.Colourf("<blue>Conquest</blue>")),
 			NewNamedArea(mgl64.Vec2{445, -57}, mgl64.Vec2{545, -157}, text.Colourf("<red>Nether</red>")),
-			NewNamedArea(mgl64.Vec2{34, -350}, mgl64.Vec2{334, -650}, text.Colourf("<dark-red>Hades</dark-red>")),
+			NewNamedArea(mgl64.Vec2{34, -350}, mgl64.Vec2{334, -650}, text.Colourf("<dark-red>Citadel</dark-red>")),
 		},
 	}
 	End = Areas{
