@@ -170,7 +170,7 @@ type TeamWithdrawAll struct {
 	All cmd.SubCommand `cmd:"all"`
 }
 
-// TeamWAll is a alias for the TeamWithdrawAll command.
+// TeamWAll is an alias for the TeamWithdrawAll command.
 type TeamWAll struct {
 	Sub cmd.SubCommand `cmd:"w"`
 	All cmd.SubCommand `cmd:"all"`
@@ -182,7 +182,7 @@ type TeamDepositAll struct {
 	All cmd.SubCommand `cmd:"all"`
 }
 
-// TeamDAllis a alias for the TeamDepositAll command.
+// TeamDAll is an alias for the TeamDepositAll command.
 type TeamDAll struct {
 	Sub cmd.SubCommand `cmd:"d"`
 	All cmd.SubCommand `cmd:"all"`
