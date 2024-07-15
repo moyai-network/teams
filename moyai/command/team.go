@@ -170,7 +170,7 @@ type TeamWithdrawAll struct {
 	All cmd.SubCommand `cmd:"all"`
 }
 
-// TeamW is a alias for the TeamWithdrawAll command.
+// TeamWAll is a alias for the TeamWithdrawAll command.
 type TeamWAll struct {
 	Sub cmd.SubCommand `cmd:"w"`
 	All cmd.SubCommand `cmd:"all"`
@@ -325,7 +325,7 @@ func (t TeamMap) Run(s cmd.Source, o *cmd.Output) {
 		distZ1 := math.Abs(playerPos.Z() - float64(pos1.Z()))
 
 		// TODO: FIX THIS DISTANCE CALCULATION
-		if distX0 < 30 || distZ0 < 30  || distX1 < 30 || distZ1 < 30 {
+		if distX0 < 30 || distZ0 < 30 || distX1 < 30 || distZ1 < 30 {
 			h.SendClaimPillar(pos0)
 			h.SendClaimPillar(pos1)
 			h.SendClaimPillar(pos2)
@@ -914,7 +914,7 @@ func (t TeamClaim) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 	_, _ = p.Inventory().AddItem(item.NewStack(item.Hoe{Tier: item.ToolTierDiamond}, 1).WithValue("CLAIM_WAND", true).WithLore(
-		text.Colourf("<green>1. <yellow>Right click one position</yellow></green>"), 
+		text.Colourf("<green>1. <yellow>Right click one position</yellow></green>"),
 		text.Colourf("<green>2. <yellow>Right click another position while shifting</yellow></green>"),
 		text.Colourf("<green>3. <yellow>Left click the air to confirm the claim</yellow></green>"),
 	))
