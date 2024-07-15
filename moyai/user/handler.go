@@ -650,11 +650,17 @@ func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duratio
 }
 
 func (h *Handler) HandleBlockPlace(ctx *event.Context, pos cube.Pos, b world.Block) {
+	u, err := data.LoadUserFromName(h.p.Name())
+	if err != nil || u.StaffMode || u.Frozen {
+		ctx.Cancel()
+		return
+	}
 	if h.coolDownBonedEffect.Active() {
 		moyai.Messagef(h.p, "bone.interact")
 		ctx.Cancel()
 		return
 	}
+
 	w := h.p.World()
 	teams, _ := data.LoadAllTeams()
 
