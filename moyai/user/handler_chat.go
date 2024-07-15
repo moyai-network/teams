@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/tag/tag"
 	"regexp"
 	"strings"
 	"time"
@@ -15,7 +16,6 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 

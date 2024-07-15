@@ -1,13 +1,13 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/tag/tag"
 	"strings"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/intercept"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
-	"github.com/moyai-network/teams/moyai/tag"
 
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/session"

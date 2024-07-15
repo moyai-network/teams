@@ -7,7 +7,7 @@ require (
 	github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
 	github.com/df-mc/atomic v1.10.0
-	github.com/df-mc/dragonfly v0.9.16
+	github.com/df-mc/dragonfly v0.9.18-0.20240711165245-56780cad8ebb
 	github.com/diamondburned/arikawa/v3 v3.3.6
 	github.com/flonja/multiversion v0.0.0-20240506134321-1cf851752c31
 	github.com/go-gl/mathgl v1.1.0
@@ -20,7 +20,7 @@ require (
 	github.com/sandertv/gophertunnel v1.39.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
-	go.mongodb.org/mongo-driver v1.15.0
+	go.mongodb.org/mongo-driver v1.16.0
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8
 	golang.org/x/text v0.16.0
 	gopkg.in/square/go-jose.v2 v2.6.0
@@ -41,6 +41,7 @@ require (
 )
 
 require (
+	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect

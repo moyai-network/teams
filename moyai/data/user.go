@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"fmt"
+	"github.com/bedrock-gophers/tag/tag"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,7 +21,6 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/punishment"
-	"github.com/moyai-network/teams/moyai/tag"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -225,7 +225,7 @@ func DefaultUser(name, xuid string) User {
 		Whitelisted: false,
 	}
 	u.Roles = role.NewRoles([]role.Role{}, map[role.Role]time.Time{})
-	u.Tags = tag.NewTags([]tag.Tag{})
+	u.Tags = tag.NewTags([]tag.Tag{}, tag.Tag{})
 	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.KOTHStart = cooldown.NewCoolDown()
@@ -416,7 +416,7 @@ func decodeSingleUserFromFilter(filter any) (User, error) {
 func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
 	var u User
 	u.Roles = role.NewRoles([]role.Role{}, map[role.Role]time.Time{})
-	u.Tags = tag.NewTags([]tag.Tag{})
+	u.Tags = tag.NewTags([]tag.Tag{}, tag.Tag{})
 	u.Teams.Invitations = cooldown.NewMappedCoolDown[string]()
 	u.Teams.Kits = cooldown.NewMappedCoolDown[string]()
 	u.Teams.KOTHStart = cooldown.NewCoolDown()

@@ -1,10 +1,10 @@
 package command
 
 import (
+	"github.com/bedrock-gophers/tag/tag"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 

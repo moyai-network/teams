@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"fmt"
+	"github.com/bedrock-gophers/tag/tag"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -41,6 +42,10 @@ import (
 // Run runs the Minecraft server.
 func Run() error {
 	err := role.Load("assets/roles")
+	if err != nil {
+		return err
+	}
+	err = tag.Load("assets/tags")
 	if err != nil {
 		return err
 	}

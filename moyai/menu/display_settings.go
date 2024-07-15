@@ -2,11 +2,11 @@ package menu
 
 import (
 	"github.com/bedrock-gophers/inv/inv"
+	"github.com/bedrock-gophers/tag/tag"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/tag"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
