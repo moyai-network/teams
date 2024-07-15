@@ -59,6 +59,29 @@ func (c *CoolDown) Set(dur time.Duration) {
 	c.expiration.Store(time.Now().Add(dur))
 }
 
+// Reduce reduces the remaining cooldown duration by the specified amount.
+func (c *CoolDown) Reduce(dur time.Duration) {
+	if c == nil {
+		return
+	}
+	if c.paused.Load() {
+		remaining := c.remainingAtPause.Load()
+		if remaining <= dur {
+			c.Reset()
+			return
+		}
+		c.remainingAtPause.Store(remaining - dur)
+		return
+	}
+
+	exp := c.expiration.Load()
+	if time.Until(exp) <= dur {
+		c.Reset()
+		return
+	}
+	c.expiration.Store(exp.Add(-dur))
+}
+
 // Active returns true if the cooldown is currently active.
 func (c *CoolDown) Active() bool {
 	if c == nil {

@@ -2,15 +2,13 @@ package user
 
 import (
 	"github.com/bedrock-gophers/tag/tag"
+	"github.com/moyai-network/teams/moyai/item"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"math/rand"
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/roles"
-	"golang.org/x/exp/rand"
 
 	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/event"
@@ -18,6 +16,7 @@ import (
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -34,11 +33,16 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	if err != nil {
 		return
 	}
+	defer data.SaveUser(u)
 
 	if moyai.ChatGameWord() != "" && *message == moyai.ChatGameWord() {
 		h.p.Message(lang.Translatef(*u.Language, "moyai.broadcast.chatgame.guessed", h.p.Name(), moyai.ChatGameWord()))
 		moyai.SetChatGameWord("")
-		item.AddOrDrop(h.p, item.NewKey(item.KeyTypePharaoh, rand.Intn(10)+1))
+		if !u.Teams.DeathBan.Active() {
+			item.AddOrDrop(h.p, item.NewKey(item.KeyTypePharaoh, rand.Intn(10)+1))
+		} else {
+			u.Teams.DeathBan.Reduce(time.Minute * 5)
+		}
 		return
 	}
 
@@ -71,7 +75,6 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 
 		if teamErr != nil {
 			u.Teams.ChatType = 1
-			data.SaveUser(u)
 			h.globalMessage(msg, u, r, tm)
 			return
 		}
