@@ -5,6 +5,7 @@ import (
 	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/sets"
 	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/exp/maps"
 	"log"
 	"time"
 
@@ -15,11 +16,18 @@ import (
 func FlushCache() {
 	userMu.Lock()
 	defer userMu.Unlock()
+
+	err := saveBatchUserData(maps.Values(users))
+	if err != nil {
+		log.Println("Error saving user data:", err)
+		return
+	}
 	for _, u := range users {
 		if time.Since(u.lastSaved) > time.Minute*2 {
 			delete(users, u.XUID)
 		}
 	}
+
 	teamMu.Lock()
 	defer teamMu.Unlock()
 	for _, t := range teams {

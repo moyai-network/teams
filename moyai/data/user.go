@@ -57,6 +57,19 @@ func saveUserData(u User) error {
 	return err
 }
 
+func saveBatchUserData(users []User) error {
+	var models []mongo.WriteModel
+	for _, u := range users {
+		filter := bson.M{"xuid": bson.M{"$eq": u.XUID}}
+		update := bson.M{"$set": u}
+
+		models = append(models, mongo.NewUpdateOneModel().SetFilter(filter).SetUpdate(update).SetUpsert(true))
+	}
+
+	_, err := userCollection.BulkWrite(ctx(), models)
+	return err
+}
+
 type Stats struct {
 	Kills          int `bson:"kills"`
 	Deaths         int `bson:"deaths"`

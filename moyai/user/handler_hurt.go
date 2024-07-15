@@ -26,7 +26,7 @@ import (
 func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
 	p := h.p
 	*dmg = *dmg / 1.25
-	
+
 	if h.tagArcher.Active() || (h.coolDownFocusMode.Active() &&
 		!class.Compare(h.lastClass.Load(), class.Archer{}) &&
 		!class.Compare(h.lastClass.Load(), class.Mage{}) &&
