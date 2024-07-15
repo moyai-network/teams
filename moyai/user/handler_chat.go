@@ -110,6 +110,11 @@ func (h *Handler) globalMessage(msg string, u data.User, r role.Role, tm data.Te
 	highestRole := u.Roles.Highest()
 	chatMessage := text.Colourf("%s<dark-grey>:</dark-grey> <white>%s</white>", highestRole.Coloured(displayName), msg)
 
+	if highestRole.Tier() > roles.Default().Tier() {
+		roleFormat := text.Colourf("<dark-grey>[%s]</dark-grey>", highestRole.Coloured(r.Name()))
+		chatMessage = roleFormat + " " + chatMessage
+	}
+
 	if len(tm.Name) > 0 {
 		formatTeam := text.Colourf("<grey>[<green>%s</green>]</grey> %s", tm.DisplayName, chatMessage)
 		formatEnemy := text.Colourf("<grey>[<red>%s</red>]</grey> %s", tm.DisplayName, chatMessage)
