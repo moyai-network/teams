@@ -72,6 +72,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 		}
 		if h.coolDownGlobalAbilities.Active() {
 			moyai.Messagef(h.p, "partner_item.cooldown", h.coolDownGlobalAbilities.Remaining().Seconds())
+			ctx.Cancel()
 		} else {
 			h.handleSpecialItemUse(v, held, left, ctx)
 		}
