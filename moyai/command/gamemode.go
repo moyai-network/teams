@@ -17,16 +17,11 @@ type GameMode struct {
 }
 
 // Run ...
-func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
-	p, ok := s.(*player.Player)
-	if !ok {
-		return
-	}
-
+func (g GameMode) Run(src cmd.Source, _ *cmd.Output) {
 	var name string
 	var mode world.GameMode
 	switch strings.ToLower(string(g.GameMode)) {
-	case "survival", "0", "s":
+	case "survival", "0", "src":
 		name, mode = "survival", world.GameModeSurvival
 	case "creative", "1", "c":
 		name, mode = "creative", world.GameModeCreative
@@ -38,30 +33,28 @@ func (g GameMode) Run(s cmd.Source, o *cmd.Output) {
 
 	targets := g.Targets.LoadOr(nil)
 	if len(targets) > 1 {
-		moyai.Messagef(p, "command.targets.exceed")
+		moyai.Messagef(src, "command.targets.exceed")
 		return
 	}
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			moyai.Messagef(p, "command.target.unknown")
+			moyai.Messagef(src, "command.target.unknown")
 			return
 		}
 
-		//	moyai.Alertf(s, "staff.alert.gamemode.change.other", target.Name(), name)
-
 		target.SetGameMode(mode)
-		moyai.Messagef(p, "command.gamemode.update.other", target.Name(), name)
+		moyai.Alertf(src, "staff.alert.gamemode.change.other", target.Name(), name)
+		moyai.Messagef(src, "command.gamemode.update.other", target.Name(), name)
 		return
 	}
-	if p, ok := s.(*player.Player); ok {
-		//moyai.Alertf(s, "staff.alert.gamemode.change", name)
-
+	if p, ok := src.(*player.Player); ok {
 		p.SetGameMode(mode)
-		moyai.Messagef(p, "command.gamemode.update.self", name)
+		moyai.Alertf(src, "staff.alert.gamemode.change", name)
+		moyai.Messagef(src, "command.gamemode.update.self", name)
 		return
 	}
-	moyai.Messagef(p, "command.gamemode.console")
+	moyai.Messagef(src, "command.gamemode.console")
 }
 
 type gameMode string

@@ -4,6 +4,7 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/timeutil"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
@@ -97,33 +98,32 @@ func (r RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 }
 
 // Run ...
-func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
+func (a RoleAddOffline) Run(src cmd.Source, _ *cmd.Output) {
 	t, err := data.LoadUserFromName(a.Target)
 	if err != nil {
-		o.Error(lang.Translatef(l, "command.target.unknown"))
+		moyai.Messagef(src, "command.target.unknown")
 		return
 	}
 
 	r, _ := role.ByName(string(a.Role))
-	if p, ok := s.(*player.Player); ok {
+	if p, ok := src.(*player.Player); ok {
 		u, err := data.LoadUserFromName(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
 		if u.Roles.Highest().Tier() < r.Tier() {
-			o.Error(lang.Translatef(l, "command.role.higher"))
+			moyai.Messagef(src, "command.role.higher")
 			return
 		}
 		if t.Roles.Contains(rls.Operator()) {
-			o.Error(lang.Translatef(l, "command.role.modify.other"))
+			moyai.Messagef(src, "command.role.modify.other")
 			return
 		}
 	}
 
 	if t.Roles.Contains(r) {
-		o.Error(lang.Translatef(l, "command.role.has", r.Name()))
+		moyai.Messagef(src, "command.role.has", r.Name())
 		return
 	}
 	t.Roles.Add(r)
@@ -132,7 +132,7 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 	if hasDuration {
 		duration, err := timeutil.ParseDuration(duration)
 		if err != nil {
-			o.Error(lang.Translatef(l, "command.duration.invalid"))
+			moyai.Messagef(src, "command.duration.invalid")
 			return
 		}
 		d = durafmt.ParseShort(duration).String()
@@ -140,50 +140,48 @@ func (a RoleAddOffline) Run(s cmd.Source, o *cmd.Output) {
 	}
 	data.SaveUser(t)
 
-	//user.Alert(s, "staff.alert.role.add", r.Name(), t.DisplayName, d)
-	o.Print(lang.Translatef(l, "command.role.add", r.Name(), t.DisplayName, d))
+	moyai.Alertf(src, "staff.alert.role.add", r.Name(), t.DisplayName, d)
+	moyai.Messagef(src, "command.role.add", r.Name(), t.DisplayName, d)
 }
 
 // Run ...
-func (d RoleRemoveOffline) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
+func (d RoleRemoveOffline) Run(src cmd.Source, _ *cmd.Output) {
 	t, err := data.LoadUserFromName(d.Target)
 	if err != nil {
-		o.Error(lang.Translatef(l, "command.target.unknown"))
+		moyai.Messagef(src, "command.target.unknown")
 		return
 	}
 
 	r, _ := role.ByName(string(d.Role))
-	if p, ok := s.(*player.Player); ok {
+	if p, ok := src.(*player.Player); ok {
 		u, err := data.LoadUserFromName(p.Name())
 		if err != nil {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
 		if u.Roles.Highest().Tier() < r.Tier() {
-			o.Error(lang.Translatef(l, "command.role.higher"))
+			moyai.Messagef(src, "command.role.higher")
 			return
 		}
 		if t.Roles.Contains(rls.Operator()) {
-			o.Error(lang.Translatef(l, "command.role.modify.other"))
+			moyai.Messagef(src, "command.role.modify.other")
 			return
 		}
 	}
 
 	if !t.Roles.Contains(r) {
-		o.Error(lang.Translatef(l, "command.role.missing", r.Name()))
+		moyai.Messagef(src, "command.role.missing", r.Name())
 		return
 	}
 	t.Roles.Remove(r)
 	data.SaveUser(t)
 
-	//user.Alert(s, "staff.alert.role.remove", r.Name(), t.DisplayName)
-	o.Print(lang.Translatef(l, "command.role.remove", r.Name(), t.DisplayName))
+	moyai.Alertf(src, "staff.alert.role.remove", r.Name(), t.DisplayName)
+	moyai.Messagef(src, "command.role.remove", r.Name(), t.DisplayName)
 }
 
 // Run ...
-func (r RoleList) Run(s cmd.Source, o *cmd.Output) {
-	l := locale(s)
+func (r RoleList) Run(src cmd.Source, _ *cmd.Output) {
 	rl, ok := role.ByName(string(r.Role))
 	if !ok {
 		return
@@ -194,7 +192,7 @@ func (r RoleList) Run(s cmd.Source, o *cmd.Output) {
 		panic(err)
 	}
 	if len(users) <= 0 {
-		o.Error(lang.Translatef(l, "command.role.list.empty"))
+		moyai.Messagef(src, "command.role.list.empty")
 		return
 	}
 
@@ -202,7 +200,7 @@ func (r RoleList) Run(s cmd.Source, o *cmd.Output) {
 	for _, u := range users {
 		usernames = append(usernames, u.DisplayName)
 	}
-	o.Print(lang.Translatef(l, "command.role.list", r.Role, len(users), strings.Join(usernames, ", ")))
+	moyai.Messagef(src, "command.role.list", r.Role, len(users), strings.Join(usernames, ", "))
 }
 
 type (
@@ -215,8 +213,8 @@ func (roles) Type() string {
 }
 
 // Options ...
-func (roles) Options(s cmd.Source) (roles []string) {
-	p, disallow := s.(*player.Player)
+func (roles) Options(src cmd.Source) (roles []string) {
+	p, disallow := src.(*player.Player)
 	if disallow {
 		u, err := data.LoadUserFromName(p.Name())
 		if err == nil {

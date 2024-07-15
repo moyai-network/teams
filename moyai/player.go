@@ -2,12 +2,12 @@ package moyai
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/moyai/roles"
-
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/roles"
+	"golang.org/x/text/language"
 )
 
 func Broadcastf(key string, a ...interface{}) {
@@ -28,11 +28,19 @@ func Alertf(s cmd.Source, key string, args ...any) {
 	}
 }
 
-func Messagef(p *player.Player, key string, a ...interface{}) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
-		p.Message("An error occurred while loading your user data.")
-		return
+func Messagef(src cmd.Source, key string, a ...interface{}) {
+	out := &cmd.Output{}
+	defer src.SendCommandOutput(out)
+	l := data.Language{Tag: language.English}
+
+	p, ok := src.(*player.Player)
+	if ok {
+		u, err := data.LoadUserFromName(p.Name())
+		if err != nil {
+			out.Error("An error occurred while loading your user data.")
+			return
+		}
+		l = *u.Language
 	}
-	p.Message(lang.Translatef(*u.Language, key, a...))
+	out.Print(lang.Translatef(l, key, a...))
 }
