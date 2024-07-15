@@ -306,9 +306,10 @@ func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inven
 // issueDeathban issues a deathban for the user.
 func (h *Handler) issueDeathban() {
 	u, err := data.LoadUserFromName(h.p.Name())
-	if err != nil {
+	if err != nil || u.Teams.DeathBan.Active() {
 		return
 	}
+	
 	u.Teams.DeathBan.Set(time.Minute * 20)
 	u.Teams.DeathBanned = true
 
@@ -415,7 +416,7 @@ func (h *Handler) SendClaimPillar(pos cube.Pos) {
 	for y := pos.Y(); y <= pos.Y()+50; y++ {
 		delta := y - pos.Y()
 		var b world.Block
-		if delta % 4 == 0 {
+		if delta%4 == 0 {
 			b = block.Diamond{}
 		} else {
 			b = block.Glass{}
