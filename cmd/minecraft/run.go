@@ -206,7 +206,7 @@ var chatGameWords = []string{
 
 // startChatGame starts the chat game.
 func startChatGame() {
-	t := time.NewTicker(time.Minute * 6)
+	t := time.NewTicker(time.Minute * 15)
 	for range t.C {
 		cursor := rand.Intn(len(chatGameWords))
 		word := chatGameWords[cursor]
