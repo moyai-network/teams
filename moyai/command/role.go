@@ -56,166 +56,44 @@ type RoleList struct {
 }
 
 // Run ...
-func (a RoleAdd) Run(s cmd.Source, o *cmd.Output) {
+func (r RoleAdd) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	if len(a.Targets) > 1 {
+	if len(r.Targets) > 1 {
 		o.Error(lang.Translatef(l, "command.targets.exceed"))
 		return
 	}
-	p, isPlayer := s.(*player.Player)
-	if !isPlayer && len(a.Targets) < 1 {
+	tg, ok := r.Targets[0].(*player.Player)
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
 
-	var t data.User
-	var err error
-
-	if len(a.Targets) > 0 {
-		tP, ok := a.Targets[0].(*player.Player)
-		if !ok {
-			o.Error(lang.Translatef(l, "command.target.unknown"))
-			return
-		}
-		t, err = data.LoadUserFromName(tP.Name())
-		if err != nil {
-			o.Error(lang.Translatef(l, "command.target.unknown"))
-			return
-		}
-		if isPlayer && tP != p && t.Roles.Contains(rls.Operator()) {
-			o.Error(lang.Translatef(l, "command.role.modify.other"))
-			return
-		}
-	} else {
-		t, err = data.LoadUserFromName(p.Name())
-		if err != nil {
-			// The user somehow left in the middle of this, so just stop in our tracks.
-			return
-		}
+	c := RoleAddOffline{
+		Target:   tg.Name(),
+		Role:     r.Role,
+		Duration: r.Duration,
 	}
-
-	r, _ := role.ByName(string(a.Role))
-	if isPlayer {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
-			// The user somehow left in the middle of this, so just stop in our tracks.
-			return
-		}
-		if !u.Roles.Contains(rls.Operator()) {
-			if strings.EqualFold(p.XUID(), t.XUID) {
-				o.Error(lang.Translatef(l, "command.role.modify.self"))
-				return
-			}
-			if u.Roles.Highest().Tier() < r.Tier() {
-				o.Error(lang.Translatef(l, "command.role.higher"))
-				return
-			}
-		}
-	}
-
-	duration, hasDuration := a.Duration.Load()
-	if t.Roles.Contains(r) {
-		e, ok := t.Roles.Expiration(r)
-		if !ok {
-			o.Error(lang.Translatef(l, "command.role.has", r.Name()))
-			return
-		}
-		if hasDuration {
-			duration, err := timeutil.ParseDuration(duration)
-			if err != nil {
-				o.Error(lang.Translatef(l, "command.duration.invalid"))
-				return
-			}
-			if e.After(time.Now().Add(duration)) {
-				o.Error(lang.Translatef(l, "command.role.has", r.Name()))
-				return
-			}
-		}
-		t.Roles.Remove(r)
-	}
-	t.Roles.Add(r)
-	d := "infinity and beyond"
-	if hasDuration {
-		duration, err := timeutil.ParseDuration(duration)
-		if err != nil {
-			o.Error(lang.Translatef(l, "command.duration.invalid"))
-			return
-		}
-		d = durafmt.ParseShort(duration).String()
-		t.Roles.Expire(r, time.Now().Add(duration))
-	}
-	data.SaveUser(t)
-
-	//user.Alert(s, "staff.alert.role.add", r.Name(), t.DisplayName, d)
-	o.Print(lang.Translatef(l, "command.role.add", r.Name(), t.DisplayName, d))
+	c.Run(s, o)
 }
 
 // Run ...
-func (d RoleRemove) Run(s cmd.Source, o *cmd.Output) {
+func (r RoleRemove) Run(s cmd.Source, o *cmd.Output) {
 	l := locale(s)
-	if len(d.Targets) > 1 {
+	if len(r.Targets) > 1 {
 		o.Error(lang.Translatef(l, "command.targets.exceed"))
 		return
 	}
-	p, isPlayer := s.(*player.Player)
-	if !isPlayer && len(d.Targets) < 1 {
+	tg, ok := r.Targets[0].(*player.Player)
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
 
-	var t data.User
-	var err error
-
-	if len(d.Targets) > 0 {
-		tP, ok := d.Targets[0].(*player.Player)
-		if !ok {
-			o.Error(lang.Translatef(l, "command.target.unknown"))
-			return
-		}
-		t, err = data.LoadUserFromName(tP.Name())
-		if err != nil {
-			o.Error(lang.Translatef(l, "command.target.unknown"))
-			return
-		}
-		if isPlayer && tP != p && t.Roles.Contains(rls.Operator()) {
-			o.Error(lang.Translatef(l, "command.role.modify.other"))
-			return
-		}
-	} else {
-		t, err = data.LoadUserFromName(p.Name())
-		if err != nil {
-			// The user somehow left in the middle of this, so just stop in our tracks.
-			return
-		}
+	c := RoleRemoveOffline{
+		Target: tg.Name(),
+		Role:   r.Role,
 	}
-
-	r, _ := role.ByName(string(d.Role))
-	if isPlayer {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
-			// The user somehow left in the middle of this, so just stop in our tracks.
-			return
-		}
-		if !u.Roles.Contains(rls.Operator()) {
-			if strings.EqualFold(p.XUID(), t.XUID) {
-				o.Error(lang.Translatef(l, "command.role.modify.self"))
-				return
-			}
-			if u.Roles.Highest().Tier() < r.Tier() {
-				o.Error(lang.Translatef(l, "command.role.higher"))
-				return
-			}
-		}
-	}
-
-	if !t.Roles.Contains(r) {
-		o.Error(lang.Translatef(l, "command.role.missing", r.Name()))
-		return
-	}
-	t.Roles.Remove(r)
-
-	//user.Alert(s, "staff.alert.role.remove", r.Name(), t.DisplayName)
-	o.Print(lang.Translatef(l, "command.role.remove", r.Name(), t.DisplayName))
+	c.Run(s, o)
 }
 
 // Run ...
