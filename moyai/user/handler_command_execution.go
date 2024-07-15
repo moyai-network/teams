@@ -30,31 +30,32 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
 	if err != nil {
 		return
 	}
+	names := []string{command.Name()}
+	names = append(names, command.Aliases()...)
 
-	if h.tagCombat.Active() {
-		for _, c := range combat {
-			names := []string{command.Name()}
-			names = append(names, command.Aliases()...)
-			for _, n := range names {
-				if strings.EqualFold(c, n) {
-					moyai.Messagef(h.p, "command.error.combat-tagged")
-					ctx.Cancel()
-				}
-			}
+	if h.tagCombat.Active() && containsAny(combat, names...) {
+		moyai.Messagef(h.p, "command.error.combat-tagged")
+		ctx.Cancel()
+	} else if u.Teams.DeathBan.Active() && containsAny(deathban, names...) {
+		moyai.Messagef(h.p, "command.error.death-ban")
+		ctx.Cancel()
+	}
+}
+
+func containsAny(s []string, e ...string) bool {
+	for _, a := range e {
+		if contains(s, a) {
+			return true
 		}
 	}
+	return false
+}
 
-	if u.Teams.DeathBan.Active() {
-		for _, d := range deathban {
-			names := []string{command.Name()}
-			names = append(names, command.Aliases()...)
-			for _, n := range names {
-				if strings.EqualFold(d, n) {
-					moyai.Messagef(h.p, "deathban.cooldown")
-					ctx.Cancel()
-				}
-			}
-
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if strings.EqualFold(a, e) {
+			return true
 		}
 	}
+	return false
 }
