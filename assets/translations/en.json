@@ -293,7 +293,7 @@
         "lives.none": "<red>You have no lives.</red>",
         "mage.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> enemies</yellow>",
         "moyai.broadcast.notice": "\n<dark-red>[<red>Note</red>]</dark-red> <yellow>%v</yellow>\n\n\n",
-        "moyai.broadcast.plus": "\n<black>There are <grey>%d</grey> Moyai Donor member(s) online: <white>%s</white>\n<i><grey>You can head over to https://moyai.tebex.io for more details.\n\n",
+        "moyai.broadcast.plus": "\n<yellow>There are <grey>%d</grey> Moyai Donor member(s) online: <white>%s</white>\n<i><grey>You can head over to https://moyai.tebex.io for more details.\n\n",
         "moyai.broadcast.discord": "Feel free to join our Discord with <red>discord.gg/moyai</red>. See you there?",
         "moyai.broadcast.emojis": "Try out our cool chat emojis, type <red>:fire:</red> in chat!",
         "moyai.broadcast.feedback": "We want to know your thoughts on Moyai, please feel free to leave us suggestions and feedback.",
