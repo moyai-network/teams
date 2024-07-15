@@ -1,9 +1,13 @@
 package item
 
 import (
+	"fmt"
+	"github.com/restartfu/gophig"
 	"math/rand"
 	"reflect"
+	"slices"
 	"strings"
+	"sync"
 	"unicode"
 
 	"github.com/df-mc/dragonfly/server/block"
@@ -99,6 +103,29 @@ type SpecialItemType interface {
 }
 
 var (
+	itemMu          sync.Mutex
+	allPartnerItems = []SpecialItemType{
+		SwitcherBallType{},
+		ExoticBoneType{},
+		PearlDisablerType{},
+		FullInvisibilityType{},
+		EffectDisablerType{},
+		BeserkAbilityType{},
+		CloseCallType{},
+		VampireAbilityType{},
+		SigilType{},
+		TimeWarpType{},
+		StormBreakerType{},
+		FocusModeType{},
+		RocketType{},
+		ScramblerType{},
+		AbilityDisablerType{},
+		StrengthPowderType{},
+		TankIngotType{},
+		RageBrickType{},
+		NinjaStarType{},
+		ComboAbilityType{},
+	}
 	specialItems []SpecialItemType
 	partnerItems []SpecialItemType
 )
@@ -112,6 +139,8 @@ func NewSpecialItem(typ SpecialItemType, n int) item.Stack {
 // SpecialItem returns the special item type of the item stack passed. If the item stack does not represent a
 // special item, the second return value will be false.
 func SpecialItem(i item.Stack) (SpecialItemType, bool) {
+	itemMu.Lock()
+	defer itemMu.Unlock()
 	for k := range i.Values() {
 		for _, v := range specialItems {
 			if k == v.Key() {
@@ -125,6 +154,8 @@ func SpecialItem(i item.Stack) (SpecialItemType, bool) {
 // PartnerItem returns the partner item type of the item stack passed. If the item stack does not represent a
 // partner item, the second return value will be false.
 func PartnerItem(i item.Stack) (SpecialItemType, bool) {
+	itemMu.Lock()
+	defer itemMu.Unlock()
 	for k, _ := range i.Values() {
 		for _, v := range partnerItems {
 			if k == v.Key() {
@@ -147,6 +178,8 @@ func PartnerItems() []SpecialItemType {
 
 // RegisterSpecialItem registers a special item type to be used in the game.
 func RegisterSpecialItem(typ SpecialItemType) {
+	itemMu.Lock()
+	defer itemMu.Unlock()
 	creative.RegisterItem(NewSpecialItem(typ, 1))
 	specialItems = append(specialItems, typ)
 }
@@ -157,31 +190,34 @@ func RegisterPartnerItem(typ SpecialItemType) {
 	partnerItems = append(partnerItems, typ)
 }
 
-func init() {
-	RegisterPartnerItem(SwitcherBallType{})
-	RegisterPartnerItem(ExoticBoneType{})
-	//RegisterPartnerItem(PearlDisablerType{})
-	RegisterPartnerItem(FullInvisibilityType{})
-	RegisterPartnerItem(EffectDisablerType{})
-	//RegisterPartnerItem(BeserkAbilityType{})
-	RegisterPartnerItem(CloseCallType{})
-	RegisterPartnerItem(VampireAbilityType{})
-	//RegisterPartnerItem(SigilType{})
-	RegisterPartnerItem(TimeWarpType{})
-	//RegisterPartnerItem(StormBreakerType{})
-	RegisterPartnerItem(FocusModeType{})
-	RegisterPartnerItem(RocketType{})
-	//RegisterPartnerItem(ScramblerType{})
-	RegisterSpecialItem(PartnerPackageType{})
-	//RegisterPartnerItem(AbilityDisablerType{})
-	RegisterPartnerItem(StrengthPowderType{})
-	//RegisterPartnerItem(TankIngotType{})
-	//RegisterPartnerItem(RageBrickType{})
-	RegisterPartnerItem(NinjaStarType{})
-	RegisterPartnerItem(ComboAbilityType{})
-	creative.RegisterItem(NewCrowBar())
-	creative.RegisterItem(NewPearlBow())
+func RefreshPartnerItems() {
+	itemMu.Lock()
+	defer itemMu.Unlock()
+	partnerItems = []SpecialItemType{}
 
+	var disabledPartnerItems []string
+	err := gophig.GetConfComplex("assets/disabled_partner_items.yml", gophig.YAMLMarshaler{}, &disabledPartnerItems)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, v := range allPartnerItems {
+		if slices.Contains(disabledPartnerItems, v.Key()) {
+			fmt.Println("WARN: disabled partner item: " + v.Key())
+			continue
+		}
+		RegisterPartnerItem(v)
+	}
+
+	fmt.Printf("INFO: Registered %d partner items\n", len(partnerItems))
+}
+
+func init() {
+	RefreshPartnerItems()
+	creative.RegisterItem(NewCrowBar())
+	//creative.RegisterItem(NewPearlBow())
+
+	RegisterSpecialItem(PartnerPackageType{})
 	RegisterSpecialItem(StaffRandomTeleportType{})
 	RegisterSpecialItem(StaffFreezeBlockType{})
 	RegisterSpecialItem(StaffKnockBackStickType{})

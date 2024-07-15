@@ -87,7 +87,7 @@ func registerCommands() {
 		cmd.New("gamemode", text.Colourf("Manage gamemodes."), []string{"gm"}, command.GameMode{}),
 		cmd.New("key", text.Colourf("Manage keys"), nil, command.Key{}, command.KeyAll{}),
 		cmd.New("koth", text.Colourf("Manage KOTHs."), nil, command.KothStart{}, command.KothStop{}, command.KothList{}),
-		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}),
+		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}, command.PartnerItemsRefresh{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command.Ping{}),
 		cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
 		cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),

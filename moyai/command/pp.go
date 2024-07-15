@@ -21,6 +21,11 @@ type PartnerPackageAll struct {
 	Count int            `cmd:"count"`
 }
 
+type PartnerItemsRefresh struct {
+	adminAllower
+	Sub cmd.SubCommand `cmd:"refresh"`
+}
+
 // Run ...
 func (pp PartnerPackage) Run(s cmd.Source, o *cmd.Output) {
 	p, ok := s.(*player.Player)
@@ -45,4 +50,8 @@ func (pa PartnerPackageAll) Run(s cmd.Source, o *cmd.Output) {
 	}
 
 	moyai.Broadcastf("command.partner_package.give.success.all")
+}
+
+func (PartnerItemsRefresh) Run(s cmd.Source, o *cmd.Output) {
+	it.RefreshPartnerItems()
 }

@@ -117,7 +117,6 @@ func NewServer(config server.Config) *server.Server {
 	providerSettings := provider.DefaultSettings()
 	providerSettings.FlushRate = time.Minute * 10
 	providerSettings.SaveEffects = false
-	fmt.Println(providerSettings.AutoSave)
 
 	playerProvider = provider.NewProvider(providerSettings)
 	config.PlayerProvider = playerProvider
