@@ -210,14 +210,16 @@ func Protected(w *world.World) []NamedArea {
 	return append(Roads(w), append(KOTHs(w), []NamedArea{
 		Spawn(w),
 		WarZone(w),
+		endPortal,
 	}...)...)
 }
 
 var (
+	endPortal = NewNamedArea(mgl64.Vec2{997, 996}, mgl64.Vec2{1005, 1004}, text.Colourf("<purple>End Portal</purple>"))
 	Overworld = Areas{
-		spawn:      NewNamedArea(mgl64.Vec2{75, -75}, mgl64.Vec2{-75, 75}, text.Colourf("<green>Spawn</green>")), 
+		spawn:      NewNamedArea(mgl64.Vec2{75, -75}, mgl64.Vec2{-75, 75}, text.Colourf("<green>Spawn</green>")),
 		warZone:    NewNamedArea(mgl64.Vec2{400, 400}, mgl64.Vec2{-400, -400}, text.Colourf("<red>Warzone</red>")),
-		wilderness: NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")), 
+		wilderness: NewNamedArea(mgl64.Vec2{3000, 3000}, mgl64.Vec2{-3000, -3000}, text.Colourf("<grey>Wilderness</grey>")),
 		roads: []NamedArea{
 			NewNamedArea(mgl64.Vec2{-20, -76}, mgl64.Vec2{20, -3000}, text.Colourf("<red>North Road</red>")),
 			NewNamedArea(mgl64.Vec2{76, -20}, mgl64.Vec2{3000, 20}, text.Colourf("<red>East Road</red>")),
@@ -227,8 +229,8 @@ var (
 		koths: []NamedArea{
 			NewNamedArea(mgl64.Vec2{575, 425}, mgl64.Vec2{425, 575}, text.Colourf("<red>Oasis</red>")),
 			NewNamedArea(mgl64.Vec2{575, -575}, mgl64.Vec2{425, -425}, text.Colourf("<gold>Shrine</gold>")),
-			NewNamedArea(mgl64.Vec2{-425, 425}, mgl64.Vec2{-585, 575}, text.Colourf("<amethyst>Kingdom</amethyst>")), 
-			NewNamedArea(mgl64.Vec2{-575, -575}, mgl64.Vec2{-425, -425}, text.Colourf("<dark-green>Garden</dark-green>")), 
+			NewNamedArea(mgl64.Vec2{-425, 425}, mgl64.Vec2{-585, 575}, text.Colourf("<amethyst>Kingdom</amethyst>")),
+			NewNamedArea(mgl64.Vec2{-575, -575}, mgl64.Vec2{-425, -425}, text.Colourf("<dark-green>Garden</dark-green>")),
 		},
 	}
 	Nether = Areas{
@@ -249,12 +251,12 @@ var (
 		},
 	}
 	End = Areas{
-		warZone:      NewNamedArea(mgl64.Vec2{250, 250}, mgl64.Vec2{-150, -150}, text.Colourf("<purple>End</purple>")),
+		warZone: NewNamedArea(mgl64.Vec2{250, 250}, mgl64.Vec2{-150, -150}, text.Colourf("<purple>End</purple>")),
 	}
 
 	Deathban = Areas{
-		spawn:      NewNamedArea(mgl64.Vec2{-2, 37}, mgl64.Vec2{12, 51}, text.Colourf("<green>Deathban Spawn</green>")),
-		warZone:      NewNamedArea(mgl64.Vec2{-100, -100}, mgl64.Vec2{100, 100}, text.Colourf("<red>Deathban Arena</red>")),
+		spawn:   NewNamedArea(mgl64.Vec2{-2, 37}, mgl64.Vec2{12, 51}, text.Colourf("<green>Deathban Spawn</green>")),
+		warZone: NewNamedArea(mgl64.Vec2{-100, -100}, mgl64.Vec2{100, 100}, text.Colourf("<red>Deathban Arena</red>")),
 	}
 )
 
