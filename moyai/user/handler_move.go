@@ -181,8 +181,8 @@ func (h *Handler) updateKOTHState(newPos mgl64.Vec3, u data.User) {
 			k.StopCapturing(p)
 			return
 		}
-	case koth.Shrine:
-		if newPos.Y() > 70 {
+	case koth.Oasis:
+		if newPos.Y() > 80 {
 			k.StopCapturing(p)
 			return
 		}

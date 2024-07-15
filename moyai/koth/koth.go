@@ -41,7 +41,7 @@ var (
 	Garden = &KOTH{
 		name:        text.Colourf("<dark-green>Garden</dark-green>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{-508, -508}, mgl64.Vec2{-514, -514}),
+		area:        area.NewArea(mgl64.Vec2{-497, -503}, mgl64.Vec2{-503, -497}),  
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, -500},
 		duration:    time.Minute * 5,
@@ -49,26 +49,26 @@ var (
 	Oasis = &KOTH{
 		name:        text.Colourf("<red>Oasis</red>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{479, 501}, mgl64.Vec2{473, 495}),
+		area:        area.NewArea(mgl64.Vec2{503, 497}, mgl64.Vec2{497, 503}),  
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Minute * 5,
 	}
 	Shrine = &KOTH{
-		name:        text.Colourf("<gold>Shrine</gold>"),
+		name:        text.Colourf("<gold>Mesa</gold>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{503, -492}, mgl64.Vec2{509, -486}),
+		area:        area.NewArea(mgl64.Vec2{503, -503}, mgl64.Vec2{497, -497}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -500},
 		duration:    time.Minute * 5,
 	}
-	Citadel = &KOTH{
-		name:        text.Colourf("<amethyst>Citadel</amethyst>"),
+	Kingdom = &KOTH{
+		name:        text.Colourf("<aqua>Kingdom</aqua>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{-502, 504}, mgl64.Vec2{-506, 500}),
+		area:        area.NewArea(mgl64.Vec2{-503, 497}, mgl64.Vec2{-497, 503}),
 		cancel:      make(chan struct{}),
-		coordinates: mgl64.Vec2{-500, 500},
-		duration:    time.Minute * 10,
+		coordinates: mgl64.Vec2{-500, 500}, 
+		duration:    time.Minute * 5,
 	}
 	Nether = &KOTH{
 		name:        text.Colourf("<red>Nether</red>"),
@@ -78,8 +78,8 @@ var (
 		coordinates: mgl64.Vec2{500, -100},
 		duration:    time.Minute * 5,
 	}
-	Hades = &KOTH{
-		name:        text.Colourf("<dark-red>Hades</dark-red>"),
+	Citadel = &KOTH{
+		name:        text.Colourf("<dark-red>Citadel</dark-red>"),
 		dimension:   world.Nether,
 		area:        area.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, -496}),
 		cancel:      make(chan struct{}),
@@ -98,7 +98,7 @@ var (
 
 // All returns all KOTHs.
 func All() []*KOTH {
-	return []*KOTH{Garden, Oasis, Shrine, Citadel, End, Nether, Hades}
+	return []*KOTH{Garden, Oasis, Shrine, Kingdom, Citadel, End, Nether}
 }
 
 // Running returns true if the KOTH passed is currently running.

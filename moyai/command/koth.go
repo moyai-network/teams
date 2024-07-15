@@ -104,7 +104,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 	coords := ko.Coordinates()
 	moyai.Broadcastf("koth.start", name, ko.Name(), coords.X(), coords.Y())
 	var st string
-	if ko == koth.Citadel || ko == koth.Hades {
+	if ko == koth.Citadel {
 		st = fmt.Sprintf(`
  §e█████████§r
  §e█████████§r
@@ -171,7 +171,7 @@ func (kothList) Options(src cmd.Source) []string {
 
 	var opts []string
 	for _, k := range koth.All() {
-		if (k == koth.Citadel || k == koth.Hades) && (playerSrc && !u.Roles.Contains(rls.Operator(), rls.Admin(), rls.Manager())) {
+		if k == koth.Citadel && (playerSrc && !u.Roles.Contains(rls.Operator(), rls.Admin(), rls.Manager())) {
 			continue
 		}
 		opts = append(opts, colour.StripMinecraftColour(strings.ToLower(k.Name())))
