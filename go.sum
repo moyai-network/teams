@@ -18,8 +18,6 @@ github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc h1:uTgPzTZhHS
 github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc/go.mod h1:sGYYdmfbe00EPV/9Ar+MqRu8b8UCGYZI1tPuWAY9pXU=
 github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d h1:w92AXsllm1U497qYTUO5WNaTu+l6Ns22qCK9Su/wrcA=
 github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d/go.mod h1:ToIpVGRz7L5YZRpPfsYOFh5JRMdpoEx1MdWCTGwSQTk=
-github.com/bedrock-gophers/tag v0.0.0-20240712171812-0173011b84dc h1:94DXwsYQqS20ycfKHfV+BV/TJXKLS9Qt9KkJooIL7HA=
-github.com/bedrock-gophers/tag v0.0.0-20240712171812-0173011b84dc/go.mod h1:ONtGKgBXN+dZrM/36aYSByRgq4QI2Dt+4MSBYzK8+04=
 github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2 h1:Fz1ySTQPYG+b9hdMPZ3i1j66xNbJnFMopLmgusyuDMk=
 github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2/go.mod h1:ONtGKgBXN+dZrM/36aYSByRgq4QI2Dt+4MSBYzK8+04=
 github.com/bedrock-gophers/tebex v0.1.0 h1:Q/ta+R8b8qenNGBmd2yJpn3ndGHKJPORPezZRu7wWHg=
@@ -156,8 +154,6 @@ github.com/xdg-go/stringprep v1.0.4/go.mod h1:mPGuuIYwz7CmR2bT9j4GbQqutWS1zV24gi
 github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76 h1:tBiBTKHnIjovYoLX/TPkcf+OjqqKGQrPtGT3Foz+Pgo=
 github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76/go.mod h1:SQliXeA7Dhkt//vS29v3zpbEwoa+zb2Cn5xj5uO4K5U=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
-go.mongodb.org/mongo-driver v1.15.0 h1:rJCKC8eEliewXjZGf0ddURtl7tTVy1TK3bfl0gkUSLc=
-go.mongodb.org/mongo-driver v1.15.0/go.mod h1:Vzb0Mk/pa7e6cWw85R4F/endUC3u0U9jGcNU603k65c=
 go.mongodb.org/mongo-driver v1.16.0 h1:tpRsfBJMROVHKpdGyc1BBEzzjDUWjItxbVSZ8Ls4BQ4=
 go.mongodb.org/mongo-driver v1.16.0/go.mod h1:oB6AhJQvFQL4LEHyXi6aJzQJtBiTQHiAd83l0GdFaiw=
 go.uber.org/atomic v1.11.0 h1:ZvwS0R+56ePWxUNi+Atn9dWONBPp/AUETXlHW0DxSjE=

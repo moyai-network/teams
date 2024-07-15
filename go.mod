@@ -6,6 +6,7 @@ require (
 	github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae
 	github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
+	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.18-0.20240711165245-56780cad8ebb
 	github.com/diamondburned/arikawa/v3 v3.3.6
@@ -41,7 +42,6 @@ require (
 )
 
 require (
-	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
