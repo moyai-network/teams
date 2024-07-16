@@ -1,7 +1,10 @@
 package user
 
 import (
+	"fmt"
 	"github.com/bedrock-gophers/tag/tag"
+	"github.com/oomph-ac/oomph/check"
+	"github.com/sandertv/gophertunnel/minecraft"
 	"strings"
 	_ "unsafe"
 
@@ -19,12 +22,36 @@ import (
 
 type PacketHandler struct {
 	intercept.NopHandler
-	c *intercept.Conn
+	name  string
+	c     *minecraft.Conn
+	oomph bool
+}
+
+func (h *PacketHandler) HandlePunishment(ctx *event.Context, check check.Check, message *string) {
+	ctx.Cancel()
+}
+
+func (h *PacketHandler) HandleFlag(ctx *event.Context, check check.Check, params map[string]any, log *bool) {
+	ctx.Cancel()
+	fmt.Println(check, params)
+}
+
+func (h *PacketHandler) HandleDebug(ctx *event.Context, check check.Check, params map[string]any) {
+	ctx.Cancel()
+}
+
+func NewOomphHandler(c *minecraft.Conn) *PacketHandler {
+	return &PacketHandler{
+		name:  c.IdentityData().DisplayName,
+		c:     c,
+		oomph: true,
+	}
 }
 
 func NewPacketHandler(c *intercept.Conn) *PacketHandler {
 	return &PacketHandler{
-		c: c,
+		name: c.IdentityData().DisplayName,
+		c:    c.Conn,
 	}
 }
 
@@ -92,9 +119,7 @@ func (h *PacketHandler) HandleServerPacket(ctx *event.Context, pk packet.Packet)
 			ctx.Cancel()
 		}
 	case *packet.SetActorData:
-		name := h.c.IdentityData().DisplayName
-
-		p, ok := Lookup(name)
+		p, ok := Lookup(h.name)
 		if !ok {
 			return
 		}

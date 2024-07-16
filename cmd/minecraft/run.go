@@ -14,7 +14,6 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/moyai/roles"
 	"github.com/oomph-ac/oomph"
-	"github.com/oomph-ac/oomph/handler"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/intercept"
@@ -249,18 +248,14 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 	c.QuitMessage = "<red>[-] %s</red>"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
 
-	configurePacketListener(&c, conf.Oomph.Enabled)
+	configurePacketListener(&c, log, conf.Oomph.Enabled)
 	return c
 }
 
 // configurePacketListener configures the packet listener for the server.
-func configurePacketListener(conf *server.Config, oomphEnabled bool) {
+func configurePacketListener(conf *server.Config, log *logrus.Logger, oomphEnabled bool) {
 	if oomphEnabled {
-		ac := oomph.New(oomph.OomphSettings{
-			LocalAddress:  ":19132",
-			RemoteAddress: ":19133",
-			RequirePacks:  true,
-		})
+		ac := oomph.New(log, ":19132")
 
 		ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
 		go func() {
@@ -270,9 +265,8 @@ func configurePacketListener(conf *server.Config, oomphEnabled bool) {
 					return
 				}
 
-				p.Player.SetLog(logrus.New())
-				p.Player.MovementMode = 0
-				p.Player.Handler(handler.HandlerIDMovement).(*handler.MovementHandler).CorrectionThreshold = 100000000
+				p.SetMovementMode(0)
+				p.Handle(user.NewOomphHandler(p.Conn()))
 
 				// TODO: Handle events
 			}
