@@ -16,7 +16,7 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/icza/abcsort v0.0.0-20230330133725-d6ace6446f81
 	github.com/joho/godotenv v1.5.1
-	github.com/oomph-ac/oomph v0.0.0-20240707221818-e498809fc25f
+	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.39.0
@@ -74,7 +74,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/image v0.17.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
