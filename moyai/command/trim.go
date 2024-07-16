@@ -62,7 +62,6 @@ func (template) Type() string {
 // Options ...
 func (template) Options(s cmd.Source) []string {
 	return []string{
-		"netherite_upgrade",
 		"sentry",
 		"vex",
 		"wild",
