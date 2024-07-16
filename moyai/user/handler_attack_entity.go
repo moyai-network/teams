@@ -132,8 +132,8 @@ func (h *Handler) setLastAttackerForCombat(targetPlayer *player.Player) {
 
 	if canAttack(h.p, targetPlayer) {
 		targetHandler.setLastAttacker(h)
-		h.tagCombat.Set(time.Second * 20)
-		targetHandler.tagCombat.Set(time.Second * 20)
+		h.tagCombat.Set(time.Second * 30)
+		targetHandler.tagCombat.Set(time.Second * 30)
 	}
 }
 

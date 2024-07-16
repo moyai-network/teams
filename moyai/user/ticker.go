@@ -432,15 +432,15 @@ func BardEffectFromItem(i world.Item) (effect.Effect, bool) {
 	case item.MagmaCream:
 		return effect.New(effect.FireResistance{}, 1, bardEffectDuration), true
 	case item.BlazePowder:
-		return effect.New(effect.Strength{}, 1, bardEffectDuration), true
+		return effect.New(effect.Strength{}, 2, bardEffectDuration), true
 	case item.Feather:
-		return effect.New(effect.JumpBoost{}, 3, bardEffectDuration), true
+		return effect.New(effect.JumpBoost{}, 7, bardEffectDuration), true
 	case item.Sugar:
-		return effect.New(effect.Speed{}, 2, bardEffectDuration), true
+		return effect.New(effect.Speed{}, 3, bardEffectDuration), true
 	case item.GhastTear:
-		return effect.New(effect.Regeneration{}, 1, bardEffectDuration), true
+		return effect.New(effect.Regeneration{}, 3, bardEffectDuration), true
 	case item.IronIngot:
-		return effect.New(effect.Resistance{}, 1, bardEffectDuration), true
+		return effect.New(effect.Resistance{}, 3, bardEffectDuration), true
 	}
 	return effect.Effect{}, false
 }

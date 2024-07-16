@@ -166,6 +166,8 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 						}
 					}
 				}
+				tm.Points += 10
+				data.SaveTeam(tm)
 				resetPoints()
 				Stop()
 			}

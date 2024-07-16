@@ -170,7 +170,7 @@ func (h *Handler) handleBardItemUse(held item.Stack, sotwRunning bool, u data.Us
 		}
 
 		// Apply the effect to nearby allies.
-		teammates := nearbyAllies(h.p, 25)
+		teammates := nearbyAllies(h.p, 30)
 		for _, m := range teammates {
 			m.p.AddEffect(e)
 		}

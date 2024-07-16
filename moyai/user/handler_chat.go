@@ -1,14 +1,15 @@
 package user
 
 import (
-	"github.com/bedrock-gophers/tag/tag"
-	"github.com/moyai-network/teams/moyai/item"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"math/rand"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/bedrock-gophers/tag/tag"
+	"github.com/moyai-network/teams/moyai/item"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/event"
@@ -59,6 +60,10 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 		return
 	}
 	msg = formatRegex.ReplaceAllString(msg, "")
+
+	if len(msg) <= 0 {
+		return
+	}
 
 	switch u.Teams.ChatType {
 	case 0:
