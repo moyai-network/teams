@@ -24,10 +24,10 @@ func (p Ping) Run(s cmd.Source, o *cmd.Output) {
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			o.Error(lang.Translatef(data.Language{}, "command.target.unknown"))
+			o.Error(lang.Translatef(data.Language{}, "command.target.unknown", ""))
 			return
 		}
-		moyai.Messagef(target, "command.ping.output", target.Name(), (target.Latency() * 2).Milliseconds())
+		moyai.Messagef(s, "command.ping.output", target.Name(), (target.Latency() * 2).Milliseconds())
 		return
 	}
 

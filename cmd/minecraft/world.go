@@ -30,7 +30,19 @@ import (
 )
 
 var (
-	shopSigns   = []shopSign{}
+	shopSigns   = []shopSign{
+		{buy: true, it: block.Emerald{}, quantity: 16, price: 2500, pos: cube.Pos{28, 67, 8}},
+		{buy: true, it: block.Diamond{}, quantity: 16, price: 2000, pos: cube.Pos{27, 67, 8}},
+		{buy: true, it: block.Gold{}, quantity: 16, price: 1000, pos: cube.Pos{26, 67, 8}},
+		{buy: true, it: block.Iron{}, quantity: 16, price: 500, pos: cube.Pos{25, 67, 8}},
+		{buy: true, it: block.Lapis{}, quantity: 16, price: 500, pos: cube.Pos{24, 67, 8}},
+
+		{it: block.Emerald{}, quantity: 16, price: 2000, pos: cube.Pos{28, 68, 8}},
+		{it: block.Diamond{}, quantity: 16, price: 1500, pos: cube.Pos{27, 68, 8}},
+		{it: block.Gold{}, quantity: 16, price: 500, pos: cube.Pos{26, 68, 8}},
+		{it: block.Iron{}, quantity: 16, price: 250, pos: cube.Pos{25, 68, 8}},
+		{it: block.Lapis{}, quantity: 16, price: 250, pos: cube.Pos{24, 68, 8}},
+	}
 	cowSpawners = []cube.Pos{
 		{-17, 63, -14},
 		{-15, 63, -18},
@@ -204,17 +216,30 @@ func placeShopSigns() {
 		b := block.Sign{Front: block.SignText{
 			Text: txt,
 		}}
+		b.Attach = block.WallAttachment(cube.North)
 		w.SetBlock(s.pos, b, nil)
 	}
 }
 
 func formatItemName(s string) string {
-	split := strings.Split(s, "_")
+	split := strings.Split(s, ":")
+
+	var formattedParts []string
+
 	for i, str := range split {
-		upperCasesPrefix := unicode.ToUpper(rune(str[0]))
-		split[i] = string(upperCasesPrefix) + str[1:]
+		if i == 0 {
+			continue
+		}
+		words := strings.Split(str, "_")
+		for j, word := range words {
+			runes := []rune(word)
+			runes[0] = unicode.ToUpper(runes[0])
+			words[j] = string(runes)
+		}
+		formattedParts = append(formattedParts, strings.Join(words, " "))
 	}
-	return strings.Join(split, " ")
+
+	return strings.Join(formattedParts, " ")
 }
 
 // placeCrates places all crates in the world.

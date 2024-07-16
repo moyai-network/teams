@@ -938,9 +938,9 @@ func (t TeamTop) Run(src cmd.Source, _ *cmd.Output) {
 			break
 		}
 		if userTeam.Name == tm.Name {
-			top += text.Colourf(" <grey>%d. <green>%src</green> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
+			top += text.Colourf(" <grey>%d. <green>%s</green> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
 		} else {
-			top += text.Colourf(" <grey>%d. <red>%src</red> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
+			top += text.Colourf(" <grey>%d. <red>%s</red> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
 		}
 	}
 	top += "\uE000"

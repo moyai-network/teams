@@ -23,8 +23,8 @@ func startLeaderboard() {
 	kdrLeaderboard := entity.NewText(formattedUserLeaderBoard("KDR", func(u data.User) float64 {
 		kills := u.Teams.Stats.Kills
 		deaths := u.Teams.Stats.Deaths
-		if kills == 0 || deaths == 0 {
-			return 0
+		if deaths == 0 {
+			deaths = 1
 		}
 		return math.Round(float64(kills) / float64(deaths)*100)/100
 	}), cube.Pos{13, 71, 10}.Vec3Middle())
@@ -71,8 +71,8 @@ func startLeaderboard() {
 		kdrLeaderboard.SetNameTag(formattedUserLeaderBoard("KDR", func(u data.User) float64 {
 			kills := u.Teams.Stats.Kills
 			deaths := u.Teams.Stats.Deaths
-			if kills == 0 || deaths == 0 {
-				return 0
+			if deaths == 0 {
+				deaths = 1
 			}
 			return math.Round(float64(kills) / float64(deaths)*100)/100
 		}))
