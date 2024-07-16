@@ -244,7 +244,7 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 	c.Entities = ent.Registry
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
-	c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.gg/moyai for more info!</red>") + "§8"
+	c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.moyai.club for more info!</red>") + "§8"
 	c.JoinMessage = "<green>[+] %s</green>"
 	c.QuitMessage = "<red>[-] %s</red>"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
@@ -348,7 +348,7 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
 		h, err := user.NewHandler(p, p.XUID())
 		if err != nil {
 			fmt.Printf("new handler: %v\n", err)
-			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.gg/moyai</red>"))
+			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.moyai.club</red>"))
 			return
 		}
 		p.Handle(h)

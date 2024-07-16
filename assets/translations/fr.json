@@ -73,7 +73,7 @@
         "scoreboard.focus.home": "<orange>QG<grey>:</grey> <yellow>%.0f, %.0f</yellow>",
         "scoreboard.focus.name": "<purple>[%s]</purple>",
         "scoreboard.focus.online": "<orange>Connect\u00e9<grey>:</grey> <yellow>%d/%d</yellow>",
-        "scoreboard.footer": "<grey><i>discord.gg/moyai</i></grey>",
+        "scoreboard.footer": "<grey><i>discord.moyai.club</i></grey>",
         "scoreboard.kills": "<red>Kills: <grey>%d</grey></red>",
         "scoreboard.killstreak": "<red>S\u00e9rie de kills: <grey>%d</grey></red>",
         "scoreboard.koth.running": "<dark-red>%s<grey>:</grey> %s</dark-red>",
