@@ -207,15 +207,22 @@ func KOTHs(w *world.World) []NamedArea {
 }
 
 func Protected(w *world.World) []NamedArea {
-	return append(Roads(w), append(KOTHs(w), []NamedArea{
+	protected := append(Roads(w), append(KOTHs(w), []NamedArea{
 		Spawn(w),
 		WarZone(w),
-		endPortal,
 	}...)...)
+
+	protected = append(protected, endPortals...) 
+	return protected
 }
 
 var (
-	endPortal = NewNamedArea(mgl64.Vec2{997, 996}, mgl64.Vec2{1005, 1004}, text.Colourf("<purple>End Portal</purple>"))
+	endPortals = []NamedArea{
+		NewNamedArea(mgl64.Vec2{997, 996}, mgl64.Vec2{1005, 1004}, text.Colourf("<purple>End Portal</purple>")),
+		NewNamedArea(mgl64.Vec2{-997, -997}, mgl64.Vec2{-1003, -1003}, text.Colourf("<purple>End Portal</purple>")),
+		NewNamedArea(mgl64.Vec2{996, -998}, mgl64.Vec2{1002, -1004}, text.Colourf("<purple>End Portal</purple>")),
+		NewNamedArea(mgl64.Vec2{-997, 997}, mgl64.Vec2{-1003, 1003}, text.Colourf("<purple>End Portal</purple>")),
+	}
 	Overworld = Areas{
 		spawn:      NewNamedArea(mgl64.Vec2{75, -75}, mgl64.Vec2{-75, 75}, text.Colourf("<green>Spawn</green>")),
 		warZone:    NewNamedArea(mgl64.Vec2{400, 400}, mgl64.Vec2{-400, -400}, text.Colourf("<red>Warzone</red>")),

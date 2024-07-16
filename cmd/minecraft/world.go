@@ -274,7 +274,7 @@ func placeCrates() {
 		b.Inventory().Handle(crate.Handler{})
 
 		w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
-		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Left click to open crate</yellow>\n<grey>Right click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
+		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
 		w.AddEntity(t)
 	}
 }

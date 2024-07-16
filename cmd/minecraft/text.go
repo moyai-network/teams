@@ -40,8 +40,8 @@ func placeText(c moyai.Config) {
 		for _, e := range []*entity.Ent{
 			entity.NewText(text.Colourf("<b><red>Crates & Keys</red></b>"), mgl64.Vec3{crate.X(), crate.Y() + 2.5, crate.Z()}),
 			entity.NewText(text.Colourf("<yellow>Crate Keys can be obtained easily with /reclaim (once).</yellow>"), mgl64.Vec3{crate.X(), crate.Y() + 2, crate.Z()}),
-			entity.NewText(text.Colourf("<grey>To the left is the Partner Crate and to the right is the KOTH Crate.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.6, crate.Z()}),
-			entity.NewText(text.Colourf("<grey>In front are the three donor crates.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.1, crate.Z()}),
+			entity.NewText(text.Colourf("<grey>To the right are Partner, Conquest, and KOTH crates.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.6, crate.Z()}), 
+			entity.NewText(text.Colourf("<grey>To the left are the three donor crates.</grey>"), mgl64.Vec3{crate.X(), crate.Y() + 1.1, crate.Z()}),
 			entity.NewText(text.Colourf("<red>Buy Keys</red>: store.moyai.club"), mgl64.Vec3{crate.X(), crate.Y() + 0.5, crate.Z()}),
 		} {
 			w.AddEntity(e)
@@ -71,7 +71,7 @@ func placeText(c moyai.Config) {
 			entity.NewText(text.Colourf("<b><red>Chasing Glory!</red></b>"), mgl64.Vec3{adv.X(), adv.Y() + 2.5, adv.Z()}),
 			entity.NewText(text.Colourf("<yellow>Create a team via /t create and a claim via /t claim to get started!</yellow>"), mgl64.Vec3{adv.X(), adv.Y() + 2, adv.Z()}),
 			entity.NewText(text.Colourf("<grey>Score team points by killing users, capturing KOTHs, and other events.</grey>"), mgl64.Vec3{adv.X(), adv.Y() + 1.6, adv.Z()}),
-			entity.NewText(text.Colourf("<grey>The top three factiosn will receive prizes every map. March down South Road and get started!</grey>"), mgl64.Vec3{adv.X(), adv.Y() + 1.1, adv.Z()}),
+			entity.NewText(text.Colourf("<grey>The top three factions will receive prizes every map. March down South Road and get started!</grey>"), mgl64.Vec3{adv.X(), adv.Y() + 1.1, adv.Z()}),
 			entity.NewText(text.Colourf("<red>Buy Ranks</red>: store.moyai.club"), mgl64.Vec3{adv.X(), adv.Y() + 0.5, adv.Z()}),
 		} {
 			w.AddEntity(e)

@@ -14,6 +14,7 @@ require (
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
+	github.com/icza/abcsort v0.0.0-20230330133725-d6ace6446f81
 	github.com/joho/godotenv v1.5.1
 	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
 	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
@@ -57,7 +58,6 @@ require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/schema v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
-	github.com/icza/abcsort v0.0.0-20230330133725-d6ace6446f81 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
@@ -89,4 +89,4 @@ replace github.com/sandertv/gophertunnel v1.39.0 => github.com/oomph-ac/gophertu
 
 replace github.com/sandertv/go-raknet => github.com/GameParrot/tedac-raknet v0.0.4
 
-replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240715222042-6321516d4ffd
+replace github.com/df-mc/dragonfly => github.com/moyai-network/libellule v0.0.0-20240716164732-c0aa0721f427
