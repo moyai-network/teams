@@ -43,7 +43,7 @@ func (pharaoh) Rewards() []Reward {
 		NewReward(item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(
 			append(pharaohEnchantments, item.NewEnchantment(ench.Speed{}, 2))...).WithCustomName(text.Colourf("<dark-red>Pharaoh Boots</dark-red>")), 10),
 		NewReward(item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(
-			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2)).WithCustomName(text.Colourf("<dark-red>Pharaoh Sword</dark-red>")), 10),
+			item.NewEnchantment(ench.Sharpness{}, 2), item.NewEnchantment(enchantment.Unbreaking{}, 2), item.NewEnchantment(enchantment.FireAspect{}, 1)).WithCustomName(text.Colourf("<dark-red>Pharaoh Sword</dark-red>")), 10),
 
 		NewReward(it.NewMoneyNote(1000, 1), 10),
 		NewReward(it.NewMoneyNote(2500, 1), 10),
