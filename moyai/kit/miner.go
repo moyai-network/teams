@@ -24,6 +24,9 @@ func (Miner) Texture() string {
 func (Miner) Items(*player.Player) [36]item.Stack {
 	items := [36]item.Stack{
 		item.NewStack(item.Pickaxe{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 5)),
+		item.NewStack(item.Pickaxe{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 5), item.NewEnchantment(enchantment.SilkTouch{}, 1)),
+		item.NewStack(item.Axe{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 5)),
+		item.NewStack(item.Shovel{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Efficiency{}, 5)),
 		item.NewStack(item.EnderPearl{}, 16),
 	}
 	return items
