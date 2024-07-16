@@ -118,8 +118,8 @@ func (h *Handler) LogTime() time.Duration {
 // clearOwnedEntities clears all entities owned by the user.
 func (h *Handler) clearOwnedEntities() {
 	for _, et := range h.p.World().Entities() {
-		if be, ok := et.(entity.Behaviour); ok {
-			if pro, ok := be.(*entity.ProjectileBehaviour); ok {
+		if ent, ok := et.(*entity.Ent); ok {
+			if pro, ok := ent.Behaviour().(*entity.ProjectileBehaviour); ok {
 				if pro.Owner() == h.p {
 					h.p.World().RemoveEntity(et)
 					_ = et.Close()
