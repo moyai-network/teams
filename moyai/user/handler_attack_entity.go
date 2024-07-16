@@ -33,7 +33,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok || h.handleSpecialCases(targetPlayer, ctx) {
 		return
 	}
-	
+
 	h.ShowArmor(true)
 
 	if !canAttack(h.p, targetPlayer) || targetPlayer.AttackImmune() {
@@ -197,7 +197,7 @@ func (h *Handler) handlePearlDisablerAbility(targetPlayer *player.Player, held, 
 	moyai.Messagef(h.p, "pearl_disabler.user", targetPlayer.Name())
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(it.PearlDisablerType{}, time.Minute)
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 }
 
 // handleExoticBoneAbility handles the Exotic Bone special ability.
@@ -212,7 +212,7 @@ func (h *Handler) handleExoticBoneAbility(targetPlayer *player.Player, held, lef
 
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(it.ExoticBoneType{}, time.Minute)
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	targetHandler, ok := targetPlayer.Handler().(*Handler)
 	if !ok {
