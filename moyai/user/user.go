@@ -121,8 +121,8 @@ func (h *Handler) clearOwnedEntities() {
 		if be, ok := et.(entity.Behaviour); ok {
 			if pro, ok := be.(*entity.ProjectileBehaviour); ok {
 				if pro.Owner() == h.p {
-					_ = et.Close()
 					h.p.World().RemoveEntity(et)
+					_ = et.Close()
 				}
 			}
 		}
@@ -309,7 +309,7 @@ func (h *Handler) issueDeathban() {
 	if err != nil || u.Teams.DeathBan.Active() {
 		return
 	}
-	
+
 	u.Teams.DeathBan.Set(time.Minute * 20)
 	u.Teams.DeathBanned = true
 
