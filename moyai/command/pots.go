@@ -1,10 +1,11 @@
 package command
 
 import (
-	"github.com/moyai-network/teams/moyai"
 	"strings"
 	"time"
 	_ "unsafe"
+
+	"github.com/moyai-network/teams/moyai"
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
