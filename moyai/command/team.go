@@ -1087,7 +1087,7 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
 		}
 	}
 
-	h.Home().Teleport(p, dur, tm.Home)
+	h.Home().Teleport(p, dur, tm.Home, moyai.Overworld())
 }
 
 // Run ...
@@ -1489,7 +1489,7 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 		float64(pos.X()),
 		float64(pos.Y()),
 		float64(pos.Z()),
-	})
+	}, moyai.Overworld())
 }
 
 // Run ...

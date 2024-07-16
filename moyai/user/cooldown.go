@@ -1,12 +1,14 @@
 package user
 
 import (
+	"time"
+
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/moyai-network/teams/internal/cooldown"
+	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/process"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"time"
 )
 
 // Logout is a process that handles the logout of a player.
@@ -24,7 +26,7 @@ func (h *Handler) BeginCamp(tm data.Team, pos cube.Pos) {
 	h.processCamp = process.NewProcess(func(t *process.Process) {
 		h.p.Message(text.Colourf("<green>You have been teleported close to %s's home.</green>", tm.DisplayName))
 	})
-	h.processCamp.Teleport(h.p, time.Second*45, pos.Vec3())
+	h.processCamp.Teleport(h.p, time.Second*45, pos.Vec3(), moyai.Overworld())
 }
 
 // CampOngoing returns true if the camp process is ongoing

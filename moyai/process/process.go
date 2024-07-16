@@ -1,9 +1,11 @@
 package process
 
 import (
-	"github.com/df-mc/dragonfly/server/player"
-	"github.com/go-gl/mathgl/mgl64"
 	"time"
+
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
 )
 
 // Func is a function called when a process is performed.
@@ -28,7 +30,7 @@ func NewProcess(f Func) *Process {
 }
 
 // Teleport teleports the player to the position after the duration has passed.
-func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3) {
+func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3, world *world.World) {
 	pr.expiration = time.Now().Add(dur)
 	pr.c = make(chan struct{})
 	pr.pos = pos
@@ -39,6 +41,9 @@ func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3)
 		case <-time.After(dur):
 			if pr.f != nil {
 				pr.f(pr)
+			}
+			if p.World() != world {
+				world.AddEntity(p)
 			}
 			p.Teleport(pos)
 			pr.ongoing = false
