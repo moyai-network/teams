@@ -539,7 +539,7 @@ func blockReplaceable(b world.Block) bool {
 
 // substractItem subtracts d from the count of the item stack passed and returns it, if the player is in
 // survival or adventure mode.
-func substractItem(p *player.Player, s item.Stack, d int) item.Stack {
+func subtractItem(p *player.Player, s item.Stack, d int) item.Stack {
 	if !p.GameMode().CreativeInventory() && d != 0 {
 		return s.Grow(-d)
 	}

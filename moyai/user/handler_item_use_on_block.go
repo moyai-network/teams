@@ -413,7 +413,7 @@ func canOpenCrate(held item.Stack, c crate.Crate) bool {
 // the reward from the crate. The player is also sent a firework to celebrate the opening of the crate.
 func openCrate(p *player.Player, w *world.World, held, left item.Stack, c crate.Crate) {
 	it.AddOrDrop(p, ench.AddEnchantmentLore(crate.SelectReward(c)))
-	p.SetHeldItems(substractItem(p, held, 1), left)
+	p.SetHeldItems(subtractItem(p, held, 1), left)
 
 	w.AddEntity(entity.NewFirework(c.Position().Add(mgl64.Vec3{0, 1, 0}), cube.Rotation{90, 90}, item.Firework{
 		Duration: 0,

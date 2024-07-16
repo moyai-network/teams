@@ -44,7 +44,7 @@ func (h *Handler) HandleItemUse(ctx *event.Context) {
 	// Deposit money note into bank account.
 	if v, ok := held.Value("MONEY_NOTE"); ok {
 		u.Teams.Balance += v.(float64)
-		h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+		h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 		h.p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
 		data.SaveUser(u)
 		return
@@ -367,7 +367,7 @@ func (h *Handler) handleFullInvisibilityAbility(kind it.FullInvisibilityType, he
 	}
 	h.ShowArmor(false)
 	h.p.AddEffect(effect.New(effect.Invisibility{}, 20, time.Second))
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 	moyai.Messagef(h.p, "partner_item.used", "Full Invisibility")
@@ -383,7 +383,7 @@ func (h *Handler) handleCloseCallAbility(kind it.CloseCallType, held item.Stack,
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*3)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	if h.p.Health() <= 8 {
 		h.p.AddEffect(effect.New(effect.Regeneration{}, 6, time.Second*5))
@@ -403,7 +403,7 @@ func (h *Handler) handleBeserkAbility(kind it.BeserkAbilityType, held item.Stack
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*5)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*12))
 	h.p.AddEffect(effect.New(effect.Resistance{}, 3, time.Second*12))
@@ -453,7 +453,7 @@ func (h *Handler) handleFocusModeAbility(kind it.FocusModeType, held item.Stack,
 
 	if t, ok := lastAttacker.Handler().(*Handler); ok {
 		t.coolDownFocusMode.Set(time.Second * 10)
-		h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+		h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 		moyai.Messagef(h.p, "partner_item.used.on", "Focus Mode", t.p.Name())
 		moyai.Messagef(t.p, "focus_mode.used", h.p)
 	}
@@ -483,7 +483,7 @@ func (h *Handler) handleAbilityDisablerAbility(kind it.AbilityDisablerType, held
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	enemies := nearbyHurtable(h.p, 15)
 	for _, e := range enemies {
@@ -504,7 +504,7 @@ func (h *Handler) handleStrengthPowderAbility(kind it.StrengthPowderType, held i
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Strength{}, 2, time.Second*7))
 	moyai.Messagef(h.p, "partner_item.used", "Strength Powder")
@@ -518,7 +518,7 @@ func (h *Handler) handleTankIngotAbility(kind it.TankIngotType, held item.Stack,
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Resistance{}, 3, time.Second*7))
 	moyai.Messagef(h.p, "partner_item.used", "Tank Ingot")
@@ -532,7 +532,7 @@ func (h *Handler) handleRageBrickAbility(kind it.RageBrickType, held item.Stack,
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	enemies := nearbyHurtable(h.p, 15)
 	lasts := time.Second * time.Duration(len(enemies))
@@ -549,7 +549,7 @@ func (h *Handler) handleComboAbility(kind it.ComboAbilityType, held item.Stack, 
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 	h.coolDownComboAbility.Set(time.Second * 10)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	moyai.Messagef(h.p, "partner_item.used", "Combo Ability")
 }
@@ -563,7 +563,7 @@ func (h *Handler) handleVampireAbility(kind it.VampireAbilityType, held item.Sta
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)
 	h.coolDownVampireAbility.Set(time.Second * 10)
 
-	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
+	h.p.SetHeldItems(subtractItem(h.p, held, 1), left)
 
 	h.p.AddEffect(effect.New(effect.Haste{}, 2, time.Second*7))
 	moyai.Messagef(h.p, "partner_item.used", "Vampire Ability")
