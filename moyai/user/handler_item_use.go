@@ -366,7 +366,7 @@ func (h *Handler) handleFullInvisibilityAbility(kind it.FullInvisibilityType, he
 		return
 	}
 	h.ShowArmor(false)
-	h.p.AddEffect(effect.New(effect.Invisibility{}, 1, time.Hour).WithoutParticles())
+	h.p.AddEffect(effect.New(effect.Invisibility{}, 20, time.Second))
 	h.p.SetHeldItems(substractItem(h.p, held, 1), left)
 	h.coolDownGlobalAbilities.Set(time.Second * 10)
 	h.coolDownSpecificAbilities.Set(kind, time.Minute*2)

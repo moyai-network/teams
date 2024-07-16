@@ -33,6 +33,7 @@ func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, 
 	if !ok || h.handleSpecialCases(targetPlayer, ctx) {
 		return
 	}
+	
 	h.ShowArmor(true)
 
 	if !canAttack(h.p, targetPlayer) || targetPlayer.AttackImmune() {
