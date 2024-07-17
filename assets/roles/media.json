@@ -1,6 +1,6 @@
 {
-	"name": "media",
-	"colour": "dark-aqua",
-	"inherits": "pharaoh",
-	"tier": 8
+    "name": "media",
+    "colour": "dark-aqua",
+    "inherits": "pharaoh",
+    "tier": 8
 }

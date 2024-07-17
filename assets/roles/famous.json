@@ -1,6 +1,6 @@
 {
-	"name": "famous",
-	"colour": "dark-purple",
-	"inherits": "media",
-	"tier": 11
+    "name": "famous",
+    "colour": "purple",
+    "inherits": "media",
+    "tier": 11
 }

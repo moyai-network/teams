@@ -3,10 +3,13 @@ module github.com/moyai-network/teams
 go 1.22.2
 
 require (
+	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3
+	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc
 	github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae
 	github.com/bedrock-gophers/provider v0.0.0-20240717003246-39479c3ef725
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
 	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2
+	github.com/bedrock-gophers/unsafe v0.0.0-20240505195854-ea3c41bde898
 	github.com/df-mc/atomic v1.10.0
 	github.com/df-mc/dragonfly v0.9.18-0.20240711165245-56780cad8ebb
 	github.com/diamondburned/arikawa/v3 v3.3.6
@@ -19,6 +22,7 @@ require (
 	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
 	github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
+	github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652
 	github.com/sandertv/gophertunnel v1.39.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
@@ -38,15 +42,11 @@ require (
 	github.com/bedrock-gophers/tebex v0.1.0
 	github.com/df-mc/npc v1.0.4
 	//github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3
-	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7
+	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
 	github.com/samber/lo v1.39.0
 )
 
 require (
-	github.com/RestartFU/sets v0.0.0-20240717033943-2ab9c88c8483 // indirect
-	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3 // indirect
-	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc // indirect
-	github.com/bedrock-gophers/unsafe v0.0.0-20240505195854-ea3c41bde898 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
@@ -69,7 +69,6 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/petermattis/goid v0.0.0-20240327183114-c42a807a84ba // indirect
-	github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sandertv/go-raknet v1.14.1 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
