@@ -80,7 +80,7 @@ func Run() error {
 	moyai.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
 	configureWorlds()
 
-	placeSpawners()
+	//placeSpawners()
 	placeText(conf)
 	placeSlapper()
 	placeCrates()

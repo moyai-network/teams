@@ -32,9 +32,9 @@ require (
 	github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5
 	github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812
 	github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73
-	github.com/bedrock-gophers/living v0.1.0
+	github.com/bedrock-gophers/living v0.1.1-0.20240717064318-ec79bc064db4
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc
-	github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d
+	github.com/bedrock-gophers/spawner v0.0.0-20240717065703-256ae7a50328
 	github.com/bedrock-gophers/tebex v0.1.0
 	github.com/df-mc/npc v1.0.4
 	//github.com/oomph-ac/oomph v0.0.0-20240527222821-14d8ab026ca3

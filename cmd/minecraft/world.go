@@ -10,7 +10,6 @@ import (
 	"unsafe"
 
 	"github.com/bedrock-gophers/inv/inv"
-	"github.com/bedrock-gophers/spawner/spawner"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -24,13 +23,12 @@ import (
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/crate"
 	ench "github.com/moyai-network/teams/moyai/enchantment"
-	ent "github.com/moyai-network/teams/moyai/entity"
 	"github.com/moyai-network/teams/moyai/menu"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var (
-	shopSigns   = []shopSign{
+	shopSigns = []shopSign{
 		{buy: true, it: block.Emerald{}, quantity: 16, price: 2500, pos: cube.Pos{28, 67, 8}},
 		{buy: true, it: block.Diamond{}, quantity: 16, price: 2000, pos: cube.Pos{27, 67, 8}},
 		{buy: true, it: block.Gold{}, quantity: 16, price: 1000, pos: cube.Pos{26, 67, 8}},
@@ -73,7 +71,7 @@ var (
 
 		{-13, 25, 114},
 		{-21, 25, 115},
-		{-24, 25 , 120},
+		{-24, 25, 120},
 		{-33, 27, 110},
 		{-36, 27, 107},
 		{-40, 27, 110},
@@ -172,24 +170,6 @@ func placeSlapper() {
 			inv.SendMenu(p, men)
 		}
 	})
-}
-
-func placeSpawners() {
-	w := moyai.Overworld()
-	nether := moyai.Nether()
-	end := moyai.End()
-	for _, pos := range cowSpawners {
-		sp := spawner.New(ent.NewCow, pos.Vec3Centre(), w, time.Second*30, 25, true)
-		w.SetBlock(pos, sp, nil)
-	}
-	for _, pos := range endermanSpawners {
-		sp := spawner.New(ent.NewEnderman, pos.Vec3Centre(), end, time.Second*5, 5, false)
-		w.SetBlock(pos, sp, nil)
-	}
-	for _, pos := range blazeSpawners {
-		sp := spawner.New(ent.NewBlaze, pos.Vec3Centre(), nether, time.Second*5, 25, true)
-		nether.SetBlock(pos, sp, nil)
-	}
 }
 
 // shopSign is a sign that can be placed in the world to create a shop. It can be used to buy or sell items.

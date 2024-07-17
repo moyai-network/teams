@@ -6,11 +6,10 @@ import (
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
 	"math/rand"
 )
 
-func NewCow(pos mgl64.Vec3, w *world.World) *living.Living {
+func NewCow(pos cube.Pos, w *world.World) world.Entity {
 	var stacks []item.Stack
 
 	beefCount := rand.Intn(2)
@@ -29,7 +28,7 @@ func NewCow(pos mgl64.Vec3, w *world.World) *living.Living {
 			Gravity:           0.08,
 			Drag:              0.02,
 			DragBeforeGravity: true,
-		}, pos, w)
+		}, pos.Vec3(), w)
 	return cow
 }
 
