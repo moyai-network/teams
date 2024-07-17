@@ -9,7 +9,7 @@ import (
 	"gopkg.in/square/go-jose.v2/json"
 )
 
-var url = "https://minecraftpocket-servers.com/api/?object=servers&element=voters&key=H3Fgc2xQ8dFpInRBy56Z0c0H3DQLMv7PrV&format=json"
+var url = "https://minecraftpocket-servers.com/api/?object=servers&month=current&element=voters&key=0LnGcO8ioywfbZvrIoLM0abshjV4cdOmZuC&format=json"
 
 type voterData struct {
 	Nickname string `json:"nickname"`
