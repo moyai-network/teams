@@ -174,9 +174,6 @@ func formattedUserLeaderBoard[T int | float64](name string, value func(u data.Us
 		leader := users[i]
 		name := leader.DisplayName
 
-		highestRole := leader.Roles.Highest()
-		name = highestRole.Coloured(name)
-
 		position, _ := roman.Itor(i + 1)
 		sb.WriteString(text.Colourf(
 			"<grey>%v.</grey> <white>%v</white> <dark-grey>-</dark-grey> <grey>%v</grey>\n",
