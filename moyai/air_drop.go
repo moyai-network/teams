@@ -220,7 +220,7 @@ type airDropInventoryHandler struct {
 	w   *world.World
 }
 
-func (h airDropInventoryHandler) HandleTake(ctx *event.Context, _ int, st item.Stack) {
+func (h airDropInventoryHandler) HandleTake(_ *event.Context, _ int, st item.Stack) {
 	stacks := h.inv.Items()
 	if len(stacks) == 1 && stacks[0].Equal(st) {
 		time.AfterFunc(time.Second, func() {
@@ -233,7 +233,7 @@ func (airDropInventoryHandler) HandlePlace(ctx *event.Context, _ int, _ item.Sta
 	ctx.Cancel()
 }
 
-func (h airDropInventoryHandler) HandleDrop(ctx *event.Context, _ int, st item.Stack) {
+func (h airDropInventoryHandler) HandleDrop(_ *event.Context, _ int, st item.Stack) {
 	stacks := h.inv.Items()
 	if len(stacks) == 1 && stacks[0].Equal(st) {
 		time.AfterFunc(time.Second, func() {

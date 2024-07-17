@@ -23,7 +23,7 @@ func NewAllower(whitelisted bool) *Allower {
 	}
 }
 
-func (a *Allower) Allow(addr net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
+func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (string, bool) {
 	u, err := data.LoadUserOrCreate(d.DisplayName, d.XUID)
 	if err != nil {
 		fmt.Printf("Failed to load user: %v\n", err)

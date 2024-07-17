@@ -218,12 +218,9 @@ func Close() {
 	time.Sleep(time.Millisecond * 500)
 
 	sotw.Save()
-	err := Nether().Close()
-	if err != nil {
-		logrus.Fatalln("close nether: %v", err)
-	}
-	End().Close()
-	srv.World().Close()
+	_ = Nether().Close()
+    _ = End().Close()
+    _ = srv.World().Close()
 	if err := srv.Close(); err != nil {
 		logrus.Fatalln("close server: %v", err)
 	}
