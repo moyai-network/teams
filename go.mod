@@ -4,7 +4,7 @@ go 1.22.2
 
 require (
 	github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae
-	github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336
+	github.com/bedrock-gophers/provider v0.0.0-20240717003246-39479c3ef725
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc
 	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2
 	github.com/df-mc/atomic v1.10.0

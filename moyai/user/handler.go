@@ -108,20 +108,9 @@ type Handler struct {
 }
 
 func NewHandler(p *player.Player, xuid string) (*Handler, error) {
+	sendFog(p)
 	if h, ok := logger(p); ok {
-		if h.p.World().Dimension() == world.End {
-			moyai.End().AddEntity(p)
-			unsafe.WritePacket(p, &packet.PlayerFog{
-				Stack: []string{"minecraft:fog_the_end"},
-			})
-			<-time.After(time.Second)
-		} else if h.p.World().Dimension() == world.Nether {
-			unsafe.WritePacket(p, &packet.PlayerFog{
-				Stack: []string{"minecraft:fog_hell"},
-			})
-			moyai.Nether().AddEntity(p)
-			<-time.After(time.Second)
-		} else if h.p.World() == moyai.Deathban() {
+		if h.p.World() == moyai.Deathban() {
 			<-time.After(time.Second)
 			moyai.Deathban().AddEntity(p)
 			p.SetGameMode(world.GameModeSurvival)
@@ -130,18 +119,6 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 		currentHealth := h.p.Health()
 		p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
 		_ = h.p.Close()
-	}
-
-	if p.World().Dimension() == world.End {
-		unsafe.WritePacket(p, &packet.PlayerFog{
-			Stack: []string{"minecraft:fog_the_end"},
-		})
-		moyai.End().AddEntity(p)
-	} else if p.World().Dimension() == world.Nether {
-		unsafe.WritePacket(p, &packet.PlayerFog{
-			Stack: []string{"minecraft:fog_hell"},
-		})
-		moyai.Nether().AddEntity(p)
 	}
 
 	h := &Handler{
@@ -234,6 +211,19 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 	UpdateState(h.p)
 	go startTicker(h)
 	return h, nil
+}
+
+func sendFog(p *player.Player) {
+	var stack []string
+	switch p.World().Dimension() {
+	case world.End:
+		stack = []string{"minecraft:fog_the_end"}
+	case world.Nether:
+		stack = []string{"minecraft:fog_hell"}
+	}
+	unsafe.WritePacket(p, &packet.PlayerFog{
+		Stack: stack,
+	})
 }
 
 func (h *Handler) handleBoosterRole(u data.User) {

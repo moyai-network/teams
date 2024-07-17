@@ -113,13 +113,26 @@ func LoadPlayerData(uuid uuid.UUID) (player.Data, error) {
 	return dat, err
 }
 
+func wrld(dim world.Dimension) *world.World {
+	switch dim {
+	case world.Overworld:
+		return Overworld()
+	case world.Nether:
+		return Nether()
+	case world.End:
+		return End()
+	}
+	return nil
+}
+
 func NewServer(config server.Config) *server.Server {
 	providerSettings := provider.DefaultSettings()
+	providerSettings.UseServerWorld = false
+	providerSettings.World = wrld
 	providerSettings.FlushRate = time.Minute * 10
 	providerSettings.SaveEffects = false
 
-	playerProvider = provider.NewProvider(providerSettings)
-	config.PlayerProvider = playerProvider
+	playerProvider = provider.NewProvider(&config, providerSettings)
 	srv = config.New()
 	return srv
 }

@@ -14,6 +14,12 @@ github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc h1:wkXM0BA
 github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc/go.mod h1:vx6yUjOWw1zmbzBgrnR2tEK413VV9nAOB7PO4IeRxIM=
 github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336 h1:dJljzV31bpmNtOMhxcia2bZSrKIGETSdkWnnOWQbwhM=
 github.com/bedrock-gophers/provider v0.0.0-20240709042032-0577bc63f336/go.mod h1:Njh0rDSl5ENBpOr6ZlMXW0WzKp/uLLq7jirpHYWtY44=
+github.com/bedrock-gophers/provider v0.0.0-20240717002120-93d94a947e15 h1:DLGvDju9IZcf0KlzLzHp7SawmUdSew0tmaDexWz9HOs=
+github.com/bedrock-gophers/provider v0.0.0-20240717002120-93d94a947e15/go.mod h1:Njh0rDSl5ENBpOr6ZlMXW0WzKp/uLLq7jirpHYWtY44=
+github.com/bedrock-gophers/provider v0.0.0-20240717003111-ab5ae21bfd82 h1:SrydHOEELG3zvxmXbT3+8hndSVesf/7SacvTddjAkxQ=
+github.com/bedrock-gophers/provider v0.0.0-20240717003111-ab5ae21bfd82/go.mod h1:Njh0rDSl5ENBpOr6ZlMXW0WzKp/uLLq7jirpHYWtY44=
+github.com/bedrock-gophers/provider v0.0.0-20240717003246-39479c3ef725 h1:tkk3IixQ4yF+K3pC+eMv67JensucMOq2R+o0BTgagiY=
+github.com/bedrock-gophers/provider v0.0.0-20240717003246-39479c3ef725/go.mod h1:Njh0rDSl5ENBpOr6ZlMXW0WzKp/uLLq7jirpHYWtY44=
 github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc h1:uTgPzTZhHS2nv4F3UYljdwQb4p3w1seEm7sszoi1zoc=
 github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc/go.mod h1:sGYYdmfbe00EPV/9Ar+MqRu8b8UCGYZI1tPuWAY9pXU=
 github.com/bedrock-gophers/spawner v0.0.0-20240524163047-01162e59b90d h1:w92AXsllm1U497qYTUO5WNaTu+l6Ns22qCK9Su/wrcA=
