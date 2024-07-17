@@ -23,7 +23,7 @@ type Reclaim struct{}
 
 // ReclaimReset is a command that allows admins to reset the reclaim cooldown.
 type ReclaimReset struct {
-	Sub cmd.SubCommand `cmd:"reset"`
+	Sub     cmd.SubCommand             `cmd:"reset"`
 	Targets cmd.Optional[[]cmd.Target] `cmd:"target"`
 }
 
@@ -164,5 +164,5 @@ func (r ReclaimReset) Run(s cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (ReclaimReset) Allow(s cmd.Source) bool {
-	return allow(s, true, rls.Operator())
+	return Allow(s, true, rls.Operator())
 }

@@ -26,8 +26,8 @@ func locale(s cmd.Source) data.Language {
 	return l
 }
 
-// allow is a helper function for command allowers. It allows users to easily check for the specified roles.
-func allow(src cmd.Source, console bool, roles ...role.Role) bool {
+// Allow is a helper function for command allowers. It allows users to easily check for the specified roles.
+func Allow(src cmd.Source, console bool, roles ...role.Role) bool {
 	p, ok := src.(*player.Player)
 	if !ok {
 		return console

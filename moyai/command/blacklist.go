@@ -202,31 +202,31 @@ func (b BlacklistOffline) Run(src cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (BlacklistList) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
+	return Allow(s, true, role.Manager{})
 }
 
 // Allow ...
 func (BlacklistInfoOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
+	return Allow(s, true, role.Manager{})
 }
 
 // Allow ...
 func (BlacklistForm) Allow(s cmd.Source) bool {
-	return allow(s, false, role.Manager{})
+	return Allow(s, false, role.Manager{})
 }
 
 // Allow ...
 func (Blacklist) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
+	return Allow(s, true, role.Manager{})
 }
 
 // Allow ...
 func (BlacklistOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
+	return Allow(s, true, role.Manager{})
 }
 
 // Allow ...
 func (BlacklistLiftOffline) Allow(s cmd.Source) bool {
-	return allow(s, true, role.Manager{})
+	return Allow(s, true, role.Manager{})
 }
 */

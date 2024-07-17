@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"fmt"
+	"github.com/bedrock-gophers/knockback/knockback"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -42,7 +43,11 @@ import (
 
 // Run runs the Minecraft server.
 func Run() error {
-	err := role.Load("assets/roles")
+	err := knockback.Load("assets/knockback.json")
+	if err != nil {
+		return err
+	}
+	err = role.Load("assets/roles")
 	if err != nil {
 		return err
 	}

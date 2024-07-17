@@ -6,6 +6,10 @@ github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812 h1:sLH
 github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812/go.mod h1:O9x7OdMuTnKfqoCvqL0+xD9OwCmlPnyOvFo9Nq+Dg8E=
 github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73 h1:0jy82xs44V4p0GA22wr2BLmfez+OgFVU/30CJEORQyI=
 github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
+github.com/bedrock-gophers/knockback v0.0.0-20240717023127-419574bf096a h1:zJFVKvrxP/ZOb2xCrH/9yXBafejurtf0IYnfmYWStPo=
+github.com/bedrock-gophers/knockback v0.0.0-20240717023127-419574bf096a/go.mod h1:3ewBix1nkzkJdpLhf8WB6OnwPbyJo2AwKI3SAItRZT4=
+github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc h1:qsPWZtBD81G95+OPBdFfatNsRtzrrrUEt0FCKIHAzWk=
+github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc/go.mod h1:3ewBix1nkzkJdpLhf8WB6OnwPbyJo2AwKI3SAItRZT4=
 github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae h1:odLd7WsNGVgZsY9sNlo3ewTYY7hrKiDNmqPJ54Zvjlo=
 github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae/go.mod h1:JRUd7WcXswt8Fke0b8pcTmBNoqNk457wGYUyCrXptrk=
 github.com/bedrock-gophers/living v0.1.0 h1:dj1YbJXNs5awL2nZj6QlfCopgNxAvlLv1w8X+0HJhCw=
@@ -129,6 +133,8 @@ github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 h1:5tDKwEzJeWkdWo
 github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7/go.mod h1:FXVPMuM5OOrgNuY4YASk0s/cFb2IM/OiAj0vlLp175Y=
 github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7 h1:Oa3kviyiNm2nGpK9rAa9gDhUAYoHfaGxMXfWU/VnbrQ=
 github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7/go.mod h1:D7jVxkjgnMfJS7w/ctnxZT1uQIx5xNMGRk6wRFXXttY=
+github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9 h1:ePLKsH9L6UXFTaLsXbCPpUhOHStvB9olzMdEJnoMvr8=
+github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9/go.mod h1:D7jVxkjgnMfJS7w/ctnxZT1uQIx5xNMGRk6wRFXXttY=
 github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6 h1:71rZQsXnTEORPG2wKiLbHXuAYl10R9jg0+6F5qv8brg=
 github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6/go.mod h1:GPBWwxxErUF7Q/GAtahbBW+loc1xtClkrmNadwn+STs=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/knockback/knockback"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/event"
@@ -23,10 +24,11 @@ import (
 	"time"
 )
 
-func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, imm *time.Duration, src world.DamageSource) {
+func (h *Handler) HandleHurt(ctx *event.Context, dmg *float64, im *time.Duration, src world.DamageSource) {
+	knockback.ApplyHitDelay(im)
+
 	p := h.p
 	*dmg = *dmg / 1.25
-
 	if h.tagArcher.Active() || (h.coolDownFocusMode.Active() &&
 		!class.Compare(h.lastClass.Load(), class.Archer{}) &&
 		!class.Compare(h.lastClass.Load(), class.Mage{}) &&

@@ -1,6 +1,8 @@
 package minecraft
 
 import (
+	"github.com/bedrock-gophers/knockback/knockback"
+	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/command"
@@ -10,6 +12,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
+		cmd.New("knockback", text.Colourf("Manage server KB"), []string{"kb"}, knockback.Menu{Allower: operatorAllower{}}),
 		cmd.New("alias", text.Colourf("Find aliases of a player."), nil, command.AliasOffline{}, command.AliasOnline{}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command.Link{}),
@@ -106,11 +109,18 @@ func registerCommands() {
 		cmd.New("eotw", text.Colourf("EOTW management commands."), nil, command.EOTWStart{}, command.EOTWEnd{}),
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
 		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"), []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
-		cmd.New("knockback", text.Colourf("Change server KB"), []string{"kb"}, command.Knockback{}),
 		cmd.New("stats", text.Colourf("View your or other player's stats."), nil, command.StatsOnlineCommand{}, command.StatsOfflineCommand{}),
 	} {
 		cmd.Register(c)
 	}
 
 	//cmd.Register(cmd.New("hub", text.Colourf("Return to the Moyai Hub."), []string{"lobby"}, command.Hub{}))
+}
+
+// operatorAllower is an allower that allows all users with the operator role to execute a command.
+type operatorAllower struct{}
+
+// Allow ...
+func (operatorAllower) Allow(s cmd.Source) bool {
+	return command.Allow(s, true, []role.Role{}...)
 }

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/knockback/knockback"
 	"time"
 
 	"github.com/bedrock-gophers/inv/inv"
@@ -27,7 +28,8 @@ import (
 
 // HandleAttackEntity handles the attack on an entity.
 func (h *Handler) HandleAttackEntity(ctx *event.Context, e world.Entity, force, height *float64, _ *bool) {
-	*force, *height = moyai.Force(), moyai.Height()
+	knockback.ApplyForce(force)
+	knockback.ApplyHeight(height)
 
 	targetPlayer, ok := e.(*player.Player)
 	if !ok || h.handleSpecialCases(targetPlayer, ctx) {

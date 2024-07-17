@@ -36,7 +36,7 @@ func (t Trim) Run(src cmd.Source, out *cmd.Output) {
 
 // Allow ...
 func (Trim) Allow(src cmd.Source) bool {
-	return allow(src, false, rls.Khufu())
+	return Allow(src, false, rls.Khufu())
 }
 
 // Run ...

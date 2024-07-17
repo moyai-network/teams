@@ -17,7 +17,7 @@ require (
 	github.com/icza/abcsort v0.0.0-20230330133725-d6ace6446f81
 	github.com/joho/godotenv v1.5.1
 	github.com/oomph-ac/oomph v0.0.0-20240708131644-45b0796df508
-	github.com/restartfu/gophig v0.0.0-20230501130741-bd994da592f7
+	github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/sandertv/gophertunnel v1.39.0
 	github.com/sirupsen/logrus v1.9.3
@@ -43,6 +43,7 @@ require (
 )
 
 require (
+	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect

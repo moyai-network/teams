@@ -21,7 +21,7 @@ func (d DataReset) Run(src cmd.Source, _ *cmd.Output) {
 
 // Allow ...
 func (DataReset) Allow(src cmd.Source) bool {
-	return allow(src, true, rls.Operator())
+	return Allow(src, true, rls.Operator())
 }
 
 type dataKind string

@@ -80,10 +80,10 @@ func (f FixAll) Run(s cmd.Source, o *cmd.Output) {
 
 // Allow ...
 func (Fix) Allow(s cmd.Source) bool {
-	return allow(s, false, rls.Khufu())
+	return Allow(s, false, rls.Khufu())
 }
 
 // Allow ...
 func (FixAll) Allow(s cmd.Source) bool {
-	return allow(s, false, rls.Ramses())
+	return Allow(s, false, rls.Ramses())
 }

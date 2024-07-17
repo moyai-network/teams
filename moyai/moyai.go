@@ -45,10 +45,6 @@ var (
 	nether *world.World
 	// deathban is the world of the Deathban arena.
 	deathban *world.World
-	// force is the knockback force
-	force float64 = 0.4
-	// height is the knockback height
-	height float64 = 0.4
 
 	// lastBlackMarket is the time at which the last black market was opened.
 	lastBlackMarket time.Time
@@ -56,7 +52,7 @@ var (
 	blackMarketOpened time.Time
 
 	// chatGameWord is the word to guess in the chat game.
-	chatGameWord string = ""
+	chatGameWord string
 )
 
 func SetDiscordState(s *state.State) {
@@ -151,22 +147,6 @@ func BlackMarketOpened() time.Time {
 
 func SetBlackMarketOpened(t time.Time) {
 	blackMarketOpened = t
-}
-
-func Force() float64 {
-	return force
-}
-
-func SetForce(f float64) {
-	force = f
-}
-
-func Height() float64 {
-	return height
-}
-
-func SetHeight(f float64) {
-	height = f
 }
 
 func ChatGameWord() string {

@@ -13,5 +13,5 @@ func (BlackMarket) Run(src cmd.Source, out *cmd.Output) {
 }
 
 func (BlackMarket) Allow(src cmd.Source) bool {
-	return allow(src, false) && time.Since(moyai.LastBlackMarket()) < time.Minute*10
+	return Allow(src, false) && time.Since(moyai.LastBlackMarket()) < time.Minute*10
 }
