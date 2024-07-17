@@ -43,6 +43,7 @@ require (
 )
 
 require (
+	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3 // indirect
 	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

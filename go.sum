@@ -2,6 +2,10 @@ github.com/GameParrot/tedac-raknet v0.0.4 h1:FOHXmHXqRMF+OI25OdaJ3ebURKBSAh0TZHT
 github.com/GameParrot/tedac-raknet v0.0.4/go.mod h1:vT0+qrD5NHYW9OElUncfIRT0brTgJhxyaozMZyjL2Zc=
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5 h1:Etg/VpPBCcBcxD0ABZRvwZOTcrMEu/712VfFv975UZg=
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5/go.mod h1:nGvjhKkEoeo04nSPVvdlBK489C+33WOYx28nxZ/TDzE=
+github.com/bedrock-gophers/cooldown v0.0.0-20240717032114-60e6681b9ec2 h1:l3P39Xrcq1bktvlD3euwqM6UFXtg/yZI9WwXPtKB1/s=
+github.com/bedrock-gophers/cooldown v0.0.0-20240717032114-60e6681b9ec2/go.mod h1:tRxTHFulJY4y8PkeEt5tuRrwTYldd1wyc4vfJ846g2g=
+github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3 h1:aMXHfUwWDn8PBbuN1MMxLTPitACcgyVLCIxQov1kVMI=
+github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3/go.mod h1:43VXrjUhIrz17lWUi4VPI9q5lWkQOJCMOuoiEtZwIa8=
 github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812 h1:sLHwDLig6Dp9KJ8q+aHXUrIYRNV/b+iTAGLTRkiTr+k=
 github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812/go.mod h1:O9x7OdMuTnKfqoCvqL0+xD9OwCmlPnyOvFo9Nq+Dg8E=
 github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73 h1:0jy82xs44V4p0GA22wr2BLmfez+OgFVU/30CJEORQyI=

@@ -3,8 +3,8 @@ package user
 import (
 	"time"
 
+	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/process"

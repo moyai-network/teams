@@ -18,8 +18,8 @@ import (
 
 	"github.com/moyai-network/teams/internal/sets"
 
+	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/bedrock-gophers/role/role"
-	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/punishment"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

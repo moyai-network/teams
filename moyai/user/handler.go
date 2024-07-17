@@ -16,6 +16,7 @@ import (
 
 	"github.com/moyai-network/teams/moyai"
 
+	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
@@ -25,7 +26,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/internal/cooldown"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/area"
