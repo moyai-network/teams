@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	"math"
 	"sync"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"

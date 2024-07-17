@@ -43,8 +43,10 @@ require (
 )
 
 require (
+	github.com/RestartFU/sets v0.0.0-20240717033943-2ab9c88c8483 // indirect
 	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3 // indirect
 	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc // indirect
+	github.com/bedrock-gophers/unsafe v0.0.0-20240505195854-ea3c41bde898 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chewxy/math32 v1.10.1 // indirect
@@ -67,6 +69,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/petermattis/goid v0.0.0-20240327183114-c42a807a84ba // indirect
+	github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sandertv/go-raknet v1.14.1 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect

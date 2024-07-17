@@ -1,10 +1,10 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"

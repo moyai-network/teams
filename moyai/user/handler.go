@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	"slices"
 	"strconv"
 	"strings"
@@ -27,7 +28,6 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"

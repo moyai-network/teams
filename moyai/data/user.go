@@ -16,7 +16,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
-	"github.com/moyai-network/teams/internal/sets"
+	"github.com/restartfu/sets"
 
 	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/bedrock-gophers/role/role"

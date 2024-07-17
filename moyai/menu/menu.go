@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/nbtconv"
@@ -10,7 +11,6 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -38,7 +38,6 @@ func updateInventory(p *player.Player) {
 		}
 	}
 }
-
 
 func viewSlotChange(s *session.Session, slot int, it item.Stack, windowID uint32) {
 	unsafe.WritePacket(s, &packet.InventorySlot{
@@ -76,7 +75,6 @@ func (glint) CompatibleWithEnchantment(t item.EnchantmentType) bool {
 func (glint) CompatibleWithItem(i world.Item) bool {
 	return true
 }
-
 
 // noinspection ALL
 //

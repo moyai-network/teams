@@ -1,5 +1,7 @@
 github.com/GameParrot/tedac-raknet v0.0.4 h1:FOHXmHXqRMF+OI25OdaJ3ebURKBSAh0TZHT3DGN6dBA=
 github.com/GameParrot/tedac-raknet v0.0.4/go.mod h1:vT0+qrD5NHYW9OElUncfIRT0brTgJhxyaozMZyjL2Zc=
+github.com/RestartFU/sets v0.0.0-20240717033943-2ab9c88c8483 h1:ccvhCh/N58wXYbhFJBKKnUwWBcD0iY8B9mfjTBEKouc=
+github.com/RestartFU/sets v0.0.0-20240717033943-2ab9c88c8483/go.mod h1:LByOzAUeHaBZ63XqgNq8Org0sKZMEBAzYYHvWReUruo=
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5 h1:Etg/VpPBCcBcxD0ABZRvwZOTcrMEu/712VfFv975UZg=
 github.com/bedrock-gophers/console v0.0.0-20240429032630-654eeaab37e5/go.mod h1:nGvjhKkEoeo04nSPVvdlBK489C+33WOYx28nxZ/TDzE=
 github.com/bedrock-gophers/cooldown v0.0.0-20240717032114-60e6681b9ec2 h1:l3P39Xrcq1bktvlD3euwqM6UFXtg/yZI9WwXPtKB1/s=
@@ -36,6 +38,8 @@ github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2 h1:Fz1ySTQPYG+
 github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2/go.mod h1:ONtGKgBXN+dZrM/36aYSByRgq4QI2Dt+4MSBYzK8+04=
 github.com/bedrock-gophers/tebex v0.1.0 h1:Q/ta+R8b8qenNGBmd2yJpn3ndGHKJPORPezZRu7wWHg=
 github.com/bedrock-gophers/tebex v0.1.0/go.mod h1:FxTSy5Skd0YRf4BxLpCXkhoIjrvQ3clN5sXOc5GqsSc=
+github.com/bedrock-gophers/unsafe v0.0.0-20240505195854-ea3c41bde898 h1:PiKhXq+BcOiixOv25EzHApylKOOIH03qpUHk5NgbBts=
+github.com/bedrock-gophers/unsafe v0.0.0-20240505195854-ea3c41bde898/go.mod h1:v48j2kHfvemXKX4A1WFqzlgTnwBENAn2vQWlgk8mLJA=
 github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 h1:/G0ghZwrhou0Wq21qc1vXXMm/t/aKWkALWwITptKbE0=
 github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9/go.mod h1:TOk10ahXejq9wkEaym3KPRNeuR/h5Jx+s8QRWIa2oTM=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
@@ -141,6 +145,8 @@ github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9 h1:ePLKsH9L6UXFTa
 github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9/go.mod h1:D7jVxkjgnMfJS7w/ctnxZT1uQIx5xNMGRk6wRFXXttY=
 github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6 h1:71rZQsXnTEORPG2wKiLbHXuAYl10R9jg0+6F5qv8brg=
 github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6/go.mod h1:GPBWwxxErUF7Q/GAtahbBW+loc1xtClkrmNadwn+STs=
+github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652 h1:8XIC22F62C3+dTtdtx0jQm8Ab7cn9pTPUzxiIzUf110=
+github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652/go.mod h1:t/dgW/msQHaR+ZSv2ojNvX7yIBcLUzBczfPRkUiOAIU=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=
 github.com/rogpeppe/go-internal v1.12.0/go.mod h1:E+RYuTGaKKdloAfM02xzb0FW3Paa99yedzYV+kq4uf4=
 github.com/samber/lo v1.39.0 h1:4gTz1wUhNYLhFSKl6O+8peW0v2F4BCY034GRpU9WnuA=

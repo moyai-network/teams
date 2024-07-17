@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	"math"
 	"math/rand"
 	"strings"
@@ -16,7 +17,6 @@ import (
 
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/internal/unsafe"
 	"github.com/moyai-network/teams/moyai"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/class"

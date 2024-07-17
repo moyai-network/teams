@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/bedrock-gophers/cooldown/cooldown"
-	"github.com/moyai-network/teams/internal/sets"
+	"github.com/restartfu/sets"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/exp/maps"
 	"log"
