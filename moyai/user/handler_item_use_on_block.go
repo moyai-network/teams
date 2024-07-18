@@ -182,7 +182,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 	switch bl := b.(type) {
 	case block.Anvil:
 		ctx.Cancel()
-	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor, block.ItemFrame, block.Hopper:
+	case block.WoodFenceGate, block.Chest, block.WoodTrapdoor, block.WoodDoor, block.ItemFrame, block.Hopper, block.Beacon:
 		if posWithinProtected {
 			h.revertMovement()
 			ctx.Cancel()

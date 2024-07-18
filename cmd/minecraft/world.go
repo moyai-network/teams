@@ -29,17 +29,23 @@ import (
 
 var (
 	shopSigns = []shopSign{
-		{buy: true, it: block.Emerald{}, quantity: 16, price: 2500, pos: cube.Pos{28, 67, 8}},
-		{buy: true, it: block.Diamond{}, quantity: 16, price: 2000, pos: cube.Pos{27, 67, 8}},
-		{buy: true, it: block.Gold{}, quantity: 16, price: 1000, pos: cube.Pos{26, 67, 8}},
-		{buy: true, it: block.Iron{}, quantity: 16, price: 500, pos: cube.Pos{25, 67, 8}},
-		{buy: true, it: block.Lapis{}, quantity: 16, price: 500, pos: cube.Pos{24, 67, 8}},
+		{buy: true, it: block.Emerald{}, quantity: 16, price: 2500, pos: cube.Pos{28, 67, 8}, direction: cube.North},
+		{buy: true, it: block.Diamond{}, quantity: 16, price: 2000, pos: cube.Pos{27, 67, 8}, direction: cube.North},
+		{buy: true, it: block.Gold{}, quantity: 16, price: 1000, pos: cube.Pos{26, 67, 8}, direction: cube.North},
+		{buy: true, it: block.Iron{}, quantity: 16, price: 500, pos: cube.Pos{25, 67, 8}, direction: cube.North},
+		{buy: true, it: block.Lapis{}, quantity: 16, price: 500, pos: cube.Pos{24, 67, 8}, direction: cube.North},
 
-		{it: block.Emerald{}, quantity: 16, price: 2000, pos: cube.Pos{28, 68, 8}},
-		{it: block.Diamond{}, quantity: 16, price: 1500, pos: cube.Pos{27, 68, 8}},
-		{it: block.Gold{}, quantity: 16, price: 500, pos: cube.Pos{26, 68, 8}},
-		{it: block.Iron{}, quantity: 16, price: 250, pos: cube.Pos{25, 68, 8}},
-		{it: block.Lapis{}, quantity: 16, price: 250, pos: cube.Pos{24, 68, 8}},
+		{it: block.Emerald{}, quantity: 16, price: 2000, pos: cube.Pos{28, 68, 8}, direction: cube.North},
+		{it: block.Diamond{}, quantity: 16, price: 1500, pos: cube.Pos{27, 68, 8}, direction: cube.North},
+		{it: block.Gold{}, quantity: 16, price: 500, pos: cube.Pos{26, 68, 8}, direction: cube.North},
+		{it: block.Iron{}, quantity: 16, price: 250, pos: cube.Pos{25, 68, 8}, direction: cube.North},
+		{it: block.Lapis{}, quantity: 16, price: 250, pos: cube.Pos{24, 68, 8}, direction: cube.North},
+
+		{buy: true, it: block.RedstoneWire{}, quantity: 16, price: 100, pos: cube.Pos{28, 69, 8}, direction: cube.North},
+		{buy: true, it: block.Lever{}, quantity: 8, price: 100, pos: cube.Pos{27, 69, 8}, direction: cube.North},
+		{buy: true, it: block.Button{}, quantity: 8, price: 100, pos: cube.Pos{26, 69, 8}, direction: cube.North},
+		{buy: true, it: block.RedstoneBlock{}, quantity: 8, price: 100, pos: cube.Pos{25, 69, 8}, direction: cube.North},
+		{buy: true, it: block.Hopper{}, quantity: 8, price: 3000, pos: cube.Pos{24, 69, 8}, direction: cube.North},
 	}
 	cowSpawners = []cube.Pos{
 		{-17, 63, -14},
@@ -179,6 +185,7 @@ type shopSign struct {
 	quantity int
 	price    int
 	pos      cube.Pos
+	direction cube.Direction
 }
 
 func placeShopSigns() {
@@ -196,7 +203,7 @@ func placeShopSigns() {
 		b := block.Sign{Front: block.SignText{
 			Text: txt,
 		}}
-		b.Attach = block.WallAttachment(cube.North)
+		b.Attach = block.WallAttachment(s.direction)
 		w.SetBlock(s.pos, b, nil)
 	}
 }
