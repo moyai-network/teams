@@ -1,12 +1,13 @@
 package user
 
 import (
-	"github.com/bedrock-gophers/unsafe/unsafe"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/bedrock-gophers/unsafe/unsafe"
 
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/google/uuid"
@@ -194,7 +195,6 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 		u.Roles.Add(roles.Default())
 	}
 
-	u.Roles.Add(roles.Pharaoh())
 	p.Message(lang.Translatef(*u.Language, "discord.message"))
 	h.handleBoosterRole(u)
 
