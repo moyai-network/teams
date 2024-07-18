@@ -40,16 +40,22 @@ func (k Key) Run(s cmd.Source, o *cmd.Output) {
         return
     }
 
-    keyType := keyToType(string(k.Key))
+    keyType, ok := keyToType(string(k.Key))
+    if !ok {
+        return
+    }
     it.AddOrDrop(t, it.NewKey(keyType, k.Count))
     moyai.Messagef(p, "command.key.give.received", k.Count)
 }
 
 // Run ...
 func (k KeyAll) Run(s cmd.Source, o *cmd.Output) {
+    keyType, ok := keyToType(string(k.Key))
+    if !ok {
+        return
+    }
     var i int
     for _, t := range moyai.Players() {
-        keyType := keyToType(string(k.Key))
         it.AddOrDrop(t, it.NewKey(keyType, k.Count))
         i++
     }
@@ -73,24 +79,27 @@ func (key) Options(s cmd.Source) []string {
         "menes",
         "ramses",
         "conquest",
+        "seasonal",
     }
 }
 
-func keyToType(k string) it.KeyType {
+func keyToType(k string) (it.KeyType, bool) {
     switch k {
     case "koth":
-        return it.KeyTypeKOTH
+        return it.KeyTypeKOTH, true
     case "pharaoh":
-        return it.KeyTypePharaoh
+        return it.KeyTypePharaoh, true
     case "partner":
-        return it.KeyTypePartner
+        return it.KeyTypePartner, true
     case "menes":
-        return it.KeyTypeMenes
+        return it.KeyTypeMenes, true
     case "ramses":
-        return it.KeyTypeRamses
+        return it.KeyTypeRamses, true
     case "conquest":
-        return it.KeyTypeConquest
+        return it.KeyTypeConquest, true
+    case "seasonal":
+        return it.KeyTypeSeasonal, true
     default:
-        panic("should never happen")
+        return it.KeyType{}, false
     }
 }

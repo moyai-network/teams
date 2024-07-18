@@ -18,6 +18,7 @@ var (
     KeyTypeMenes    = KeyType{key: 3}
     KeyTypeRamses   = KeyType{key: 4}
     KeyTypeConquest = KeyType{key: 5}
+    KeyTypeSeasonal = KeyType{key: 6}
 )
 
 func AllKeyTypes() []KeyType {
@@ -28,6 +29,7 @@ func AllKeyTypes() []KeyType {
         KeyTypeMenes,
         KeyTypeRamses,
         KeyTypeConquest,
+        KeyTypeSeasonal,
     }
 }
 
@@ -54,6 +56,9 @@ func NewKey(keyType KeyType, n int) item.Stack {
     case KeyTypeConquest:
         value = "crate-key_Conquest"
         customName = text.Colourf("<blue>Conquest Crate Key</blue>")
+    case KeyTypeSeasonal:
+        value = "crate-key_Seasonal"
+        customName = text.Colourf("<gold>Seaonal Crate Key</gold>")
     default:
         panic("should never happen")
     }
