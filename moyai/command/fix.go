@@ -34,8 +34,9 @@ func (f Fix) Run(s cmd.Source, o *cmd.Output) {
 		p = target
 	}
 
-	it, _ := p.HeldItems()
-	it.WithDurability(it.MaxDurability())
+	it, off := p.HeldItems()
+	it = it.WithDurability(it.MaxDurability())
+	p.SetHeldItems(it, off)
 
 	moyai.Messagef(p, "command.fix.success")
 }
@@ -56,7 +57,7 @@ func (f FixAll) Run(s cmd.Source, o *cmd.Output) {
 		p = target
 	}
 
-	for i, it := range p.Inventory().Items() {
+	for i, it := range p.Inventory().Slots() {
 		new := it.WithDurability(it.MaxDurability())
 		p.Inventory().SetItem(i, new)
 	}
