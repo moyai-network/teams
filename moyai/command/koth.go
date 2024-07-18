@@ -56,19 +56,19 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
+	u, err := data.LoadUserFromName(p.Name())
+	if err != nil {
+		return
+	}
+
 	_, sotwRunning := sotw.Running()
-	if sotwRunning {
+	if sotwRunning && u.Roles.Highest() != rls.Operator() {
 		moyai.Messagef(p, "command.koth.sotw")
 		return
 	}
 	_, eotwRunning := eotw.Running()
-	if eotwRunning {
+	if eotwRunning && u.Roles.Highest() != rls.Operator() {
 		moyai.Messagef(p, "command.koth.eotw")
-		return
-	}
-
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
 		return
 	}
 
