@@ -91,6 +91,7 @@ func (h *Handler) HandleQuit() {
 				Occurrence: time.Now(),
 				Expiration: time.Now().Add(time.Hour * 24 * 30),
 			}
+			u.Frozen = false
 		}
 		data.SaveUser(u)
 
