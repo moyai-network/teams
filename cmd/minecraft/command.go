@@ -93,7 +93,7 @@ func registerCommands() {
 		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}, command.PartnerItemsRefresh{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command.Ping{}),
 		cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
-		cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
+		//cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command.BlockShop{}),
