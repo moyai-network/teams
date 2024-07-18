@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"math"
 	"strings"
 	_ "unsafe"
@@ -239,31 +240,32 @@ func validAirPosition(e *entity.Ent, target trace.Result, direction cube.Directi
 func validFencePosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
 	pos := target.Position()
 
-	if b, ok := e.World().Block(cube.PosFromVec3(pos)).(block.WoodFenceGate); ok {
-		if b.Open {
-			newPos := mgl64.Vec3{}
-
-			switch direction {
-			case cube.West:
-				newPos = pos.Add(mgl64.Vec3{-1, 0, 0})
-			case cube.East:
-				newPos = pos.Add(mgl64.Vec3{1, 0, 0})
-			case cube.North:
-				newPos = pos.Add(mgl64.Vec3{0, 0, 1})
-			case cube.South:
-				newPos = pos.Add(mgl64.Vec3{0, 0, -1})
-			}
-
-			if _, ok := e.World().Block(cube.PosFromVec3(newPos)).(block.Air); ok {
-				if _, ok := e.World().Block(cube.PosFromVec3(newPos.Add(mgl64.Vec3{0, 1, 0}))).(block.Air); ok {
-					return newPos, true
-				}
-			}
-		} else {
-			return pos, true
-		}
+	b, ok := e.World().Block(cube.PosFromVec3(pos)).(block.WoodFenceGate)
+	if !ok {
+		return mgl64.Vec3{}, false
 	}
+	if b.Open {
+		newPos := mgl64.Vec3{}
 
+		switch direction {
+		case cube.West:
+			newPos = pos.Add(mgl64.Vec3{-1, 0, 0})
+		case cube.East:
+			newPos = pos.Add(mgl64.Vec3{1, 0, 0})
+		case cube.North:
+			newPos = pos.Add(mgl64.Vec3{0, 0, -1})
+		case cube.South:
+			newPos = pos.Add(mgl64.Vec3{0, 0, 1})
+		}
+
+		if _, ok := e.World().Block(cube.PosFromVec3(newPos)).(block.Air); ok {
+			if _, ok := e.World().Block(cube.PosFromVec3(newPos.Add(mgl64.Vec3{0, 1, 0}))).(block.Air); ok {
+				return newPos, true
+			}
+		}
+	} else {
+		return pos, true
+	}
 	return mgl64.Vec3{}, false
 }
 
@@ -272,6 +274,11 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 
 	b := e.World().Block(pos)
 	name, properties := b.EncodeBlock()
+
+	if fencePos, fenceOk := validFencePosition(e, target, direction); fenceOk {
+		fmt.Println("Fence Pearl")
+		return fencePos, true
+	}
 
 	if underPos, underOk := validUnderPearl(e, target, direction); underOk {
 		// // fmt.Println("Under Pearl")
@@ -301,13 +308,6 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 		if airPos, airOk := validAirPosition(e, target, direction); airOk {
 			// // fmt.Println("Air Pearl")
 			return airPos, true
-		}
-	}
-
-	if name == "minecraft:fence_gate" {
-		if fencePos, fenceOk := validFencePosition(e, target, direction); fenceOk {
-			// // fmt.Println("Fence Pearl")
-			return fencePos, true
 		}
 	}
 
