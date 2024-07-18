@@ -49,11 +49,19 @@ func (h *Handler) HandleMove(ctx *event.Context, newPos mgl64.Vec3, newYaw, newP
 
 	cubePos := cube.PosFromVec3(newPos)
 	bl := w.Block(cubePos)
-	if _, ok := bl.(b.EndPortalBlock); ok && !u.Teams.PVP.Active() {
-		h.handleEndPortalEntry()
+	if _, ok := bl.(b.EndPortalBlock); ok {
+		if !u.Teams.PVP.Active() {
+			h.handleEndPortalEntry()
+		} else {
+			p.SendTip(lang.Translatef(*u.Language, "portal.pvp.disabled"))
+		}
 	}
-	if _, ok := bl.(b.Portal); ok && !u.Teams.PVP.Active() {
-		h.handleNetherPortalEntry()
+	if _, ok := bl.(b.Portal); ok{
+		if !u.Teams.PVP.Active() {
+			h.handleNetherPortalEntry()
+		} else {
+			p.SendTip(lang.Translatef(*u.Language, "portal.pvp.disabled"))
+		}
 	}
 
 	h.updateKOTHState(newPos, u)
