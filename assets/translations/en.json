@@ -43,6 +43,7 @@
         "class.ability.receive.self": "<yellow>You have received <green>%s %v</green> from yourself</yellow>",
         "class.ability.use": "<yellow>You have given <green>%s %v</green> to <blue>%v</blue> teammates</yellow>",
         "class.energy.insufficient": "<red>You don't have enough energy to use this ability.</red>",
+        "command.use.overworld": "<red>You may only use this command in the overworld.</red>",
         "command.add.receiver": "<green>%s has paid you $%2.f.</green>",
         "command.add.sender": "<green>You have paid %s $%2.f.</green>",
         "command.alias.accounts": "\n<yellow>Listed accounts under %v's IP</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's DID</yellow>\n<grey>%v</grey>\n\n<yellow>Listed accounts under %v's SSID</yellow>\n<grey>%v</grey>\n\n",
