@@ -455,7 +455,8 @@ func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []data.Team) b
 
 	for _, t := range teams {
 		cl := t.Claim
-		if !t.Member(p.Name()) && cl.Vec3WithinOrEqualXZ(pos.Vec3()) && t.DTR > 0 {
+		_, eotwRunning := eotw.Running()
+		if !t.Member(p.Name()) && cl.Vec3WithinOrEqualXZ(pos.Vec3()) && t.DTR > 0 && !eotwRunning {
 			posWithinProtected = true
 			break
 		}

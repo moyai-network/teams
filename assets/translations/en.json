@@ -274,6 +274,7 @@
         "conquest.won": "<yellow>%s</yellow> <green>has won the <blue>Conquest</blue> with <yellow>%d</yellow> points</green>",
         "crate.key.require": "<red>You need a %s key to open this crate</red>",
         "deathban.cooldown": "<red>You may not use this while on deathban.</red>",
+        "death.eotw": "<red>You have died in EOTW. You may not join Moyai until the end of the map.</red>",
         "discord.message": "<green>Make sure to join our discord</green><grey>:</grey> <yellow>discord.moyai.club</yellow>",
         "discord.linked": "<green>You have linked your account to %s</green>",
         "elevator.no-block": "<red>There is no block above the sign</red>",

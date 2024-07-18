@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/unsafe/unsafe"
 	"math"
 	"math/rand"
 	"strings"
@@ -10,7 +9,10 @@ import (
 	"unicode"
 	_ "unsafe"
 
+	"github.com/bedrock-gophers/unsafe/unsafe"
+
 	"github.com/moyai-network/teams/moyai/conquest"
+	"github.com/moyai-network/teams/moyai/eotw"
 	"github.com/moyai-network/teams/moyai/koth"
 
 	"github.com/df-mc/dragonfly/server/item/inventory"
@@ -213,6 +215,11 @@ func (h *Handler) kill(src world.DamageSource) {
 
 	sortArmourEffects(h)
 	sortClassEffects(h)
+	
+	if _, ok := eotw.Running(); ok {
+		h.p.Disconnect(lang.Translatef(*u.Language, "death.eotw"))
+	}
+
 	moyai.Deathban().AddEntity(p)
 	unsafe.WritePacket(h.p, &packet.PlayerFog{
 		Stack: []string{"minecraft:fog_default"},
