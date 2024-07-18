@@ -2,7 +2,6 @@ package command
 
 import (
     "github.com/df-mc/dragonfly/server/cmd"
-    "github.com/df-mc/dragonfly/server/player"
     "github.com/moyai-network/teams/internal/lang"
     "github.com/moyai-network/teams/moyai"
     "github.com/moyai-network/teams/moyai/data"
