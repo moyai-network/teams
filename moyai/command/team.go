@@ -1474,6 +1474,9 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 	if !ok {
 		return
 	}
+	if p.World() != moyai.Overworld() {
+		return
+	}
 	pos := safePosition(p, cube.PosFromVec3(p.Position()), 24)
 	if pos == (cube.Pos{}) {
 		moyai.Messagef(p, "command.team.stuck.no-safe")
@@ -1502,6 +1505,10 @@ func (t TeamStuck) Run(s cmd.Source, o *cmd.Output) {
 func (t TeamCamp) Run(src cmd.Source, o *cmd.Output) {
 	p, ok := src.(*player.Player)
 	if !ok {
+		return
+	}
+
+	if p.World() != moyai.Overworld() {
 		return
 	}
 

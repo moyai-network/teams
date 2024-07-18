@@ -97,6 +97,10 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			break
 		}
 
+		if h.p.World() != moyai.Overworld() {
+			break
+		}
+
 		if !tm.Leader(h.p.Name()) {
 			moyai.Messagef(h.p, "team.not-leader")
 			break
