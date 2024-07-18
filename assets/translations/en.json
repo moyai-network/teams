@@ -462,7 +462,7 @@
         "user.killstreak.award": "<green>You have been awarded key(s) for your killstreak!</green>",
         "user.message.cooldown": "<red>You're sending messages too fast</red>",
         "user.message.mute": "<red>You may not send message while muted</red>",
-        "user.reclaim": "%s <green>claimed their</green> %s <green>reclaim and received</green> %s and <red>%dx lives</red>",
+        "user.reclaim": "%s <green>claimed their</green> %s <green>reclaim and received</green> %s <green>and</green> <red>%dx lives</red>",
         "user.reclaimed": "<red>You have already claimed your reclaim this map.</red>",
         "user.refill.cooldown": "<red>You must wait %s before using /pots again.</red>",
         "user.suicide": "<red>%s</red><dark-red>[%d]</dark-red> <yellow>killed himself</yellow>",
