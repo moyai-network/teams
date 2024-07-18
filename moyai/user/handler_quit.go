@@ -1,15 +1,17 @@
 package user
 
 import (
+	"time"
+
 	"github.com/bedrock-gophers/unsafe/unsafe"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/punishment"
 	"github.com/moyai-network/teams/moyai/area"
 	"github.com/moyai-network/teams/moyai/data"
 	"github.com/moyai-network/teams/moyai/sotw"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"time"
 )
 
 func (h *Handler) HandleQuit() {
@@ -81,6 +83,17 @@ func (h *Handler) HandleQuit() {
 
 		h.p.Handle(h)
 		h.p.Armour().Handle(arm.Inventory().Handler())
+
+		if u.Frozen {
+			u.Teams.Ban = punishment.Punishment{
+				Staff:      "FROZEN",
+				Reason:     "Logged while frozen",
+				Occurrence: time.Now(),
+				Expiration: time.Now().Add(time.Hour * 24 * 30),
+			}
+			u.Frozen = false
+		}
+		data.SaveUser(u)
 
 		setLogger(p, h)
 		return

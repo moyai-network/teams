@@ -17,7 +17,7 @@ func (FullInvisibilityType) Item() world.Item {
 }
 
 func (FullInvisibilityType) Lore() []string {
-	return []string{text.Colourf("<grey>Become completely invisible to enemies.</grey>")}
+	return []string{text.Colourf("<grey>Become completely invisible to enemies for 60 seconds or until they hit you.</grey>")}
 }
 
 func (FullInvisibilityType) Key() string {

@@ -37,7 +37,7 @@ func (h *Handler) HandleChat(ctx *event.Context, message *string) {
 	defer data.SaveUser(u)
 
 	if moyai.ChatGameWord() != "" && *message == moyai.ChatGameWord() {
-		h.p.Message(lang.Translatef(*u.Language, "moyai.broadcast.chatgame.guessed", h.p.Name(), moyai.ChatGameWord()))
+		moyai.Broadcastf("moyai.broadcast.chatgame.guessed", h.p.Name(), moyai.ChatGameWord())
 		moyai.SetChatGameWord("")
 		if !u.Teams.DeathBan.Active() {
 			item.AddOrDrop(h.p, item.NewKey(item.KeyTypePharaoh, rand.Intn(10)+1))

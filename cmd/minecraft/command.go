@@ -93,7 +93,7 @@ func registerCommands() {
 		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}, command.PartnerItemsRefresh{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command.Ping{}),
 		cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
-		cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
+		//cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command.BlockShop{}),
@@ -110,6 +110,7 @@ func registerCommands() {
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
 		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"), []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
 		cmd.New("stats", text.Colourf("View your or other player's stats."), nil, command.StatsOnlineCommand{}, command.StatsOfflineCommand{}),
+		cmd.New("report", text.Colourf("Report a player."), nil, command.Report{}),
 	} {
 		cmd.Register(c)
 	}

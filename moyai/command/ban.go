@@ -1,10 +1,11 @@
 package command
 
 import (
-	"github.com/moyai-network/teams/moyai"
-	rls "github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai"
+	rls "github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/internal/punishment"
@@ -219,12 +220,16 @@ func parseBanReason(r banReason) (string, time.Duration) {
 	switch r {
 	case "advantage":
 		return "Unfair Advantage", time.Hour * 24 * 30
+	case "allying":
+		return "Allying", time.Hour * 3
+	case "hostage":
+		return "Hostage", time.Hour * 3
 	case "exploitation":
-		return "Exploitation", time.Hour * 24 * 9
+		return "Exploitation", time.Hour * 24 * 7
 	case "abuse":
 		return "Permission Abuse", time.Hour * 24 * 30
 	case "skin":
-		return "Invalid Skin", time.Hour * 24 * 3
+		return "Invalid Skin", time.Hour * 3
 	case "evasion":
 		return "Evasion", time.Hour * 24 * 120
 	case "advertisement":
