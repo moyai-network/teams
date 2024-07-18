@@ -29,15 +29,17 @@ import (
 
 // HandleItemUseOnBlock ...
 func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cube.Face, clickPos mgl64.Vec3) {
-	if h.coolDownItemUse.Active() {
-		ctx.Cancel()
-		return
-	}
-	h.coolDownItemUse.Set(time.Second / 10)
-
 	w := h.p.World()
 	held, left := h.p.HeldItems()
 	b := w.Block(pos)
+
+	if _, ok := held.Item().(world.Block); !ok {
+		if h.coolDownItemUse.Active() {
+			ctx.Cancel()
+			return
+		}
+		h.coolDownItemUse.Set(time.Second / 10)
+	} 
 
 	c, crateFound := resolveCrateFromPosition(pos, b)
 	if crateFound {

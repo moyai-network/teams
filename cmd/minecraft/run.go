@@ -2,13 +2,14 @@ package minecraft
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/knockback/knockback"
 	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/bedrock-gophers/knockback/knockback"
 
 	"github.com/bedrock-gophers/tag/tag"
 
