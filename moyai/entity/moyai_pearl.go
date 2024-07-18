@@ -1,9 +1,7 @@
 package entity
 
 import (
-	"fmt"
 	"math"
-	"strings"
 	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/item"
@@ -63,89 +61,6 @@ type teleporter interface {
 
 // teleport teleports the owner of an Ent to a trace.Result's position.
 func teleport(e *entity.Ent, target trace.Result) {
-	// if tlp, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter); ok {
-	// 	if p, ok := tlp.(*player.Player); ok {
-	// 		h, ok := p.Handler().(*user.Handler)
-	// 		if !ok {
-	// 			return
-	// 		}
-	// 		if h.Combat().Active() && area.Spawn(tlp.World()).Vec3WithinOrEqualXZ(target.Position()) {
-	// 			h.Pearl().Reset()
-	// 			return
-	// 		}
-
-	// 		u, _ := data.LoadUserFromName(p.Name())
-	// 		teams, _ := data.LoadAllTeams()
-	// 		if u.Teams.PVP.Active() {
-	// 			for _, t := range teams {
-	// 				a := t.Claim
-	// 				if a.Vec3WithinOrEqualXZ(target.Position()) {
-	// 					h.Pearl().Reset()
-	// 					return
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-
-	// 	b := e.World().Block(cube.PosFromVec3(target.Position()))
-	// 	p := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(teleporter).(*player.Player)
-	// 	rot := p.Rotation()
-	// 	if f, ok := b.(block.WoodFenceGate); ok || f.Open {
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(e.Position()[0]), float32(e.Position()[1] + 1.621), float32(e.Position()[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	}
-
-	// 	if slabPos, ok := validSlabPosition(e, target, directions[p]); ok {
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(slabPos[0]), float32(slabPos[1] + 1.621), float32(slabPos[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	}
-
-	// 	if taliPos, ok := validTaliPearl(e, target, directions[p]); ok {
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(taliPos[0]), float32(taliPos[1] + 1.621), float32(taliPos[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	}
-
-	// 	onGround := p.OnGround()
-	// 	for _, v := range p.World().Viewers(p.Position()) {
-	// 		v.ViewEntityMovement(p, e.Position(), rot, onGround)
-	// 	}
-
-	// 	e.World().PlaySound(tlp.Position(), sound.Teleport{})
-
-	// 	data, err := data.LoadUserFromName(p.Name())
-	// 	if err == nil && data.Teams.Settings.Visual.PearlAnimation {
-	// 		session_writePacket(player_session(p), &packet.MovePlayer{
-	// 			EntityRuntimeID: 1,
-	// 			Position:        mgl32.Vec3{float32(target.Position()[0]), float32(target.Position()[1] + 1.621), float32(target.Position()[2])},
-	// 			Pitch:           float32(rot[1]),
-	// 			Yaw:             float32(rot[0]),
-	// 			HeadYaw:         float32(rot[0]),
-	// 			Mode:            packet.MoveModeNormal,
-	// 		})
-	// 	} else {
-	// 		tlp.Teleport(target.Position())
-	// 	}
-
-	// 	//tlp.Hurt(5, entity.FallDamageSource{})
-	// }
 	p, ok := e.Behaviour().(*entity.ProjectileBehaviour).Owner().(*player.Player)
 	usr, ok2 := p.Handler().(*user.Handler)
 
@@ -270,37 +185,25 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	name, properties := b.EncodeBlock()
 
 	if fencePos, fenceOk := validFencePosition(e, target, direction); fenceOk {
-		fmt.Println("Fence Pearl")
 		return fencePos, true
 	}
 
-	if underPos, underOk := validUnderPearl(e, target, direction); underOk {
-		// // fmt.Println("Under Pearl")
-		return underPos, true
-	}
 
-	if strings.Contains(name, "slab") {
-		if strings.Contains(name, "double") {
-			return mgl64.Vec3{}, false
-		}
-
+	if _, ok := b.(block.Slab); ok {
 		if slabPos, slabOk := validSlabPosition(e, target, direction); slabOk {
-			// // fmt.Println("Slab Pearl")
 			return slabPos, true
 		}
 	}
 
-	if name == "minecraft:air" || strings.Contains(name, "stairs") {
-		if strings.Contains(name, "stairs") {
-			if len(properties) != 0 {
-				if properties["upside_down_bit"] == false && properties["weirdo_direction"] == int32(1) {
-					return mgl64.Vec3{}, false
-				}
+
+	if _, ok := b.(block.Stairs); ok || name == "minecraft:air" {
+		if len(properties) != 0 {
+			if properties["upside_down_bit"] == false && properties["weirdo_direction"] == int32(1) {
+				return mgl64.Vec3{}, false
 			}
 		}
 
 		if airPos, airOk := validAirPosition(e, target, direction); airOk {
-			// // fmt.Println("Air Pearl")
 			return airPos, true
 		}
 	}
@@ -310,11 +213,14 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
 	}
 
 	if validBlock(b) && validBlock(e.World().Block(pos.Add(cube.Pos{0, 1, 0}))) {
-		// fmt.Println("Valid Block Pearl")
 		return pos.Vec3(), true
 	}
 
-	return pos.Vec3(), false
+	if underPos, underOk := validUnderPearl(e, target, direction); underOk {
+		return underPos, true
+	}
+
+	return mgl64.Vec3{}, false
 }
 
 func validUnderPearl(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
@@ -396,22 +302,19 @@ func validTaliPearl(e *entity.Ent, target trace.Result, direction cube.Direction
 func validBlock(block2 world.Block) bool {
 	//TODO: this needs a lot of work :pain:
 
-	var blocks = []world.Block{block.DoubleFlower{}, block.DoubleTallGrass{}, block.ShortGrass{}, block.Flower{}, block.DoubleFlower{}, block.Air{}, block.Grass{}, block.Sand{}, block.Leaves{}, block.GlassPane{}, block.StainedGlassPane{}}
+	var blocks = []world.Block{block.DoubleFlower{}, block.DoubleTallGrass{}, block.ShortGrass{}, block.Flower{}, block.DoubleFlower{}, block.Grass{}, block.Sand{}, block.Leaves{}, block.GlassPane{}, block.StainedGlassPane{}}
 
 	name, _ := block2.EncodeBlock()
+
 	for _, bk := range blocks {
 		targetName, _ := bk.EncodeBlock()
-
-		if strings.HasSuffix(name, "glass_pane") {
-			return true
-		}
 
 		if targetName == name {
 			return true
 		}
 	}
 
-	return true
+	return false
 }
 
 // noinspection ALL
