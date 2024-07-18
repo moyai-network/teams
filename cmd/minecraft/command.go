@@ -110,6 +110,7 @@ func registerCommands() {
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
 		cmd.New("leaderboards", text.Colourf("See the leaderboards for kills, deaths, killstreaks, and KDR"), []string{"lb"}, command.LeaderboardKills{}, command.LeaderboardDeaths{}, command.LeaderboardKillStreaks{}, command.LeaderboardKDR{}),
 		cmd.New("stats", text.Colourf("View your or other player's stats."), nil, command.StatsOnlineCommand{}, command.StatsOfflineCommand{}),
+		cmd.New("report", text.Colourf("Report a player."), nil, command.Report{}),
 	} {
 		cmd.Register(c)
 	}
