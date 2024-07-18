@@ -239,12 +239,8 @@ func validAirPosition(e *entity.Ent, target trace.Result, direction cube.Directi
 
 func validFencePosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
 	pos := target.Position()
-
 	b, ok := e.World().Block(cube.PosFromVec3(pos)).(block.WoodFenceGate)
-	if !ok {
-		return mgl64.Vec3{}, false
-	}
-	if b.Open {
+	if !ok || b.Open {
 		newPos := mgl64.Vec3{}
 
 		switch direction {
