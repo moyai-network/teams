@@ -237,30 +237,30 @@ func validAirPosition(e *entity.Ent, target trace.Result, direction cube.Directi
 }
 
 func validFencePosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
-	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
+	pos := target.Position()
 
-	if b, ok := e.World().Block(pos).(block.WoodFenceGate); ok {
+	if b, ok := e.World().Block(cube.PosFromVec3(pos)).(block.WoodFenceGate); ok {
 		if b.Open {
-			newPos := cube.Pos{}
+			newPos := mgl64.Vec3{}
 
-			switch direction.String() {
-			case "west":
-				newPos = pos.Sub(cube.Pos{1, 0, 0})
-			case "east":
-				newPos = pos.Add(cube.Pos{1, 0, 0})
-			case "north":
-				newPos = pos.Sub(cube.Pos{0, 0, 1})
-			case "south":
-				newPos = pos.Add(cube.Pos{0, 0, 1})
+			switch direction {
+			case cube.West:
+				newPos = pos.Add(mgl64.Vec3{-1, 0, 0})
+			case cube.East:
+				newPos = pos.Add(mgl64.Vec3{1, 0, 0})
+			case cube.North:
+				newPos = pos.Add(mgl64.Vec3{0, 0, 1})
+			case cube.South:
+				newPos = pos.Add(mgl64.Vec3{0, 0, -1})
 			}
 
-			if _, ok := e.World().Block(newPos).(block.Air); ok {
-				if _, ok := e.World().Block(newPos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
-					return newPos.Vec3(), true
+			if _, ok := e.World().Block(cube.PosFromVec3(newPos)).(block.Air); ok {
+				if _, ok := e.World().Block(cube.PosFromVec3(newPos.Add(mgl64.Vec3{0, 1, 0}))).(block.Air); ok {
+					return newPos, true
 				}
 			}
 		} else {
-			return pos.Vec3(), true
+			return pos, true
 		}
 	}
 
@@ -327,7 +327,7 @@ func validUnderPearl(e *entity.Ent, target trace.Result, direction cube.Directio
 	pos := cube.Pos{int(target.Position().X()), int(target.Position().Y()), int(target.Position().Z())}
 
 	pitch := pitches[e]
-	
+
 	if pitch > -45 && pitch < 45 {
 		if _, ok := e.World().Block(pos.Add(cube.Pos{0, 1, 0})).(block.Air); ok {
 			return pos.Vec3(), true
