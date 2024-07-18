@@ -238,18 +238,21 @@ type TeamCamp struct {
 
 // TeamIncrementDTR is a command to increment DTR
 type TeamIncrementDTR struct {
+	adminAllower
 	Sub  cmd.SubCommand `cmd:"incdtr"`
 	Name teamName
 }
 
 // TeamDecrementDTR is a command to decrement DTR
 type TeamDecrementDTR struct {
+	adminAllower
 	Sub  cmd.SubCommand `cmd:"decdtr"`
 	Name teamName
 }
 
 // TeamResetRegen is a command to reset regeneration
 type TeamResetRegen struct {
+	adminAllower
 	Sub  cmd.SubCommand `cmd:"resetregen"`
 	Name teamName
 }

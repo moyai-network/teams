@@ -28,6 +28,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/block/model"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
@@ -436,6 +437,35 @@ func (h *Handler) SendAirPillar(pos cube.Pos) {
 	for y := pos.Y(); y <= pos.Y()+50; y++ {
 		h.viewBlockUpdate(cube.Pos{pos.X(), y, pos.Z()}, block.Air{}, 0)
 	}
+}
+
+// revertMovement reverts the user's movement.
+func (h *Handler) revertMovement() {
+	p := h.p
+	latency := p.Latency()*2
+	pos := p.Position()
+	time.AfterFunc(latency, func() {
+		if p == nil {
+			return
+		}
+		g := p.OnGround()
+		p.Teleport(pos)
+		if !g {
+			w := p.World()
+			x := int(pos.X())
+			z := int(pos.Z())
+			for y := int(pos.Y()) - 1; y > 0; y-- {
+				b := w.Block(cube.Pos{x, y, z})
+				if _, ok := b.Model().(model.Solid); ok {
+					new := pos
+					new.Add(mgl64.Vec3{0, float64(y + 1), 0})
+					p.Teleport(new)
+				} else {
+					continue
+				}
+			}
+		}
+	})
 }
 
 // sendWall sends a wall to the user.
