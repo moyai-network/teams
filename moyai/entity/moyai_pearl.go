@@ -263,10 +263,8 @@ func validFencePosition(e *entity.Ent, target trace.Result, direction cube.Direc
 				return newPos, true
 			}
 		}
-	} else {
-		return pos, true
 	}
-	return mgl64.Vec3{}, false
+	return pos, true
 }
 
 func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
