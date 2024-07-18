@@ -1,24 +1,24 @@
 package moyai
 
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"time"
 
-    "github.com/bedrock-gophers/provider/provider"
-    "github.com/google/uuid"
+	"github.com/bedrock-gophers/provider/provider"
+	"github.com/google/uuid"
 
-    "github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/state"
 
-    "github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/data"
 
-    "github.com/moyai-network/teams/moyai/sotw"
-    "github.com/sirupsen/logrus"
+	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/sirupsen/logrus"
 
-    "github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player"
 
-    "github.com/df-mc/dragonfly/server"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/df-mc/dragonfly/server/world/mcdb"
+	"github.com/df-mc/dragonfly/server"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/dragonfly/server/world/mcdb"
 )
 
 func init() {
@@ -27,7 +27,7 @@ func init() {
             <-time.After(time.Millisecond)
             continue
         }
-        //go tickAirDrop(Overworld())
+        go tickAirDrop(Overworld())
         go tickAutomaticSave(Overworld())
     }()
 }
