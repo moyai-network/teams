@@ -1068,6 +1068,9 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output) {
 	}
 
 	if area.Spawn(p.World()).Vec3WithinOrEqualXZ(p.Position()) {
+		if p.World() != moyai.Overworld() {
+			moyai.Overworld().AddEntity(p)
+		}
 		p.Teleport(tm.Home)
 		return
 	}
