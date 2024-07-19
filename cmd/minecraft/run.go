@@ -75,6 +75,7 @@ func Run() error {
     handleServerClose()
 
     registerCommands()
+    store := loadStore(conf.Moyai.Tebex, log)
     srv.Listen()
 
     moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
@@ -97,8 +98,6 @@ func Run() error {
     go startLeaderboard()
 
     go startChatGame()
-
-    store := loadStore(conf.Moyai.Tebex, log)
     for srv.Accept(acceptFunc(store)) {
         // Do nothing.
     }
