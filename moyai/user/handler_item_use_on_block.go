@@ -223,6 +223,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
 			}
 
 			if u.Teams.DeathBan.Active() && key == "deathban" {
+				h.p.Inventory().Clear()
+				h.p.Armour().Clear()
 				kit.Apply(kit.Diamond{}, h.p)
 			}
 			return
