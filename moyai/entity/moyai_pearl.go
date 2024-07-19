@@ -218,7 +218,7 @@ func validPosition(e *entity.Ent, target trace.Result, direction cube.Direction)
         return underPos, true
     }
 
-    return mgl64.Vec3{}, false
+    return pos.Vec3(), true
 }
 
 func validUnderPearl(e *entity.Ent, target trace.Result, direction cube.Direction) (mgl64.Vec3, bool) {
