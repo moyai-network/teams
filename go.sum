@@ -8,6 +8,8 @@ github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812 h1:sLH
 github.com/bedrock-gophers/intercept v0.1.2-0.20240617025713-0a401701e812/go.mod h1:O9x7OdMuTnKfqoCvqL0+xD9OwCmlPnyOvFo9Nq+Dg8E=
 github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73 h1:0jy82xs44V4p0GA22wr2BLmfez+OgFVU/30CJEORQyI=
 github.com/bedrock-gophers/inv v0.1.1-0.20240601174859-539141970a73/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
+github.com/bedrock-gophers/inv v0.1.1-0.20240719141804-8dcc2ab81afd h1:pjBMjWcwtun6+58gb4KqgB4yMVoCbzqjC9Xfby7zGNY=
+github.com/bedrock-gophers/inv v0.1.1-0.20240719141804-8dcc2ab81afd/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc h1:qsPWZtBD81G95+OPBdFfatNsRtzrrrUEt0FCKIHAzWk=
 github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc/go.mod h1:3ewBix1nkzkJdpLhf8WB6OnwPbyJo2AwKI3SAItRZT4=
 github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae h1:odLd7WsNGVgZsY9sNlo3ewTYY7hrKiDNmqPJ54Zvjlo=
