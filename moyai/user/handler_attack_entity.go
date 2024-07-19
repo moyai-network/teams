@@ -318,6 +318,10 @@ func (h *Handler) handleSpecialCases(targetPlayer *player.Player, ctx *event.Con
 		}
 		ctx.Cancel()
 		return true
+	} else if colour.StripMinecraftColour(targetPlayer.Name()) == "Block Shop" {
+		inv.SendMenu(h.p, menu.NewBlocksMenu(h.p))
+		ctx.Cancel()
+		return true
 	}
 	return false
 }

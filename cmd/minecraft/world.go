@@ -1,30 +1,30 @@
 package minecraft
 
 import (
-    "fmt"
-    "math"
-    "reflect"
-    "strings"
-    "time"
-    "unicode"
-    "unsafe"
+	"fmt"
+	"math"
+	"reflect"
+	"strings"
+	"time"
+	"unicode"
+	"unsafe"
 
-    "github.com/bedrock-gophers/inv/inv"
-    "github.com/df-mc/dragonfly/server/block"
-    "github.com/df-mc/dragonfly/server/block/cube"
-    "github.com/df-mc/dragonfly/server/entity"
-    "github.com/df-mc/dragonfly/server/item"
-    "github.com/df-mc/dragonfly/server/item/inventory"
-    "github.com/df-mc/dragonfly/server/player"
-    "github.com/df-mc/dragonfly/server/player/skin"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/df-mc/npc"
-    "github.com/go-gl/mathgl/mgl64"
-    "github.com/moyai-network/teams/moyai"
-    "github.com/moyai-network/teams/moyai/crate"
-    ench "github.com/moyai-network/teams/moyai/enchantment"
-    "github.com/moyai-network/teams/moyai/menu"
-    "github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/bedrock-gophers/inv/inv"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/item/inventory"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/skin"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/npc"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/crate"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
+	"github.com/moyai-network/teams/moyai/menu"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var (
@@ -175,6 +175,17 @@ func placeSlapper() {
         if men, ok := menu.NewKitsMenu(p); ok {
             inv.SendMenu(p, men)
         }
+    })
+    _ = npc.Create(npc.Settings{
+        Name:       text.Colourf("<gold>Block Shop</gold>"),
+        Skin:       skin.Skin{},
+        Scale:      1,
+        Yaw:        -120,
+        MainHand:   item.NewStack(block.Diamond{}, 1),
+
+        Position: mgl64.Vec3{-6, 67, 45.5},
+    }, w, func(p *player.Player) {
+        inv.SendMenu(p, menu.NewBlocksMenu(p))
     })
 }
 
