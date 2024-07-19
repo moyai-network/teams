@@ -1,8 +1,9 @@
 package user
 
 import (
-	"github.com/bedrock-gophers/knockback/knockback"
 	"time"
+
+	"github.com/bedrock-gophers/knockback/knockback"
 
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/entity/effect"

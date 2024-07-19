@@ -29,7 +29,14 @@ func init() {
         }
         go tickAirDrop(Overworld())
         go tickAutomaticSave(Overworld(), time.Minute)
-        go tickAutomaticSave(Nether(), time.Minute*5)
+    }()
+
+    go func() {
+        for Nether() == nil {
+            <-time.After(time.Millisecond)
+            continue
+        }
+        go tickAutomaticSave(Nether(), time.Second*5)
     }()
 }
 
