@@ -85,6 +85,9 @@ func PartialReset() {
         u.Teams.Refill = cooldown.NewCoolDown()
         u.Teams.PVP = cooldown.NewCoolDown()
         u.Teams.PVP.Set(time.Hour + time.Second)
+        if !u.Teams.PVP.Paused() {
+            u.Teams.PVP.TogglePause()
+        }
         u.Teams.Create = cooldown.NewCoolDown()
         u.Teams.Stats = Stats{}
         u.Teams.ClaimedRewards = sets.New[int]()
