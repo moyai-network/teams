@@ -13,7 +13,7 @@ func placeText(c moyai.Config) {
 	crate := mgl64.Vec3{0.5, 70, 17}
 	kit := mgl64.Vec3{7, 69.5, 47.5}
 	shop := mgl64.Vec3{21.5, 69, 0.5}
-	adv := mgl64.Vec3{0, 71, 75}
+	adv := mgl64.Vec3{0.5, 71, 75}
 	for _, e := range moyai.Overworld().Entities() {
 		if _, ok := e.Type().(entity.TextType); ok {
 			e.Close()

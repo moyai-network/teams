@@ -1,28 +1,28 @@
 package entity
 
 import (
-    "math"
-    _ "unsafe"
+	"math"
+	_ "unsafe"
 
-    "github.com/df-mc/dragonfly/server/item"
-    "github.com/df-mc/dragonfly/server/session"
-    "github.com/moyai-network/teams/moyai/area"
-    "github.com/moyai-network/teams/moyai/data"
-    "github.com/moyai-network/teams/moyai/user"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/session"
+	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/user"
 
-    //"github.com/paroxity/portal/session"
-    "github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-    "github.com/sandertv/gophertunnel/minecraft/text"
+	//"github.com/paroxity/portal/session"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 
-    "github.com/df-mc/dragonfly/server/block"
-    "github.com/df-mc/dragonfly/server/block/cube"
-    "github.com/df-mc/dragonfly/server/block/cube/trace"
-    "github.com/df-mc/dragonfly/server/entity"
-    "github.com/df-mc/dragonfly/server/player"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/df-mc/dragonfly/server/world/particle"
-    "github.com/df-mc/dragonfly/server/world/sound"
-    "github.com/go-gl/mathgl/mgl64"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/block/cube/trace"
+	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/dragonfly/server/world/particle"
+	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/go-gl/mathgl/mgl64"
 )
 
 var directions = map[world.Entity]cube.Direction{}
@@ -90,7 +90,7 @@ func teleport(e *entity.Ent, target trace.Result) {
     if pos, ok := validPosition(e, target, directions[p]); ok {
         p.Teleport(pos)
         p.PlaySound(sound.Teleport{})
-        p.Hurt(5, entity.FallDamageSource{})
+        //p.Hurt(5, entity.FallDamageSource{})
     } else {
         usr.Pearl().Reset()
         p.SendPopup(text.Colourf("<red>Pearl Refunded</red>"))

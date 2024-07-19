@@ -105,7 +105,7 @@ func startLeaderboard() {
 
 func formattedTeamLeaderBoard[T int | float64](name string, value func(u data.Team) T) string {
 	sb := &strings.Builder{}
-	sb.WriteString(text.Colourf("<bold><gold>TOP TEAM %v</gold></bold>\n", strings.ToUpper(name))) 
+	sb.WriteString(text.Colourf("<bold><red>TOP TEAM %v</red></bold>\n", strings.ToUpper(name))) 
 	teams, err := data.LoadAllTeams()
 	if err != nil {
 		return sb.String()
