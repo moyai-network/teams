@@ -43,7 +43,7 @@ func userCached(f func(User) bool) (User, bool) {
 }
 
 func saveUserData(u User) error {
-    filter := bson.M{"xuid": bson.M{"$eq": u.XUID}}
+    filter := bson.M{"name": bson.M{"$eq": u.Name}}
     update := bson.M{"$set": u}
 
     res, err := userCollection.UpdateOne(ctx(), filter, update)
@@ -60,7 +60,7 @@ func saveUserData(u User) error {
 func saveBatchUserData(users []User) error {
     var models []mongo.WriteModel
     for _, u := range users {
-        filter := bson.M{"xuid": bson.M{"$eq": u.XUID}}
+        filter := bson.M{"name": bson.M{"$eq": u.Name}}
         update := bson.M{"$set": u}
 
         models = append(models, mongo.NewUpdateOneModel().SetFilter(filter).SetUpdate(update).SetUpsert(true))
@@ -266,7 +266,7 @@ func LoadUserOrCreate(name, xuid string) (User, error) {
         fmt.Println("LoadUserOrCreate: no user found")
         u = DefaultUser(name, xuid)
         userMu.Lock()
-        users[u.XUID] = u
+        users[u.Name] = u
         userMu.Unlock()
         return u, nil
     }
@@ -383,10 +383,10 @@ func loadUsersFromFilter(filter any) ([]User, error) {
 
     userMu.Lock()
     for i, u := range data {
-        if _, ok := users[u.XUID]; ok {
-            data[i] = users[u.XUID]
+        if _, ok := users[u.Name]; ok {
+            data[i] = users[u.Name]
         } else {
-            users[u.XUID] = u
+            users[u.Name] = u
         }
     }
     userMu.Unlock()
@@ -397,13 +397,13 @@ func loadUsersFromFilter(filter any) ([]User, error) {
 func SaveUser(u User) {
     u.lastSaved = time.Now()
     userMu.Lock()
-    users[u.XUID] = u
+    users[u.Name] = u
     userMu.Unlock()
 }
 
 func FlushUser(u User) {
     userMu.Lock()
-    delete(users, u.XUID)
+    delete(users, u.Name)
     userMu.Unlock()
 
     err := saveUserData(u)
@@ -439,7 +439,7 @@ func decodeSingleUserResult(result *mongo.SingleResult) (User, error) {
     }
 
     userMu.Lock()
-    users[u.XUID] = u
+    users[u.Name] = u
     userMu.Unlock()
 
     return u, nil

@@ -1,317 +1,317 @@
 package user
 
 import (
-	"slices"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
+    "slices"
+    "strconv"
+    "strings"
+    "sync"
+    "time"
 
-	"github.com/bedrock-gophers/unsafe/unsafe"
+    "github.com/bedrock-gophers/unsafe/unsafe"
 
-	"github.com/df-mc/dragonfly/server/item/inventory"
-	"github.com/google/uuid"
+    "github.com/df-mc/dragonfly/server/item/inventory"
+    "github.com/google/uuid"
 
-	"github.com/moyai-network/teams/moyai/roles"
+    "github.com/moyai-network/teams/moyai/roles"
 
-	"github.com/diamondburned/arikawa/v3/discord"
+    "github.com/diamondburned/arikawa/v3/discord"
 
-	"github.com/moyai-network/teams/moyai"
+    "github.com/moyai-network/teams/moyai"
 
-	"github.com/bedrock-gophers/cooldown/cooldown"
-	"github.com/df-mc/atomic"
-	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/event"
-	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/scoreboard"
-	"github.com/df-mc/dragonfly/server/world"
-	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/class"
-	"github.com/moyai-network/teams/moyai/data"
-	it "github.com/moyai-network/teams/moyai/item"
+    "github.com/bedrock-gophers/cooldown/cooldown"
+    "github.com/df-mc/atomic"
+    "github.com/df-mc/dragonfly/server/block/cube"
+    "github.com/df-mc/dragonfly/server/entity"
+    "github.com/df-mc/dragonfly/server/event"
+    "github.com/df-mc/dragonfly/server/item"
+    "github.com/df-mc/dragonfly/server/player"
+    "github.com/df-mc/dragonfly/server/player/scoreboard"
+    "github.com/df-mc/dragonfly/server/world"
+    "github.com/go-gl/mathgl/mgl64"
+    "github.com/moyai-network/teams/internal/lang"
+    "github.com/moyai-network/teams/moyai/area"
+    "github.com/moyai-network/teams/moyai/class"
+    "github.com/moyai-network/teams/moyai/data"
+    it "github.com/moyai-network/teams/moyai/item"
 
-	"github.com/moyai-network/teams/moyai/process"
-	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+    "github.com/moyai-network/teams/moyai/process"
+    "github.com/sandertv/gophertunnel/minecraft/protocol/packet"
+    "github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var (
-	// tlds is a list of top level domains used for checking for advertisements.
-	tlds = [...]string{".me", ".club", "www.", ".com", ".net", ".gg", ".cc", ".net", ".co", ".co.uk", ".ddns", ".ddns.net", ".cf", ".live", ".ml", ".gov", "http://", "https://", ",club", "www,", ",com", ",cc", ",net", ",gg", ",co", ",couk", ",ddns", ",ddns.net", ",cf", ",live", ",ml", ",gov", ",http://", "https://", "gg/"}
-	// emojis is a map between emojis and their unicode representation.
-	emojis = strings.NewReplacer(
-		":l:", "\uE107",
-		":skull:", "\uE105",
-		":fire:", "\uE108",
-		":eyes:", "\uE109",
-		":clown:", "\uE10A",
-		":100:", "\uE10B",
-		":heart:", "\uE10C",
-	)
+    // tlds is a list of top level domains used for checking for advertisements.
+    tlds = [...]string{".me", ".club", "www.", ".com", ".net", ".gg", ".cc", ".net", ".co", ".co.uk", ".ddns", ".ddns.net", ".cf", ".live", ".ml", ".gov", "http://", "https://", ",club", "www,", ",com", ",cc", ",net", ",gg", ",co", ",couk", ",ddns", ",ddns.net", ",cf", ",live", ",ml", ",gov", ",http://", "https://", "gg/"}
+    // emojis is a map between emojis and their unicode representation.
+    emojis = strings.NewReplacer(
+        ":l:", "\uE107",
+        ":skull:", "\uE105",
+        ":fire:", "\uE108",
+        ":eyes:", "\uE109",
+        ":clown:", "\uE10A",
+        ":100:", "\uE10B",
+        ":heart:", "\uE10C",
+    )
 
-	loggers  = map[string]*Handler{}
-	loggerMu sync.Mutex
+    loggers  = map[string]*Handler{}
+    loggerMu sync.Mutex
 )
 
 type Handler struct {
-	player.NopHandler
+    player.NopHandler
 
-	p    *player.Player
-	uuid uuid.UUID
+    p    *player.Player
+    uuid uuid.UUID
 
-	logTime           time.Time
-	claimSelectionPos [2]mgl64.Vec3
-	waypoint          *WayPoint
-	energy            atomic.Value[float64]
+    logTime           time.Time
+    claimSelectionPos [2]mgl64.Vec3
+    waypoint          *WayPoint
+    energy            atomic.Value[float64]
 
-	wallBlocks   map[cube.Pos]float64
-	wallBlocksMu sync.Mutex
+    wallBlocks   map[cube.Pos]float64
+    wallBlocksMu sync.Mutex
 
-	lastArmour       atomic.Value[[4]item.Stack]
-	lastClass        atomic.Value[class.Class]
-	lastScoreBoard   atomic.Value[*scoreboard.Scoreboard]
-	lastArea         atomic.Value[area.NamedArea]
-	lastAttackerName atomic.Value[string]
-	lastAttackTime   atomic.Value[time.Time]
-	lastPearlPos     mgl64.Vec3
-	lastMessage      atomic.Value[time.Time]
+    lastArmour       atomic.Value[[4]item.Stack]
+    lastClass        atomic.Value[class.Class]
+    lastScoreBoard   atomic.Value[*scoreboard.Scoreboard]
+    lastArea         atomic.Value[area.NamedArea]
+    lastAttackerName atomic.Value[string]
+    lastAttackTime   atomic.Value[time.Time]
+    lastPearlPos     mgl64.Vec3
+    lastMessage      atomic.Value[time.Time]
 
-	tagCombat                 *cooldown.CoolDown
-	tagArcher                 *cooldown.CoolDown
-	coolDownComboAbility      *cooldown.CoolDown
-	coolDownVampireAbility    *cooldown.CoolDown
-	coolDownBonedEffect       *cooldown.CoolDown
-	coolDownEffectDisabled    *cooldown.CoolDown
-	coolDownFocusMode         *cooldown.CoolDown
-	coolDownPearl             *cooldown.CoolDown
-	coolDownBackStab          *cooldown.CoolDown
-	coolDownGoldenApple       *cooldown.CoolDown
-	coolDownItemUse           *cooldown.CoolDown
-	coolDownArcherRogueItem   cooldown.MappedCoolDown[world.Item]
-	coolDownBardItem          cooldown.MappedCoolDown[world.Item]
-	coolDownMageItem          cooldown.MappedCoolDown[world.Item]
-	coolDownGlobalAbilities   *cooldown.CoolDown
-	coolDownSpecificAbilities cooldown.MappedCoolDown[it.SpecialItemType]
-	processLogout             *process.Process
-	processStuck              *process.Process
-	processHome               *process.Process
-	processCamp               *process.Process
+    tagCombat                 *cooldown.CoolDown
+    tagArcher                 *cooldown.CoolDown
+    coolDownComboAbility      *cooldown.CoolDown
+    coolDownVampireAbility    *cooldown.CoolDown
+    coolDownBonedEffect       *cooldown.CoolDown
+    coolDownEffectDisabled    *cooldown.CoolDown
+    coolDownFocusMode         *cooldown.CoolDown
+    coolDownPearl             *cooldown.CoolDown
+    coolDownBackStab          *cooldown.CoolDown
+    coolDownGoldenApple       *cooldown.CoolDown
+    coolDownItemUse           *cooldown.CoolDown
+    coolDownArcherRogueItem   cooldown.MappedCoolDown[world.Item]
+    coolDownBardItem          cooldown.MappedCoolDown[world.Item]
+    coolDownMageItem          cooldown.MappedCoolDown[world.Item]
+    coolDownGlobalAbilities   *cooldown.CoolDown
+    coolDownSpecificAbilities cooldown.MappedCoolDown[it.SpecialItemType]
+    processLogout             *process.Process
+    processStuck              *process.Process
+    processHome               *process.Process
+    processCamp               *process.Process
 
-	gracefulLogout bool
-	logger         bool
+    gracefulLogout bool
+    logger         bool
 
-	close chan struct{}
-	death chan struct{}
+    close chan struct{}
+    death chan struct{}
 }
 
 func NewHandler(p *player.Player, xuid string) (*Handler, error) {
-	sendFog(p)
-	if h, ok := logger(p); ok {
-		if h.p.World() == moyai.Deathban() {
-			<-time.After(time.Second)
-			moyai.Deathban().AddEntity(p)
-			p.SetGameMode(world.GameModeSurvival)
-		}
-		p.Teleport(h.p.Position())
-		currentHealth := h.p.Health()
-		p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
-		_ = h.p.Close()
-	}
+    sendFog(p)
+    if h, ok := logger(p); ok {
+        if h.p.World() == moyai.Deathban() {
+            <-time.After(time.Second)
+            moyai.Deathban().AddEntity(p)
+            p.SetGameMode(world.GameModeSurvival)
+        }
+        p.Teleport(h.p.Position())
+        currentHealth := h.p.Health()
+        p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
+        _ = h.p.Close()
+    }
 
-	h := &Handler{
-		p:          p,
-		uuid:       p.UUID(),
-		wallBlocks: map[cube.Pos]float64{},
+    h := &Handler{
+        p:          p,
+        uuid:       p.UUID(),
+        wallBlocks: map[cube.Pos]float64{},
 
-		tagCombat:                 cooldown.NewCoolDown(),
-		tagArcher:                 cooldown.NewCoolDown(),
-		coolDownPearl:             cooldown.NewCoolDown(),
-		coolDownBackStab:          cooldown.NewCoolDown(),
-		coolDownGoldenApple:       cooldown.NewCoolDown(),
-		coolDownGlobalAbilities:   cooldown.NewCoolDown(),
-		coolDownBonedEffect:       cooldown.NewCoolDown(),
-		coolDownEffectDisabled:    cooldown.NewCoolDown(),
-		coolDownFocusMode:         cooldown.NewCoolDown(),
-		coolDownItemUse:           cooldown.NewCoolDown(),
-		coolDownComboAbility:      cooldown.NewCoolDown(),
-		coolDownVampireAbility:    cooldown.NewCoolDown(),
-		coolDownArcherRogueItem:   cooldown.NewMappedCoolDown[world.Item](),
-		coolDownBardItem:          cooldown.NewMappedCoolDown[world.Item](),
-		coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),
-		coolDownSpecificAbilities: cooldown.NewMappedCoolDown[it.SpecialItemType](),
-		processHome: process.NewProcess(func(t *process.Process) {
-			p.Message(text.Colourf("<green>You have been teleported home.</green>"))
-		}),
-		processStuck: process.NewProcess(func(t *process.Process) {
-			p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
-		}),
+        tagCombat:                 cooldown.NewCoolDown(),
+        tagArcher:                 cooldown.NewCoolDown(),
+        coolDownPearl:             cooldown.NewCoolDown(),
+        coolDownBackStab:          cooldown.NewCoolDown(),
+        coolDownGoldenApple:       cooldown.NewCoolDown(),
+        coolDownGlobalAbilities:   cooldown.NewCoolDown(),
+        coolDownBonedEffect:       cooldown.NewCoolDown(),
+        coolDownEffectDisabled:    cooldown.NewCoolDown(),
+        coolDownFocusMode:         cooldown.NewCoolDown(),
+        coolDownItemUse:           cooldown.NewCoolDown(),
+        coolDownComboAbility:      cooldown.NewCoolDown(),
+        coolDownVampireAbility:    cooldown.NewCoolDown(),
+        coolDownArcherRogueItem:   cooldown.NewMappedCoolDown[world.Item](),
+        coolDownBardItem:          cooldown.NewMappedCoolDown[world.Item](),
+        coolDownMageItem:          cooldown.NewMappedCoolDown[world.Item](),
+        coolDownSpecificAbilities: cooldown.NewMappedCoolDown[it.SpecialItemType](),
+        processHome: process.NewProcess(func(t *process.Process) {
+            p.Message(text.Colourf("<green>You have been teleported home.</green>"))
+        }),
+        processStuck: process.NewProcess(func(t *process.Process) {
+            p.Message(text.Colourf("<red>You have been teleported to a safe place.</red>"))
+        }),
 
-		close: make(chan struct{}),
-		death: make(chan struct{}),
-	}
+        close: make(chan struct{}),
+        death: make(chan struct{}),
+    }
 
-	h.processLogout = process.NewProcess(func(t *process.Process) {
-		h.gracefulLogout = true
-		p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
-	})
+    h.processLogout = process.NewProcess(func(t *process.Process) {
+        h.gracefulLogout = true
+        p.Disconnect(text.Colourf("<red>You have been logged out.</red>"))
+    })
 
-	p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
-	UpdateState(p)
+    p.SetNameTag(text.Colourf("<red>%s</red>", p.Name()))
+    UpdateState(p)
 
-	s := unsafe.Session(p)
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
-		return nil, err
-	}
+    s := unsafe.Session(p)
+    u, err := data.LoadUserFromName(p.Name())
+    if err != nil {
+        return nil, err
+    }
 
-	u.StaffMode = false
-	if u.Teams.DeathBan.Active() {
-		moyai.Deathban().AddEntity(p)
-		p.Teleport(mgl64.Vec3{5, 13, 44})
-	} else {
-		if u.Teams.DeathBanned {
-			u.Teams.DeathBanned = false
-			u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
-			if !u.Teams.PVP.Paused() {
-				u.Teams.PVP.TogglePause()
-			}
+    u.StaffMode = false
+    if u.Teams.DeathBan.Active() {
+        moyai.Deathban().AddEntity(p)
+        p.Teleport(mgl64.Vec3{5, 13, 44})
+    } else {
+        if u.Teams.DeathBanned {
+            u.Teams.DeathBanned = false
+            u.Teams.PVP.Set(time.Hour + (time.Millisecond * 500))
+            if !u.Teams.PVP.Paused() {
+                u.Teams.PVP.TogglePause()
+            }
 
-			moyai.Overworld().AddEntity(p)
-			p.Teleport(mgl64.Vec3{0, 80, 0})
-		}
-	}
+            moyai.Overworld().AddEntity(p)
+            p.Teleport(mgl64.Vec3{0, 80, 0})
+        }
+    }
 
-	u.DisplayName = p.Name()
-	u.Name = strings.ToLower(p.Name())
-	u.XUID = xuid
-	u.DeviceID = s.ClientData().DeviceID
-	u.SelfSignedID = s.ClientData().SelfSignedID
+    u.DisplayName = p.Name()
+    u.Name = strings.ToLower(p.Name())
+    u.XUID = xuid
+    u.DeviceID = s.ClientData().DeviceID
+    u.SelfSignedID = s.ClientData().SelfSignedID
 
-	if !u.Roles.Contains(roles.Default()) {
-		u.Roles.Add(roles.Default())
-	}
+    if !u.Roles.Contains(roles.Default()) {
+        u.Roles.Add(roles.Default())
+    }
 
-	p.Message(lang.Translatef(*u.Language, "discord.message"))
-	h.handleBoosterRole(u)
+    p.Message(lang.Translatef(*u.Language, "discord.message"))
+    h.handleBoosterRole(u)
 
-	data.SaveUser(u)
-	if u.Frozen {
-		p.SetImmobile()
-	}
+    data.SaveUser(u)
+    if u.Frozen {
+        p.SetImmobile()
+    }
 
-	h.updateCurrentArea(p.Position(), u)
-	h.updateKOTHState(p.Position(), u)
-	UpdateVanishState(p, u)
+    h.updateCurrentArea(p.Position(), u)
+    h.updateKOTHState(p.Position(), u)
+    UpdateVanishState(p, u)
 
-	h.logTime = time.Now()
-	UpdateState(h.p)
-	go startTicker(h)
-	return h, nil
+    h.logTime = time.Now()
+    UpdateState(h.p)
+    go startTicker(h)
+    return h, nil
 }
 
 func sendFog(p *player.Player) {
-	var stack []string
-	switch p.World().Dimension() {
-	case world.End:
-		stack = []string{"minecraft:fog_the_end"}
-	case world.Nether:
-		stack = []string{"minecraft:fog_hell"}
-	}
-	unsafe.WritePacket(p, &packet.PlayerFog{
-		Stack: stack,
-	})
+    var stack []string
+    switch p.World().Dimension() {
+    case world.End:
+        stack = []string{"minecraft:fog_the_end"}
+    case world.Nether:
+        stack = []string{"minecraft:fog_hell"}
+    }
+    unsafe.WritePacket(p, &packet.PlayerFog{
+        Stack: stack,
+    })
 }
 
 func (h *Handler) handleBoosterRole(u data.User) {
-	p := h.p
+    p := h.p
 
-	if len(u.DiscordID) > 0 {
-		userID, _ := strconv.Atoi(u.DiscordID)
-		rl, err := moyai.DiscordState().MemberRoles(discord.GuildID(1111055709300342826), discord.UserID(userID))
-		if err == nil && slices.ContainsFunc(rl, func(d discord.Role) bool {
-			return discord.RoleID(1113243316805447830) == d.ID
-		}) {
-			{
-				p.Message(text.Colourf("<green>Thank you for being a Nitro Booster!</green>"))
-				u.Roles.Add(roles.Nitro())
-				return
-			}
-		}
-	}
-	if u.Roles.Contains(roles.Nitro()) {
-		p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
-		u.Roles.Remove(roles.Nitro())
-	}
+    if len(u.DiscordID) > 0 {
+        userID, _ := strconv.Atoi(u.DiscordID)
+        rl, err := moyai.DiscordState().MemberRoles(discord.GuildID(1111055709300342826), discord.UserID(userID))
+        if err == nil && slices.ContainsFunc(rl, func(d discord.Role) bool {
+            return discord.RoleID(1113243316805447830) == d.ID
+        }) {
+            {
+                p.Message(text.Colourf("<green>Thank you for being a Nitro Booster!</green>"))
+                u.Roles.Add(roles.Nitro())
+                return
+            }
+        }
+    }
+    if u.Roles.Contains(roles.Nitro()) {
+        p.Message(text.Colourf("<red>You are no longer a Nitro Booster.</red>"))
+        u.Roles.Remove(roles.Nitro())
+    }
 }
 
 func vec3ToVec2(v mgl64.Vec3) mgl64.Vec2 {
-	return mgl64.Vec2{v.X(), v.Z()}
+    return mgl64.Vec2{v.X(), v.Z()}
 }
 
 func maxMin(n, n2 float64) (max float64, min float64) {
-	if n > n2 {
-		return n, n2
-	}
-	return n2, n
+    if n > n2 {
+        return n, n2
+    }
+    return n2, n
 }
 
 type npcHandler struct {
-	player.NopHandler
+    player.NopHandler
 }
 
 func (npcHandler) HandleItemPickup(ctx *event.Context, _ *item.Stack) {
-	ctx.Cancel()
+    ctx.Cancel()
 }
 
 type NoArmourAttackEntitySource struct {
-	Attacker world.Entity
+    Attacker world.Entity
 }
 
 func (NoArmourAttackEntitySource) Fire() bool {
-	return false
+    return false
 }
 
 func (NoArmourAttackEntitySource) ReducedByArmour() bool {
-	return false
+    return false
 }
 
 func (NoArmourAttackEntitySource) ReducedByResistance() bool {
-	return false
+    return false
 }
 
 // attackerFromSource returns the Attacker from a DamageSource. If the source is not an entity false is
 // returned.
 func attackerFromSource(src world.DamageSource) (world.Entity, bool) {
-	switch s := src.(type) {
-	case entity.AttackDamageSource:
-		return s.Attacker, true
-	case NoArmourAttackEntitySource:
-		return s.Attacker, true
-	}
-	return nil, false
+    switch s := src.(type) {
+    case entity.AttackDamageSource:
+        return s.Attacker, true
+    case NoArmourAttackEntitySource:
+        return s.Attacker, true
+    }
+    return nil, false
 }
 
 func restorePlayerData(p *player.Player) {
-	p.Inventory().Handle(inventory.NopHandler{})
-	dat, err := moyai.LoadPlayerData(p.UUID())
-	if err != nil {
-		return
-	}
-	p.Teleport(dat.Position)
-	p.SetGameMode(dat.GameMode)
+    p.Inventory().Handle(inventory.NopHandler{})
+    dat, err := moyai.LoadPlayerData(p.UUID())
+    if err != nil {
+        return
+    }
+    p.Teleport(dat.Position)
+    p.SetGameMode(dat.GameMode)
 
-	newInv := dat.Inventory
-	p.Inventory().Clear()
-	p.Armour().Clear()
-	p.Armour().Set(newInv.Helmet, newInv.Chestplate, newInv.Leggings, newInv.Boots)
-	for slot, itm := range newInv.Items {
-		if itm.Empty() {
-			continue
-		}
-		_ = p.Inventory().SetItem(slot, itm)
-	}
+    newInv := dat.Inventory
+    p.Inventory().Clear()
+    p.Armour().Clear()
+    p.Armour().Set(newInv.Helmet, newInv.Chestplate, newInv.Leggings, newInv.Boots)
+    for slot, itm := range newInv.Items {
+        if itm.Empty() {
+            continue
+        }
+        _ = p.Inventory().SetItem(slot, itm)
+    }
 }

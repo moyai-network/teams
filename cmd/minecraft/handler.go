@@ -40,8 +40,8 @@ func (temporaryHandler) HandleSignEdit(ctx *event.Context, _ cube.Pos, _ bool, _
 func (temporaryHandler) HandleLecternPageTurn(ctx *event.Context, _ cube.Pos, _ int, _ *int) {
     ctx.Cancel()
 }
-func (temporaryHandler) HandleItemPickup(ctx *event.Context, _ *item.Stack)       { ctx.Cancel() }
-func (temporaryHandler) HandleItemUse(ctx *event.Context)                         { ctx.Cancel() }
+func (temporaryHandler) HandleItemPickup(ctx *event.Context, _ *item.Stack) { ctx.Cancel() }
+func (temporaryHandler) HandleItemUse(ctx *event.Context)                   { ctx.Cancel() }
 func (temporaryHandler) HandleItemUseOnBlock(ctx *event.Context, _ cube.Pos, _ cube.Face, _ mgl64.Vec3) {
     ctx.Cancel()
 }
@@ -51,7 +51,7 @@ func (temporaryHandler) HandleItemDamage(ctx *event.Context, _ item.Stack, _ int
 func (temporaryHandler) HandleAttackEntity(ctx *event.Context, _ world.Entity, _ *float64, _ *float64, _ *bool) {
     ctx.Cancel()
 }
-func (temporaryHandler) HandleExperienceGain(ctx *event.Context, _ *int)          { ctx.Cancel() }
+func (temporaryHandler) HandleExperienceGain(ctx *event.Context, _ *int) { ctx.Cancel() }
 func (temporaryHandler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, _ world.DamageSource) {
     ctx.Cancel()
 }

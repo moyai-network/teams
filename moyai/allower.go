@@ -38,7 +38,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
     }
     if !u.Teams.Ban.Expired() {
         description := lang.Translatef(*u.Language, "user.ban.description", strings.TrimSpace(u.Teams.Ban.Reason), durafmt.ParseShort(u.Teams.Ban.Remaining()))
-        if u.XUID == d.XUID {
+        if strings.EqualFold(u.Name, d.DisplayName) {
             return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header") + "\n" + description), false
         }
     }
@@ -55,13 +55,13 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
         if !u.Teams.Ban.Expired() {
             if u.Teams.Ban.Permanent {
                 description := lang.Translatef(*u.Language, "user.blacklist.description", strings.TrimSpace(u.Teams.Ban.Reason))
-                if u.XUID == d.XUID {
+                if strings.EqualFold(u.Name, d.DisplayName) {
                     return strutils.CenterLine(lang.Translatef(*u.Language, "user.blacklist.header") + "\n" + description), false
                 }
                 return strutils.CenterLine(lang.Translatef(*u.Language, "user.blacklist.header.alt") + "\n" + description), false
             }
             description := lang.Translatef(*u.Language, "user.ban.description", strings.TrimSpace(u.Teams.Ban.Reason), durafmt.ParseShort(u.Teams.Ban.Remaining()))
-            if u.XUID == d.XUID {
+            if strings.EqualFold(u.Name, d.DisplayName) {
                 return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header") + "\n" + description), false
             }
             return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header.alt") + "\n" + description), false
