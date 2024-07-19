@@ -1,24 +1,24 @@
 package moyai
 
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"time"
 
-    "github.com/bedrock-gophers/provider/provider"
-    "github.com/google/uuid"
+	"github.com/bedrock-gophers/provider/provider"
+	"github.com/google/uuid"
 
-    "github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/state"
 
-    "github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/data"
 
-    "github.com/moyai-network/teams/moyai/sotw"
-    "github.com/sirupsen/logrus"
+	"github.com/moyai-network/teams/moyai/sotw"
+	"github.com/sirupsen/logrus"
 
-    "github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player"
 
-    "github.com/df-mc/dragonfly/server"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/df-mc/dragonfly/server/world/mcdb"
+	"github.com/df-mc/dragonfly/server"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/df-mc/dragonfly/server/world/mcdb"
 )
 
 func init() {
@@ -28,7 +28,8 @@ func init() {
             continue
         }
         go tickAirDrop(Overworld())
-        go tickAutomaticSave(Overworld())
+        go tickAutomaticSave(Overworld(), time.Minute)
+        go tickAutomaticSave(Nether(), time.Minute*5)
     }()
 }
 
@@ -226,9 +227,9 @@ func Close() {
     }
 }
 
-func tickAutomaticSave(w *world.World) {
+func tickAutomaticSave(w *world.World, dur time.Duration) {
     for {
-        <-time.After(time.Minute * 1)
+        <-time.After(dur)
         w.Save()
         for _, p := range Players() {
             u, err := data.LoadUserFromName(p.Name())
