@@ -16,7 +16,7 @@ type PlayerListTeleport struct {
 }
 
 func SendPlayerListTeleportMenu(p *player.Player) {
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
@@ -65,7 +65,7 @@ func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(u data.User, p *player.
 }
 
 func (pl *PlayerListTeleport) Submit(p *player.Player, stack item.Stack) {
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}

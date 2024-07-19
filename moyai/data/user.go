@@ -326,15 +326,6 @@ func LoadUserFromDiscordID(did string) (User, error) {
 
 }
 
-func LoadUserFromXUID(xuid string) (User, error) {
-    if u, ok := userCached(func(u User) bool {
-        return u.XUID == xuid
-    }); ok {
-        return u, nil
-    }
-    return decodeSingleUserFromFilter(bson.M{"xuid": bson.M{"$eq": xuid}})
-}
-
 func LoadUserFromName(name string) (User, error) {
     name = strings.ToLower(name)
 

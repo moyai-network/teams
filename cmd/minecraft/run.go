@@ -1,401 +1,403 @@
 package minecraft
 
 import (
-	"fmt"
-	"math/rand"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
+    "fmt"
+    "math/rand"
+    "os"
+    "os/signal"
+    "strings"
+    "syscall"
+    "time"
 
-	"github.com/bedrock-gophers/knockback/knockback"
+    "github.com/bedrock-gophers/knockback/knockback"
 
-	"github.com/bedrock-gophers/tag/tag"
+    "github.com/bedrock-gophers/tag/tag"
 
-	"github.com/bedrock-gophers/role/role"
-	"github.com/moyai-network/teams/moyai/roles"
-	"github.com/oomph-ac/oomph"
-	"github.com/oomph-ac/oomph/handler"
+    "github.com/bedrock-gophers/role/role"
+    "github.com/moyai-network/teams/moyai/roles"
+    "github.com/oomph-ac/oomph"
+    "github.com/oomph-ac/oomph/handler"
 
-	"github.com/bedrock-gophers/console/console"
-	"github.com/bedrock-gophers/intercept"
-	"github.com/bedrock-gophers/inv/inv"
-	"github.com/bedrock-gophers/tebex/tebex"
-	"github.com/df-mc/dragonfly/server"
-	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/player"
+    "github.com/bedrock-gophers/console/console"
+    "github.com/bedrock-gophers/intercept"
+    "github.com/bedrock-gophers/inv/inv"
+    "github.com/bedrock-gophers/tebex/tebex"
+    "github.com/df-mc/dragonfly/server"
+    "github.com/df-mc/dragonfly/server/entity"
+    "github.com/df-mc/dragonfly/server/player"
 
-	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
+    _ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
 
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
-	ent "github.com/moyai-network/teams/moyai/entity"
-	it "github.com/moyai-network/teams/moyai/item"
-	"github.com/moyai-network/teams/moyai/user"
-	"github.com/restartfu/gophig"
-	"github.com/sandertv/gophertunnel/minecraft"
-	"github.com/sandertv/gophertunnel/minecraft/text"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/text/language"
+    "github.com/moyai-network/teams/internal/lang"
+    "github.com/moyai-network/teams/moyai"
+    "github.com/moyai-network/teams/moyai/area"
+    "github.com/moyai-network/teams/moyai/data"
+    ent "github.com/moyai-network/teams/moyai/entity"
+    it "github.com/moyai-network/teams/moyai/item"
+    "github.com/moyai-network/teams/moyai/user"
+    "github.com/restartfu/gophig"
+    "github.com/sandertv/gophertunnel/minecraft"
+    "github.com/sandertv/gophertunnel/minecraft/text"
+    "github.com/sirupsen/logrus"
+    "golang.org/x/text/language"
 )
 
 // Run runs the Minecraft server.
 func Run() error {
-	err := knockback.Load("assets/knockback.json")
-	if err != nil {
-		return err
-	}
-	err = role.Load("assets/roles")
-	if err != nil {
-		return err
-	}
-	err = tag.Load("assets/tags")
-	if err != nil {
-		return err
-	}
-	registerLanguages()
+    err := knockback.Load("assets/knockback.json")
+    if err != nil {
+        return err
+    }
+    err = role.Load("assets/roles")
+    if err != nil {
+        return err
+    }
+    err = tag.Load("assets/tags")
+    if err != nil {
+        return err
+    }
+    registerLanguages()
 
-	log := logrus.New()
-	log.Formatter = &logrus.TextFormatter{ForceColors: true}
-	log.Level = logrus.DebugLevel
+    log := logrus.New()
+    log.Formatter = &logrus.TextFormatter{ForceColors: true}
+    log.Level = logrus.DebugLevel
 
-	// chat.Global.Subscribe(chat.StdoutSubscriber{})
+    // chat.Global.Subscribe(chat.StdoutSubscriber{})
 
-	console.Enable(log)
-	conf, err := readConfig()
-	if err != nil {
-		return err
-	}
-	config := configure(conf, log)
+    console.Enable(log)
+    conf, err := readConfig()
+    if err != nil {
+        return err
+    }
+    config := configure(conf, log)
 
-	srv := moyai.NewServer(config)
-	handleServerClose()
+    srv := moyai.NewServer(config)
+    handleServerClose()
 
-	registerCommands()
-	srv.Listen()
+    registerCommands()
+    srv.Listen()
 
-	moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
-	moyai.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
-	configureWorlds()
+    moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
+    moyai.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
+    configureWorlds()
 
-	//placeSpawners()
-	placeText(conf)
-	placeSlapper()
-	placeCrates()
-	placeShopSigns()
+    //placeSpawners()
+    placeText(conf)
+    placeSlapper()
+    placeCrates()
+    placeShopSigns()
 
-	go tickVotes()
-	//go tickBlackMarket(srv)
-	go tickClearLag()
+    go tickVotes()
+    //go tickBlackMarket(srv)
+    go tickClearLag()
 
-	go startBroadcats()
-	go startPlayerBroadcasts()
+    go startBroadcats()
+    go startPlayerBroadcasts()
 
-	go startLeaderboard()
+    go startLeaderboard()
 
-	go startChatGame()
+    go startChatGame()
 
-	store := loadStore(conf.Moyai.Tebex, log)
-	for srv.Accept(acceptFunc(store)) {
-		// Do nothing.
-	}
+    store := loadStore(conf.Moyai.Tebex, log)
+    for srv.Accept(acceptFunc(store)) {
+        // Do nothing.
+    }
 
-	return nil
+    return nil
 }
 
 // registerLanguages registers all languages that are available in the server.
 func registerLanguages() {
-	lang.Register(language.English)
-	lang.Register(language.Spanish)
-	lang.Register(language.French)
+    lang.Register(language.English)
+    lang.Register(language.Spanish)
+    lang.Register(language.French)
 }
 
 // tickVotes ticks new votes every 5 minutes of all users.
 func tickVotes() {
-	t := time.NewTicker(time.Second * 5)
-	for range t.C {
-		usrs := data.NewVoters()
-		for _, u := range usrs {
-			u.Roles.Add(roles.Voter())
-			u.Roles.Expire(roles.Voter(), time.Now().Add(time.Hour*24))
-			moyai.Broadcastf("vote.broadcast", u.DisplayName)
-			data.SaveUser(u)
-		}
-	}
+    t := time.NewTicker(time.Second * 5)
+    for range t.C {
+        usrs := data.NewVoters()
+        for _, u := range usrs {
+            u.Roles.Add(roles.Voter())
+            u.Roles.Expire(roles.Voter(), time.Now().Add(time.Hour*24))
+            moyai.Broadcastf("vote.broadcast", u.DisplayName)
+            data.SaveUser(u)
+        }
+    }
 }
 
 // startBroadcats starts the broadcasts.
 func startBroadcats() {
-	broadcasts := [...]string{
-		"moyai.broadcast.discord",
-		"moyai.broadcast.store",
-		"moyai.broadcast.emojis",
-		"moyai.broadcast.settings",
-		"moyai.broadcast.feedback",
-		//"moyai.broadcast.report",
-		"moyai.broadcast.rules",
-		"moyai.broadcast.vote",
-	}
+    broadcasts := [...]string{
+        "moyai.broadcast.discord",
+        "moyai.broadcast.store",
+        "moyai.broadcast.emojis",
+        "moyai.broadcast.settings",
+        "moyai.broadcast.feedback",
+        //"moyai.broadcast.report",
+        "moyai.broadcast.rules",
+        "moyai.broadcast.vote",
+    }
 
-	var cursor int
-	t := time.NewTicker(time.Minute * 4)
-	defer t.Stop()
-	for range t.C {
-		message := broadcasts[cursor]
-		for _, p := range moyai.Players() {
-			u, err := data.LoadUserFromName(p.Name())
-			if err != nil {
-				continue
-			}
-			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.notice", lang.Translate(*u.Language, message)))
-		}
-		if cursor++; cursor == len(broadcasts) {
-			cursor = 0
-		}
-	}
+    var cursor int
+    t := time.NewTicker(time.Minute * 4)
+    defer t.Stop()
+    for range t.C {
+        message := broadcasts[cursor]
+        for _, p := range moyai.Players() {
+            u, err := data.LoadUserFromName(p.Name())
+            if err != nil {
+                continue
+            }
+            p.Message(lang.Translatef(*u.Language, "moyai.broadcast.notice", lang.Translate(*u.Language, message)))
+        }
+        if cursor++; cursor == len(broadcasts) {
+            cursor = 0
+        }
+    }
 }
 
 // startPlayerBroadcasts starts the player broadcasts.
 func startPlayerBroadcasts() {
-	t := time.NewTicker(time.Minute * 5)
-	for range t.C {
-		players := moyai.Players()
-		var plus []string
-		for _, p := range players {
-			u, err := data.LoadUserFromName(p.Name())
-			if err != nil {
-				continue
-			}
-			if roles.Premium(u.Roles.Highest()) {
-				plus = append(plus, p.Name())
-			}
-		}
+    t := time.NewTicker(time.Minute * 5)
+    for range t.C {
+        players := moyai.Players()
+        var plus []string
+        for _, p := range players {
+            u, err := data.LoadUserFromName(p.Name())
+            if err != nil {
+                continue
+            }
+            if roles.Premium(u.Roles.Highest()) {
+                plus = append(plus, p.Name())
+            }
+        }
 
-		for _, p := range players {
-			u, err := data.LoadUserFromName(p.Name())
-			if err != nil {
-				continue
-			}
-			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.plus", len(plus), strings.Join(plus, ", ")))
-		}
-	}
+        for _, p := range players {
+            u, err := data.LoadUserFromName(p.Name())
+            if err != nil {
+                continue
+            }
+            p.Message(lang.Translatef(*u.Language, "moyai.broadcast.plus", len(plus), strings.Join(plus, ", ")))
+        }
+    }
 }
 
 var chatGameWords = []string{
-	"moyai",
-	"beacon",
-	"diamond",
-	"nether",
-	"ender",
-	"dragon",
-	"blaze",
-	"wither",
-	"creeper",
-	"spider",
-	"zombie",
-	"skeleton",
-	"pig",
-	"sheep",
-	"cow",
-	"chicken",
-	"squid",
-	"wolf",
-	"villager",
-	"rabbit",
-	"guardian",
-	"shulker",
-	"sword",
-	"shield",
-	"bow",
-	"carrot",
+    "moyai",
+    "beacon",
+    "diamond",
+    "nether",
+    "ender",
+    "dragon",
+    "blaze",
+    "wither",
+    "creeper",
+    "spider",
+    "zombie",
+    "skeleton",
+    "pig",
+    "sheep",
+    "cow",
+    "chicken",
+    "squid",
+    "wolf",
+    "villager",
+    "rabbit",
+    "guardian",
+    "shulker",
+    "sword",
+    "shield",
+    "bow",
+    "carrot",
 }
 
 // startChatGame starts the chat game.
 func startChatGame() {
-	t := time.NewTicker(time.Minute * 10)
-	for range t.C {
-		cursor := rand.Intn(len(chatGameWords))
-		word := chatGameWords[cursor]
+    t := time.NewTicker(time.Minute * 10)
+    for range t.C {
+        cursor := rand.Intn(len(chatGameWords))
+        word := chatGameWords[cursor]
 
-		scramble := func(word string) string {
-			runes := []rune(word)
-			for i := 0; i < len(runes); i++ {
-				j := rand.Intn(len(runes))
-				runes[i], runes[j] = runes[j], runes[i]
-			}
-			return string(runes)
-		}
+        scramble := func(word string) string {
+            runes := []rune(word)
+            for i := 0; i < len(runes); i++ {
+                j := rand.Intn(len(runes))
+                runes[i], runes[j] = runes[j], runes[i]
+            }
+            return string(runes)
+        }
 
-		scrambled := scramble(word)
-		moyai.SetChatGameWord(word)
-		for _, p := range moyai.Players() {
-			u, err := data.LoadUserFromName(p.Name())
-			if err != nil {
-				continue
-			}
-			p.Message(lang.Translatef(*u.Language, "moyai.broadcast.chatgame", scrambled))
-		}
-	}
+        scrambled := scramble(word)
+        moyai.SetChatGameWord(word)
+        for _, p := range moyai.Players() {
+            u, err := data.LoadUserFromName(p.Name())
+            if err != nil {
+                continue
+            }
+            p.Message(lang.Translatef(*u.Language, "moyai.broadcast.chatgame", scrambled))
+        }
+    }
 }
 
 // configure initializes the server configuration.
 func configure(conf moyai.Config, log *logrus.Logger) server.Config {
-	c, err := conf.Config(log)
-	if err != nil {
-		panic(err)
-	}
-	c.Entities = ent.Registry
+    c, err := conf.Config(log)
+    if err != nil {
+        panic(err)
+    }
+    c.Entities = ent.Registry
 
-	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
-	c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.moyai.club for more info!</red>") + "§8"
-	c.JoinMessage = "<green>[+] %s</green>"
-	c.QuitMessage = "<red>[-] %s</red>"
-	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
+    c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
+    c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.moyai.club for more info!</red>") + "§8"
+    c.JoinMessage = "<green>[+] %s</green>"
+    c.QuitMessage = "<red>[-] %s</red>"
+    c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
 
-	configurePacketListener(&c, conf.Oomph.Enabled)
-	return c
+    configurePacketListener(&c, conf.Oomph.Enabled)
+    return c
 }
 
 // configurePacketListener configures the packet listener for the server.
 func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	if oomphEnabled {
-		ac := oomph.New(oomph.OomphSettings{
-			LocalAddress:  ":19132",
-			RemoteAddress: ":19133",
-			RequirePacks:  true,
-		})
+    if oomphEnabled {
+        ac := oomph.New(oomph.OomphSettings{
+            LocalAddress:  ":19132",
+            RemoteAddress: ":19133",
+            RequirePacks:  true,
+        })
 
-		ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
-		go func() {
-			for {
-				p, err := ac.Accept()
-				if err != nil {
-					return
-				}
+        ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
+        go func() {
+            for {
+                p, err := ac.Accept()
+                if err != nil {
+                    return
+                }
 
-				p.Player.SetLog(logrus.New())
-				p.Player.MovementMode = 0
-				p.Player.Handler(handler.HandlerIDMovement).(*handler.MovementHandler).CorrectionThreshold = 100000000
+                p.Player.SetLog(logrus.New())
+                p.Player.MovementMode = 0
+                p.Player.Handler(handler.HandlerIDMovement).(*handler.MovementHandler).CorrectionThreshold = 100000000
 
-				// TODO: Handle events
-			}
-		}()
-		return
-	}
-	pk := intercept.NewPacketListener()
-	pk.Listen(conf, ":19132", []minecraft.Protocol{
-		//v486.New(),
-		// v582.New(),
-		// v589.New(),
-		// v594.New(),
-		// v618.New(),
-		// v622.New(),
-		// v630.New(),
-		// v649.New(),
-		// v662.New(),
-	})
+                // TODO: Handle events
+            }
+        }()
+        return
+    }
+    pk := intercept.NewPacketListener()
+    pk.Listen(conf, ":19132", []minecraft.Protocol{
+        //v486.New(),
+        // v582.New(),
+        // v589.New(),
+        // v594.New(),
+        // v618.New(),
+        // v622.New(),
+        // v630.New(),
+        // v649.New(),
+        // v662.New(),
+    })
 
-	go func() {
-		for {
-			p, err := pk.Accept()
-			if err != nil {
-				return
-			}
-			p.Handle(user.NewPacketHandler(p))
-		}
-	}()
+    go func() {
+        for {
+            p, err := pk.Accept()
+            if err != nil {
+                return
+            }
+            p.Handle(user.NewPacketHandler(p))
+        }
+    }()
 }
 
 // loadStore initializes the Tebex store connection.
 func loadStore(key string, log *logrus.Logger) *tebex.Client {
-	store := tebex.NewClient(log, time.Second*5, key)
-	name, domain, err := store.Information()
-	if err != nil {
-		log.Fatalf("tebex: %v", err)
-		return nil
-	}
-	log.Infof("Connected to Tebex under %v (%v).", name, domain)
-	return store
+    store := tebex.NewClient(log, time.Second*5, key)
+    name, domain, err := store.Information()
+    if err != nil {
+        log.Fatalf("tebex: %v", err)
+        return nil
+    }
+    log.Infof("Connected to Tebex under %v (%v).", name, domain)
+    return store
 }
 
 // handleServerClose handles the closing of the server.
 func handleServerClose() {
-	ch := make(chan os.Signal, 2)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-ch
-		moyai.Close()
-	}()
+    ch := make(chan os.Signal, 2)
+    signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+    go func() {
+        <-ch
+        moyai.Close()
+    }()
 }
 
 func readConfig() (moyai.Config, error) {
-	c := moyai.DefaultConfig()
-	g := gophig.NewGophig("./config", "toml", 0777)
+    c := moyai.DefaultConfig()
+    g := gophig.NewGophig("./config", "toml", 0777)
 
-	err := g.GetConf(&c)
-	if os.IsNotExist(err) {
-		err = g.SetConf(c)
-	}
-	return c, err
+    err := g.GetConf(&c)
+    if os.IsNotExist(err) {
+        err = g.SetConf(c)
+    }
+    return c, err
 }
 
 // acceptFunc returns a function that is called when a player joins the server.
 func acceptFunc(store *tebex.Client) func(*player.Player) {
-	return func(p *player.Player) {
-		inv.RedirectPlayerPackets(p, func() {
-			moyai.Close()
-			os.Exit(1)
-		})
-		store.ExecuteCommands(p)
+    return func(p *player.Player) {
+        p.Handle(temporaryHandler{})
 
-		h, err := user.NewHandler(p, p.XUID())
-		if err != nil {
-			fmt.Printf("new handler: %v\n", err)
-			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.moyai.club</red>"))
-			return
-		}
-		p.Handle(h)
-		p.Armour().Handle(user.NewArmourHandler(p))
-		p.RemoveScoreboard()
-		for _, ef := range p.Effects() {
-			p.RemoveEffect(ef.Type())
-		}
-		p.ShowCoordinates()
-		p.SetFood(20)
+        inv.RedirectPlayerPackets(p, func() {
+            moyai.Close()
+            os.Exit(1)
+        })
+        go store.ExecuteCommands(p)
 
-		in := p.Inventory()
-		for slot, i := range in.Slots() {
-			for _, sp := range append(it.SpecialItems(), it.PartnerItems()...) {
-				if _, ok := i.Value(sp.Key()); ok {
-					_ = in.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
-				}
-			}
-		}
+        h, err := user.NewHandler(p, p.XUID())
+        if err != nil {
+            fmt.Printf("new handler: %v\n", err)
+            p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.moyai.club</red>"))
+            return
+        }
+        p.Handle(h)
+        p.Armour().Handle(user.NewArmourHandler(p))
+        p.RemoveScoreboard()
+        for _, ef := range p.Effects() {
+            p.RemoveEffect(ef.Type())
+        }
+        p.ShowCoordinates()
+        p.SetFood(20)
 
-		p.SetImmobile()
-		p.SetAttackImmunity(time.Millisecond * 500)
-		time.AfterFunc(time.Millisecond*500, func() {
-			if p != nil {
-				p.SetMobile()
-			}
-		})
+        in := p.Inventory()
+        for slot, i := range in.Slots() {
+            for _, sp := range append(it.SpecialItems(), it.PartnerItems()...) {
+                if _, ok := i.Value(sp.Key()); ok {
+                    _ = in.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
+                }
+            }
+        }
 
-		w := p.World()
-		for _, e := range w.Entities() {
-			if !area.Spawn(w).Vec3WithinOrEqualFloorXZ(e.Position()) {
-				continue
-			}
-			if _, ok := e.(*player.Player); ok {
-				continue
-			}
-			if e.Type() == (entity.TextType{}) {
-				continue
-			}
+        p.SetImmobile()
+        p.SetAttackImmunity(time.Millisecond * 500)
+        time.AfterFunc(time.Millisecond*500, func() {
+            if p != nil {
+                p.SetMobile()
+            }
+        })
 
-			p.HideEntity(e)
-		}
-	}
+        w := p.World()
+        for _, e := range w.Entities() {
+            if !area.Spawn(w).Vec3WithinOrEqualFloorXZ(e.Position()) {
+                continue
+            }
+            if _, ok := e.(*player.Player); ok {
+                continue
+            }
+            if e.Type() == (entity.TextType{}) {
+                continue
+            }
+
+            p.HideEntity(e)
+        }
+    }
 }

@@ -17,7 +17,7 @@ func (Unlink) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.data.load.error")
 		return
@@ -37,7 +37,7 @@ func (Link) Run(src cmd.Source, out *cmd.Output) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		moyai.Messagef(p, "user.data.load.error")
 		return

@@ -65,7 +65,7 @@ type Prizes struct {
 }
 
 func SendPrizesMenu(p *player.Player) {
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}

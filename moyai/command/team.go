@@ -1782,7 +1782,7 @@ func teamInformationFormat(t data.Team) string {
     formattedDtr = t.DTRString()
     var onlineCount int
     for _, p := range t.Members {
-        u, _ := data.LoadUserFromXUID(p.XUID)
+        u, _ := data.LoadUserFromName(p.Name)
         _, ok := user.Lookup(p.DisplayName)
         if ok {
             onlineCount++

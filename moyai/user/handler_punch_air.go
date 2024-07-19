@@ -16,7 +16,7 @@ import (
 // HandlePunchAir ...
 func (h *Handler) HandlePunchAir(ctx *event.Context) {
 	p := h.p
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}

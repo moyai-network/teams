@@ -34,7 +34,7 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output) {
 		return
 	}
 
-	u, err := data.LoadUserFromXUID(p.XUID())
+	u, err := data.LoadUserFromName(p.Name())
 	if err != nil {
 		return
 	}
