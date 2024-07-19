@@ -1,9 +1,10 @@
 package command
 
 import (
+	"time"
+
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/moyai"
-	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -31,6 +32,9 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output) {
 	if tg.Teams.DeathBan.Active() {
 		moyai.Overworld().AddEntity(target)
 		target.Teleport(mgl64.Vec3{0, 80, 0})
+
+		target.Inventory().Clear()
+		target.Armour().Clear()
 
 		tg.Teams.DeathBan.Reset()
 		tg.Teams.DeathBanned = false
