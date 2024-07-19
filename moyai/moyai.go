@@ -36,7 +36,7 @@ func init() {
             <-time.After(time.Millisecond)
             continue
         }
-        go tickAutomaticSave(Nether(), time.Second*5)
+        go tickAutomaticSave(Nether(), time.Minute*5)
     }()
 }
 
