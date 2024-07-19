@@ -34,7 +34,7 @@ var pitches = map[world.Entity]float64{}
 // blue item used to teleport.
 func NewMoyaiPearl(pos mgl64.Vec3, vel mgl64.Vec3, owner world.Entity) world.Entity {
     e := entity.Config{Behaviour: moyaiPearlConf.New(owner)}.New(entity.EnderPearlType{}, pos)
-    e.SetVelocity(vel.Mul(1.35))
+    e.SetVelocity(vel.Mul(1.45))
 
     directions[owner] = owner.Rotation().Direction()
     yaws[owner] = math.Round(owner.Rotation().Yaw())
