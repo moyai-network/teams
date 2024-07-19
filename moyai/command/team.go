@@ -1,31 +1,31 @@
 package command
 
 import (
-    "fmt"
-    "math"
-    "regexp"
-    "sort"
-    "strings"
-    "time"
+	"fmt"
+	"math"
+	"regexp"
+	"sort"
+	"strings"
+	"time"
 
-    "github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai"
 
-    "github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/colour"
 
-    "github.com/moyai-network/teams/internal/lang"
-    "github.com/moyai-network/teams/internal/timeutil"
-    "github.com/moyai-network/teams/moyai/area"
-    "github.com/moyai-network/teams/moyai/data"
-    "github.com/moyai-network/teams/moyai/team"
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/internal/timeutil"
+	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/moyai/team"
 
-    "github.com/df-mc/dragonfly/server/block"
-    "github.com/df-mc/dragonfly/server/block/cube"
-    "github.com/df-mc/dragonfly/server/cmd"
-    "github.com/df-mc/dragonfly/server/item"
-    "github.com/df-mc/dragonfly/server/player"
-    "github.com/go-gl/mathgl/mgl64"
-    "github.com/moyai-network/teams/moyai/user"
-    "github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/moyai/user"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
@@ -255,6 +255,13 @@ type TeamResetRegen struct {
     adminAllower
     Sub  cmd.SubCommand `cmd:"resetregen"`
     Name teamName
+}
+
+type TeamSetPoints struct {
+    adminAllower
+    Sub  cmd.SubCommand `cmd:"setpoints"`
+    Name teamName
+    Points int
 }
 
 func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output) {
@@ -1678,6 +1685,19 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output) {
 
     moyai.Messagef(p, "team.rename.success", tm.DisplayName)
     team.Broadcastf(tm, "team.rename.success.broadcast", p.Name(), tm.DisplayName)
+}
+
+func (t TeamSetPoints) Run(src cmd.Source, o *cmd.Output) {
+    tm, err := data.LoadTeamFromName(strings.ToLower(string(t.Name)))
+    if err != nil {
+        moyai.Messagef(src, "command.team.not.found", t.Name)
+        return
+    }
+
+    tm = tm.WithPoints(t.Points)
+    data.SaveTeam(tm)
+
+    o.Printf("Successfully set points to %v", t.Points)
 }
 
 type (

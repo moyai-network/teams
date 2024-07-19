@@ -1,16 +1,16 @@
 package user
 
 import (
-    "fmt"
-    rls "github.com/moyai-network/teams/moyai/roles"
-    "slices"
-    "strings"
-    "time"
+	"slices"
+	"strings"
+	"time"
 
-    "github.com/df-mc/dragonfly/server/cmd"
-    "github.com/df-mc/dragonfly/server/event"
-    "github.com/moyai-network/teams/moyai"
-    "github.com/moyai-network/teams/moyai/data"
+	rls "github.com/moyai-network/teams/moyai/roles"
+
+	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/event"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/data"
 )
 
 var (
@@ -37,7 +37,6 @@ func (h *Handler) HandleCommandExecution(ctx *event.Context, command cmd.Command
     names := append(command.Aliases(), command.Name())
 
     if time.Since(h.lastMessage.Load()) < moyai.ChatCoolDown() && !u.Roles.Contains(rls.Admin()) {
-        fmt.Println(names)
         whisper := slices.Contains(names, "whisper")
         reply := slices.Contains(names, "reply")
         if whisper || reply {
