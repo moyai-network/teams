@@ -1,31 +1,31 @@
 package command
 
 import (
-	"fmt"
-	"math"
-	"regexp"
-	"sort"
-	"strings"
-	"time"
+    "fmt"
+    "math"
+    "regexp"
+    "sort"
+    "strings"
+    "time"
 
-	"github.com/moyai-network/teams/moyai"
+    "github.com/moyai-network/teams/moyai"
 
-	"github.com/moyai-network/teams/moyai/colour"
+    "github.com/moyai-network/teams/moyai/colour"
 
-	"github.com/moyai-network/teams/internal/lang"
-	"github.com/moyai-network/teams/internal/timeutil"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
-	"github.com/moyai-network/teams/moyai/team"
+    "github.com/moyai-network/teams/internal/lang"
+    "github.com/moyai-network/teams/internal/timeutil"
+    "github.com/moyai-network/teams/moyai/area"
+    "github.com/moyai-network/teams/moyai/data"
+    "github.com/moyai-network/teams/moyai/team"
 
-	"github.com/df-mc/dragonfly/server/block"
-	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/player"
-	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/moyai/user"
-	"github.com/sandertv/gophertunnel/minecraft/text"
+    "github.com/df-mc/dragonfly/server/block"
+    "github.com/df-mc/dragonfly/server/block/cube"
+    "github.com/df-mc/dragonfly/server/cmd"
+    "github.com/df-mc/dragonfly/server/item"
+    "github.com/df-mc/dragonfly/server/player"
+    "github.com/go-gl/mathgl/mgl64"
+    "github.com/moyai-network/teams/moyai/user"
+    "github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 var regex = regexp.MustCompile("^[a-zA-Z0-9]*$")
@@ -259,8 +259,8 @@ type TeamResetRegen struct {
 
 type TeamSetPoints struct {
     adminAllower
-    Sub  cmd.SubCommand `cmd:"setpoints"`
-    Name teamName
+    Sub    cmd.SubCommand `cmd:"setpoints"`
+    Name   teamName
     Points int
 }
 

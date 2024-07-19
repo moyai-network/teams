@@ -1,16 +1,16 @@
 package user
 
 import (
-	"slices"
-	"strings"
-	"time"
+    "slices"
+    "strings"
+    "time"
 
-	rls "github.com/moyai-network/teams/moyai/roles"
+    rls "github.com/moyai-network/teams/moyai/roles"
 
-	"github.com/df-mc/dragonfly/server/cmd"
-	"github.com/df-mc/dragonfly/server/event"
-	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/data"
+    "github.com/df-mc/dragonfly/server/cmd"
+    "github.com/df-mc/dragonfly/server/event"
+    "github.com/moyai-network/teams/moyai"
+    "github.com/moyai-network/teams/moyai/data"
 )
 
 var (
