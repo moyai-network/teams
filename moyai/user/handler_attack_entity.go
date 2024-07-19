@@ -167,9 +167,12 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	if area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(pl.Position()) || area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(target.Position()) {
-		return false
+	if u.Teams.DeathBanned || t.Teams.DeathBanned {
+		if area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(pl.Position()) || area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(target.Position()) {
+			return false
+		}
 	}
+
 
 	tm, err := data.LoadTeamFromMemberName(pl.Name())
 	if err != nil {
