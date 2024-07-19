@@ -77,6 +77,7 @@ func Run() error {
     registerCommands()
     store := loadStore(conf.Moyai.Tebex, log)
     srv.Listen()
+    go executeTebexCommands(store, srv)
 
     moyai.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
     moyai.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
@@ -306,6 +307,16 @@ func configurePacketListener(conf *server.Config, oomphEnabled bool) {
             p.Handle(user.NewPacketHandler(p))
         }
     }()
+}
+
+func executeTebexCommands(store *tebex.Client, srv *server.Server) {
+    for {
+        for _, p := range srv.Players() {
+            store.ExecuteCommands(p)
+            <-time.After(time.Second / 4)
+        }
+        <-time.After(time.Second * 20)
+    }
 }
 
 // loadStore initializes the Tebex store connection.
