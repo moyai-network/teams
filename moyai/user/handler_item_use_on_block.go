@@ -1,30 +1,30 @@
 package user
 
 import (
-    "fmt"
-    "strconv"
-    "strings"
-    "time"
-    _ "unsafe"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
+	_ "unsafe"
 
-    "github.com/df-mc/dragonfly/server/block"
-    "github.com/df-mc/dragonfly/server/block/cube"
-    "github.com/df-mc/dragonfly/server/entity"
-    "github.com/df-mc/dragonfly/server/event"
-    "github.com/df-mc/dragonfly/server/item"
-    "github.com/df-mc/dragonfly/server/player"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/go-gl/mathgl/mgl64"
-    "github.com/moyai-network/teams/moyai"
-    "github.com/moyai-network/teams/moyai/area"
-    blck "github.com/moyai-network/teams/moyai/block"
-    "github.com/moyai-network/teams/moyai/colour"
-    "github.com/moyai-network/teams/moyai/crate"
-    "github.com/moyai-network/teams/moyai/data"
-    ench "github.com/moyai-network/teams/moyai/enchantment"
-    "github.com/moyai-network/teams/moyai/eotw"
-    it "github.com/moyai-network/teams/moyai/item"
-    "github.com/moyai-network/teams/moyai/kit"
+	"github.com/df-mc/dragonfly/server/block"
+	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/event"
+	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/area"
+	blck "github.com/moyai-network/teams/moyai/block"
+	"github.com/moyai-network/teams/moyai/colour"
+	"github.com/moyai-network/teams/moyai/crate"
+	"github.com/moyai-network/teams/moyai/data"
+	ench "github.com/moyai-network/teams/moyai/enchantment"
+	"github.com/moyai-network/teams/moyai/eotw"
+	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/kit"
 )
 
 // HandleItemUseOnBlock ...
@@ -159,7 +159,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *event.Context, pos cube.Pos, face cu
                 moyai.Messagef(h.p, "team.claim.too-big")
                 return
             }
-            cost := int(a * 5)
+            cost := int(a * 2)
             moyai.Messagef(h.p, "team.claim.cost", cost)
         }
         if h.claimSelectionPos[pn-1] != (mgl64.Vec3{}) {
