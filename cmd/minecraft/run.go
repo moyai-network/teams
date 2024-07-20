@@ -1,45 +1,45 @@
 package minecraft
 
 import (
-    "fmt"
-    "math/rand"
-    "os"
-    "os/signal"
-    "strings"
-    "syscall"
-    "time"
+	"fmt"
+	"math/rand"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
 
-    "github.com/bedrock-gophers/knockback/knockback"
+	"github.com/bedrock-gophers/knockback/knockback"
 
-    "github.com/bedrock-gophers/tag/tag"
+	"github.com/bedrock-gophers/tag/tag"
 
-    "github.com/bedrock-gophers/role/role"
-    "github.com/moyai-network/teams/moyai/roles"
-    "github.com/oomph-ac/oomph"
-    "github.com/oomph-ac/oomph/handler"
+	"github.com/bedrock-gophers/role/role"
+	"github.com/moyai-network/teams/moyai/roles"
+	"github.com/oomph-ac/oomph"
+	"github.com/oomph-ac/oomph/handler"
 
-    "github.com/bedrock-gophers/console/console"
-    "github.com/bedrock-gophers/intercept"
-    "github.com/bedrock-gophers/inv/inv"
-    "github.com/bedrock-gophers/tebex/tebex"
-    "github.com/df-mc/dragonfly/server"
-    "github.com/df-mc/dragonfly/server/entity"
-    "github.com/df-mc/dragonfly/server/player"
+	"github.com/bedrock-gophers/console/console"
+	"github.com/bedrock-gophers/intercept"
+	"github.com/bedrock-gophers/inv/inv"
+	"github.com/bedrock-gophers/tebex/tebex"
+	"github.com/df-mc/dragonfly/server"
+	"github.com/df-mc/dragonfly/server/entity"
+	"github.com/df-mc/dragonfly/server/player"
 
-    _ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
+	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
 
-    "github.com/moyai-network/teams/internal/lang"
-    "github.com/moyai-network/teams/moyai"
-    "github.com/moyai-network/teams/moyai/area"
-    "github.com/moyai-network/teams/moyai/data"
-    ent "github.com/moyai-network/teams/moyai/entity"
-    it "github.com/moyai-network/teams/moyai/item"
-    "github.com/moyai-network/teams/moyai/user"
-    "github.com/restartfu/gophig"
-    "github.com/sandertv/gophertunnel/minecraft"
-    "github.com/sandertv/gophertunnel/minecraft/text"
-    "github.com/sirupsen/logrus"
-    "golang.org/x/text/language"
+	"github.com/moyai-network/teams/internal/lang"
+	"github.com/moyai-network/teams/moyai"
+	"github.com/moyai-network/teams/moyai/area"
+	"github.com/moyai-network/teams/moyai/data"
+	ent "github.com/moyai-network/teams/moyai/entity"
+	it "github.com/moyai-network/teams/moyai/item"
+	"github.com/moyai-network/teams/moyai/user"
+	"github.com/restartfu/gophig"
+	"github.com/sandertv/gophertunnel/minecraft"
+	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/text/language"
 )
 
 // Run runs the Minecraft server.
@@ -358,8 +358,7 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
         p.Handle(temporaryHandler{})
 
         inv.RedirectPlayerPackets(p, func() {
-            moyai.Close()
-            os.Exit(1)
+            p.Disconnect(text.Colourf("<red>Internal Server Error. Please contact developers at discord.moyai.club</red>"))
         })
         go store.ExecuteCommands(p)
 
