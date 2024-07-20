@@ -12,6 +12,8 @@ github.com/bedrock-gophers/inv v0.1.1-0.20240719141804-8dcc2ab81afd h1:pjBMjWcwt
 github.com/bedrock-gophers/inv v0.1.1-0.20240719141804-8dcc2ab81afd/go.mod h1:4ToPQjChIj0k813cOvUtKR6tfsDxvkddOTOBNP6bEvQ=
 github.com/bedrock-gophers/inv v0.1.1-0.20240720171302-e544dd51f7b9 h1:ip2c4FQ1LOem9bPHPIM8oLcjdZarMEz9K3VosgkGxXk=
 github.com/bedrock-gophers/inv v0.1.1-0.20240720171302-e544dd51f7b9/go.mod h1:m90OwadzNs0quxMRneAk/qq5/FmNVAUjoxUZeFJTn6w=
+github.com/bedrock-gophers/inv v0.2.0 h1:V3Ni8dsPtyqf6nLTa1EeR7hJi0qO/BEA+6sqI4U/+g0=
+github.com/bedrock-gophers/inv v0.2.0/go.mod h1:m90OwadzNs0quxMRneAk/qq5/FmNVAUjoxUZeFJTn6w=
 github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc h1:qsPWZtBD81G95+OPBdFfatNsRtzrrrUEt0FCKIHAzWk=
 github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc/go.mod h1:3ewBix1nkzkJdpLhf8WB6OnwPbyJo2AwKI3SAItRZT4=
 github.com/bedrock-gophers/konsole v0.0.0-20240617182629-13532158e8ae h1:odLd7WsNGVgZsY9sNlo3ewTYY7hrKiDNmqPJ54Zvjlo=
