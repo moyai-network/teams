@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/moyai-network/teams/moyai/user/class"
 	"slices"
 	"strconv"
 	"strings"
@@ -30,7 +31,6 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal/lang"
 	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/class"
 	"github.com/moyai-network/teams/moyai/data"
 	it "github.com/moyai-network/teams/moyai/item"
 
