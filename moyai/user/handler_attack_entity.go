@@ -312,8 +312,8 @@ func (h *Handler) applyComboAbility() {
 // handleSpecialCases handles special cases like kits menu.
 func (h *Handler) handleSpecialCases(targetPlayer *player.Player, ctx *event.Context) bool {
 	if colour.StripMinecraftColour(targetPlayer.Name()) == "Click to use kits" {
-		if menu, ok := menu.NewKitsMenu(h.p); ok {
-			inv.SendMenu(h.p, menu)
+		if mn, ok := menu.NewKitsMenu(h.p); ok {
+			inv.SendMenu(h.p, mn)
 		}
 		ctx.Cancel()
 		return true

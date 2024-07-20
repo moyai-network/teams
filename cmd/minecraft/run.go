@@ -59,7 +59,7 @@ func Run() error {
 
 	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
-	log.Level = logrus.InfoLevel
+	log.Level = logrus.DebugLevel
 
 	// chat.Global.Subscribe(chat.StdoutSubscriber{})
 
