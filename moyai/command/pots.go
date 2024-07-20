@@ -91,8 +91,8 @@ func placePairedChests(a, b cube.Pos, p *player.Player, it world.Item) {
 	w := p.World()
 	che := block.NewChest()
 	pair := block.NewChest()
-	fillInventory(che.Inventory(), item.NewStack(it, 1))
-	fillInventory(pair.Inventory(), item.NewStack(it, 1))
+	fillInventory(che.Inventory(w, a), item.NewStack(it, 1))
+	fillInventory(pair.Inventory(w, b), item.NewStack(it, 1))
 
 	w.SetBlock(a, che, nil)
 	w.SetBlock(b, pair, nil)
