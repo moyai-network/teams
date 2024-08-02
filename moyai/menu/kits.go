@@ -1,10 +1,10 @@
 package menu
 
 import (
-	"fmt"
-	"github.com/moyai-network/teams/moyai/roles"
 	"strings"
 	"time"
+
+	"github.com/moyai-network/teams/moyai/roles"
 
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/block"
@@ -133,8 +133,4 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	case "Starter":
 		kit.Apply(kit.Starter{}, p)
 	}
-}
-
-func (Kits) Close(p *player.Player) {
-	fmt.Println("close")
 }
