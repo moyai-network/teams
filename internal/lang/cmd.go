@@ -4,6 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/moyai/data"
+	"golang.org/x/text/language"
 )
 
 type Lang struct {
@@ -42,5 +43,21 @@ func (c languages) Type() string {
 }
 
 func (c languages) Options(_ cmd.Source) []string {
-	return []string{"English", "French", "Spanish"}
+	var langs []string
+	for k, _ := range translations {
+		langs = append(langs, langString(k))
+	}
+	return langs
+}
+
+func langString(l language.Tag) string {
+	switch l {
+	case language.English:
+		return "English"
+	case language.French:
+		return "Français"
+	case language.Spanish:
+		return "Español"
+	}
+	panic("should never happen: unknown language tag: " + l.String())
 }
