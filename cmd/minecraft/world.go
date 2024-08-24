@@ -41,10 +41,10 @@ var (
 		{it: block.Iron{}, quantity: 16, price: 250, pos: cube.Pos{25, 68, 8}, direction: cube.North},
 		{it: block.Lapis{}, quantity: 16, price: 250, pos: cube.Pos{24, 68, 8}, direction: cube.North},
 
-		{buy: true, it: block.RedstoneWire{}, quantity: 16, price: 100, pos: cube.Pos{28, 69, 8}, direction: cube.North},
-		{buy: true, it: block.Lever{}, quantity: 8, price: 100, pos: cube.Pos{27, 69, 8}, direction: cube.North},
-		{buy: true, it: block.Button{}, quantity: 8, price: 100, pos: cube.Pos{26, 69, 8}, direction: cube.North},
-		{buy: true, it: block.RedstoneBlock{}, quantity: 8, price: 100, pos: cube.Pos{25, 69, 8}, direction: cube.North},
+		//{buy: true, it: block.RedstoneWire{}, quantity: 16, price: 100, pos: cube.Pos{28, 69, 8}, direction: cube.North},
+		//{buy: true, it: block.Lever{}, quantity: 8, price: 100, pos: cube.Pos{27, 69, 8}, direction: cube.North},
+		//{buy: true, it: block.Button{}, quantity: 8, price: 100, pos: cube.Pos{26, 69, 8}, direction: cube.North},
+		//{buy: true, it: block.RedstoneBlock{}, quantity: 8, price: 100, pos: cube.Pos{25, 69, 8}, direction: cube.North},
 		{buy: true, it: block.Hopper{}, quantity: 8, price: 3000, pos: cube.Pos{24, 69, 8}, direction: cube.North},
 	}
 	cowSpawners = []cube.Pos{
@@ -121,8 +121,6 @@ func configureWorlds() {
 		l := world.NewLoader(8, w, world.NopViewer{})
 		l.Move(w.Spawn().Vec3Middle())
 		l.Load(math.MaxInt)
-
-		inv.PlaceFakeContainer(w, cube.Pos{0, 127, 0})
 	}
 }
 

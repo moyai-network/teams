@@ -96,7 +96,7 @@ func placePairedChests(a, b cube.Pos, p *player.Player, it world.Item) {
 
 	w.SetBlock(a, che, nil)
 	w.SetBlock(b, pair, nil)
-	ch, pair, ok := che.Pair(w, a, b)
+	ch, pair, ok := chest_pair(w, a, b)
 	if ok {
 		w.SetBlock(a, ch, nil)
 		w.SetBlock(b, pair, nil)
@@ -108,3 +108,8 @@ func fillInventory(in *inventory.Inventory, it item.Stack) {
 		in.SetItem(i, it)
 	}
 }
+
+// noinspection ALL
+//
+//go:linkname chest_pair github.com/df-mc/dragonfly/server/block.(*Chest).pair
+func chest_pair(w *world.World, pos, pairPos cube.Pos) (ch, pair block.Chest, ok bool)

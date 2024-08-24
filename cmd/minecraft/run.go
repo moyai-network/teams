@@ -2,7 +2,6 @@ package minecraft
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/intercept/intercept"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -10,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bedrock-gophers/intercept/intercept"
+
 	"github.com/bedrock-gophers/knockback/knockback"
 
 	"github.com/bedrock-gophers/tag/tag"
 
 	"github.com/bedrock-gophers/role/role"
 	"github.com/moyai-network/teams/moyai/roles"
-	"github.com/oomph-ac/oomph"
-	"github.com/oomph-ac/oomph/handler"
 
 	"github.com/bedrock-gophers/console/console"
 	"github.com/bedrock-gophers/tebex/tebex"
@@ -35,7 +34,6 @@ import (
 	it "github.com/moyai-network/teams/moyai/item"
 	"github.com/moyai-network/teams/moyai/user"
 	"github.com/restartfu/gophig"
-	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
@@ -254,13 +252,13 @@ func configure(conf moyai.Config, log *logrus.Logger) server.Config {
 	c.QuitMessage = "<red>[-] %s</red>"
 	c.Allower = moyai.NewAllower(conf.Moyai.Whitelisted)
 
-	configurePacketListener(&c, conf.Oomph.Enabled)
+	//configurePacketListener(&c, conf.Oomph.Enabled)
 	return c
 }
 
 // configurePacketListener configures the packet listener for the server.
 func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	if oomphEnabled {
+	/*if oomphEnabled {
 		ac := oomph.New(oomph.OomphSettings{
 			LocalAddress:  ":19132",
 			RemoteAddress: ":19133",
@@ -284,6 +282,7 @@ func configurePacketListener(conf *server.Config, oomphEnabled bool) {
 		}()
 		return
 	}
+	*/
 }
 
 func executeTebexCommands(store *tebex.Client, srv *server.Server) {

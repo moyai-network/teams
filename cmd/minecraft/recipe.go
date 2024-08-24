@@ -11,11 +11,11 @@ func init() {
 		plank := item.NewStack(block.Planks{
 			Wood: w,
 		}, 1)
-		recipe.Register(recipe.NewShaped([]recipe.Item{
-			item.Stack{},    item.Stack{},
-			plank,    plank,    item.Stack{},
+		/*recipe.Register(recipe.NewShaped([]recipe.Item{
+			item.Stack{}, item.Stack{},
+			plank, plank, item.Stack{},
 		}, item.NewStack(block.WoodPressurePlate{
-			Wood: w}, 1), recipe.NewShape(2, 2), "crafting_table"))
+		Wood: w}, 1), recipe.NewShape(2, 2), "crafting_table"))*/
 
 		recipe.Register(recipe.NewShaped([]recipe.Item{
 			item.Stack{}, plank, plank,
