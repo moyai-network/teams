@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/creative"
 	"github.com/df-mc/dragonfly/server/world"
+	"math/rand"
 )
 
 func init() {
@@ -53,12 +54,12 @@ func (f PortalFrame) EncodeBlock() (name string, properties map[string]any) {
 	}
 }
 
-func (f PortalFrame) Hash() uint64 {
+func (f PortalFrame) Hash() (uint64, uint64) {
 	filled := 0
 	if f.Filled {
 		filled = 1
 	}
-	return 218 | uint64(f.Facing)<<8 | uint64(filled)<<11
+	return 218 | uint64(f.Facing)<<8 | uint64(filled)<<11, rand.Uint64()
 }
 
 func (f PortalFrame) Model() world.BlockModel {

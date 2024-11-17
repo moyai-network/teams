@@ -40,8 +40,8 @@ func (p Portal) EncodeBlock() (string, map[string]any) {
 	return "minecraft:portal", map[string]any{"portal_axis": p.Axis.String()}
 }
 
-func (p Portal) Hash() uint64 {
-	return rand.Uint64()
+func (p Portal) Hash() (uint64, uint64) {
+	return rand.Uint64(), rand.Uint64()
 }
 
 // NeighbourUpdateTick ...
@@ -54,7 +54,7 @@ type portalModel struct {
 }
 
 // BBox ...
-func (p portalModel) BBox(cube.Pos, *world.World) []cube.BBox {
+func (p portalModel) BBox(cube.Pos, world.BlockSource) []cube.BBox {
 	min, max := mgl64.Vec3{0, 0, 0.375}, mgl64.Vec3{1, 1, 0.25}
 	if p.Axis == cube.Z {
 		min[0], min[2], max[0], max[2] = 0.375, 0, 0.25, 1
@@ -63,6 +63,6 @@ func (p portalModel) BBox(cube.Pos, *world.World) []cube.BBox {
 }
 
 // FaceSolid ...
-func (portalModel) FaceSolid(cube.Pos, cube.Face, *world.World) bool {
+func (portalModel) FaceSolid(cube.Pos, cube.Face, world.BlockSource) bool {
 	return false
 }

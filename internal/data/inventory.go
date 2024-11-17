@@ -9,7 +9,7 @@ import (
 
 // Inventory is a struct that contains all data of the player inventories.
 type Inventory struct {
-	// Items contains all the items in the player's main inventory.
+	// Items contains all the items in the player's cmd inventory.
 	// This excludes armor and offhand.
 	Items []item.Stack
 	// Boots, Leggings, Chestplate, Helmet are armor pieces that belong to the slot corresponding to the name.
@@ -17,7 +17,7 @@ type Inventory struct {
 	Leggings   item.Stack
 	Chestplate item.Stack
 	Helmet     item.Stack
-	// OffHand is what the player is carrying in their non-main hand, like a shield or arrows.
+	// OffHand is what the player is carrying in their non-cmd hand, like a shield or arrows.
 	OffHand item.Stack
 	// MainHandSlot saves the slot in the hotbar that the player is currently switched to.
 	// Should be between 0-8.

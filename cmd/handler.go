@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	cube "github.com/df-mc/dragonfly/server/block/cube"

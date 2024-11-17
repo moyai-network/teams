@@ -15,8 +15,8 @@ func (h TripwireHook) EncodeBlock() (string, map[string]any) {
 	}
 }
 
-func (h TripwireHook) Hash() uint64 {
-	return 98132746
+func (h TripwireHook) Hash() (uint64, uint64) {
+	return 98132746, 98132747
 }
 
 func (h TripwireHook) Model() world.BlockModel {

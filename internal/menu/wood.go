@@ -27,8 +27,6 @@ func NewWoodMenu(p *player.Player) inv.Menu {
 	stacks[22] = item.NewStack(block.Planks{Wood: block.JungleWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
 	stacks[23] = item.NewStack(block.Planks{Wood: block.AcaciaWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
 	stacks[24] = item.NewStack(block.Planks{Wood: block.DarkOakWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
-	stacks[29] = item.NewStack(block.Planks{Wood: block.Cherry()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
-	stacks[30] = item.NewStack(block.Planks{Wood: block.Mangrove()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
 	stacks[31] = item.NewStack(block.Planks{Wood: block.SpruceWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
 	stacks[32] = item.NewStack(block.Planks{Wood: block.CrimsonWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))
 	stacks[33] = item.NewStack(block.Planks{Wood: block.WarpedWood()}, 32).WithLore(text.Colourf("<gold>Cost: </gold><green>$300</green>"))

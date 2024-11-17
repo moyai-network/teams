@@ -21,8 +21,8 @@ type RedstoneOre struct {
 	Type block.OreType
 }
 
-func (d RedstoneOre) Hash() uint64 {
-	return redstoneHashes[d.Type]
+func (d RedstoneOre) Hash() (uint64, uint64) {
+	return redstoneHashes[d.Type], redstoneHashes[d.Type] + 1
 }
 
 func (d RedstoneOre) Model() world.BlockModel {

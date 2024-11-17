@@ -28,8 +28,8 @@ func (f EndPortalBlock) EncodeBlock() (name string, properties map[string]any) {
 	return "minecraft:end_portal", map[string]any{}
 }
 
-func (f EndPortalBlock) Hash() uint64 {
-	return 100000000000
+func (f EndPortalBlock) Hash() (uint64, uint64) {
+	return 100000000000, 100000000001
 }
 
 func (f EndPortalBlock) Model() world.BlockModel {

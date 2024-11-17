@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/event"
+	"github.com/moyai-network/teams/internal/colour"
 	"github.com/moyai-network/teams/internal/data"
 	"github.com/moyai-network/teams/internal/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -33,7 +34,7 @@ func (h *Handler) HandleSignEdit(ctx *event.Context, pos cube.Pos, frontSide boo
 		return
 	}
 
-	switch formatRegex.ReplaceAllString(strings.ToLower(lines[0]), "") {
+	switch strings.ToLower(colour.Strip(lines[0])) {
 	case "[elevator]":
 		if len(lines) < 2 {
 			return

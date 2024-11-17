@@ -23,16 +23,6 @@ func NewAdvancedSettings(p *player.Player) inv.Menu {
 		return m
 	}
 
-	var ca string
-	if u.Teams.Settings.Advanced.Cape == "" {
-		ca = "None"
-	} else {
-		ca = u.Teams.Settings.Advanced.Cape
-	}
-	stacks[11] = item.NewStack(item.Dye{Colour: item.ColourBlue()}, 1).
-		WithCustomName(text.Colourf("<dark-aqua>Cape</dark-aqua>")).
-		WithLore(text.Colourf("<grey><aqua>Current: </aqua>%s</grey>\n", ca)).
-		WithEnchantments(item.NewEnchantment(glint{}, 1))
 	stacks[12] = item.NewStack(item.Dye{Colour: item.ColourOrange()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>Particle Multiplier</dark-aqua>")).
 		WithLore(text.Colourf("<grey><aqua>Current: </aqua>x%d</grey>", u.Teams.Settings.Advanced.ParticleMultiplier)).
@@ -77,8 +67,6 @@ func (b AdvancedSettings) Submit(p *player.Player, it item.Stack) {
 	}
 
 	switch d.Colour {
-	case item.ColourBlue():
-		inv.UpdateMenu(p, NewCape(p))
 	case item.ColourLightBlue():
 		inv.UpdateMenu(p, NewPotionSplashColors(p))
 	case item.ColourOrange():

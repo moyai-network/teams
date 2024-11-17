@@ -1,7 +1,8 @@
-package cmd
+package main
 
 import (
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -23,8 +24,6 @@ import (
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
-
-	_ "github.com/flonja/multiversion/protocols" // VERY IMPORTANT
 
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/area"
@@ -65,7 +64,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	config := configure(conf, log)
+	config := configure(conf, slog.Default())
 
 	srv := internal.NewServer(config)
 	handleServerClose()
@@ -236,7 +235,7 @@ func startChatGame() {
 }
 
 // configure initializes the server configuration.
-func configure(conf internal.Config, log *logrus.Logger) server.Config {
+func configure(conf internal.Config, log *slog.Logger) server.Config {
 	c, err := conf.Config(log)
 	if err != nil {
 		panic(err)

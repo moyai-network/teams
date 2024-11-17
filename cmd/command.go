@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"github.com/bedrock-gophers/knockback/knockback"
@@ -25,7 +25,7 @@ func registerCommands() {
 		cmd.New("pots", text.Colourf("Place potion chests."), nil, command.Pots{}),
 		cmd.New("fix", text.Colourf("Fix your inventory."), nil, command.Fix{}, command.FixAll{}),
 		cmd.New("chat", text.Colourf("Chat management commands."), nil, command.ChatMute{}, command.ChatUnMute{}, command.ChatCoolDown{}),
-		cmd.New("t", text.Colourf("The main team management command."), []string{"f"},
+		cmd.New("t", text.Colourf("The cmd team management command."), []string{"f"},
 			command.TeamCreate{},
 			command.TeamRename{},
 			command.TeamInformation{},
@@ -80,7 +80,6 @@ func registerCommands() {
 		cmd.New("reclaim", text.Colourf("Manage a reclaim."), nil, command.Reclaim{}, command.ReclaimReset{}),
 		cmd.New("kit", text.Colourf("Choose a kit."), nil, command.Kit{}, command.KitReset{}),
 		cmd.New("ban", text.Colourf("Unleash the ban hammer."), nil, command.Ban{}, command.BanOffline{}, command.BanList{}, command.BanLiftOffline{} /*command.BanInfoOffline{},*/, command.BanForm{}),
-		//cmd.New("blacklist", text.Colourf("Blacklist little evaders."), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
 		cmd.New("kick", text.Colourf("Kick a user."), nil, command.Kick{}),
 		cmd.New("mute", text.Colourf("Mute a user."), nil, command.MuteList{}, command.MuteInfo{}, command.MuteInfoOffline{}, command.MuteLift{}, command.MuteLiftOffline{}, command.MuteForm{}, command.Mute{}, command.MuteOffline{}),
 		cmd.New("whisper", text.Colourf("Send a private message to a player."), []string{"w", "tell", "msg"}, command.Whisper{}),
@@ -94,7 +93,6 @@ func registerCommands() {
 		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command.PartnerPackageAll{}, command.PartnerPackage{}, command.PartnerItemsRefresh{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command.Ping{}),
 		cmd.New("data", text.Colourf("Clear data."), nil, command.DataReset{}),
-		//cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command.BlockShop{}),
@@ -105,7 +103,6 @@ func registerCommands() {
 		cmd.New("nether", text.Colourf("End your adventure."), nil, command.Nether{}),
 		cmd.New("settings", text.Colourf("Access your settings."), nil, command.Settings{}),
 		cmd.New("tag", text.Colourf("Manage your tags."), nil, command.TagAddOnline{}, command.TagAddOffline{}, command.TagRemoveOnline{}, command.TagRemoveOffline{}, command.TagSet{}),
-		cmd.New("cape", text.Colourf("Manage your capes."), nil, command.Cape{}),
 		cmd.New("conquest", text.Colourf("Manage Conquest."), nil, command.ConquestStart{}, command.ConquestStop{}),
 		cmd.New("eotw", text.Colourf("EOTW management commands."), nil, command.EOTWStart{}, command.EOTWEnd{}),
 		cmd.New("lastinv", text.Colourf("Access last inventory of players."), nil, command.LastInv{}),
@@ -115,8 +112,6 @@ func registerCommands() {
 	} {
 		cmd.Register(c)
 	}
-
-	//cmd.Register(cmd.New("hub", text.Colourf("Return to the Moyai Hub."), []string{"lobby"}, command.Hub{}))
 }
 
 // operatorAllower is an allower that allows all users with the operator role to execute a command.
