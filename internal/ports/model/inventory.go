@@ -1,4 +1,4 @@
-package data
+package model
 
 import (
 	"github.com/df-mc/dragonfly/server/item"

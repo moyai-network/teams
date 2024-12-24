@@ -1,16 +1,17 @@
 package internal
 
 import (
-    "fmt"
-    data2 "github.com/moyai-network/teams/internal/core/data"
-    "github.com/moyai-network/teams/internal/core/eotw"
-    "net"
-    "strings"
+	"fmt"
+	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core/eotw"
+	"github.com/moyai-network/teams/internal/ports/model"
+	"net"
+	"strings"
 
-    "github.com/hako/durafmt"
-    "github.com/moyai-network/teams/pkg/lang"
-    "github.com/sandertv/gophertunnel/minecraft/protocol/login"
-    "github.com/unickorn/strutils"
+	"github.com/hako/durafmt"
+	"github.com/moyai-network/teams/pkg/lang"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
+	"github.com/unickorn/strutils"
 )
 
 type Allower struct {
@@ -27,7 +28,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 	u, err := data2.LoadUserOrCreate(d.DisplayName, d.XUID)
 	if err != nil {
 		fmt.Printf("Failed to load user: %v\n", err)
-		return lang.Translatef(data2.Language{}, "user.data.load.error"), false
+		return lang.Translatef(model.Language{}, "user.data.load.error"), false
 	}
 
 	if a.whitelisted && !u.Whitelisted {
@@ -42,7 +43,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 			return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header") + "\n" + description), false
 		}
 	}
-	var users []data2.User
+	var users []model.User
 	ssid, err := data2.LoadUsersFromSelfSignedID(u.SelfSignedID)
 	if err == nil {
 		users = append(users, ssid...)

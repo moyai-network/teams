@@ -1,21 +1,22 @@
 package koth
 
 import (
-    "github.com/moyai-network/teams/internal/core/area"
-    "github.com/moyai-network/teams/internal/core/colour"
-    data2 "github.com/moyai-network/teams/internal/core/data"
-    "github.com/moyai-network/teams/internal/core/item"
-    "math/rand"
-    "strings"
-    "time"
+	"github.com/moyai-network/teams/internal/core/area"
+	"github.com/moyai-network/teams/internal/core/colour"
+	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
+	"math/rand"
+	"strings"
+	"time"
 
-    "github.com/moyai-network/teams/pkg/lang"
+	"github.com/moyai-network/teams/pkg/lang"
 
-    "github.com/df-mc/dragonfly/server/player"
-    "github.com/df-mc/dragonfly/server/player/chat"
-    "github.com/df-mc/dragonfly/server/world"
-    "github.com/go-gl/mathgl/mgl64"
-    "github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/chat"
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/go-gl/mathgl/mgl64"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 func init() {
@@ -201,7 +202,7 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 			tm.KOTHWins++
 			data2.SaveTeam(tm)
 
-			_, _ = chat.Global.WriteString(lang.Translatef(data2.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
 			item.AddOrDrop(p, item.NewKey(item.KeyTypeKOTH, 2))
 		case <-k.cancel:
 			k.capturing = nil

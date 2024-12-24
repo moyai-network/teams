@@ -5,6 +5,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/colour"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -153,12 +154,12 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 				return
 			}
 			IncreaseTeamPoints(tm, 10)
-			_, _ = chat.Global.WriteString(lang.Translatef(data2.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "conquest.captured", c.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
 			c.StopCapturing(p)
 
 			pts := LookupTeamPoints(tm)
 			if pts >= 150 {
-				_, _ = chat.Global.WriteString(lang.Translatef(data2.Language{}, "conquest.won", tm.Name, pts))
+				_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "conquest.won", tm.Name, pts))
 				for _, m := range tm.Members {
 					for p := range internal.Players(p.Tx()) {
 						if p.Name() == m.DisplayName {

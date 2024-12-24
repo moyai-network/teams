@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"time"
 
 	"github.com/bedrock-gophers/cooldown/cooldown"
@@ -22,7 +22,7 @@ func (h *Handler) Stuck() *Process {
 }
 
 // BeginCamp is a process that handles the camp command
-func (h *Handler) BeginCamp(p *player.Player, tm data.Team, pos cube.Pos) {
+func (h *Handler) BeginCamp(p *player.Player, tm model.Team, pos cube.Pos) {
 	h.processCamp = NewProcess(func(t *Process) {
 		p.Message(text.Colourf("<green>You have been teleported close to %s's home.</green>", tm.DisplayName))
 	})

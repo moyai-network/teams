@@ -6,13 +6,14 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )
 
 // locale returns the locale of a cmd.Source.
-func locale(s cmd.Source) data2.Language {
-	l := data2.Language{
+func locale(s cmd.Source) model.Language {
+	l := model.Language{
 		Tag: language.English,
 	}
 
@@ -44,7 +45,7 @@ func Allow(src cmd.Source, console bool, roles ...role.Role) bool {
 
 // names returns a list of formatted names from a list of users. If tag is true a tag will be shown next to the name
 // indicating if the user is banned or blacklisted.
-func names(users []data2.User, tag bool) (names []string) {
+func names(users []model.User, tag bool) (names []string) {
 	for _, u := range users {
 		_ = u
 		if u.Teams.Ban.Permanent {

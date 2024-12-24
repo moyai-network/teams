@@ -4,6 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"time"
 
 	"github.com/go-gl/mathgl/mgl64"
@@ -52,7 +53,7 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	data2.SaveUser(tg)
 }
 
-func addDataInventory(p *player.Player, inv data2.Inventory) {
+func addDataInventory(p *player.Player, inv model.Inventory) {
 	for _, i := range inv.Items {
 		it.AddOrDrop(p, i)
 	}

@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"golang.org/x/text/language"
 )
 
@@ -26,7 +27,7 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 
 	for l, t := range translations {
 		if t.Properties.Name == string(la.Name) {
-			*u.Language = data2.Language{
+			*u.Language = model.Language{
 				Tag: l,
 			}
 			data2.SaveUser(u)

@@ -6,6 +6,7 @@ import (
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"strings"
 	"unicode"
 
@@ -128,19 +129,19 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 func (r ReclaimReset) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	targets := r.Targets.LoadOr(nil)
 	if len(targets) > 1 {
-		o.Error(lang.Translatef(data2.Language{}, "command.targets.exceed"))
+		o.Error(lang.Translatef(model.Language{}, "command.targets.exceed"))
 		return
 	}
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			o.Error(lang.Translatef(data2.Language{}, "command.target.unknown"))
+			o.Error(lang.Translatef(model.Language{}, "command.target.unknown"))
 			return
 		}
 
 		u, err := data2.LoadUserFromName(target.Name())
 		if err != nil {
-			o.Error(lang.Translatef(data2.Language{}, "command.target.unknown"))
+			o.Error(lang.Translatef(model.Language{}, "command.target.unknown"))
 			return
 		}
 
@@ -152,7 +153,7 @@ func (r ReclaimReset) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if p, ok := s.(*player.Player); ok {
 		u, err := data2.LoadUserFromName(p.Name())
 		if err != nil {
-			o.Error(lang.Translatef(data2.Language{}, "command.target.unknown"))
+			o.Error(lang.Translatef(model.Language{}, "command.target.unknown"))
 			return
 		}
 

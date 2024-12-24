@@ -8,6 +8,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/conquest"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/koth"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 	"time"
 
@@ -104,7 +105,7 @@ func (h *Handler) handleNetherPortalEntry(p *player.Player) {
 	}
 }
 
-func (h *Handler) updateWalls(ctx *player.Context, newPos mgl64.Vec3, u data2.User) {
+func (h *Handler) updateWalls(ctx *player.Context, newPos mgl64.Vec3, u model.User) {
 	p := ctx.Val()
 	w := p.Tx().World()
 
@@ -149,7 +150,7 @@ func (h *Handler) cancelProcesses(p *player.Player, newPos mgl64.Vec3) {
 	}
 }
 
-func (h *Handler) updateConquestState(p *player.Player, newPos mgl64.Vec3, u data2.User) {
+func (h *Handler) updateConquestState(p *player.Player, newPos mgl64.Vec3, u model.User) {
 	w := p.Tx().World()
 	if u.Teams.PVP.Active() {
 		return
@@ -168,7 +169,7 @@ func (h *Handler) updateConquestState(p *player.Player, newPos mgl64.Vec3, u dat
 	}
 }
 
-func (h *Handler) updateKOTHState(p *player.Player, newPos mgl64.Vec3, u data2.User) {
+func (h *Handler) updateKOTHState(p *player.Player, newPos mgl64.Vec3, u model.User) {
 	w := p.Tx().World()
 	if u.Teams.PVP.Active() {
 		return
@@ -204,7 +205,7 @@ func (h *Handler) updateKOTHState(p *player.Player, newPos mgl64.Vec3, u data2.U
 	k.StartCapturing(p)
 }
 
-func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u data2.User) {
+func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model.User) {
 	w := p.Tx().World()
 	var areas []area.NamedArea
 

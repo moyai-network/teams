@@ -3,6 +3,7 @@ package menu
 import (
 	"github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"time"
 
 	"github.com/bedrock-gophers/inv/inv"
@@ -86,7 +87,7 @@ func SendPrizesMenu(p *player.Player) {
 	}()
 }
 
-func (pr *Prizes) sendPrizesMenu(u data.User, p *player.Player) {
+func (pr *Prizes) sendPrizesMenu(u model.User, p *player.Player) {
 	h, ok := p.Handler().(userHandler)
 	if !ok {
 		return

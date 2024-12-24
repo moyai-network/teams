@@ -8,6 +8,7 @@ import (
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/team"
 	user2 "github.com/moyai-network/teams/internal/core/user"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 	"regexp"
 	"sort"
@@ -430,8 +431,8 @@ func teamExists(p *player.Player) bool {
 	return err == nil
 }
 
-func createTeam(p *player.Player, name string) data2.Team {
-	tm := data2.DefaultTeam(name).WithMembers(data2.DefaultMember(p.XUID(), p.Name()).WithRank(3))
+func createTeam(p *player.Player, name string) model.Team {
+	tm := model.DefaultTeam(name).WithMembers(model.DefaultMember(p.XUID(), p.Name()).WithRank(3))
 	data2.SaveTeam(tm)
 	return tm
 }
@@ -550,7 +551,7 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	data2.SaveUser(u)
 
 	// Add player to the team and update team DTR
-	tm = tm.WithMembers(append(tm.Members, data2.DefaultMember(p.XUID(), p.Name()))...)
+	tm = tm.WithMembers(append(tm.Members, model.DefaultMember(p.XUID(), p.Name()))...)
 	tm = tm.WithDTR(tm.DTR + 1.01)
 	data2.SaveTeam(tm)
 
@@ -1127,7 +1128,7 @@ func (t TeamList) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	})
 
 	// Filter out teams with DTR <= 0
-	filteredTeams := make([]data2.Team, 0, len(teams))
+	filteredTeams := make([]model.Team, 0, len(teams))
 	for _, tm := range teams {
 		if tm.DTR > 0 {
 			filteredTeams = append(filteredTeams, tm)
@@ -1211,7 +1212,7 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 	focus := tm.Focus
 
-	if focus.Kind == data2.FocusTypeNone {
+	if focus.Kind == model.FocusTypeNone {
 		internal.Messagef(p, "command.team.focus.none")
 		return
 	}
@@ -1219,7 +1220,7 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	tm = tm.WithoutFocus()
 	data2.SaveTeam(tm)
 
-	if focus.Kind == data2.FocusTypeTeam {
+	if focus.Kind == model.FocusTypeTeam {
 		targetTeam, err := data2.LoadTeamFromName(focus.Value)
 		if err == nil {
 			for _, m := range team.OnlineMembers(tx, targetTeam) {
@@ -1229,7 +1230,7 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 				// }
 			}
 		}
-	} else if focus.Kind == data2.FocusTypePlayer {
+	} else if focus.Kind == model.FocusTypePlayer {
 		if mem, ok := user2.Lookup(tx, focus.Value); ok {
 			user2.UpdateState(mem)
 		}
@@ -1791,7 +1792,7 @@ func (teamMember) Options(src cmd.Source) []string {
 }
 
 // formatTeamInformation returns a formatted string containing the information of the faction.
-func formatTeamInformation(tx *world.Tx, t data2.Team) string {
+func formatTeamInformation(tx *world.Tx, t model.Team) string {
 	var formattedRegenerationTime string
 	var formattedDtr string
 	var formattedLeader string

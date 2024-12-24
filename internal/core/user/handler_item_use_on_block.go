@@ -11,6 +11,8 @@ import (
 	"github.com/moyai-network/teams/internal/core/eotw"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
+	"github.com/moyai-network/teams/internal/ports"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"strconv"
 	"strings"
 	"time"
@@ -353,7 +355,7 @@ func handleShopSignInteraction(p *player.Player, choice string, lines []string) 
 // handleBuy handles the purchase of an item from a shop sign. If the player can buy the item, the item is
 // added to the player's inventory and the player's balance is reduced by the price of the item. If the player
 // cannot buy the item, the player is sent a message informing them that they do not have enough balance.
-func handleBuy(p *player.Player, u data2.User, stack item.Stack, price float64, itemName string) {
+func handleBuy(p *player.Player, u model.User, stack item.Stack, price float64, itemName string) {
 	if u.Teams.Balance < price {
 		internal.Messagef(p, "shop.balance.insufficient")
 		return
@@ -367,7 +369,7 @@ func handleBuy(p *player.Player, u data2.User, stack item.Stack, price float64, 
 // handleSell handles the selling of an item to a shop sign. If the player can sell the item, the player's
 // balance is increased by the price of the item. If the player cannot sell the item, the player is sent a
 // message informing them that they cannot sell the item.
-func handleSell(p *player.Player, u data2.User, itm world.Item, q int, price float64, itemName string) {
+func handleSell(p *player.Player, u model.User, itm world.Item, q int, price float64, itemName string) {
 	inv := p.Inventory()
 	count := 0
 	var items []item.Stack
@@ -406,7 +408,7 @@ func handleSell(p *player.Player, u data2.User, itm world.Item, q int, price flo
 
 // resolveCrateFromPosition resolves a crate from a position and block. If a crate is found, the crate and
 // true are returned. If no crate is found, nil and false are returned.
-func resolveCrateFromPosition(pos cube.Pos, b world.Block) (crate.Crate, bool) {
+func resolveCrateFromPosition(pos cube.Pos, b world.Block) (ports.Crate, bool) {
 	for _, c := range crate.All() {
 		if _, ok := b.(block.Chest); ok && pos.Vec3Middle() == c.Position() {
 			return c, true
@@ -417,14 +419,14 @@ func resolveCrateFromPosition(pos cube.Pos, b world.Block) (crate.Crate, bool) {
 
 // canOpenCrate checks if a player can open a crate with the held item stack and the crate passed. If the
 // player can open the crate, true is returned. If the player cannot open the crate, false is returned.
-func canOpenCrate(held item.Stack, c crate.Crate) bool {
+func canOpenCrate(held item.Stack, c ports.Crate) bool {
 	_, ok := held.Value("crate-key_" + colour.StripMinecraftColour(c.Name()))
 	return ok
 }
 
 // openCrate opens a crate for a player, removing a key from the player's inventory and giving the player
 // the reward from the crate. The player is also sent a firework to celebrate the opening of the crate.
-func openCrate(p *player.Player, w *world.World, held, left item.Stack, c crate.Crate) {
+func openCrate(p *player.Player, w *world.World, held, left item.Stack, c ports.Crate) {
 	item2.AddOrDrop(p, ench.AddEnchantmentLore(crate.SelectReward(c)))
 	p.SetHeldItems(subtractItem(p, held, 1), left)
 
@@ -447,7 +449,7 @@ func openCrate(p *player.Player, w *world.World, held, left item.Stack, c crate.
 // posWithinProtectedArea checks if a position is within a protected area. If the position is within a protected
 // area, true is returned. If the position is not within a protected area, false is returned. The player passed
 // is used to check if the player is a member of a team that has a claim in the area.
-func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []data2.Team) bool {
+func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []model.Team) bool {
 	if p.GameMode() == world.GameModeCreative {
 		return false
 	}

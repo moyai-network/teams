@@ -2,7 +2,7 @@ package lang
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -31,18 +31,18 @@ func Register(lang language.Tag) {
 }
 
 // Properties returns the name and image of a language.
-func Properties(lang data.Language) (string, string, bool) {
+func Properties(lang model.Language) (string, string, bool) {
 	dat, ok := translations[lang.Tag]
 	return dat.Properties.Name, dat.Properties.Image, ok
 }
 
 // Translatef returns the translated version of a string.
-func Translatef(lang data.Language, key string, a ...interface{}) string {
+func Translatef(lang model.Language, key string, a ...interface{}) string {
 	return text.Colourf(Translate(lang, key), a...)
 }
 
 // Translate returns the translated version of a string.
-func Translate(lang data.Language, key string) string {
+func Translate(lang model.Language, key string) string {
 	t, ok := translations[lang.Tag]
 	if !ok {
 		t = translations[language.English]

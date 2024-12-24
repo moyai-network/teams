@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -61,7 +62,7 @@ func (s StatsOfflineCommand) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	o.Print(userStatsFormat(u))
 }
 
-func userStatsFormat(u data.User) string {
+func userStatsFormat(u model.User) string {
 	kills := u.Teams.Stats.Kills
 	deaths := u.Teams.Stats.Deaths
 	if deaths == 0 {

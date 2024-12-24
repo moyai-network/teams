@@ -15,6 +15,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"time"
@@ -223,10 +224,10 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 				heldName = "their fist"
 			}
 
-			_, _ = chat.Global.WriteString(lang.Translatef(data2.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
+			_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "user.kill", p.Name(), u.Teams.Stats.Kills, killer.Name(), k.Teams.Stats.Kills, text.Colourf("<red>%s</red>", heldName)))
 			h.resetLastAttacker()
 		} else {
-			_, _ = chat.Global.WriteString(lang.Translatef(data2.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
+			_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "user.suicide", p.Name(), u.Teams.Stats.Kills))
 		}
 	}
 

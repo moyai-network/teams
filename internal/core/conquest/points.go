@@ -2,6 +2,7 @@ package conquest
 
 import (
 	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"sort"
 	"sync"
 )
@@ -21,7 +22,7 @@ func resetPoints() {
 }
 
 // increaseTeamPoints increases the points of a team by n.
-func IncreaseTeamPoints(team data.Team, n int) {
+func IncreaseTeamPoints(team model.Team, n int) {
 	pointsMu.Lock()
 	points[team.Name] += n
 	pointsMu.Unlock()
@@ -29,21 +30,21 @@ func IncreaseTeamPoints(team data.Team, n int) {
 
 // OrderedTeamsByPoints returns a slice of all teams ordered by the amount of points they have. The team with the
 // most points will be at the start of the slice.
-func OrderedTeamsByPoints() []data.Team {
+func OrderedTeamsByPoints() []model.Team {
 	pointsMu.Lock()
 	tms, _ := data.LoadAllTeams()
-    sort.SliceStable(tms, func(i, j int) bool {
-        if points[tms[i].Name] != points[tms[j].Name] {
-            return points[tms[i].Name] > points[tms[j].Name]
-        }
-        return tms[i].Name < tms[j].Name
-    })
+	sort.SliceStable(tms, func(i, j int) bool {
+		if points[tms[i].Name] != points[tms[j].Name] {
+			return points[tms[i].Name] > points[tms[j].Name]
+		}
+		return tms[i].Name < tms[j].Name
+	})
 	pointsMu.Unlock()
 	return tms
 }
 
 // LookupTeamPoints returns the amount of points a team has.
-func LookupTeamPoints(team data.Team) int {
+func LookupTeamPoints(team model.Team) int {
 	pointsMu.Lock()
 	defer pointsMu.Unlock()
 	pts, ok := points[team.Name]

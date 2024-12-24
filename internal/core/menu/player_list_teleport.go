@@ -9,6 +9,7 @@ import (
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"slices"
 )
@@ -27,7 +28,7 @@ func SendPlayerListTeleportMenu(p *player.Player) {
 	pl.sendPlayerListTeleportMenu(p.Tx(), u, p)
 }
 
-func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(tx *world.Tx, u data.User, p *player.Player) {
+func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(tx *world.Tx, u model.User, p *player.Player) {
 	rl := u.Roles.Highest()
 	if !roles.Staff(rl) && !u.Roles.Contains(roles.Operator()) {
 		return

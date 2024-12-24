@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/moyai-network/teams/pkg/lang"
 	"golang.org/x/text/language"
 )
@@ -37,7 +38,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue
 			}
-			p.Disconnect(lang.Translatef(data2.Language{Tag: language.English}, "command.kick.reason"))
+			p.Disconnect(lang.Translatef(model.Language{Tag: language.English}, "command.kick.reason"))
 			if single {
 				//webhook.SendPunishment(s.Name(), p.Name(), "", "Kick")
 				o.Print(lang.Translatef(l, "command.kick.success", p.Name()))

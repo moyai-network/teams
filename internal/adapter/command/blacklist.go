@@ -13,7 +13,7 @@ package command
 	"github.com/internal-network/moose/role"
 	"github.com/internal-network/teams/internal/form"
 	"github.com/internal-network/teams/internal/user"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.repository.org/repository-driver/bson"
 )
 
 // BlacklistForm is a command that is used to blacklist a player through a punishment form.

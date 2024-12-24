@@ -10,6 +10,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/area"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/moyai-network/teams/pkg/lang"
 )
 
@@ -69,7 +70,7 @@ func (h *Handler) HandlePunchAir(ctx *player.Context) {
 }
 
 // handleClaimSelection handles the selection of a claim area.
-func handleClaimSelection(p *player.Player, h *Handler, tm data2.Team) {
+func handleClaimSelection(p *player.Player, h *Handler, tm model.Team) {
 	pos := h.claimSelectionPos
 	if pos[0] == (mgl64.Vec3{}) || pos[1] == (mgl64.Vec3{}) {
 		internal.Messagef(p, "team.claim.select-before")
@@ -193,7 +194,7 @@ func calculateCost(claim area.Area) int {
 }
 
 // checkBalance checks if the team has enough balance to claim the area.
-func checkBalance(tm data2.Team, cost int) bool {
+func checkBalance(tm model.Team, cost int) bool {
 	return int(tm.Balance) >= cost
 }
 

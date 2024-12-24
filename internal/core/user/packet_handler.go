@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/bedrock-gophers/intercept/intercept"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"strings"
 	_ "unsafe"
 
@@ -106,7 +106,7 @@ func (h packetHandler) HandleServerPacket(ctx *player.Context, pk packet.Packet)
 
 		var ta string
 
-		if t, ok := tag.ByName(tData.Teams.Settings.Display.ActiveTag); ok {
+		if t, ok := tag.ByName(tmodel.Teams.Settings.Display.ActiveTag); ok {
 			ta = t.Format()
 		}
 
@@ -142,14 +142,14 @@ func (h packetHandler) HandleServerPacket(ctx *player.Context, pk packet.Packet)
 	}*/
 }
 
-func compareTeams(a data.Team, b data.Team) bool {
+func compareTeams(a model.Team, b model.Team) bool {
 	if len(a.Name) == 0 || len(b.Name) == 0 {
 		return false
 	}
 	return a.Name == b.Name
 }
 
-func formatNameTag(name string, t data.Team, col1, col2 string, tag string) string {
+func formatNameTag(name string, t model.Team, col1, col2 string, tag string) string {
 	if len(t.Name) == 0 {
 		return text.Colourf("<%s>%s</%s>", col1, name, col1)
 	}

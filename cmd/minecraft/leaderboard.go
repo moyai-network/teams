@@ -3,6 +3,7 @@ package minecraft
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 	"slices"
 	"strings"
@@ -17,11 +18,11 @@ import (
 )
 
 func startLeaderboard() {
-	killsLeaderboard := entity.NewText(formattedUserLeaderBoard("KILLS", func(u data2.User) int {
+	killsLeaderboard := entity.NewText(formattedUserLeaderBoard("KILLS", func(u model.User) int {
 		return u.Teams.Stats.Kills
 	}), cube.Pos{9, 71, 11}.Vec3Middle())
 
-	kdrLeaderboard := entity.NewText(formattedUserLeaderBoard("KDR", func(u data2.User) float64 {
+	kdrLeaderboard := entity.NewText(formattedUserLeaderBoard("KDR", func(u model.User) float64 {
 		kills := u.Teams.Stats.Kills
 		deaths := u.Teams.Stats.Deaths
 		if deaths == 0 {
@@ -30,19 +31,19 @@ func startLeaderboard() {
 		return math.Round(float64(kills)/float64(deaths)*100) / 100
 	}), cube.Pos{13, 71, 10}.Vec3Middle())
 
-	deathsLeaderboard := entity.NewText(formattedUserLeaderBoard("DEATHS", func(u data2.User) int {
+	deathsLeaderboard := entity.NewText(formattedUserLeaderBoard("DEATHS", func(u model.User) int {
 		return u.Teams.Stats.Deaths
 	}), cube.Pos{17, 71, 8}.Vec3Middle())
 
-	topPointsLeaderboard := entity.NewText(formattedTeamLeaderBoard("POINTS", func(t data2.Team) int {
+	topPointsLeaderboard := entity.NewText(formattedTeamLeaderBoard("POINTS", func(t model.Team) int {
 		return t.Points
 	}), cube.Pos{-9, 71, 11}.Vec3Middle())
 
-	topKOTHLeaderboard := entity.NewText(formattedTeamLeaderBoard("KOTH CAPTURES", func(t data2.Team) int {
+	topKOTHLeaderboard := entity.NewText(formattedTeamLeaderBoard("KOTH CAPTURES", func(t model.Team) int {
 		return t.KOTHWins
 	}), cube.Pos{-13, 71, 10}.Vec3Middle())
 
-	topKillsLeaderboard := entity.NewText(formattedTeamLeaderBoard("KILLS", func(t data2.Team) int {
+	topKillsLeaderboard := entity.NewText(formattedTeamLeaderBoard("KILLS", func(t model.Team) int {
 		kills := 0
 		for _, m := range t.Members {
 			u, err := data2.LoadUserFromName(m.Name)
@@ -83,15 +84,15 @@ func startLeaderboard() {
 			return u.Teams.Stats.Deaths
 		}))
 
-		topPointsLeaderboard.SetNameTag(formattedTeamLeaderBoard("POINTS", func(t data.Team) int {
+		topPointsLeaderboard.SetNameTag(formattedTeamLeaderBoard("POINTS", func(t model.Team) int {
 			return t.Points
 		}))
 
-		topKOTHLeaderboard.SetNameTag(formattedTeamLeaderBoard("KOTH CAPTURES", func(t data.Team) int {
+		topKOTHLeaderboard.SetNameTag(formattedTeamLeaderBoard("KOTH CAPTURES", func(t model.Team) int {
 			return t.KOTHWins
 		}))
 
-		topKillsLeaderboard.SetNameTag(formattedTeamLeaderBoard("KILLS", func(t data.Team) int {
+		topKillsLeaderboard.SetNameTag(formattedTeamLeaderBoard("KILLS", func(t model.Team) int {
 			kills := 0
 			for _, m := range t.Members {
 				u, err := data.LoadUserFromName(m.Name)
@@ -105,7 +106,7 @@ func startLeaderboard() {
 	}
 }
 
-func formattedTeamLeaderBoard[T int | float64](name string, value func(u data2.Team) T) string {
+func formattedTeamLeaderBoard[T int | float64](name string, value func(u model.Team) T) string {
 	sb := &strings.Builder{}
 	sb.WriteString(text.Colourf("<bold><red>TOP TEAM %v</red></bold>\n", strings.ToUpper(name)))
 	teams, err := data2.LoadAllTeams()
@@ -118,7 +119,7 @@ func formattedTeamLeaderBoard[T int | float64](name string, value func(u data2.T
 		return teams[i].Name
 	})
 
-	slices.SortFunc(teams, func(a, b data2.Team) int {
+	slices.SortFunc(teams, func(a, b model.Team) int {
 		if value(a) == value(b) {
 			return 0
 		}
@@ -146,7 +147,7 @@ func formattedTeamLeaderBoard[T int | float64](name string, value func(u data2.T
 	return sb.String()
 }
 
-func formattedUserLeaderBoard[T int | float64](name string, value func(u data2.User) T) string {
+func formattedUserLeaderBoard[T int | float64](name string, value func(u model.User) T) string {
 	sb := &strings.Builder{}
 	sb.WriteString(text.Colourf("<bold><red>TOP %v</red></bold>\n", strings.ToUpper(name)))
 	users, err := data2.LoadAllUsers()
@@ -159,7 +160,7 @@ func formattedUserLeaderBoard[T int | float64](name string, value func(u data2.U
 		return users[i].Name
 	})
 
-	slices.SortFunc(users, func(a, b data2.User) int {
+	slices.SortFunc(users, func(a, b model.User) int {
 		if value(a) == value(b) {
 			return 0
 		}

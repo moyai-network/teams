@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	item2 "github.com/moyai-network/teams/internal/core/item"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -29,17 +30,17 @@ var partnerEnchantments = []item.Enchantment{
 	item.NewEnchantment(enchantment.Unbreaking, 2),
 }
 
-func (partner) Rewards() []Reward {
-	rewards := make([]Reward, 23)
+func (partner) Rewards() []model.Reward {
+	rewards := make([]model.Reward, 23)
 	for i, p := range item2.PartnerItems() {
 		chance := 10
 		if p == (item2.NinjaStarType{}) {
 			chance = 5
 		}
 		if i >= 9 {
-			rewards[i+3] = NewReward(item2.NewSpecialItem(p, 1), chance)
+			rewards[i+3] = model.NewReward(item2.NewSpecialItem(p, 1), chance)
 		} else {
-			rewards[i] = NewReward(item2.NewSpecialItem(p, 1), chance)
+			rewards[i] = model.NewReward(item2.NewSpecialItem(p, 1), chance)
 		}
 	}
 	return rewards

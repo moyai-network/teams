@@ -8,6 +8,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/core/user/class"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 	"math/rand"
 	"strings"
@@ -26,7 +27,7 @@ import (
 
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/block/model"
+	model2 "github.com/df-mc/dragonfly/server/block/model"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/entity/effect"
 	"github.com/df-mc/dragonfly/server/item"
@@ -87,7 +88,7 @@ func showVanished(p *player.Player) {
 }
 
 // UpdateVanishState vanishes the user.
-func UpdateVanishState(p *player.Player, u data2.User) {
+func UpdateVanishState(p *player.Player, u model.User) {
 	if u.Vanished {
 		showVanished(p)
 	} else {
@@ -285,8 +286,8 @@ func (h *Handler) incrementDeath(p *player.Player) {
 	data2.SaveUser(victim)
 }
 
-func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) data2.Inventory {
-	return data2.Inventory{
+func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) model.Inventory {
+	return model.Inventory{
 		MainHandSlot: 0,
 		OffHand:      off,
 		Items:        i.Slots(),
@@ -439,7 +440,7 @@ func (h *Handler) revertMovement(p *player.Player) {
 			z := int(pos.Z())
 			for y := int(pos.Y()) - 1; y > 0; y-- {
 				b := w.Block(cube.Pos{x, y, z})
-				if _, ok := b.Model().(model.Solid); ok {
+				if _, ok := b.Model().(model2.Solid); ok {
 					new := pos
 					new.Add(mgl64.Vec3{0, float64(y + 1), 0})
 					p.Teleport(new)

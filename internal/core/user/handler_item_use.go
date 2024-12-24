@@ -11,6 +11,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/menu"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math/rand"
 	"slices"
 	"time"
@@ -146,7 +147,7 @@ func (h *Handler) handleArcherRogueItemUse(ctx *player.Context, held item.Stack,
 }
 
 // handleBardItemUse handles the use of items by Bard class.
-func (h *Handler) handleBardItemUse(ctx *player.Context, held item.Stack, sotwRunning bool, u data.User) {
+func (h *Handler) handleBardItemUse(ctx *player.Context, held item.Stack, sotwRunning bool, u model.User) {
 	p := ctx.Val()
 
 	// Ignore if the item is a chest.
@@ -194,7 +195,7 @@ func (h *Handler) handleBardItemUse(ctx *player.Context, held item.Stack, sotwRu
 }
 
 // handleMageItemUse handles the use of items by Mage class.
-func (h *Handler) handleMageItemUse(p *player.Player, held item.Stack, sotwRunning bool, u data.User) {
+func (h *Handler) handleMageItemUse(p *player.Player, held item.Stack, sotwRunning bool, u model.User) {
 	// Get the corresponding effect for the item.
 	if e, ok := MageEffectFromItem(held.Item()); ok {
 		// Check PvP and SOTW status.

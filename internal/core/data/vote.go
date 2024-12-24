@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/moyai-network/teams/internal/ports/model"
 	"io"
 	"net/http"
 	"strconv"
@@ -50,13 +51,13 @@ func requestVoteData() (voteData, error) {
 	return dat, err
 }
 
-func NewVoters() []User {
+func NewVoters() []model.User {
 	dat, err := requestVoteData()
 	if err != nil {
 		return nil
 	}
 
-	var users []User
+	var users []model.User
 	for _, v := range dat.Voters {
 		u, err := LoadUserFromName(v.Nickname)
 		if err != nil || time.Since(u.LastVote) < 24*time.Hour {

@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 )
 
 type worldHandler struct {
@@ -14,8 +15,8 @@ type worldHandler struct {
 
 func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos, liquid world.Liquid, replaced world.Block) {
 	teams, _ := data.LoadAllTeams()
-	var initialTeam data.Team
-	var nextTeam data.Team
+	var initialTeam model.Team
+	var nextTeam model.Team
 
 	for _, t := range teams {
 		if len(initialTeam.Name) != 0 && len(nextTeam.Name) != 0 {

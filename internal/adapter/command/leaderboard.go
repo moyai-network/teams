@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"math"
 	"sort"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
-func orderedUsersByKills() []data.User {
+func orderedUsersByKills() []model.User {
 	usrs, _ := data.LoadAllUsers()
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.Kills != usrs[j].Teams.Stats.Kills {
@@ -22,7 +23,7 @@ func orderedUsersByKills() []data.User {
 	return usrs
 }
 
-func orderedUsersByDeaths() []data.User {
+func orderedUsersByDeaths() []model.User {
 	usrs, _ := data.LoadAllUsers()
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.Deaths != usrs[j].Teams.Stats.Deaths {
@@ -33,7 +34,7 @@ func orderedUsersByDeaths() []data.User {
 	return usrs
 }
 
-func orderedUsersByKDR() []data.User {
+func orderedUsersByKDR() []model.User {
 	usrs, _ := data.LoadAllUsers()
 	sort.SliceStable(usrs, func(i, j int) bool {
 		iDeath := usrs[i].Teams.Stats.Deaths
@@ -54,7 +55,7 @@ func orderedUsersByKDR() []data.User {
 	return usrs
 }
 
-func orderedUsersByKillStreaks() []data.User {
+func orderedUsersByKillStreaks() []model.User {
 	usrs, _ := data.LoadAllUsers()
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.KillStreak != usrs[j].Teams.Stats.KillStreak {

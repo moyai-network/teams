@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/moyai-network/teams/pkg/lang"
 	"golang.org/x/text/language"
 )
@@ -32,7 +33,7 @@ func Alertf(tx *world.Tx, s cmd.Source, key string, args ...any) {
 func Messagef(src cmd.Source, key string, a ...interface{}) {
 	out := &cmd.Output{}
 	defer src.SendCommandOutput(out)
-	l := data2.Language{Tag: language.English}
+	l := model.Language{Tag: language.English}
 
 	p, ok := src.(*player.Player)
 	if ok {

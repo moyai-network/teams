@@ -9,6 +9,7 @@ import (
 	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"time"
 
 	"github.com/bedrock-gophers/knockback/knockback"
@@ -59,7 +60,7 @@ func (h *Handler) handleRogueBackstab(ctx *player.Context, t *player.Player, for
 	if s, ok := held.Item().(item.Sword); ok && s.Tier == item.ToolTierGold && class.Compare(h.lastClass.Load(), class.Rogue{}) && t.Rotation().Direction() == p.Rotation().Direction() {
 		cd := h.coolDownBackStab
 		if cd.Active() {
-			p.Message(lang.Translatef(data2.Language{}, "user.cool-down", "Rogue", cd.Remaining().Seconds()))
+			p.Message(lang.Translatef(model.Language{}, "user.cool-down", "Rogue", cd.Remaining().Seconds()))
 		} else {
 			ctx.Cancel()
 			for i := 1; i <= 3; i++ {

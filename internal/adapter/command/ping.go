@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"github.com/moyai-network/teams/pkg/lang"
 )
 
@@ -18,14 +18,14 @@ type Ping struct {
 func (p Ping) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	targets := p.Targets.LoadOr(nil)
 	if len(targets) > 1 {
-		o.Error(lang.Translatef(data.Language{}, "command.targets.exceed"))
+		o.Error(lang.Translatef(model.Language{}, "command.targets.exceed"))
 		return
 	}
 
 	if len(targets) == 1 {
 		target, ok := targets[0].(*player.Player)
 		if !ok {
-			o.Error(lang.Translatef(data.Language{}, "command.target.unknown", ""))
+			o.Error(lang.Translatef(model.Language{}, "command.target.unknown", ""))
 			return
 		}
 		internal.Messagef(s, "command.ping.output", target.Name(), (target.Latency() * 2).Milliseconds())

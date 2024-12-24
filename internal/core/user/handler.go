@@ -6,6 +6,7 @@ import (
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user/class"
+	"github.com/moyai-network/teams/internal/ports/model"
 	"slices"
 	"strconv"
 	"strings"
@@ -223,7 +224,7 @@ func sendFog(p *player.Player) {
 	})
 }
 
-func (h *Handler) handleBoosterRole(p *player.Player, u data.User) {
+func (h *Handler) handleBoosterRole(p *player.Player, u model.User) {
 	if len(u.DiscordID) > 0 {
 		userID, _ := strconv.Atoi(u.DiscordID)
 		rl, err := internal.DiscordState().MemberRoles(discord.GuildID(1111055709300342826), discord.UserID(userID))
