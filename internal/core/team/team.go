@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core/user"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 )
 
 func OnlineMembers(tx *world.Tx, tm model.Team) (players []*player.Player) {

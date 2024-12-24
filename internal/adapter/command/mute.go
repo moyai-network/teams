@@ -5,6 +5,7 @@ import (
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/hako/durafmt"
 
 	"github.com/moyai-network/teams/pkg/lang"
-	"github.com/moyai-network/teams/pkg/punishment"
 )
 
 // MuteForm is a command that is used to mute an online player through a punishment form.
@@ -156,7 +156,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Teams.Mute = punishment.Punishment{}
+	u.Teams.Mute = model.Punishment{}
 	data.SaveUser(u)
 
 	internal.Alertf(tx, src, "staff.alert.unmute", p.Name())
@@ -176,7 +176,7 @@ func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		out.Error(lang.Translatef(l, "command.mute.not"))
 		return
 	}
-	u.Teams.Mute = punishment.Punishment{}
+	u.Teams.Mute = model.Punishment{}
 	data.SaveUser(u)
 
 	internal.Alertf(tx, src, "staff.alert.unmute", u.DisplayName)
@@ -221,7 +221,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	sn := src.(cmd.NamedTarget)
 	reason, length := parseMuteReason(m.Reason)
-	u.Teams.Mute = punishment.Punishment{
+	u.Teams.Mute = model.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -260,7 +260,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	reason, length := parseMuteReason(m.Reason)
-	u.Teams.Mute = punishment.Punishment{
+	u.Teams.Mute = model.Punishment{
 		Staff:      sn.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),

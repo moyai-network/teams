@@ -1,4 +1,4 @@
-package punishment
+package model
 
 import (
 	"time"

@@ -2,8 +2,7 @@ package lang
 
 import (
 	"fmt"
-	"github.com/moyai-network/teams/internal/ports/model"
-
+	"github.com/moyai-network/teams/internal/model"
 	"github.com/restartfu/gophig"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"

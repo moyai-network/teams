@@ -5,7 +5,7 @@ import (
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
-	"github.com/moyai-network/teams/internal/ports/model"
+	model2 "github.com/moyai-network/teams/internal/model"
 	"math/rand"
 	"regexp"
 	"strings"
@@ -108,7 +108,7 @@ func (h *Handler) staffMessage(p *player.Player, msg string, r role.Role) {
 	}
 }
 
-func (h *Handler) globalMessage(p *player.Player, msg string, u model.User, r role.Role, tm model.Team) {
+func (h *Handler) globalMessage(p *player.Player, msg string, u model2.User, r role.Role, tm model2.Team) {
 	if !internal.GlobalChatEnabled() {
 		internal.Messagef(p, "chat.global.muted")
 		return

@@ -10,7 +10,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/area"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
 )
 

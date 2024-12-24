@@ -6,7 +6,7 @@ import (
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	"unicode"
 

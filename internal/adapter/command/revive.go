@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"time"
 
 	"github.com/go-gl/mathgl/mgl64"

@@ -4,7 +4,6 @@ import (
 	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/bedrock-gophers/role/role"
 	"github.com/bedrock-gophers/tag/tag"
-	"github.com/moyai-network/teams/pkg/punishment"
 	"github.com/restartfu/sets"
 	"strings"
 	"time"
@@ -108,8 +107,8 @@ type User struct {
 	SelfSignedID string `bson:"self_signed_id"`
 
 	Roles    *role.Roles `bson:"roles"`
-	Tags     *tag.Tags   `bson:"tags"`
-	Language *Language   `bson:"language"`
+	Tags     *tag.Tags `bson:"tags"`
+	Language *Language `bson:"language"`
 
 	// PlayTime is the total playtime of the user.
 	PlayTime time.Duration `bson:"playtime"`
@@ -156,9 +155,9 @@ type User struct {
 		// GodApple is cooldown for god apples.
 		GodApple *cooldown.CoolDown
 		// Ban is the ban of the user.
-		Ban punishment.Punishment
+		Ban Punishment
 		// Mute is the mute of the user.
-		Mute punishment.Punishment
+		Mute Punishment
 		// Dead is the live status of the logger.
 		// If true, the user should be cleared.
 		//Dead bool

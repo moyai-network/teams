@@ -9,7 +9,7 @@ import (
 	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"time"
 
 	"github.com/bedrock-gophers/knockback/knockback"

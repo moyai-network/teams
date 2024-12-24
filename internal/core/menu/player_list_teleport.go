@@ -9,7 +9,7 @@ import (
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"slices"
 )

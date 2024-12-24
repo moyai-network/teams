@@ -4,7 +4,7 @@ import (
 	"fmt"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/eotw"
-	"github.com/moyai-network/teams/internal/ports/model"
+	model2 "github.com/moyai-network/teams/internal/model"
 	"net"
 	"strings"
 
@@ -28,7 +28,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 	u, err := data2.LoadUserOrCreate(d.DisplayName, d.XUID)
 	if err != nil {
 		fmt.Printf("Failed to load user: %v\n", err)
-		return lang.Translatef(model.Language{}, "user.data.load.error"), false
+		return lang.Translatef(model2.Language{}, "user.data.load.error"), false
 	}
 
 	if a.whitelisted && !u.Whitelisted {
@@ -43,7 +43,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 			return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header") + "\n" + description), false
 		}
 	}
-	var users []model.User
+	var users []model2.User
 	ssid, err := data2.LoadUsersFromSelfSignedID(u.SelfSignedID)
 	if err == nil {
 		users = append(users, ssid...)

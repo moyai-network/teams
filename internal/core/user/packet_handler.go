@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/bedrock-gophers/intercept/intercept"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	_ "unsafe"
 

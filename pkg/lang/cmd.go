@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	data2 "github.com/moyai-network/teams/internal/core/data"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"golang.org/x/text/language"
 )
 

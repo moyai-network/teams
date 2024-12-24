@@ -9,7 +9,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
-	"github.com/moyai-network/teams/internal/ports/model"
+	model2 "github.com/moyai-network/teams/internal/model"
 	"math"
 	"strings"
 	"time"
@@ -145,7 +145,7 @@ func sortClassEffects(p *player.Player, h *Handler) {
 	}
 }
 
-func tickDeathban(p *player.Player, u model.User) {
+func tickDeathban(p *player.Player, u model2.User) {
 	if !u.Teams.DeathBan.Active() && u.Teams.DeathBanned {
 		u.Teams.DeathBan.Reset()
 		u.Teams.DeathBanned = false
@@ -290,7 +290,7 @@ func startTicker(p *player.Player, h *Handler) {
 
 			if tm, err := data2.LoadTeamFromMemberName(p.Name()); err == nil {
 				focus := tm.Focus
-				if focus.Kind == model.FocusTypeTeam {
+				if focus.Kind == model2.FocusTypeTeam {
 					if ft, err := data2.LoadTeamFromName(focus.Value); err == nil && !u.Teams.DeathBan.Active() {
 						_, _ = sb.WriteString("§c\uE000")
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
@@ -373,7 +373,7 @@ func startTicker(p *player.Player, h *Handler) {
 	}
 }
 
-func teamOnlineCount(tx *world.Tx, t model.Team) int {
+func teamOnlineCount(tx *world.Tx, t model2.Team) int {
 	var onlineNames []string
 	for p := range internal.Players(tx) {
 		onlineNames = append(onlineNames, strings.ToLower(p.Name()))

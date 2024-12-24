@@ -6,7 +6,7 @@ import (
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user/class"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"slices"
 	"strconv"
 	"strings"

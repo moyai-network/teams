@@ -8,7 +8,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/core/user/class"
-	"github.com/moyai-network/teams/internal/ports/model"
+	model3 "github.com/moyai-network/teams/internal/model"
 	"math"
 	"math/rand"
 	"strings"
@@ -88,7 +88,7 @@ func showVanished(p *player.Player) {
 }
 
 // UpdateVanishState vanishes the user.
-func UpdateVanishState(p *player.Player, u model.User) {
+func UpdateVanishState(p *player.Player, u model3.User) {
 	if u.Vanished {
 		showVanished(p)
 	} else {
@@ -286,8 +286,8 @@ func (h *Handler) incrementDeath(p *player.Player) {
 	data2.SaveUser(victim)
 }
 
-func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) model.Inventory {
-	return model.Inventory{
+func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) model3.Inventory {
+	return model3.Inventory{
 		MainHandSlot: 0,
 		OffHand:      off,
 		Items:        i.Slots(),

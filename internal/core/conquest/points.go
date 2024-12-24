@@ -2,7 +2,7 @@ package conquest
 
 import (
 	"github.com/moyai-network/teams/internal/core/data"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"sort"
 	"sync"
 )

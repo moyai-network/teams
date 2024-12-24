@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"google.golang.org/appengine/log"
 	"iter"
 	"maps"

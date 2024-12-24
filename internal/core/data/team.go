@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"log"
 	"math"
 	"strings"

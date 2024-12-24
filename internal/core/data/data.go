@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/bedrock-gophers/cooldown/cooldown"
-	"github.com/moyai-network/teams/internal/ports/model"
+	model2 "github.com/moyai-network/teams/internal/model"
 	"github.com/restartfu/sets"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/exp/maps"
@@ -43,10 +43,10 @@ func FlushCache() {
 func Reset() {
 	userMu.Lock()
 	defer userMu.Unlock()
-	users = map[string]model.User{}
+	users = map[string]model2.User{}
 	teamMu.Lock()
 	defer teamMu.Unlock()
-	teams = map[string]model.Team{}
+	teams = map[string]model2.Team{}
 
 	// Reset the database.
 	_, err := userCollection.DeleteMany(ctx(), bson.M{})
@@ -62,7 +62,7 @@ func Reset() {
 func PartialReset() {
 	teamMu.Lock()
 	defer teamMu.Unlock()
-	teams = map[string]model.Team{}
+	teams = map[string]model2.Team{}
 
 	// Reset the database.
 	usrs, err := LoadAllUsers()
@@ -90,9 +90,9 @@ func PartialReset() {
 			u.Teams.PVP.TogglePause()
 		}
 		u.Teams.Create = cooldown.NewCoolDown()
-		u.Teams.Stats = model.Stats{}
+		u.Teams.Stats = model2.Stats{}
 		u.Teams.ClaimedRewards = sets.New[int]()
-		u.Teams.DeathInventory = &model.Inventory{}
+		u.Teams.DeathInventory = &model2.Inventory{}
 
 		err = saveUserData(u)
 		if err != nil {
@@ -101,7 +101,7 @@ func PartialReset() {
 	}
 
 	userMu.Lock()
-	users = map[string]model.User{}
+	users = map[string]model2.User{}
 	userMu.Unlock()
 
 	_, err = teamCollection.DeleteMany(ctx(), bson.M{})

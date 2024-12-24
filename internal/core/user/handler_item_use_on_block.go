@@ -11,8 +11,8 @@ import (
 	"github.com/moyai-network/teams/internal/core/eotw"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
+	model2 "github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/internal/ports"
-	"github.com/moyai-network/teams/internal/ports/model"
 	"strconv"
 	"strings"
 	"time"
@@ -355,7 +355,7 @@ func handleShopSignInteraction(p *player.Player, choice string, lines []string) 
 // handleBuy handles the purchase of an item from a shop sign. If the player can buy the item, the item is
 // added to the player's inventory and the player's balance is reduced by the price of the item. If the player
 // cannot buy the item, the player is sent a message informing them that they do not have enough balance.
-func handleBuy(p *player.Player, u model.User, stack item.Stack, price float64, itemName string) {
+func handleBuy(p *player.Player, u model2.User, stack item.Stack, price float64, itemName string) {
 	if u.Teams.Balance < price {
 		internal.Messagef(p, "shop.balance.insufficient")
 		return
@@ -369,7 +369,7 @@ func handleBuy(p *player.Player, u model.User, stack item.Stack, price float64, 
 // handleSell handles the selling of an item to a shop sign. If the player can sell the item, the player's
 // balance is increased by the price of the item. If the player cannot sell the item, the player is sent a
 // message informing them that they cannot sell the item.
-func handleSell(p *player.Player, u model.User, itm world.Item, q int, price float64, itemName string) {
+func handleSell(p *player.Player, u model2.User, itm world.Item, q int, price float64, itemName string) {
 	inv := p.Inventory()
 	count := 0
 	var items []item.Stack
@@ -449,7 +449,7 @@ func openCrate(p *player.Player, w *world.World, held, left item.Stack, c ports.
 // posWithinProtectedArea checks if a position is within a protected area. If the position is within a protected
 // area, true is returned. If the position is not within a protected area, false is returned. The player passed
 // is used to check if the player is a member of a team that has a claim in the area.
-func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []model.Team) bool {
+func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []model2.Team) bool {
 	if p.GameMode() == world.GameModeCreative {
 		return false
 	}

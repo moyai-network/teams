@@ -6,7 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/go-gl/mathgl/mgl64"
 	enchantment2 "github.com/moyai-network/teams/internal/core/enchantment"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 

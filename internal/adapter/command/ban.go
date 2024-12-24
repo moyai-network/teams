@@ -4,16 +4,15 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
+	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	"time"
-
-	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/pkg/lang"
-	"github.com/moyai-network/teams/pkg/punishment"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/hako/durafmt"
+	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/pkg/lang"
 )
 
 // BanForm is a command that is used to ban a player through a punishment form.
@@ -97,7 +96,7 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		o.Error(lang.Translatef(l, "command.ban.not"))
 		return
 	}
-	u.Teams.Ban = punishment.Punishment{}
+	u.Teams.Ban = model.Punishment{}
 	data.SaveUser(u)
 
 	internal.Alertf(tx, src, "staff.alert.unban", u.DisplayName)
@@ -137,7 +136,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 	reason, length := parseBanReason(b.Reason)
-	u.Teams.Ban = punishment.Punishment{
+	u.Teams.Ban = model.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),
@@ -179,7 +178,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 
 	reason, length := parseBanReason(b.Reason)
-	u.Teams.Ban = punishment.Punishment{
+	u.Teams.Ban = model.Punishment{
 		Staff:      s.Name(),
 		Reason:     reason,
 		Occurrence: time.Now(),

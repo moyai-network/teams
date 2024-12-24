@@ -8,7 +8,7 @@ import (
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/team"
 	user2 "github.com/moyai-network/teams/internal/core/user"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"math"
 	"regexp"
 	"sort"

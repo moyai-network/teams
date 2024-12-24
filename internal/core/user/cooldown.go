@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"time"
 
 	"github.com/bedrock-gophers/cooldown/cooldown"

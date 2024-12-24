@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/data"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 )
 
 type worldHandler struct {

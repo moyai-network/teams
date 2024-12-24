@@ -3,7 +3,7 @@ package menu
 import (
 	"github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"time"
 
 	"github.com/bedrock-gophers/inv/inv"

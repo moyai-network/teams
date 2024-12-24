@@ -15,7 +15,7 @@ import (
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
-	"github.com/moyai-network/teams/internal/ports/model"
+	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"time"
