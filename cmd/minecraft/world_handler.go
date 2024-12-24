@@ -2,10 +2,9 @@ package minecraft
 
 import (
 	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/moyai/area"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/internal/core/area"
+	"github.com/moyai-network/teams/internal/core/data"
 )
 
 type worldHandler struct {
@@ -13,7 +12,7 @@ type worldHandler struct {
 	w *world.World
 }
 
-func (w *worldHandler) HandleLiquidFlow(ctx *event.Context, from, into cube.Pos, liquid world.Liquid, replaced world.Block) {
+func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos, liquid world.Liquid, replaced world.Block) {
 	teams, _ := data.LoadAllTeams()
 	var initialTeam data.Team
 	var nextTeam data.Team

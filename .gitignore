@@ -17,5 +17,5 @@ mv/
 multi/
 teams
 *.txt
-config.toml
+configs/config.toml
 .env

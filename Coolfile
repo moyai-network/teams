@@ -1,6 +1,0 @@
-CLONE: github.com/moyai-network/teams@master
-
-BEGIN: go build -o bin .
-EXTRACT: bin .
-THEN: ./bin
-END: rm -rf bin

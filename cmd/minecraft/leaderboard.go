@@ -1,6 +1,8 @@
 package minecraft
 
 import (
+	"github.com/df-mc/dragonfly/server/world"
+	data2 "github.com/moyai-network/teams/internal/core/data"
 	"math"
 	"slices"
 	"strings"
@@ -9,42 +11,41 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/icza/abcsort"
-	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/internal"
 	"github.com/restartfu/roman"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 func startLeaderboard() {
-	killsLeaderboard := entity.NewText(formattedUserLeaderBoard("KILLS", func(u data.User) int {
+	killsLeaderboard := entity.NewText(formattedUserLeaderBoard("KILLS", func(u data2.User) int {
 		return u.Teams.Stats.Kills
 	}), cube.Pos{9, 71, 11}.Vec3Middle())
 
-	kdrLeaderboard := entity.NewText(formattedUserLeaderBoard("KDR", func(u data.User) float64 {
+	kdrLeaderboard := entity.NewText(formattedUserLeaderBoard("KDR", func(u data2.User) float64 {
 		kills := u.Teams.Stats.Kills
 		deaths := u.Teams.Stats.Deaths
 		if deaths == 0 {
 			deaths = 1
 		}
-		return math.Round(float64(kills) / float64(deaths)*100)/100
+		return math.Round(float64(kills)/float64(deaths)*100) / 100
 	}), cube.Pos{13, 71, 10}.Vec3Middle())
 
-	deathsLeaderboard := entity.NewText(formattedUserLeaderBoard("DEATHS", func(u data.User) int {
+	deathsLeaderboard := entity.NewText(formattedUserLeaderBoard("DEATHS", func(u data2.User) int {
 		return u.Teams.Stats.Deaths
 	}), cube.Pos{17, 71, 8}.Vec3Middle())
 
-	topPointsLeaderboard := entity.NewText(formattedTeamLeaderBoard("POINTS", func(t data.Team) int {
+	topPointsLeaderboard := entity.NewText(formattedTeamLeaderBoard("POINTS", func(t data2.Team) int {
 		return t.Points
 	}), cube.Pos{-9, 71, 11}.Vec3Middle())
 
-	topKOTHLeaderboard := entity.NewText(formattedTeamLeaderBoard("KOTH CAPTURES", func(t data.Team) int {
+	topKOTHLeaderboard := entity.NewText(formattedTeamLeaderBoard("KOTH CAPTURES", func(t data2.Team) int {
 		return t.KOTHWins
 	}), cube.Pos{-13, 71, 10}.Vec3Middle())
 
-	topKillsLeaderboard := entity.NewText(formattedTeamLeaderBoard("KILLS", func(t data.Team) int {
+	topKillsLeaderboard := entity.NewText(formattedTeamLeaderBoard("KILLS", func(t data2.Team) int {
 		kills := 0
 		for _, m := range t.Members {
-			u, err := data.LoadUserFromName(m.Name)
+			u, err := data2.LoadUserFromName(m.Name)
 			if err != nil {
 				continue
 			}
@@ -53,18 +54,19 @@ func startLeaderboard() {
 		return kills
 	}), cube.Pos{-17, 71, 8}.Vec3Middle())
 
-	moyai.Overworld().AddEntity(killsLeaderboard)
-	moyai.Overworld().AddEntity(kdrLeaderboard)
-	moyai.Overworld().AddEntity(deathsLeaderboard)
-
-	moyai.Overworld().AddEntity(topPointsLeaderboard)
-	moyai.Overworld().AddEntity(topKOTHLeaderboard)
-	moyai.Overworld().AddEntity(topKillsLeaderboard)
+	internal.Overworld().Exec(func(tx *world.Tx) {
+		tx.AddEntity(killsLeaderboard)
+		tx.AddEntity(kdrLeaderboard)
+		tx.AddEntity(deathsLeaderboard)
+		tx.AddEntity(topPointsLeaderboard)
+		tx.AddEntity(topKOTHLeaderboard)
+		tx.AddEntity(topKillsLeaderboard)
+	})
 
 	t := time.NewTicker(time.Minute)
 
 	for range t.C {
-		killsLeaderboard.SetNameTag(formattedUserLeaderBoard("KILLS", func(u data.User) int {
+		/*killsLeaderboard.SetNameTag(formattedUserLeaderBoard("KILLS", func(u data.User) int {
 			return u.Teams.Stats.Kills
 		}))
 
@@ -74,7 +76,7 @@ func startLeaderboard() {
 			if deaths == 0 {
 				deaths = 1
 			}
-			return math.Round(float64(kills) / float64(deaths)*100)/100
+			return math.Round(float64(kills)/float64(deaths)*100) / 100
 		}))
 
 		deathsLeaderboard.SetNameTag(formattedUserLeaderBoard("DEATHS", func(u data.User) int {
@@ -99,14 +101,14 @@ func startLeaderboard() {
 				kills += u.Teams.Stats.Kills
 			}
 			return kills
-		}))
+		}))*/
 	}
-} 
+}
 
-func formattedTeamLeaderBoard[T int | float64](name string, value func(u data.Team) T) string {
+func formattedTeamLeaderBoard[T int | float64](name string, value func(u data2.Team) T) string {
 	sb := &strings.Builder{}
-	sb.WriteString(text.Colourf("<bold><red>TOP TEAM %v</red></bold>\n", strings.ToUpper(name))) 
-	teams, err := data.LoadAllTeams()
+	sb.WriteString(text.Colourf("<bold><red>TOP TEAM %v</red></bold>\n", strings.ToUpper(name)))
+	teams, err := data2.LoadAllTeams()
 	if err != nil {
 		return sb.String()
 	}
@@ -116,7 +118,7 @@ func formattedTeamLeaderBoard[T int | float64](name string, value func(u data.Te
 		return teams[i].Name
 	})
 
-	slices.SortFunc(teams, func(a, b data.Team) int {
+	slices.SortFunc(teams, func(a, b data2.Team) int {
 		if value(a) == value(b) {
 			return 0
 		}
@@ -144,10 +146,10 @@ func formattedTeamLeaderBoard[T int | float64](name string, value func(u data.Te
 	return sb.String()
 }
 
-func formattedUserLeaderBoard[T int | float64](name string, value func(u data.User) T) string {
+func formattedUserLeaderBoard[T int | float64](name string, value func(u data2.User) T) string {
 	sb := &strings.Builder{}
 	sb.WriteString(text.Colourf("<bold><red>TOP %v</red></bold>\n", strings.ToUpper(name)))
-	users, err := data.LoadAllUsers()
+	users, err := data2.LoadAllUsers()
 	if err != nil {
 		return sb.String()
 	}
@@ -157,7 +159,7 @@ func formattedUserLeaderBoard[T int | float64](name string, value func(u data.Us
 		return users[i].Name
 	})
 
-	slices.SortFunc(users, func(a, b data.User) int {
+	slices.SortFunc(users, func(a, b data2.User) int {
 		if value(a) == value(b) {
 			return 0
 		}

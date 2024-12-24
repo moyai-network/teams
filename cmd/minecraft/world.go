@@ -2,6 +2,9 @@ package minecraft
 
 import (
 	"fmt"
+	crate2 "github.com/moyai-network/teams/internal/adapter/crate"
+	"github.com/moyai-network/teams/internal/core/enchantment"
+	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"math"
 	"reflect"
 	"strings"
@@ -20,10 +23,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/npc"
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/moyai"
-	"github.com/moyai-network/teams/moyai/crate"
-	ench "github.com/moyai-network/teams/moyai/enchantment"
-	"github.com/moyai-network/teams/moyai/menu"
+	"github.com/moyai-network/teams/internal"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -106,7 +106,7 @@ var (
 )
 
 func configureWorlds() {
-	for _, w := range moyai.Worlds() {
+	for _, w := range internal.Worlds() {
 		w.Handle(&worldHandler{w: w})
 		w.SetDifficulty(world.DifficultyHard)
 		w.StopWeatherCycle()
@@ -119,8 +119,10 @@ func configureWorlds() {
 		w.SetSpawn(cube.Pos{0, 80, 0})
 
 		l := world.NewLoader(8, w, world.NopViewer{})
-		l.Move(w.Spawn().Vec3Middle())
-		l.Load(math.MaxInt)
+		w.Exec(func(tx *world.Tx) {
+			l.Move(tx, w.Spawn().Vec3Middle())
+			l.Load(tx, math.MaxInt)
+		})
 	}
 }
 
@@ -129,21 +131,21 @@ func tickClearLag() {
 	defer t.Stop()
 
 	for range t.C {
-		for _, w := range moyai.Worlds() {
+		for _, w := range internal.Worlds() {
 			clearAgedEntities(w)
 		}
 	}
 }
 
 func clearAgedEntities(w *world.World) {
-	for _, e := range w.Entities() {
+	/*for _, e := range w.Entities() {
 		if et, ok := e.(*entity.Ent); ok && et.Type() == (entity.ItemType{}) {
 			age := fetchPrivateField[time.Duration](et, "age")
 			if age > (time.Minute*5)/2 {
 				w.RemoveEntity(e)
 			}
 		}
-	}
+	}*/
 }
 
 // fetchPrivateField fetches a private field of a session.
@@ -156,34 +158,35 @@ func fetchPrivateField[T any](v any, name string) T {
 }
 
 func placeSlapper() {
-	w := moyai.Overworld()
-	_ = npc.Create(npc.Settings{
-		Name:       text.Colourf("<green>Click to use kits</green>"),
-		Skin:       skin.Skin{},
-		Scale:      1,
-		Yaw:        120,
-		MainHand:   item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(ench.Sharpness{}, 1)),
-		Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
-		Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
-		Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
-		Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(ench.Protection{}, 1)),
+	internal.Overworld().Exec(func(w *world.Tx) {
+		_ = npc.Create(npc.Settings{
+			Name:       text.Colourf("<green>Click to use kits</green>"),
+			Skin:       skin.Skin{},
+			Scale:      1,
+			Yaw:        120,
+			MainHand:   item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Sharpness{}, 1)),
+			Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
+			Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
+			Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
+			Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
 
-		Position: mgl64.Vec3{7, 67, 47.5},
-	}, w, func(p *player.Player) {
-		if men, ok := menu.NewKitsMenu(p); ok {
-			inv.SendMenu(p, men)
-		}
-	})
-	_ = npc.Create(npc.Settings{
-		Name:     text.Colourf("<gold>Block Shop</gold>"),
-		Skin:     skin.Skin{},
-		Scale:    1,
-		Yaw:      -120,
-		MainHand: item.NewStack(block.Diamond{}, 1),
+			Position: mgl64.Vec3{7, 67, 47.5},
+		}, w, func(p *player.Player) {
+			if men, ok := menu2.NewKitsMenu(p); ok {
+				inv.SendMenu(p, men)
+			}
+		})
+		_ = npc.Create(npc.Settings{
+			Name:     text.Colourf("<gold>Block Shop</gold>"),
+			Skin:     skin.Skin{},
+			Scale:    1,
+			Yaw:      -120,
+			MainHand: item.NewStack(block.Diamond{}, 1),
 
-		Position: mgl64.Vec3{-6, 67, 45.5},
-	}, w, func(p *player.Player) {
-		inv.SendMenu(p, menu.NewBlocksMenu(p))
+			Position: mgl64.Vec3{-6, 67, 45.5},
+		}, w, func(p *player.Player) {
+			inv.SendMenu(p, menu2.NewBlocksMenu(p))
+		})
 	})
 }
 
@@ -198,7 +201,7 @@ type shopSign struct {
 }
 
 func placeShopSigns() {
-	w := moyai.Overworld()
+	w := internal.Overworld()
 	for _, s := range shopSigns {
 		var txt string
 		state := text.Colourf("<green>[Buy]</green>")
@@ -213,7 +216,9 @@ func placeShopSigns() {
 			Text: txt,
 		}}
 		b.Attach = block.WallAttachment(s.direction)
-		w.SetBlock(s.pos, b, nil)
+		w.Exec(func(tx *world.Tx) {
+			tx.SetBlock(s.pos, b, nil)
+		})
 	}
 }
 
@@ -240,38 +245,39 @@ func formatItemName(s string) string {
 
 // placeCrates places all crates in the world.
 func placeCrates() {
-	w := moyai.Overworld()
-	for _, c := range crate.All() {
-		b := block.NewChest()
-		b.Facing = c.Facing().Direction()
-		b.CustomName = text.Colourf("%s <grey>Crate</grey>", c.Name())
+	for _, c := range crate2.All() {
+		internal.Overworld().Exec(func(w *world.Tx) {
+			b := block.NewChest()
+			b.Facing = c.Facing().Direction()
+			b.CustomName = text.Colourf("%s <grey>Crate</grey>", c.Name())
 
-		pos := cube.PosFromVec3(c.Position())
-		*b.Inventory(w, pos) = *inventory.New(27, nil)
+			pos := cube.PosFromVec3(c.Position())
+			*b.Inventory(w, pos) = *inventory.New(27, nil)
 
-		var items [27]item.Stack
-		for i, r := range c.Rewards() {
-			if r.Stack().Empty() {
-				continue // Ignore this, ill fix it later
+			var items [27]item.Stack
+			for i, r := range c.Rewards() {
+				if r.Stack().Empty() {
+					continue // Ignore this, ill fix it later
+				}
+				st := enchantment.AddEnchantmentLore(r.Stack())
+				st = st.WithLore(append(st.Lore(), text.Colourf("<yellow>Chance: %d%%</yellow>", r.Chance()))...)
+				items[i] = st
 			}
-			st := ench.AddEnchantmentLore(r.Stack())
-			st = st.WithLore(append(st.Lore(), text.Colourf("<yellow>Chance: %d%%</yellow>", r.Chance()))...)
-			items[i] = st
-		}
-		for i, s := range items {
-			if s.Empty() {
-				items[i] = item.NewStack(block.StainedGlass{Colour: item.ColourRed()}, 1)
+			for i, s := range items {
+				if s.Empty() {
+					items[i] = item.NewStack(block.StainedGlass{Colour: item.ColourRed()}, 1)
+				}
 			}
-		}
 
-		for s, i := range items {
-			_ = b.Inventory(w, pos).SetItem(s, i)
-		}
+			for s, i := range items {
+				_ = b.Inventory(w, pos).SetItem(s, i)
+			}
 
-		b.Inventory(w, pos).Handle(crate.Handler{})
+			b.Inventory(w, pos).Handle(crate2.Handler{})
 
-		w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
-		t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
-		w.AddEntity(t)
+			w.SetBlock(cube.PosFromVec3(c.Position()), b, nil)
+			t := entity.NewText(text.Colourf("%s <grey>Crate</grey>\n<yellow>Right click to open crate</yellow>\n<grey>Left click to see rewards</grey>", c.Name()), c.Position().Add(mgl64.Vec3{0, 2, 0}))
+			w.AddEntity(t)
+		})
 	}
 }

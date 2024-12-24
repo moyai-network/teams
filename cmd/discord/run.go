@@ -1,18 +1,7 @@
 package discord
 
-import (
-	"context"
-	"github.com/diamondburned/arikawa/v3/api/cmdroute"
-	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/diamondburned/arikawa/v3/state"
-	"github.com/moyai-network/teams/cmd/discord/command"
-	"github.com/moyai-network/teams/moyai"
-	"log"
-	"os"
-)
-
 func Run() {
-	r := cmdroute.NewRouter()
+	/*r := cmdroute.NewRouter()
 	s := state.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	r.Use(cmdroute.Deferrable(s, cmdroute.DeferOpts{}))
 
@@ -38,5 +27,5 @@ func Run() {
 		}
 	}()
 
-	moyai.SetDiscordState(s)
+	internal.SetDiscordState(s)*/
 }

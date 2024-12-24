@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/api/cmdroute"
-	"github.com/moyai-network/teams/moyai/data"
+	"github.com/moyai-network/teams/internal/core/data"
 	"strings"
 )
 
