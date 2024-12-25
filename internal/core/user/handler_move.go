@@ -1,8 +1,8 @@
 package user
 
 import (
-	"fmt"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/block"
 	"github.com/moyai-network/teams/internal/core/conquest"
@@ -121,8 +121,8 @@ func (h *Handler) updateWalls(ctx *player.Context, newPos mgl64.Vec3, u model.Us
 	}
 
 	if u.Teams.PVP.Active() && !u.Teams.DeathBan.Active() {
-		teams, _ := data2.LoadAllTeams()
-		for _, a := range teams {
+		teams := core.TeamRepository.FindAll()
+		for a := range teams {
 			a := a.Claim
 			if a != (area.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
 				ctx.Cancel()
@@ -209,17 +209,14 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 	w := p.Tx().World()
 	var areas []area.NamedArea
 
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		fmt.Println(err)
-	}
-	t, teamErr := data2.LoadTeamFromMemberName(p.Name())
+	teams := core.TeamRepository.FindAll()
+	t, teamFound := core.TeamRepository.FindByMemberName(p.Name())
 
-	for _, tm := range teams {
+	for tm := range teams {
 		a := tm.Claim
 
 		name := text.Colourf("<red>%s</red>", tm.DisplayName)
-		if teamErr == nil && t.Name == tm.Name {
+		if teamFound && t.Name == tm.Name {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
 		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))

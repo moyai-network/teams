@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"strings"
@@ -38,8 +39,8 @@ func (Pots) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -53,12 +54,9 @@ func (Pots) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		return
-	}
+	teams := core.TeamRepository.FindAll()
 
-	for _, t := range teams {
+	for t := range teams {
 		if strings.EqualFold(t.Name, tm.Name) {
 			placePotionChests(tx, p)
 			u.Teams.Refill.Set(time.Hour * 4)

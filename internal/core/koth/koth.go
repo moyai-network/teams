@@ -1,6 +1,7 @@
 package koth
 
 import (
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -193,14 +194,14 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 				k.StopCapturing(p)
 				return
 			}
-			tm, err := data2.LoadTeamFromMemberName(u.Name)
-			if err != nil {
+			tm, ok := core.TeamRepository.FindByMemberName(u.Name)
+			if !ok {
 				k.StopCapturing(p)
 				return
 			}
 			tm.Points += 10
 			tm.KOTHWins++
-			data2.SaveTeam(tm)
+			core.TeamRepository.Save(tm)
 
 			_, _ = chat.Global.WriteString(lang.Translatef(model.Language{}, "koth.captured", k.Name(), u.Roles.Highest().Coloured(u.DisplayName)))
 			item.AddOrDrop(p, item.NewKey(item.KeyTypeKOTH, 2))

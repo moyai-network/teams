@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/adapter/crate"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/pkg/lang"
@@ -19,7 +20,7 @@ func (h *Handler) HandleStartBreak(ctx *player.Context, pos cube.Pos) {
 
 	b := p.Tx().Block(pos)
 	if _, ok := b.(block.ItemFrame); ok {
-		teams, _ := data2.LoadAllTeams()
+		teams := core.TeamRepository.FindAll()
 		if posWithinProtectedArea(p, pos, teams) {
 			ctx.Cancel()
 			return

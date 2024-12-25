@@ -12,7 +12,7 @@ require (
 	github.com/bedrock-gophers/tag v0.0.0-20240715011448-15ad3a2cb3d2
 	github.com/bedrock-gophers/unsafe v0.1.0
 	github.com/df-mc/atomic v1.10.0
-	github.com/df-mc/dragonfly v0.9.20-0.20241224004207-21950f3a2a74
+	github.com/df-mc/dragonfly v0.9.20-0.20241224203752-918a90491313
 	github.com/diamondburned/arikawa/v3 v3.3.6
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.6.0
@@ -33,8 +33,8 @@ require (
 
 require (
 	github.com/bedrock-gophers/console v0.1.1
-	github.com/bedrock-gophers/intercept v0.2.1-0.20241127002705-553929b05d82
-	github.com/bedrock-gophers/inv v0.2.6-0.20241207074948-ca39172d25fe
+	github.com/bedrock-gophers/intercept v0.2.3
+	github.com/bedrock-gophers/inv v0.2.9
 	github.com/bedrock-gophers/living v0.1.3
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc
 	github.com/bedrock-gophers/spawner v0.1.2

@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/core"
 	conquest2 "github.com/moyai-network/teams/internal/core/conquest"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
@@ -288,10 +289,10 @@ func startTicker(p *player.Player, h *Handler) {
 				_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.mage.energy", h.energy.Load()))
 			}
 
-			if tm, err := data2.LoadTeamFromMemberName(p.Name()); err == nil {
+			if tm, ok := core.TeamRepository.FindByMemberName(p.Name()); ok {
 				focus := tm.Focus
 				if focus.Kind == model2.FocusTypeTeam {
-					if ft, err := data2.LoadTeamFromName(focus.Value); err == nil && !u.Teams.DeathBan.Active() {
+					if ft, ok := core.TeamRepository.FindByName(focus.Value); ok && !u.Teams.DeathBan.Active() {
 						_, _ = sb.WriteString("§c\uE000")
 						_, _ = sb.WriteString(lang.Translatef(l, "scoreboard.focus.name", ft.DisplayName))
 						if hm := ft.Home; hm != (mgl64.Vec3{}) {
@@ -321,7 +322,7 @@ func startTicker(p *player.Player, h *Handler) {
 					pts := conquest2.LookupTeamPoints(tm)
 					if pts > 0 {
 						var name string
-						if t, err := data2.LoadTeamFromMemberName(p.Name()); err != nil || t.Name != tm.Name {
+						if t, ok := core.TeamRepository.FindByMemberName(p.Name()); ok || t.Name != tm.Name {
 							name = fmt.Sprintf("<red>%s</red>", tm.DisplayName)
 						} else {
 							name = fmt.Sprintf("<green>%s</green>", tm.DisplayName)

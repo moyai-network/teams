@@ -6,6 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/item"
@@ -26,7 +27,7 @@ func (h *Handler) HandleBlockPlace(ctx *player.Context, pos cube.Pos, b world.Bl
 	}
 
 	tx := p.Tx()
-	teams, _ := data2.LoadAllTeams()
+	teams := core.TeamRepository.FindAll()
 
 	if posWithinProtectedArea(p, pos, teams) {
 		ctx.Cancel()
@@ -38,7 +39,7 @@ func (h *Handler) HandleBlockPlace(ctx *player.Context, pos cube.Pos, b world.Bl
 	case block.Chest:
 		for _, dir := range []cube.Direction{bl.Facing.RotateLeft(), bl.Facing.RotateRight()} {
 			sidePos := pos.Side(dir.Face())
-			for _, t := range teams {
+			for t := range teams {
 				if !t.Member(p.Name()) {
 					c := tx.Block(sidePos)
 					_, eotw := eotw.Running()

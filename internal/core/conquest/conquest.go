@@ -1,6 +1,7 @@
 package conquest
 
 import (
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -148,8 +149,8 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 				c.StopCapturing(p)
 				return
 			}
-			tm, err := data2.LoadTeamFromMemberName(u.Name)
-			if err != nil {
+			tm, ok := core.TeamRepository.FindByMemberName(u.Name)
+			if !ok {
 				c.StopCapturing(p)
 				return
 			}
@@ -168,7 +169,7 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 					}
 				}
 				tm.Points += 20
-				data2.SaveTeam(tm)
+				core.TeamRepository.Save(tm)
 				resetPoints()
 				Stop()
 			}

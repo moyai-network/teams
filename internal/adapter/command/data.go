@@ -3,7 +3,6 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 )
 
@@ -14,9 +13,9 @@ type DataReset struct {
 func (d DataReset) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	switch d.Kind {
 	case "all":
-		data.Reset()
+		//data.Reset()
 	case "partial":
-		data.PartialReset()
+		//data.PartialReset()
 	}
 }
 

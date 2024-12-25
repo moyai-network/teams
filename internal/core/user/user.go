@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/conquest"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -313,12 +314,12 @@ func (h *Handler) issueDeathban(p *player.Player) {
 
 // handleTeamMemberDeath handles the death of a team member.
 func (h *Handler) handleTeamMemberDeath(p *player.Player) {
-	if tm, err := data2.LoadTeamFromMemberName(p.Name()); err == nil {
+	if tm, ok := core.TeamRepository.FindByMemberName(p.Name()); ok {
 		tm = tm.WithDTR(tm.DTR - 1).WithLastDeath(time.Now())
 		if tm.Points > 0 {
 			tm = tm.WithPoints(tm.Points - 1)
 		}
-		data2.SaveTeam(tm)
+		core.TeamRepository.Save(tm)
 
 		for _, member := range tm.Members {
 			if m, ok := Lookup(p.Tx(), member.Name); ok {
@@ -382,10 +383,10 @@ func (h *Handler) ShowArmor(p *player.Player, visible bool) {
 		boots = p.Armour().Boots()
 	}
 
-	tm, tmErr := data2.LoadTeamFromMemberName(p.Name())
+	tm, teamFound := core.TeamRepository.FindByMemberName(p.Name())
 	for pl := range internal.Players(p.Tx()) {
 		s := unsafe.Session(pl)
-		if tmErr == nil {
+		if teamFound {
 			if !tm.Member(pl.Name()) {
 				h.updateArmour(p, s, helmet, chestplate, leggings, boots)
 			}
@@ -639,8 +640,8 @@ func nearbyPlayers(p *player.Player, dist float64) []*player.Player {
 // nearbyEnemies returns the nearby enemies of a certain distance from the user
 func nearbyEnemies(p *player.Player, dist float64) []*player.Player {
 	var pl []*player.Player
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		return nearbyPlayers(p, dist)
 	}
 
@@ -656,8 +657,8 @@ func nearbyEnemies(p *player.Player, dist float64) []*player.Player {
 // nearbyAllies returns the nearby allies of a certain distance from the user
 func nearbyAllies(p *player.Player, dist float64) []*player.Player {
 	pl := []*player.Player{p}
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		return pl
 	}
 

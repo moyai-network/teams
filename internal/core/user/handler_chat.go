@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
@@ -57,7 +58,7 @@ func (h *Handler) HandleChat(ctx *player.Context, message *string) {
 		p.Message(lang.Translatef(*u.Language, "user.message.mute"))
 		return
 	}
-	tm, teamErr := data2.LoadTeamFromMemberName(p.Name())
+	tm, teamFound := core.TeamRepository.FindByMemberName(p.Name())
 	msg := strings.TrimSpace(*message)
 	if len(msg) <= 0 {
 		return
@@ -81,7 +82,7 @@ func (h *Handler) HandleChat(ctx *player.Context, message *string) {
 			return
 		}
 
-		if teamErr != nil {
+		if teamFound {
 			u.Teams.ChatType = 1
 			h.globalMessage(p, msg, u, r, tm)
 			return

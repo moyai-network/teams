@@ -36,6 +36,8 @@ import (
 
 // Run runs the Minecraft server.
 func Run() error {
+	internal.Assemble()
+
 	err := knockback.Load("assets/knockback.json")
 	if err != nil {
 		return err

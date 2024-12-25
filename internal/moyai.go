@@ -210,7 +210,6 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 }
 
 func Close() {
-	data2.FlushCache()
 	//destroyAirDrop(srv.World(), lastDropPos)
 	for p := range Players(nil) {
 		u, err := data2.LoadUserFromName(p.Name())

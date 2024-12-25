@@ -9,6 +9,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	conquest2 "github.com/moyai-network/teams/internal/core/conquest"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -196,20 +197,20 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 				item.AddOrDrop(killer, item.NewKey(item.KeyTypePartner, int(k.Teams.Stats.KillStreak)/2))
 			}
 
-			if tm, err := data2.LoadTeamFromMemberName(killer.Name()); err == nil {
+			if tm, ok := core.TeamRepository.FindByMemberName(killer.Name()); ok {
 				tm = tm.WithPoints(tm.Points + 1)
 				if conquest2.Running() {
 					for _, k := range area.KOTHs(p.Tx().World()) {
 						if k.Name() == "Conquest" && k.Vec3WithinOrEqualXZ(p.Position()) {
 							conquest2.IncreaseTeamPoints(tm, 15)
-							if otherTm, err := data2.LoadTeamFromMemberName(killer.Name()); err == nil {
+							if otherTm, ok := core.TeamRepository.FindByMemberName(killer.Name()); ok {
 								conquest2.IncreaseTeamPoints(otherTm, -15)
 							}
 						}
 					}
 				}
 
-				data2.SaveTeam(tm)
+				core.TeamRepository.Save(tm)
 			}
 			data2.SaveUser(k)
 

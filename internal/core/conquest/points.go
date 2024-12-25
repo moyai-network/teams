@@ -1,8 +1,9 @@
 package conquest
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/model"
+	"slices"
 	"sort"
 	"sync"
 )
@@ -32,7 +33,7 @@ func IncreaseTeamPoints(team model.Team, n int) {
 // most points will be at the start of the slice.
 func OrderedTeamsByPoints() []model.Team {
 	pointsMu.Lock()
-	tms, _ := data.LoadAllTeams()
+	tms := slices.Collect(core.TeamRepository.FindAll())
 	sort.SliceStable(tms, func(i, j int) bool {
 		if points[tms[i].Name] != points[tms[j].Name] {
 			return points[tms[i].Name] > points[tms[j].Name]

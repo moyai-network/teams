@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -11,6 +12,7 @@ import (
 	"github.com/moyai-network/teams/internal/model"
 	"math"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -265,28 +267,28 @@ type TeamSetPoints struct {
 	Points int
 }
 
-func (t TeamSetDTR) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
-	tm, err := data2.LoadTeamFromName(strings.ToLower(string(t.Name)))
-	if err != nil {
+func (t TeamSetDTR) Run(_ cmd.Source, o *cmd.Output, tx *world.Tx) {
+	tm, ok := core.TeamRepository.FindByName(strings.ToLower(string(t.Name)))
+	if !ok {
 		o.Error("Invalid Team.")
 		return
 	}
 
 	tm = tm.WithDTR(t.DTR)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	o.Printf("Successfully set DTR to %v", t.DTR)
 }
 
 func (t TeamDelete) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
-	tm, err := data2.LoadTeamFromName(strings.ToLower(string(t.Name)))
-	src, _ := s.(cmd.NamedTarget)
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(strings.ToLower(string(t.Name)))
+	if !ok {
 		o.Error("Invalid Team.")
 		return
 	}
+	src, _ := s.(cmd.NamedTarget)
 
 	players := tm.Members
-	data2.DisbandTeam(tm)
+	core.TeamRepository.Delete(tm)
 	o.Print("Disbanded faction.")
 	for _, m := range players {
 		if mem, ok := user2.Lookup(tx, m.Name); ok {
@@ -301,13 +303,9 @@ func (t TeamMap) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	h, _ := p.Handler().(*user2.Handler)
 
 	areas := make([]area.NamedArea, 0)
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		internal.Messagef(p, "command.team.load.fail")
-		return
-	}
-	for _, t := range teams {
-		areas = append(areas, area.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
+	teams := core.TeamRepository.FindAll()
+	for tm := range teams {
+		areas = append(areas, area.NewNamedArea(tm.Claim.Max(), tm.Claim.Min(), tm.Name))
 	}
 
 	// check all areas, if the player is within 50 blocks of one, send pillars
@@ -351,18 +349,14 @@ func (t TeamMap) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 }
 
-func (t TeamClearMap) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
+func (t TeamClearMap) Run(src cmd.Source, _ *cmd.Output, _ *world.Tx) {
 	p, _ := src.(*player.Player)
 	h, _ := p.Handler().(*user2.Handler)
 
 	areas := make([]area.NamedArea, 0)
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		internal.Messagef(p, "command.team.load.fail")
-		return
-	}
-	for _, t := range teams {
-		areas = append(areas, area.NewNamedArea(t.Claim.Max(), t.Claim.Min(), t.Name))
+	teams := core.TeamRepository.FindAll()
+	for tm := range teams {
+		areas = append(areas, area.NewNamedArea(tm.Claim.Max(), tm.Claim.Min(), tm.Name))
 	}
 
 	// check all areas, if the player is within 50 blocks of one, send pillars
@@ -413,7 +407,7 @@ func (t TeamCreate) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	if _, err = data2.LoadTeamFromName(t.Name); err == nil {
+	if _, ok = core.TeamRepository.FindByName(t.Name); ok {
 		internal.Messagef(p, "team.create.exists")
 		return
 	}
@@ -427,13 +421,13 @@ func (t TeamCreate) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 }
 
 func teamExists(p *player.Player) bool {
-	_, err := data2.LoadTeamFromMemberName(p.Name())
-	return err == nil
+	_, ok := core.TeamRepository.FindByMemberName(p.Name())
+	return ok
 }
 
 func createTeam(p *player.Player, name string) model.Team {
 	tm := model.DefaultTeam(name).WithMembers(model.DefaultMember(p.XUID(), p.Name()).WithRank(3))
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	return tm
 }
 
@@ -466,8 +460,8 @@ func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -492,8 +486,8 @@ func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	_, err = data2.LoadTeamFromMemberName(target.Name())
-	if err == nil {
+	_, ok = core.TeamRepository.FindByMemberName(target.Name())
+	if ok {
 		internal.Messagef(p, "team.invite.has-team")
 		return
 	}
@@ -518,15 +512,14 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	// Check if player is already in a team
-	_, err := data2.LoadTeamFromMemberName(p.Name())
-	if err == nil {
+	if _, ok := core.TeamRepository.FindByMemberName(p.Name()); ok {
 		internal.Messagef(p, "team.join.error")
 		return
 	}
 
 	// Load the team to join
-	tm, err := data2.LoadTeamFromName(string(t.Team))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(string(t.Team))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found")
 		return
 	}
@@ -553,7 +546,7 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	// Add player to the team and update team DTR
 	tm = tm.WithMembers(append(tm.Members, model.DefaultMember(p.XUID(), p.Name()))...)
 	tm = tm.WithDTR(tm.DTR + 1.01)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	// Broadcast team join event
 	team.Broadcastf(tx, tm, "team.member.join", p.Name(), tm.DTR)
@@ -573,8 +566,8 @@ func (t TeamInformation) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 
 	// Check if the specified name is empty
 	if name == "" {
-		tm, err := data2.LoadTeamFromMemberName(p.Name())
-		if err != nil {
+		tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+		if !ok {
 			internal.Messagef(p, "user.team-less")
 			return
 		}
@@ -584,14 +577,14 @@ func (t TeamInformation) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	// Attempt to load team by name or member name
-	tm, err := data2.LoadTeamFromName(name)
-	if err == nil {
+	tm, ok := core.TeamRepository.FindByName(name)
+	if ok {
 		out.Print(formatTeamInformation(tx, tm))
 		anyFound = true
 	}
 
-	tm, err = data2.LoadTeamFromMemberName(name)
-	if err == nil {
+	tm, ok = core.TeamRepository.FindByMemberName(name)
+	if ok {
 		out.Print(formatTeamInformation(tx, tm))
 		anyFound = true
 	}
@@ -617,8 +610,8 @@ func (t TeamWho) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 
 	// Check if the specified name is empty
 	if name == "" {
-		tm, err := data2.LoadTeamFromMemberName(p.Name())
-		if err != nil {
+		tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+		if !ok {
 			internal.Messagef(p, "user.team-less")
 			return
 		}
@@ -627,14 +620,14 @@ func (t TeamWho) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	// Attempt to load team by name or member name
-	tm, err := data2.LoadTeamFromName(strings.ToLower(name))
-	if err == nil {
+	tm, ok := core.TeamRepository.FindByName(strings.ToLower(name))
+	if ok {
 		out.Print(formatTeamInformation(tx, tm))
 		anyFound = true
 	}
 
-	tm, err = data2.LoadTeamFromMemberName(strings.ToLower(name))
-	if err == nil {
+	tm, ok = core.TeamRepository.FindByMemberName(strings.ToLower(name))
+	if ok {
 		out.Print(formatTeamInformation(tx, tm))
 		anyFound = true
 	}
@@ -652,8 +645,8 @@ func (t TeamRally) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -675,8 +668,8 @@ func (t TeamUnRally) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -698,8 +691,8 @@ func (t TeamDisband) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	name := p.Name()
-	tm, err := data2.LoadTeamFromMemberName(name)
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(name)
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -715,7 +708,7 @@ func (t TeamDisband) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	team.Broadcastf(tx, tm, "command.team.disband.disbanded", p.Name())
-	data2.DisbandTeam(tm)
+	core.TeamRepository.Delete(tm)
 }
 
 func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
@@ -724,8 +717,8 @@ func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -743,7 +736,7 @@ func (t TeamLeave) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	tm = tm.WithoutMember(p.Name())
 	tm = tm.WithDTR(tm.DTR - 1.01)
 	team.Broadcastf(tx, tm, "team.member.leave", p.Name(), tm.DTR)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 }
 
 func (t TeamKick) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
@@ -753,8 +746,8 @@ func (t TeamKick) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	// Load the team of the player issuing the command
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -801,7 +794,7 @@ func (t TeamKick) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	tm = tm.WithoutMember(string(t.Member))
 	tm = tm.WithDTR(tm.DTR - 1.01)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	// Update state and notify kicked member
 	for _, m := range tm.Members {
@@ -819,8 +812,8 @@ func (t TeamPromote) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	// Load the team of the player issuing the command
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -857,7 +850,7 @@ func (t TeamPromote) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	// Promote the member and save the team
 	tm = tm.Promote(string(t.Member))
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	// Determine the rank name for broadcasting
 	rankName := "Captain"
@@ -876,8 +869,8 @@ func (t TeamDemote) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	// Load the team of the player issuing the command
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -914,7 +907,7 @@ func (t TeamDemote) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	// Demote the member and save the team
 	tm.Demote(string(t.Member))
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	// Broadcast demotion message to the team
 	team.Broadcastf(tx, tm, "command.team.demote.user.demoted", string(t.Member), "Member")
@@ -926,10 +919,7 @@ func (t TeamTop) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		internal.Messagef(p, "command.team.load.fail")
-	}
+	teams := slices.Collect(core.TeamRepository.FindAll())
 
 	if len(teams) == 0 {
 		internal.Messagef(p, "command.team.top.none")
@@ -943,12 +933,12 @@ func (t TeamTop) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	var top string
 	top += text.Colourf("        <yellow>Top Teams</yellow>\n")
 	top += "\uE000\n"
-	userTeam, err := data2.LoadTeamFromMemberName(p.Name())
+	userTeam, _ := core.TeamRepository.FindByMemberName(p.Name())
 	for i, tm := range teams {
 		if i > 9 {
 			break
 		}
-		if userTeam.Name == tm.Name {
+		if strings.EqualFold(userTeam.Name, tm.Name) {
 			top += text.Colourf(" <grey>%d. <green>%s</green> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
 		} else {
 			top += text.Colourf(" <grey>%d. <red>%s</red> (<yellow>%d</yellow>)</grey>\n", i+1, tm.DisplayName, tm.Points)
@@ -965,8 +955,8 @@ func (t TeamClaim) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -995,8 +985,8 @@ func (t TeamUnClaim) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1007,7 +997,7 @@ func (t TeamUnClaim) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	tm = tm.WithClaim(area.Area{}).WithHome(mgl64.Vec3{})
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	internal.Messagef(p, "command.unclaim.success")
 }
 
@@ -1018,8 +1008,8 @@ func (t TeamSetHome) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1041,7 +1031,7 @@ func (t TeamSetHome) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	tm = tm.WithHome(p.Position())
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	internal.Messagef(p, "command.team.home.set")
 }
 
@@ -1052,8 +1042,8 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1090,13 +1080,9 @@ func (t TeamHome) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	// Adjust teleport duration based on nearby claimed areas
 	dur := time.Second * 10
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		internal.Messagef(p, "command.team.load.fail")
-		return
-	}
+	teams := core.TeamRepository.FindAll()
 
-	for _, otherTeam := range teams {
+	for otherTeam := range teams {
 		if otherTeam.Claim.Vec3WithinOrEqualXZ(p.Position()) && otherTeam.Name != tm.Name {
 			dur = time.Second * 20
 			break
@@ -1112,12 +1098,7 @@ func (t TeamList) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		internal.Messagef(p, "command.team.load.fail")
-		return
-	}
+	teams := slices.Collect(core.TeamRepository.FindAll())
 
 	// Sort teams by online member count descending, then by DTR ascending
 	sort.Slice(teams, func(i, j int) bool {
@@ -1139,7 +1120,7 @@ func (t TeamList) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	list.WriteString(text.Colourf("        <yellow>Team List</yellow>\n"))
 	list.WriteString("\uE000\n")
 
-	userTeam, _ := data2.LoadTeamFromMemberName(p.Name())
+	userTeam, _ := core.TeamRepository.FindByMemberName(p.Name())
 
 	for i, tm := range filteredTeams {
 		if i > 9 {
@@ -1169,13 +1150,13 @@ func (t TeamFocusTeam) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
-	targetTeam, err := data2.LoadTeamFromName(strings.ToLower(string(t.Name)))
-	if err != nil {
+	targetTeam, ok := core.TeamRepository.FindByName(strings.ToLower(string(t.Name)))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found", string(t.Name))
 		return
 	}
@@ -1185,7 +1166,7 @@ func (t TeamFocusTeam) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 	tm = tm.WithTeamFocus(targetTeam)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	for _, m := range team.OnlineMembers(tx, targetTeam) {
 		user2.UpdateState(m)
@@ -1205,8 +1186,8 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1218,11 +1199,11 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	tm = tm.WithoutFocus()
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	if focus.Kind == model.FocusTypeTeam {
-		targetTeam, err := data2.LoadTeamFromName(focus.Value)
-		if err == nil {
+		targetTeam, ok := core.TeamRepository.FindByName(focus.Value)
+		if ok {
 			for _, m := range team.OnlineMembers(tx, targetTeam) {
 				user2.UpdateState(m)
 				// if h, ok := m.Handler().(*user.Handler); ok {
@@ -1237,7 +1218,7 @@ func (t TeamUnFocus) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	tm = tm.WithoutFocus()
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	for _, m := range team.OnlineMembers(tx, tm) {
 		user2.UpdateState(m)
@@ -1252,8 +1233,8 @@ func (t TeamFocusPlayer) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1278,7 +1259,7 @@ func (t TeamFocusPlayer) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	tm = tm.WithPlayerFocus(target.Name())
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	user2.UpdateState(target)
 	team.Broadcastf(tx, tm, "command.team.focus", target.Name())
 }
@@ -1316,8 +1297,8 @@ func (t TeamWithdraw) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1341,7 +1322,7 @@ func (t TeamWithdraw) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	tm = tm.WithBalance(tm.Balance - amt)
 	u.Teams.Balance = u.Teams.Balance + amt
 
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	data2.SaveUser(u)
 
 	internal.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
@@ -1365,8 +1346,8 @@ func (t TeamDeposit) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1385,7 +1366,7 @@ func (t TeamDeposit) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	tm = tm.WithBalance(tm.Balance + amt)
 	u.Teams.Balance = u.Teams.Balance - amt
 
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	data2.SaveUser(u)
 
 	internal.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
@@ -1408,8 +1389,8 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1428,7 +1409,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	tm = tm.WithBalance(tm.Balance - amt)
 	u.Teams.Balance = u.Teams.Balance + amt
 
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	data2.SaveUser(u)
 
 	internal.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
@@ -1451,8 +1432,8 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1466,7 +1447,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	tm = tm.WithBalance(tm.Balance + amt)
 	u.Teams.Balance = u.Teams.Balance - amt
 
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 	data2.SaveUser(u)
 
 	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.Name))
@@ -1524,8 +1505,8 @@ func (t TeamCamp) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromName(string(t.Team))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(string(t.Team))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found", t.Team)
 		return
 	}
@@ -1557,17 +1538,14 @@ func safePosition(p *player.Player, pos cube.Pos, radius int) cube.Pos {
 	minZ := pos.Z() - radius
 	maxZ := pos.Z() + radius
 
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		return cube.Pos{}
-	}
+	teams := core.TeamRepository.FindAll()
 	for x := minX; x < maxX; x++ {
 		for z := minZ; z < maxZ; z++ {
 			at := pos.Add(cube.Pos{x, 0, z})
-			for _, tm := range teams {
+			for tm := range teams {
 				if tm.Claim != (area.Area{}) {
 					if tm.Claim.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
-						if t, err := data2.LoadTeamFromMemberName(p.Name()); err == nil && t.Name == tm.Name {
+						if t, ok := core.TeamRepository.FindByMemberName(p.Name()); ok && t.Name == tm.Name {
 							y := w.Range().Max()
 							for y > pos.Y() {
 								y--
@@ -1581,8 +1559,8 @@ func safePosition(p *player.Player, pos cube.Pos, radius int) cube.Pos {
 				}
 			}
 
-			for _, area := range append(area.Protected(p.Tx().World()), area.Wilderness(p.Tx().World())) {
-				if area.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
+			for _, a := range append(area.Protected(p.Tx().World()), area.Wilderness(p.Tx().World())) {
+				if a.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
 					y := p.Tx().World().Range().Max()
 					for y > pos.Y() {
 						y--
@@ -1605,13 +1583,13 @@ func (t TeamIncrementDTR) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromName(string(t.Name))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(string(t.Name))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found", t.Name)
 		return
 	}
 	tm = tm.WithDTR(tm.DTR + 1.00)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	p.Message(text.Colourf("<green>Successfully incremented DTR by 1.00.</green>"))
 }
@@ -1623,14 +1601,14 @@ func (t TeamDecrementDTR) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromName(string(t.Name))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(string(t.Name))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found", t.Name)
 		return
 	}
 	tm = tm.WithDTR(tm.DTR - 1.00)
 	tm = tm.WithLastDeath(time.Now())
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	p.Message(text.Colourf("<green>Successfully decremented DTR by 1.00.</green>"))
 }
@@ -1642,13 +1620,13 @@ func (t TeamResetRegen) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromName(string(t.Name))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(string(t.Name))
+	if !ok {
 		internal.Messagef(p, "command.team.not.found", t.Name)
 		return
 	}
 	tm = tm.WithLastDeath(time.Time{})
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	p.Message(text.Colourf("<green>Successfully reset team regeneration.</green>"))
 }
@@ -1660,8 +1638,8 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
@@ -1691,14 +1669,14 @@ func (t TeamRename) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 }
 
 func (t TeamSetPoints) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
-	tm, err := data2.LoadTeamFromName(strings.ToLower(string(t.Name)))
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByName(strings.ToLower(string(t.Name)))
+	if !ok {
 		internal.Messagef(src, "command.team.not.found", t.Name)
 		return
 	}
 
 	tm = tm.WithPoints(t.Points)
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	o.Printf("Successfully set points to %v", t.Points)
 }
@@ -1738,8 +1716,8 @@ func (member) Type() string {
 // Options ...
 func (member) Options(src cmd.Source) []string {
 	p := src.(*player.Player)
-	tm, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		return nil
 	}
 
@@ -1761,9 +1739,9 @@ func (teamName) Type() string {
 // Options ...
 func (teamName) Options(cmd.Source) []string {
 	var teams []string
-	tms, _ := data2.LoadAllTeams()
+	tms := core.TeamRepository.FindAll()
 
-	for _, tm := range tms {
+	for tm := range tms {
 		teams = append(teams, tm.Name)
 	}
 	return teams
@@ -1777,12 +1755,9 @@ func (teamMember) Type() string {
 // Options ...
 func (teamMember) Options(src cmd.Source) []string {
 	var members []string
-	tms, err := data2.LoadAllTeams()
-	if err != nil {
-		return members
-	}
+	tms := core.TeamRepository.FindAll()
 
-	for _, tm := range tms {
+	for tm := range tms {
 		for _, m := range tm.Members {
 			members = append(members, m.Name)
 		}

@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/adapter/crate"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	blck "github.com/moyai-network/teams/internal/core/block"
 	"github.com/moyai-network/teams/internal/core/colour"
@@ -13,6 +14,7 @@ import (
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/internal/ports"
+	"iter"
 	"strconv"
 	"strings"
 	"time"
@@ -56,8 +58,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 		return
 	}
 
-	tm, teamErr := data2.LoadTeamFromMemberName(p.Name())
-	teams, _ := data2.LoadAllTeams()
+	tm, teamFound := core.TeamRepository.FindByMemberName(p.Name())
+	teams := core.TeamRepository.FindAll()
 	posWithinProtected := posWithinProtectedArea(p, pos, teams)
 
 	if _, ok := b.(block.ItemFrame); ok && posWithinProtected {
@@ -96,14 +98,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 		}
 
 		_, ok := held.Value("CLAIM_WAND")
-		if !ok {
-			break
-		}
-		if teamErr != nil {
-			break
-		}
-
-		if w != internal.Overworld() {
+		if !ok || !teamFound || w != internal.Overworld() {
 			break
 		}
 
@@ -137,7 +132,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 			}
 		}
 
-		for _, t := range teams {
+		for t := range teams {
 			c := t.Claim
 			if c != (area.Area{}) {
 				continue
@@ -449,7 +444,7 @@ func openCrate(p *player.Player, w *world.World, held, left item.Stack, c ports.
 // posWithinProtectedArea checks if a position is within a protected area. If the position is within a protected
 // area, true is returned. If the position is not within a protected area, false is returned. The player passed
 // is used to check if the player is a member of a team that has a claim in the area.
-func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []model2.Team) bool {
+func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams iter.Seq[model2.Team]) bool {
 	if p.GameMode() == world.GameModeCreative {
 		return false
 	}
@@ -471,7 +466,7 @@ func posWithinProtectedArea(p *player.Player, pos cube.Pos, teams []model2.Team)
 		return false
 	}
 
-	for _, t := range teams {
+	for t := range teams {
 		cl := t.Claim
 		_, eotwRunning := eotw.Running()
 		if !t.Member(p.Name()) && cl.Vec3WithinOrEqualXZ(pos.Vec3()) && t.DTR > 0 && !eotwRunning {

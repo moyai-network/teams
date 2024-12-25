@@ -73,7 +73,7 @@ func LoadUserOrCreate(name, xuid string) (model2.User, error) {
 	u, err := LoadUserFromName(name)
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		fmt.Println("LoadUserOrCreate: no user found")
-		u = model2.DefaultUser(name, xuid)
+		u = model2.NewUser(name, xuid)
 		userMu.Lock()
 		users[u.Name] = u
 		userMu.Unlock()
@@ -183,7 +183,7 @@ func loadUsersFromFilter(filter any) ([]model2.User, error) {
 	}
 	data := make([]model2.User, n)
 	for i := range data {
-		data[i] = model2.DefaultUser("loadUsersFromFilter", "")
+		data[i] = model2.NewUser("loadUsersFromFilter", "")
 	}
 
 	if err = cursor.All(ctx(), &data); err != nil {
@@ -252,13 +252,4 @@ func decodeSingleUserResult(result *mongo.SingleResult) (model2.User, error) {
 	userMu.Unlock()
 
 	return u, nil
-}
-
-func init() {
-	t := time.NewTicker(1 * time.Minute)
-	go func() {
-		for range t.C {
-			FlushCache()
-		}
-	}()
 }

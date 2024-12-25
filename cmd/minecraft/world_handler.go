@@ -3,8 +3,8 @@ package minecraft
 import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
-	"github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/model"
 )
 
@@ -14,11 +14,11 @@ type worldHandler struct {
 }
 
 func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos, liquid world.Liquid, replaced world.Block) {
-	teams, _ := data.LoadAllTeams()
+	teams := core.TeamRepository.FindAll()
 	var initialTeam model.Team
 	var nextTeam model.Team
 
-	for _, t := range teams {
+	for t := range teams {
 		if len(initialTeam.Name) != 0 && len(nextTeam.Name) != 0 {
 			break
 		}

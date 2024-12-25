@@ -107,8 +107,8 @@ type User struct {
 	SelfSignedID string `bson:"self_signed_id"`
 
 	Roles    *role.Roles `bson:"roles"`
-	Tags     *tag.Tags `bson:"tags"`
-	Language *Language `bson:"language"`
+	Tags     *tag.Tags   `bson:"tags"`
+	Language *Language   `bson:"language"`
 
 	// PlayTime is the total playtime of the user.
 	PlayTime time.Duration `bson:"playtime"`
@@ -169,7 +169,7 @@ type User struct {
 	LastSaved time.Time
 }
 
-func DefaultUser(name, xuid string) User {
+func NewUser(name, xuid string) User {
 	u := User{
 		XUID:        xuid,
 		Name:        strings.ToLower(name),

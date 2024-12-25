@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/team"
 )
 
@@ -18,8 +18,8 @@ func (TL) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	tm, err := data.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.team-less")
 		return
 	}

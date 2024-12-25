@@ -5,6 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -24,7 +25,7 @@ func (h *Handler) HandleSignEdit(ctx *player.Context, pos cube.Pos, frontSide bo
 		return
 	}
 
-	teams, _ := data2.LoadAllTeams()
+	teams := core.TeamRepository.FindAll()
 	if posWithinProtectedArea(p, pos, teams) {
 		return
 	}

@@ -3,26 +3,24 @@ package repository
 import (
 	"context"
 	"github.com/moyai-network/teams/internal/model"
-	"google.golang.org/appengine/log"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"iter"
 	"maps"
 	"strings"
 	"sync"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type TeamRepository struct {
+type UserRepository struct {
 	collection *mongo.Collection
-	teams      map[string]model.Team
+	users      map[string]model.User
 	sync.Mutex
 }
 
-func NewTeamRepository(collection *mongo.Collection) (*TeamRepository, error) {
-	repo := &TeamRepository{
+func NewUserRepository(collection *mongo.Collection) (*UserRepository, error) {
+	repo := &UserRepository{
 		collection: collection,
-		teams:      make(map[string]model.Team),
+		users:      make(map[string]model.User),
 	}
 
 	cursor, err := collection.Find(context.Background(), bson.D{})
@@ -30,64 +28,49 @@ func NewTeamRepository(collection *mongo.Collection) (*TeamRepository, error) {
 		return nil, err
 	}
 
-	var teams []model.Team
-	if err = cursor.All(context.Background(), &teams); err != nil {
+	count, err := collection.CountDocuments(context.Background(), bson.D{})
+	if err != nil {
 		return nil, err
 	}
 
-	for _, team := range teams {
-		repo.teams[team.Name] = team
+	users := make([]model.User, count)
+	for i := range users {
+		users[i] = model.NewUser("", "")
+	}
+
+	if err = cursor.All(context.Background(), &users); err != nil {
+		return nil, err
+	}
+
+	for _, user := range users {
+		repo.users[user.Name] = user
 	}
 
 	return repo, nil
 }
 
-func (u *TeamRepository) FindByMemberName(name string) (model.Team, bool) {
-	for _, team := range u.teams {
-		for _, member := range team.Members {
-			if strings.EqualFold(member.DisplayName, name) {
-				return team, true
-			}
-		}
-	}
-	return model.Team{}, false
-}
-
-func (u *TeamRepository) FindByName(name string) (model.Team, bool) {
+func (u *UserRepository) FindByName(name string) (model.User, bool) {
 	u.Lock()
 	defer u.Unlock()
-	tm, ok := u.teams[strings.ToLower(name)]
-	return tm, ok
+	user, ok := u.users[strings.ToLower(name)]
+	return user, ok
 }
 
-func (u *TeamRepository) FindAll() iter.Seq[model.Team] {
+func (u *UserRepository) FindAll() iter.Seq[model.User] {
 	u.Lock()
 	defer u.Unlock()
-	return maps.Values(u.teams)
+	return maps.Values(u.users)
 }
 
-func (u *TeamRepository) Save(team model.Team) {
+func (u *UserRepository) Save(user model.User) {
 	u.Lock()
 	defer u.Unlock()
-	u.teams[team.Name] = team
+	u.users[user.Name] = user
 
 	go func() {
-		err := saveObject(u.collection, team.Name, team)
+		err := saveObject(u.collection, user.Name, user)
 		if err != nil {
-			log.Errorf("Mongo insert", "%s", err)
-		}
-	}()
-}
-
-func (u *TeamRepository) Delete(team model.Team) {
-	u.Lock()
-	defer u.Unlock()
-	delete(u.teams, team.Name)
-
-	go func() {
-		err := deleteObject(u.collection, team.Name)
-		if err != nil {
-			log.Errorf("Mongo delete", "%s", err)
+			//log.Errorf("Mongo insert", "%s", err)
 		}
 	}()
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
@@ -52,8 +53,8 @@ func (h *Handler) HandlePunchAir(ctx *player.Context) {
 		return
 	}
 
-	t, err := data2.LoadTeamFromMemberName(p.Name())
-	if err != nil {
+	t, ok := core.TeamRepository.FindByMemberName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -108,7 +109,7 @@ func handleClaimSelection(p *player.Player, h *Handler, tm model.Team) {
 
 	// Set the claim area for the team and save it.
 	tm.Claim = claim
-	data2.SaveTeam(tm)
+	core.TeamRepository.Save(tm)
 
 	internal.Messagef(p, "command.claim.success", pos[0], pos[1], cost)
 }
@@ -124,11 +125,8 @@ func checkExistingClaims(p *player.Player, h *Handler, claim area.Area) bool {
 		}
 	}
 
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		return true
-	}
-	for _, tm := range teams {
+	teams := core.TeamRepository.FindAll()
+	for tm := range teams {
 		c := tm.Claim
 		if c == (area.Area{}) {
 			continue

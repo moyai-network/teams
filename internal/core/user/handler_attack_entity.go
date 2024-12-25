@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	data2 "github.com/moyai-network/teams/internal/core/data"
@@ -177,8 +178,8 @@ func canAttack(pl, target *player.Player) bool {
 		}
 	}
 
-	tm, err := data2.LoadTeamFromMemberName(pl.Name())
-	if err != nil {
+	tm, ok := core.TeamRepository.FindByMemberName(pl.Name())
+	if !ok {
 		return true
 	}
 

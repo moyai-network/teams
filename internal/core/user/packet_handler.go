@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/bedrock-gophers/intercept/intercept"
-	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	_ "unsafe"
@@ -20,7 +19,7 @@ func init() {
 
 type packetHandler struct{}
 
-func (h packetHandler) HandleClientPacket(ctx *player.Context, pk packet.Packet) {
+func (h packetHandler) HandleClientPacket(ctx *intercept.Context, pk packet.Packet) {
 	switch pkt := pk.(type) {
 	case *packet.PlayerSkin:
 		if len(pkt.Skin.SkinGeometry) > 4265 && (len(pkt.Skin.SkinGeometry)-4265) >= 78530 {
@@ -51,7 +50,7 @@ func (h packetHandler) HandleClientPacket(ctx *player.Context, pk packet.Packet)
 	}
 }
 
-func (h packetHandler) HandleServerPacket(ctx *player.Context, pk packet.Packet) {
+func (h packetHandler) HandleServerPacket(ctx *intercept.Context, pk packet.Packet) {
 	/*p := ctx.Val()
 
 	switch pkt := pk.(type) {

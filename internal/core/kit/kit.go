@@ -1,6 +1,8 @@
 package kit
 
 import (
+	"github.com/df-mc/dragonfly/server/event"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	enchantment2 "github.com/moyai-network/teams/internal/core/enchantment"
 	it "github.com/moyai-network/teams/internal/core/item"
 	_ "unsafe"
@@ -64,19 +66,20 @@ func Apply(kit Kit, p *player.Player) {
 		if arm.Slots()[slot].Item() != nil {
 			it.Drop(p, itm)
 		} else {
+			ctx := event.C[inventory.Holder](p)
 			switch slot {
 			case 0:
 				arm.SetHelmet(itm)
-				arm.Inventory().Handler().HandlePlace(nil, 0, itm)
+				arm.Inventory().Handler().HandlePlace(ctx, 0, itm)
 			case 1:
 				arm.SetChestplate(itm)
-				arm.Inventory().Handler().HandlePlace(nil, 1, itm)
+				arm.Inventory().Handler().HandlePlace(ctx, 1, itm)
 			case 2:
 				arm.SetLeggings(itm)
-				arm.Inventory().Handler().HandlePlace(nil, 2, itm)
+				arm.Inventory().Handler().HandlePlace(ctx, 2, itm)
 			case 3:
 				arm.SetBoots(itm)
-				arm.Inventory().Handler().HandlePlace(nil, 3, itm)
+				arm.Inventory().Handler().HandlePlace(ctx, 3, itm)
 			}
 		}
 	}

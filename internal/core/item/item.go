@@ -2,8 +2,10 @@ package item
 
 import (
 	"fmt"
+	"github.com/df-mc/dragonfly/server/entity"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	"github.com/restartfu/gophig"
+	"math/rand"
 	"reflect"
 	"slices"
 	"strings"
@@ -54,19 +56,20 @@ func AddArmorOrDrop(p *player.Player, it item.Stack) {
 }
 
 func Drop(p *player.Player, it item.Stack) {
-	/*w, pos := p.World(), p.Position()
-	et := entity.NewItem(it, pos)
-	et.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
+	et := entity.NewItem(world.EntitySpawnOpts{
+		Position: p.Position(),
+		Velocity: mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1},
+	}, it)
 	p.Tx().AddEntity(et)
 
-	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(pos) {
-		for _, e := range w.Entities() {
+	/*if area.Spawn(w).Vec3WithinOrEqualFloorXZ(pos) {
+		for e := range p.Tx().Entities() {
 			if p, ok := e.(*player.Player); ok {
 				p.HideEntity(et)
 			}
 		}
-	}*/
-	panic("todo")
+	}
+	panic("todo")*/
 }
 
 func DropFromPosition(w *world.World, pos mgl64.Vec3, it item.Stack) {

@@ -37,16 +37,14 @@ func (h *Handler) HandleCommandExecution(ctx *player.Context, command cmd.Comman
 	}
 	names := append(command.Aliases(), command.Name())
 
-	if time.Since(h.lastMessage.Load()) < internal.ChatCoolDown() && !u.Roles.Contains(rls.Admin()) {
-		whisper := slices.Contains(names, "whisper")
-		reply := slices.Contains(names, "reply")
-		if whisper || reply {
+	whisper := slices.Contains(names, "whisper")
+	reply := slices.Contains(names, "reply")
+	if whisper || reply {
+		if time.Since(h.lastMessage.Load()) < internal.ChatCoolDown() && !u.Roles.Contains(rls.Admin()) {
 			ctx.Cancel()
 			internal.Messagef(p, "chat.cooldown", time.Until(h.lastMessage.Load().Add(internal.ChatCoolDown())).Seconds())
 			return
 		}
-		return
-	} else {
 		h.lastMessage.Store(time.Now().Add(internal.ChatCoolDown()))
 	}
 

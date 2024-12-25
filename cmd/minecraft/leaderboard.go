@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"math"
@@ -109,10 +110,7 @@ func startLeaderboard() {
 func formattedTeamLeaderBoard[T int | float64](name string, value func(u model2.Team) T) string {
 	sb := &strings.Builder{}
 	sb.WriteString(text.Colourf("<bold><red>TOP TEAM %v</red></bold>\n", strings.ToUpper(name)))
-	teams, err := data2.LoadAllTeams()
-	if err != nil {
-		return sb.String()
-	}
+	teams := slices.Collect(core.TeamRepository.FindAll())
 
 	sorter := abcsort.New("abcdefghijklmnopqrstuvwxyz123456789 ")
 	sorter.Slice(teams, func(i int) string {
