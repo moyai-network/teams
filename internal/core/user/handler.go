@@ -24,7 +24,6 @@ import (
 	"github.com/bedrock-gophers/cooldown/cooldown"
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/scoreboard"
@@ -37,8 +36,6 @@ import (
 )
 
 var (
-	// tlds is a list of top level domains used for checking for advertisements.
-	tlds = [...]string{".me", ".club", "www.", ".com", ".net", ".gg", ".cc", ".net", ".co", ".co.uk", ".ddns", ".ddns.net", ".cf", ".live", ".ml", ".gov", "http://", "https://", ",club", "www,", ",com", ",cc", ",net", ",gg", ",co", ",couk", ",ddns", ",ddns.net", ",cf", ",live", ",ml", ",gov", ",http://", "https://", "gg/"}
 	// emojis is a map between emojis and their unicode representation.
 	emojis = strings.NewReplacer(
 		":l:", "\uE107",
@@ -49,9 +46,6 @@ var (
 		":100:", "\uE10B",
 		":heart:", "\uE10C",
 	)
-
-	loggers  = map[string]*Handler{}
-	loggerMu sync.Mutex
 )
 
 type Handler struct {
@@ -105,17 +99,6 @@ type Handler struct {
 
 func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 	sendFog(p)
-	/*if h, ok := logger(p); ok {
-		if p.World() == internal.Deathban() {
-			<-time.After(time.Second)
-			internal.Deathban().AddEntity(p)
-			p.SetGameMode(world.GameModeSurvival)
-		}
-		p.Teleport(p.Position())
-		currentHealth := p.Health()
-		p.Hurt(20-currentHealth, NoArmourAttackEntitySource{})
-		_ = p.Close()
-	}*/
 
 	h := &Handler{
 		uuid:       p.UUID(),
@@ -244,23 +227,11 @@ func (h *Handler) handleBoosterRole(p *player.Player, u model.User) {
 	}
 }
 
-func vec3ToVec2(v mgl64.Vec3) mgl64.Vec2 {
-	return mgl64.Vec2{v.X(), v.Z()}
-}
-
 func maxMin(n, n2 float64) (max float64, min float64) {
 	if n > n2 {
 		return n, n2
 	}
 	return n2, n
-}
-
-type npcHandler struct {
-	player.NopHandler
-}
-
-func (npcHandler) HandleItemPickup(ctx *player.Context, _ *item.Stack) {
-	ctx.Cancel()
 }
 
 type NoArmourAttackEntitySource struct {
@@ -277,18 +248,6 @@ func (NoArmourAttackEntitySource) ReducedByArmour() bool {
 
 func (NoArmourAttackEntitySource) ReducedByResistance() bool {
 	return false
-}
-
-// attackerFromSource returns the Attacker from a DamageSource. If the source is not an entity false is
-// returned.
-func attackerFromSource(src world.DamageSource) (world.Entity, bool) {
-	switch s := src.(type) {
-	case entity.AttackDamageSource:
-		return s.Attacker, true
-	case NoArmourAttackEntitySource:
-		return s.Attacker, true
-	}
-	return nil, false
 }
 
 func restorePlayerData(p *player.Player) {

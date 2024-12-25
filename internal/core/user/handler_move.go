@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/bedrock-gophers/unsafe/unsafe"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
@@ -8,12 +9,12 @@ import (
 	"github.com/moyai-network/teams/internal/core/conquest"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/model"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"math"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/player/bossbar"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal"
@@ -64,14 +65,6 @@ func (h *Handler) HandleMove(ctx *player.Context, newPos mgl64.Vec3, newRot cube
 	h.updateKOTHState(p, newPos, u)
 	h.updateConquestState(p, newPos, u)
 	h.updateCurrentArea(p, newPos, u)
-}
-
-func (h *Handler) updateCompass(p *player.Player) {
-	yaw := p.Rotation().Yaw()
-	comp := compass(yaw)
-	bar := bossbar.New(comp)
-
-	p.SendBossBar(bar)
 }
 
 func (h *Handler) handleEndPortalEntry(p *player.Player) {
@@ -250,7 +243,7 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 				}
 
 				if ar != (model.Area{}) {
-					// internal.Messagef(h.p, "area.leave", ar.Name())
+					internal.Messagef(p, "area.leave", ar.Name)
 				}
 
 				var leaveDB, enterDB string
@@ -287,12 +280,12 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 
 	if ar != area.Wilderness(w) {
 		if ar != (model.Area{}) {
-			// if ar.Name() == koth.Citadel.Name() {
-			// 	unsafe.WritePacket(h.p, &packet.PlayerFog{
-			// 		Stack: []string{"minecraft:fog_ocean"},
-			// 	})
-			// }
-			// internal.Messagef(h.p, "area.leave", ar.Name())
+			if ar.Name == koth.Citadel.Name() {
+				unsafe.WritePacket(p, &packet.PlayerFog{
+					Stack: []string{"minecraft:fog_ocean"},
+				})
+			}
+			internal.Messagef(p, "area.leave", ar.Name)
 
 		}
 

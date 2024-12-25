@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	spawn  = []string{}
 	combat = []string{
 		"ec",
 		"logout",

@@ -1,7 +1,6 @@
 package minecraft
 
 import (
-	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/cmd"
 	command2 "github.com/moyai-network/teams/internal/adapter/command"
 	"github.com/moyai-network/teams/pkg/lang"
@@ -112,14 +111,4 @@ func registerCommands() {
 	} {
 		cmd.Register(c)
 	}
-
-	//cmd.Register(cmd.New("hub", text.Colourf("Return to the Moyai Hub."), []string{"lobby"}, command.Hub{}))
-}
-
-// operatorAllower is an allower that allows all users with the operator role to execute a command.
-type operatorAllower struct{}
-
-// Allow ...
-func (operatorAllower) Allow(s cmd.Source) bool {
-	return command2.Allow(s, true, []role.Role{}...)
 }

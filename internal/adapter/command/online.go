@@ -28,7 +28,7 @@ func (Online) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 			name += fmt.Sprintf("(%s)", u.Name())
 		}
 		highest := d.Roles.Highest()
-		users = append(users, highest.Coloured(u.Name()))
+		users = append(users, highest.Coloured(name))
 	}
 	o.Printf(lang.Translatef(locale(s), "command.online.users", len(users), strings.Join(users, ", ")))
 }

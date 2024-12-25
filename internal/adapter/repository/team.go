@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/moyai-network/teams/internal/model"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"iter"
@@ -77,7 +78,7 @@ func (u *TeamRepository) Save(team model.Team) {
 	go func() {
 		err := saveObject(u.collection, team.Name, team)
 		if err != nil {
-			//log.Errorf("Mongo insert", "%s", err)
+			logrus.Errorf("Mongo insert: %s", err)
 		}
 	}()
 }
@@ -90,7 +91,7 @@ func (u *TeamRepository) Delete(team model.Team) {
 	go func() {
 		err := deleteObject(u.collection, team.Name)
 		if err != nil {
-			//log.Errorf("Mongo delete", "%s", err)
+			logrus.Errorf("Mongo delete: %s", err)
 		}
 	}()
 }

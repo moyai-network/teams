@@ -200,10 +200,6 @@ func RefreshPartnerItems() {
 	for _, v := range allPartnerItems {
 		if slices.Contains(disabledPartnerItems, v.Key()) {
 			fmt.Println("WARN: disabled partner item: " + v.Key())
-			slices.DeleteFunc(creative.Items(), func(stack item.Stack) bool {
-				_, ok := stack.Value(v.Key())
-				return ok
-			})
 			continue
 		}
 		creative.RegisterItem(NewSpecialItem(v, 1))

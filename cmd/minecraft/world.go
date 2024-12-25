@@ -2,21 +2,16 @@ package minecraft
 
 import (
 	"fmt"
-	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/inventory"
-	"github.com/df-mc/dragonfly/server/player"
-	"github.com/df-mc/dragonfly/server/player/skin"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/df-mc/npc"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal"
 	crate2 "github.com/moyai-network/teams/internal/adapter/crate"
 	"github.com/moyai-network/teams/internal/core/enchantment"
-	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math"
 	"strings"
@@ -37,67 +32,7 @@ var (
 		{it: block.Iron{}, quantity: 16, price: 250, pos: cube.Pos{25, 68, 8}, direction: cube.North},
 		{it: block.Lapis{}, quantity: 16, price: 250, pos: cube.Pos{24, 68, 8}, direction: cube.North},
 
-		//{buy: true, it: block.RedstoneWire{}, quantity: 16, price: 100, pos: cube.Pos{28, 69, 8}, direction: cube.North},
-		//{buy: true, it: block.Lever{}, quantity: 8, price: 100, pos: cube.Pos{27, 69, 8}, direction: cube.North},
-		//{buy: true, it: block.Button{}, quantity: 8, price: 100, pos: cube.Pos{26, 69, 8}, direction: cube.North},
-		//{buy: true, it: block.RedstoneBlock{}, quantity: 8, price: 100, pos: cube.Pos{25, 69, 8}, direction: cube.North},
 		{buy: true, it: block.Hopper{}, quantity: 8, price: 3000, pos: cube.Pos{24, 69, 8}, direction: cube.North},
-	}
-	cowSpawners = []cube.Pos{
-		{-17, 63, -14},
-		{-15, 63, -18},
-		{-13, 63, -22},
-		{-11, 63, -26},
-		{-17, 63, -14},
-		{-18, 63, -17},
-		{-19, 63, -20},
-		{-14, 63, -15},
-		{-16, 63, -21},
-		{-17, 63, -24},
-		{-14, 63, -25},
-		{-12, 63, -19},
-		{-11, 63, -16},
-		{-8, 63, -17},
-		{-9, 63, -20},
-		{-10, 63, -23},
-	}
-	endermanSpawners = []cube.Pos{
-		{27, 28, 121},
-		{27, 28, 131},
-		{21, 28, 131},
-		{23, 28, 134},
-		{18, 28, 138},
-		{12, 28, 138},
-		{14, 28, 126},
-		{16, 28, 132},
-
-		{-13, 25, 114},
-		{-21, 25, 115},
-		{-24, 25, 120},
-		{-33, 27, 110},
-		{-36, 27, 107},
-		{-40, 27, 110},
-		{-38, 28, 103},
-
-		{-60, 28, 62},
-		{-56, 28, 59},
-		{-51, 28, 62},
-
-		{23, 27, 40},
-		{19, 27, 44},
-		{26, 27, 45},
-		{30, 27, 39},
-		{27, 27, 52},
-	}
-	blazeSpawners = []cube.Pos{
-		{-513, 83, -188},
-		{-508, 83, -198},
-		{-520, 83, -188},
-		{-519, 83, -199},
-
-		{-437, 87, -187},
-		{-434, 87, -177},
-		{-427, 87, -175},
 	}
 )
 
@@ -120,39 +55,6 @@ func configureWorlds() {
 			l.Load(tx, math.MaxInt)
 		})
 	}
-}
-
-func placeSlapper() {
-	internal.Overworld().Exec(func(w *world.Tx) {
-		_ = npc.Create(npc.Settings{
-			Name:       text.Colourf("<green>Click to use kits</green>"),
-			Skin:       skin.Skin{},
-			Scale:      1,
-			Yaw:        120,
-			MainHand:   item.NewStack(item.Sword{Tier: item.ToolTierDiamond}, 1).WithEnchantments(item.NewEnchantment(enchantment.Sharpness{}, 1)),
-			Helmet:     item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
-			Chestplate: item.NewStack(item.Chestplate{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
-			Leggings:   item.NewStack(item.Leggings{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
-			Boots:      item.NewStack(item.Boots{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(item.NewEnchantment(enchantment.Protection{}, 1)),
-
-			Position: mgl64.Vec3{7, 67, 47.5},
-		}, w, func(p *player.Player) {
-			if men, ok := menu2.NewKitsMenu(p); ok {
-				inv.SendMenu(p, men)
-			}
-		})
-		_ = npc.Create(npc.Settings{
-			Name:     text.Colourf("<gold>Block Shop</gold>"),
-			Skin:     skin.Skin{},
-			Scale:    1,
-			Yaw:      -120,
-			MainHand: item.NewStack(block.Diamond{}, 1),
-
-			Position: mgl64.Vec3{-6, 67, 45.5},
-		}, w, func(p *player.Player) {
-			inv.SendMenu(p, menu2.NewBlocksMenu(p))
-		})
-	})
 }
 
 // shopSign is a sign that can be placed in the world to create a shop. It can be used to buy or sell items.

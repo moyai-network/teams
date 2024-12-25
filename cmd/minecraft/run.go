@@ -7,6 +7,7 @@ import (
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	user2 "github.com/moyai-network/teams/internal/core/user"
+	"github.com/sirupsen/logrus"
 	"log/slog"
 	"math/rand"
 	"os"
@@ -73,8 +74,6 @@ func Run() error {
 
 	placeCrates()
 	placeShopSigns()
-
-	go tickClearLag()
 
 	go startBroadcats()
 	go startPlayerBroadcasts()
@@ -228,7 +227,7 @@ func loadStore(key string, log *slog.Logger) *tebex.Client {
 	store := tebex.NewClient(log, time.Second*5, key)
 	name, domain, err := store.Information()
 	if err != nil {
-		log.Error("tebex: %v", err)
+		logrus.Errorf("tebex: %v", err)
 		return nil
 	}
 	log.Info("Connected to Tebex under %v (%v).", name, domain)

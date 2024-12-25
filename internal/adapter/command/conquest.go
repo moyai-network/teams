@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/conquest"
@@ -50,7 +49,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 
 	internal.Broadcastf(p.Tx(), "koth.start", name, "Conquest", -100.0, -500.0)
-	st := fmt.Sprintf(`
+	st := `
  §e█████████§r
  §e█████████§r
  §e█§6█§e█§6█§e█§6█§e█§6█§e█§r
@@ -61,9 +60,9 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
  §e█████████§r
  §e█████████§r
 
-`)
+`
 
-	p.Message(text.Colourf(st))
+	p.Message(st)
 }
 
 // Run ...

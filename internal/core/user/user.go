@@ -36,16 +36,6 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 )
 
-// lookupRuntimeID ...
-func lookupRuntimeID(p *player.Player, rid uint64) (*player.Player, bool) {
-	for t := range internal.Players(nil) {
-		if session_entityRuntimeID(unsafe.Session(p), t) == rid {
-			return t, true
-		}
-	}
-	return nil, false
-}
-
 // Lookup looks up the Handler of a name passed.
 func Lookup(tx *world.Tx, name string) (*player.Player, bool) {
 	for t := range internal.Players(tx) {
@@ -328,11 +318,6 @@ func (h *Handler) handleTeamMemberDeath(p *player.Player) {
 	}
 }
 
-// canMessage returns true if the user can send a message.
-func (h *Handler) canMessage() bool {
-	return time.Since(h.lastMessage.Load()) > time.Second*1
-}
-
 // lastAttacker returns the last attacker of the user.
 func (h *Handler) lastAttacker(tx *world.Tx) (*player.Player, bool) {
 	if time.Since(h.lastAttackTime.Load()) > 15*time.Second {
@@ -529,19 +514,6 @@ func (h *Handler) viewBlockUpdate(p *player.Player, pos cube.Pos, b world.Block,
 	s.ViewBlockUpdate(pos, b, layer)
 }
 
-// viewers returns a list of all viewers of the Player.
-func (h *Handler) viewers(p *player.Player) []world.Viewer {
-	viewers := p.Tx().Viewers(p.Position())
-	s := unsafe.Session(p)
-
-	for _, v := range viewers {
-		if v == s {
-			return viewers
-		}
-	}
-	return append(viewers, s)
-}
-
 // blockReplaceable checks if the tagCombat wall should replace a block.
 func blockReplaceable(b world.Block) bool {
 	_, air := b.(block.Air)
@@ -564,34 +536,6 @@ func subtractItem(p *player.Player, s item.Stack, d int) item.Stack {
 		return s.Grow(-d)
 	}
 	return s
-}
-
-func setLogger(p *player.Player, l *Handler) {
-	l.logger = true
-
-	loggerMu.Lock()
-	loggers[p.XUID()] = l
-	loggerMu.Unlock()
-}
-
-func logger(p *player.Player) (*Handler, bool) {
-	loggerMu.Lock()
-	l, ok := loggers[p.XUID()]
-	loggerMu.Unlock()
-	return l, ok
-}
-
-// PlayTime returns the play time of the user.
-func PlayTime(p *player.Player) time.Duration {
-	u, ok := core.UserRepository.FindByName(p.Name())
-	if !ok {
-		return 0
-	}
-	h, ok := p.Handler().(*Handler)
-	if ok {
-		u.PlayTime += time.Since(h.logTime)
-	}
-	return u.PlayTime
 }
 
 // addEffects adds a list of effects to the user.

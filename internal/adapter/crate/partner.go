@@ -2,10 +2,7 @@ package crate
 
 import (
 	"github.com/df-mc/dragonfly/server/block/cube"
-	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/item/enchantment"
 	"github.com/go-gl/mathgl/mgl64"
-	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -23,11 +20,6 @@ func (partner) Position() mgl64.Vec3 {
 
 func (partner) Facing() cube.Face {
 	return cube.FaceEast
-}
-
-var partnerEnchantments = []item.Enchantment{
-	item.NewEnchantment(ench.Protection{}, 2),
-	item.NewEnchantment(enchantment.Unbreaking, 2),
 }
 
 func (partner) Rewards() []model.Reward {

@@ -47,62 +47,6 @@ var pickaxeEffective = func(t item.Tool) bool {
 	return t.ToolType() == item.TypePickaxe
 }
 
-// axeEffective is a convenience function for blocks that are effectively mined with an axe.
-var axeEffective = func(t item.Tool) bool {
-	return t.ToolType() == item.TypeAxe
-}
-
-// shearsEffective is a convenience function for blocks that are effectively mined with shears.
-var shearsEffective = func(t item.Tool) bool {
-	return t.ToolType() == item.TypeShears
-}
-
-// shovelEffective is a convenience function for blocks that are effectively mined with a shovel.
-var shovelEffective = func(t item.Tool) bool {
-	return t.ToolType() == item.TypeShovel
-}
-
-// hoeEffective is a convenience function for blocks that are effectively mined with a hoe.
-var hoeEffective = func(t item.Tool) bool {
-	return t.ToolType() == item.TypeHoe
-}
-
-// nothingEffective is a convenience function for blocks that cannot be mined efficiently with any tool.
-var nothingEffective = func(item.Tool) bool {
-	return false
-}
-
-// alwaysHarvestable is a convenience function for blocks that are harvestable using any item.
-var alwaysHarvestable = func(t item.Tool) bool {
-	return true
-}
-
-// neverHarvestable is a convenience function for blocks that are not harvestable by any item.
-var neverHarvestable = func(t item.Tool) bool {
-	return false
-}
-
-// pickaxeHarvestable is a convenience function for blocks that are harvestable using any kind of pickaxe.
-var pickaxeHarvestable = pickaxeEffective
-
-// simpleDrops returns a drops function that returns the items passed.
-func simpleDrops(s ...item.Stack) func(item.Tool, []item.Enchantment) []item.Stack {
-	return func(item.Tool, []item.Enchantment) []item.Stack {
-		return s
-	}
-}
-
-// oneOf returns a drops function that returns one of each of the item types passed.
-func oneOf(i ...world.Item) func(item.Tool, []item.Enchantment) []item.Stack {
-	return func(item.Tool, []item.Enchantment) []item.Stack {
-		var s []item.Stack
-		for _, it := range i {
-			s = append(s, item.NewStack(it, 1))
-		}
-		return s
-	}
-}
-
 // hasSilkTouch checks if an item has the silk touch enchantment.
 func hasSilkTouch(enchantments []item.Enchantment) bool {
 	for _, enchant := range enchantments {
@@ -121,26 +65,5 @@ func silkTouchOneOf(normal, silkTouch world.Item) func(item.Tool, []item.Enchant
 			return []item.Stack{item.NewStack(silkTouch, 1)}
 		}
 		return []item.Stack{item.NewStack(normal, 1)}
-	}
-}
-
-// silkTouchDrop returns a drop function that returns the silk touch drop when silk touch exists, or the
-// normal drop when it does not.
-func silkTouchDrop(normal, silkTouch item.Stack) func(item.Tool, []item.Enchantment) []item.Stack {
-	return func(t item.Tool, enchantments []item.Enchantment) []item.Stack {
-		if hasSilkTouch(enchantments) {
-			return []item.Stack{silkTouch}
-		}
-		return []item.Stack{normal}
-	}
-}
-
-// silkTouchOnlyDrop returns a drop function that returns the drop when silk touch exists.
-func silkTouchOnlyDrop(it world.Item) func(t item.Tool, enchantments []item.Enchantment) []item.Stack {
-	return func(t item.Tool, enchantments []item.Enchantment) []item.Stack {
-		if hasSilkTouch(enchantments) {
-			return []item.Stack{item.NewStack(it, 1)}
-		}
-		return nil
 	}
 }

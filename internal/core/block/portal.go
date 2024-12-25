@@ -22,7 +22,7 @@ type Portal struct {
 
 // Model ...
 func (p Portal) Model() world.BlockModel {
-	return portalModel{Axis: p.Axis}
+	return p
 }
 
 // Portal ...
@@ -48,13 +48,8 @@ func (p Portal) Hash() (uint64, uint64) {
 func (p Portal) NeighbourUpdateTick(pos, _ cube.Pos, w *world.World) {
 }
 
-type portalModel struct {
-	// Axis is the axis which the portal faces.
-	Axis cube.Axis
-}
-
 // BBox ...
-func (p portalModel) BBox(pos cube.Pos, s world.BlockSource) []cube.BBox {
+func (p Portal) BBox(pos cube.Pos, s world.BlockSource) []cube.BBox {
 	min, max := mgl64.Vec3{0, 0, 0.375}, mgl64.Vec3{1, 1, 0.25}
 	if p.Axis == cube.Z {
 		min[0], min[2], max[0], max[2] = 0.375, 0, 0.25, 1
@@ -63,6 +58,6 @@ func (p portalModel) BBox(pos cube.Pos, s world.BlockSource) []cube.BBox {
 }
 
 // FaceSolid ...
-func (portalModel) FaceSolid(pos cube.Pos, face cube.Face, s world.BlockSource) bool {
+func (Portal) FaceSolid(pos cube.Pos, face cube.Face, s world.BlockSource) bool {
 	return false
 }

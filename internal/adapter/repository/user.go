@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/moyai-network/teams/internal/model"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"iter"
@@ -70,7 +71,7 @@ func (u *UserRepository) Save(user model.User) {
 	go func() {
 		err := saveObject(u.collection, user.Name, user)
 		if err != nil {
-			//log.Errorf("Mongo insert", "%s", err)
+			logrus.Errorf("Mongo insert: %s", err)
 		}
 	}()
 }

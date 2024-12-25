@@ -51,7 +51,6 @@ func (KothList) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 
 // Run ...
 func (k KothStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
-	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	p, ok := s.(*player.Player)
 	if !ok {
 		return
@@ -74,7 +73,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 
 	r := u.Roles.Highest()
-	name = r.Coloured(p.Name())
+	name := r.Coloured(p.Name())
 	if u.Teams.KOTHStart.Active() {
 		internal.Messagef(p, "command.koth.cooldown", durafmt.ParseShort(u.Teams.KOTHStart.Remaining()).LimitFirstN(2))
 		return
@@ -131,7 +130,7 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 `, ko.Name())
 	}
 
-	p.Message(text.Colourf(st))
+	p.Message(st)
 }
 
 // Run ...

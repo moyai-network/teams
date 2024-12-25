@@ -43,21 +43,6 @@ func armourStacks(arm *inventory.Armour) [4]item.Stack {
 	return stacks
 }
 
-func compareArmours(a1, a2 [4]item.Stack) bool {
-	for i, a := range a1 {
-		if a.Empty() && !a2[i].Empty() {
-			return false
-		}
-		if a.Empty() && !a2[i].Empty() || !a.Empty() && a2[i].Empty() {
-			return false
-		}
-		if !a.Comparable(a2[i]) {
-			return false
-		}
-	}
-	return true
-}
-
 func sortArmourEffects(p *player.Player, h *Handler) {
 	if h.coolDownEffectDisabled.Active() {
 		return
@@ -386,18 +371,6 @@ func teamOnlineCount(tx *world.Tx, t model2.Team) int {
 	}
 	return count
 
-}
-
-func compareLines(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, l := range a {
-		if l != b[i] {
-			return false
-		}
-	}
-	return true
 }
 
 func parseDuration(d time.Duration) string {

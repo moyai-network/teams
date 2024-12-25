@@ -2,15 +2,12 @@ package user
 
 import (
 	"github.com/bedrock-gophers/intercept/intercept"
-	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	_ "unsafe"
 
 	"github.com/df-mc/dragonfly/server/session"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 func init() {
@@ -139,33 +136,6 @@ func (h packetHandler) HandleServerPacket(ctx *intercept.Context, pk packet.Pack
 		}
 		pkt.EntityMetadata = meta
 	}*/
-}
-
-func compareTeams(a model.Team, b model.Team) bool {
-	if len(a.Name) == 0 || len(b.Name) == 0 {
-		return false
-	}
-	return a.Name == b.Name
-}
-
-func formatNameTag(name string, t model.Team, col1, col2 string, tag string) string {
-	if len(t.Name) == 0 {
-		return text.Colourf("<%s>%s</%s>", col1, name, col1)
-	}
-	dtr := t.DTRString()
-
-	return text.Colourf("<orange>[</orange><%s>%s</%s><orange>]</orange> %s\n<%s>%s %s</%s>", col2, t.DisplayName, col2, dtr, col1, name, tag, col1)
-}
-
-// removeFlag removes a flag from the entity data.
-func removeFlag(key uint32, index uint8, m protocol.EntityMetadata) {
-	v := m[key]
-	switch key {
-	case protocol.EntityDataKeyPlayerFlags:
-		m[key] = v.(byte) &^ (1 << index)
-	default:
-		m[key] = v.(int64) &^ (1 << int64(index))
-	}
 }
 
 // noinspection ALL

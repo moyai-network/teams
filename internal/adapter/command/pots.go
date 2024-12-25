@@ -101,7 +101,7 @@ func placePairedChests(tx *world.Tx, a, b cube.Pos, p *player.Player, it world.I
 
 func fillInventory(in *inventory.Inventory, it item.Stack) {
 	for i := 0; i < in.Size(); i++ {
-		in.SetItem(i, it)
+		_ = in.SetItem(i, it)
 	}
 }
 

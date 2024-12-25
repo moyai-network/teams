@@ -47,19 +47,7 @@ func Resolve(p *player.Player) ports.Class {
 }
 
 func Compare(a ports.Class, b ports.Class) bool {
-	if a == b {
-		return true
-	}
-	return false
-}
-
-func CompareAny(a ports.Class, b ...ports.Class) bool {
-	for _, c := range b {
-		if Compare(a, c) {
-			return true
-		}
-	}
-	return false
+	return a == b
 }
 
 func Register(c ports.Class) {

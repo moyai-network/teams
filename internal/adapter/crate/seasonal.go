@@ -26,11 +26,6 @@ func (seasonal) Facing() cube.Face {
 	return cube.FaceNorth
 }
 
-var seasonalEnchantments = []item.Enchantment{
-	item.NewEnchantment(enchantment2.Protection{}, 2),
-	item.NewEnchantment(enchantment.Unbreaking, 2),
-}
-
 func (seasonal) Rewards() []model.Reward {
 	return []model.Reward{
 		model.NewReward(item.NewStack(item.Helmet{Tier: item.ArmourTierDiamond{}}, 1).WithEnchantments(

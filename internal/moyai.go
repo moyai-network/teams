@@ -233,7 +233,7 @@ func Close() {
 	_ = End().Close()
 	_ = srv.World().Close()
 	if err := srv.Close(); err != nil {
-		logrus.Fatalln("close server: %v", err)
+		logrus.Fatalf("close server: %v\n", err)
 	}
 }
 

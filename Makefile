@@ -1,4 +1,8 @@
-all:
-	go env -w GOOS=linux
-	go build .
-	go env -w GOOS=windows
+.PHONY: mocks
+
+lint:
+	./tests/scripts/lint.sh
+mocks:
+	./tests/scripts/mocks.sh
+tests: lint mocks
+	./tests/scripts/tests.sh

@@ -7,7 +7,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	model2 "github.com/moyai-network/teams/internal/model"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 	"golang.org/x/text/language"
 )
 
@@ -41,28 +40,4 @@ func Allow(src cmd.Source, console bool, roles ...role.Role) bool {
 		return false
 	}
 	return u.Roles.Contains(append(roles, rls.Operator())...)
-}
-
-// names returns a list of formatted names from a list of users. If tag is true a tag will be shown next to the name
-// indicating if the user is banned or blacklisted.
-func names(users []model2.User, tag bool) (names []string) {
-	for _, u := range users {
-		_ = u
-		if u.Teams.Ban.Permanent {
-			if tag {
-				names = append(names, text.Colourf("<dark-red>%s [BLACKLISTED]</dark-red>", u.DisplayName))
-			} else {
-				names = append(names, text.Colourf("<dark-red>%s</dark-red>", u.DisplayName))
-			}
-		} else if !u.Teams.Ban.Expired() {
-			if tag {
-				names = append(names, text.Colourf("<red>%s [BANNED]</red>", u.DisplayName))
-			} else {
-				names = append(names, text.Colourf("<red>%s</red>", u.DisplayName))
-			}
-		} else {
-			names = append(names, text.Colourf("<green>%s</green>", u.DisplayName))
-		}
-	}
-	return
 }

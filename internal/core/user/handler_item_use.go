@@ -506,7 +506,6 @@ func (h *Handler) handleAbilityDisablerAbility(p *player.Player, kind item2.Abil
 	enemies := nearbyHurtable(p, 15)
 	for _, e := range enemies {
 		//e.coolDownGlobalAbilities.Set(time.Second * 10)
-		panic("todo")
 		internal.Messagef(e, "ability_disabler.used", p.Name())
 	}
 

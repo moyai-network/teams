@@ -59,21 +59,20 @@ func (f FixAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 
 	for i, it := range p.Inventory().Slots() {
-		new := it.WithDurability(it.MaxDurability())
-		p.Inventory().SetItem(i, new)
+		_ = p.Inventory().SetItem(i, it.WithDurability(it.MaxDurability()))
 	}
 
 	for i, it := range p.Armour().Items() {
-		new := it.WithDurability(it.MaxDurability())
+		newIt := it.WithDurability(it.MaxDurability())
 		switch i {
 		case 0:
-			p.Armour().SetHelmet(new)
+			p.Armour().SetHelmet(newIt)
 		case 1:
-			p.Armour().SetChestplate(new)
+			p.Armour().SetChestplate(newIt)
 		case 2:
-			p.Armour().SetLeggings(new)
+			p.Armour().SetLeggings(newIt)
 		case 3:
-			p.Armour().SetBoots(new)
+			p.Armour().SetBoots(newIt)
 		}
 	}
 

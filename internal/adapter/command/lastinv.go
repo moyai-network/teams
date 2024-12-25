@@ -50,18 +50,18 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		if i <= 8 {
 			x = 27
 		}
-		iv.SetItem(i+x, d)
+		_ = iv.SetItem(i+x, d)
 	}
-	iv.SetItem(45, d.Helmet)
-	iv.SetItem(46, d.Chestplate)
-	iv.SetItem(47, d.Leggings)
-	iv.SetItem(48, d.Boots)
+	_ = iv.SetItem(45, d.Helmet)
+	_ = iv.SetItem(46, d.Chestplate)
+	_ = iv.SetItem(47, d.Leggings)
+	_ = iv.SetItem(48, d.Boots)
 
 	rev := item.NewStack(item.EnchantedBook{}, 1).
 		WithCustomName(text.Colourf("<red>Last Inventory Info</red>")).
 		WithLore(text.Colourf("<red>Dead</red>: %t", t.Teams.DeathBan.Active()), text.Colourf("<green>Click to revive user with current inventory</green>"))
 
-	iv.SetItem(53, rev)
+	_ = iv.SetItem(53, rev)
 
 	iv.Handle(&handler{})
 	menu := inv.NewCustomMenu(fmt.Sprintf("Last Inventory of %s", t.DisplayName), inv.ContainerChest{DoubleChest: true}, iv, nil)

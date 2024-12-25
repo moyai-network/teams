@@ -5,6 +5,7 @@ go 1.23
 toolchain go1.23.4
 
 require (
+	git.restartfu.com/restart/gophig.git v1.0.0
 	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3
 	github.com/bedrock-gophers/knockback v0.0.0-20240717023947-eb4741c043cc
 	github.com/bedrock-gophers/provider v0.1.1
@@ -26,8 +27,10 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unickorn/strutils v0.0.0-20221027210219-8e7a82cccd62
 	go.mongodb.org/mongo-driver v1.16.0
+	go.uber.org/mock v0.5.0
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
 	golang.org/x/text v0.19.0
+	google.golang.org/appengine v1.6.8
 	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
@@ -39,19 +42,18 @@ require (
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc
 	github.com/bedrock-gophers/spawner v0.1.2
 	github.com/bedrock-gophers/tebex v0.1.1
-	github.com/df-mc/npc v1.0.4
 	github.com/rcrowley/go-bson v0.0.0-20140210180454-771ad044f2d7 // indirect
 	github.com/samber/lo v1.39.0
 )
 
 require (
-	git.restartfu.com/restart/gophig.git v1.0.0 // indirect
 	github.com/brentp/intintmap v0.0.0-20190211203843-30dc0ade9af9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/df-mc/goleveldb v1.1.9 // indirect
 	github.com/df-mc/worldupgrader v1.0.18 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gorilla/schema v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
@@ -75,7 +77,7 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
