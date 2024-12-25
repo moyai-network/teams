@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"github.com/moyai-network/teams/internal/config"
 	"github.com/moyai-network/teams/internal/core"
 	ent "github.com/moyai-network/teams/internal/core/entity"
 	it "github.com/moyai-network/teams/internal/core/item"
@@ -210,7 +211,7 @@ func startChatGame() {
 }
 
 // configure initializes the server configuration.
-func configure(conf internal.Config, log *slog.Logger) server.Config {
+func configure(conf config.Config, log *slog.Logger) server.Config {
 	c, err := conf.Config(log)
 	if err != nil {
 		panic(err)
@@ -244,8 +245,8 @@ func handleServerClose() {
 	}()
 }
 
-func readConfig() (internal.Config, error) {
-	c := internal.DefaultConfig()
+func readConfig() (config.Config, error) {
+	c := config.DefaultConfig()
 	g := gophig.NewGophig("./configs/config", "toml", 0777)
 
 	err := g.GetConf(&c)
