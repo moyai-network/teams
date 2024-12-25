@@ -3,7 +3,6 @@ package minecraft
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	ent "github.com/moyai-network/teams/internal/core/entity"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
@@ -79,7 +78,6 @@ func Run() error {
 	placeCrates()
 	placeShopSigns()
 
-	go tickVotes()
 	//go tickBlackMarket(srv)
 	go tickClearLag()
 
@@ -101,20 +99,6 @@ func registerLanguages() {
 	lang.Register(language.English)
 	lang.Register(language.Spanish)
 	lang.Register(language.French)
-}
-
-// tickVotes ticks new votes every 5 minutes of all users.
-func tickVotes() {
-	t := time.NewTicker(time.Second * 5)
-	for range t.C {
-		usrs := data2.NewVoters()
-		for _, u := range usrs {
-			u.Roles.Add(roles.Voter())
-			u.Roles.Expire(roles.Voter(), time.Now().Add(time.Hour*24))
-			internal.Broadcastf(nil, "vote.broadcast", u.DisplayName)
-			core.UserRepository.Save(u)
-		}
-	}
 }
 
 // startBroadcats starts the broadcasts.
