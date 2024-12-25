@@ -1,6 +1,8 @@
 package minecraft
 
 import (
+	"github.com/bedrock-gophers/intercept/intercept"
+	"github.com/df-mc/dragonfly/server/player/chat"
 	"github.com/moyai-network/teams/internal/config"
 	"github.com/moyai-network/teams/internal/core"
 	ent "github.com/moyai-network/teams/internal/core/entity"
@@ -16,8 +18,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bedrock-gophers/intercept/intercept"
-
 	"github.com/bedrock-gophers/knockback/knockback"
 
 	"github.com/bedrock-gophers/tag/tag"
@@ -26,8 +26,6 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/bedrock-gophers/tebex/tebex"
 	"github.com/df-mc/dragonfly/server"
-	"github.com/df-mc/dragonfly/server/player"
-
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/restartfu/gophig"
@@ -53,14 +51,14 @@ func Run() error {
 	}
 	registerLanguages()
 
-	// chat.Global.Subscribe(chat.StdoutSubscriber{})
+	chat.Global.Subscribe(chat.StdoutSubscriber{})
 	conf, err := readConfig()
 	if err != nil {
 		return err
 	}
-	config := configure(conf, slog.Default())
+	cfg := configure(conf, slog.Default())
 
-	srv := internal.NewServer(config)
+	srv := internal.NewServer(cfg)
 	console.Enable(srv, slog.Default())
 	handleServerClose()
 
@@ -68,8 +66,8 @@ func Run() error {
 	store := loadStore(conf.Moyai.Tebex, slog.Default())
 	srv.Listen()
 
-	internal.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
-	internal.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
+	internal.ConfigureDimensions(cfg.Entities, conf.Nether.Folder, conf.End.Folder)
+	internal.ConfigureDeathban(cfg.Entities, conf.DeathBan.Folder)
 	configureWorlds()
 
 	placeCrates()
@@ -77,12 +75,34 @@ func Run() error {
 
 	go startBroadcats()
 	go startPlayerBroadcasts()
-
-	go startLeaderboard()
-
 	go startChatGame()
+
 	for p := range srv.Accept() {
-		acceptFunc(store)(p)
+		intercept.Intercept(p)
+		go store.ExecuteCommands(p)
+
+		h, err := user2.NewHandler(p, p.XUID())
+		if err != nil {
+			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.internal.club</red>"))
+			continue
+		}
+		p.Handle(h)
+		p.Armour().Handle(user2.NewArmourHandler(p))
+		p.RemoveScoreboard()
+		for _, ef := range p.Effects() {
+			p.RemoveEffect(ef.Type())
+		}
+		p.ShowCoordinates()
+		p.SetFood(20)
+
+		in := p.Inventory()
+		for slot, i := range in.Slots() {
+			for _, sp := range append(it.SpecialItems(), it.PartnerItems()...) {
+				if _, ok := i.Value(sp.Key()); ok {
+					_ = in.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
+				}
+			}
+		}
 	}
 
 	return nil
@@ -103,7 +123,6 @@ func startBroadcats() {
 		"internal.broadcast.emojis",
 		"internal.broadcast.settings",
 		"internal.broadcast.feedback",
-		//"internal.broadcast.report",
 		"internal.broadcast.rules",
 		"internal.broadcast.vote",
 	}
@@ -253,36 +272,4 @@ func readConfig() (config.Config, error) {
 		err = g.SetConf(c)
 	}
 	return c, err
-}
-
-// acceptFunc returns a function that is called when a player joins the server.
-func acceptFunc(store *tebex.Client) func(*player.Player) {
-	return func(p *player.Player) {
-		intercept.Intercept(p)
-		//p.Handle(temporaryHandler{})
-		go store.ExecuteCommands(p)
-
-		h, err := user2.NewHandler(p, p.XUID())
-		if err != nil {
-			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.internal.club</red>"))
-			return
-		}
-		p.Handle(h)
-		p.Armour().Handle(user2.NewArmourHandler(p))
-		p.RemoveScoreboard()
-		for _, ef := range p.Effects() {
-			p.RemoveEffect(ef.Type())
-		}
-		p.ShowCoordinates()
-		p.SetFood(20)
-
-		in := p.Inventory()
-		for slot, i := range in.Slots() {
-			for _, sp := range append(it.SpecialItems(), it.PartnerItems()...) {
-				if _, ok := i.Value(sp.Key()); ok {
-					_ = in.SetItem(slot, it.NewSpecialItem(sp, i.Count()))
-				}
-			}
-		}
-	}
 }

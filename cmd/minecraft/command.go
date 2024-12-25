@@ -10,7 +10,6 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
-		//cmd.New("knockback", text.Colourf("Manage server KB"), []string{"kb"}, knockback.Menu{Allower: operatorAllower{}}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command2.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command2.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command2.Revive{}),
@@ -77,7 +76,6 @@ func registerCommands() {
 		cmd.New("reclaim", text.Colourf("Manage a reclaim."), nil, command2.Reclaim{}, command2.ReclaimReset{}),
 		cmd.New("kit", text.Colourf("Choose a kit."), nil, command2.Kit{}, command2.KitReset{}),
 		cmd.New("ban", text.Colourf("Unleash the ban hammer."), nil, command2.Ban{}, command2.BanOffline{}, command2.BanList{}, command2.BanLiftOffline{} /*command.BanInfoOffline{},*/, command2.BanForm{}),
-		//cmd.New("blacklist", text.Colourf("Blacklist little evaders."), nil, command.Blacklist{}, command.BlacklistOffline{}, command.BlacklistList{}, command.BlacklistLiftOffline{}, command.BlacklistInfoOffline{}, command.BlacklistForm{}),
 		cmd.New("kick", text.Colourf("Kick a user."), nil, command2.Kick{}),
 		cmd.New("mute", text.Colourf("Mute a user."), nil, command2.MuteList{}, command2.MuteInfo{}, command2.MuteInfoOffline{}, command2.MuteLift{}, command2.MuteLiftOffline{}, command2.MuteForm{}, command2.Mute{}, command2.MuteOffline{}),
 		cmd.New("whisper", text.Colourf("Send a private message to a player."), []string{"w", "tell", "msg"}, command2.Whisper{}),

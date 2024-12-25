@@ -12,7 +12,7 @@ type worldHandler struct {
 	w *world.World
 }
 
-func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos, liquid world.Liquid, replaced world.Block) {
+func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos, _ world.Liquid, _ world.Block) {
 	teams := core.TeamRepository.FindAll()
 	var initialTeam model.Team
 	var nextTeam model.Team
