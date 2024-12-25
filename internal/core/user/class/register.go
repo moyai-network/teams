@@ -3,14 +3,15 @@ package class
 import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/moyai-network/teams/internal/ports"
 	"reflect"
 )
 
 var (
-	classes []Class
+	classes []ports.Class
 )
 
-func ResolveFromArmour(a [4]item.ArmourTier) Class {
+func ResolveFromArmour(a [4]item.ArmourTier) ports.Class {
 	for _, c := range classes {
 		if compareTypes(a[0], c.Armour()[0]) && compareTypes(a[1], c.Armour()[1]) && compareTypes(a[2], c.Armour()[2]) && compareTypes(a[3], c.Armour()[3]) {
 			return c
@@ -23,7 +24,7 @@ func compareTypes(a, b interface{}) bool {
 	return reflect.TypeOf(a) == reflect.TypeOf(b)
 }
 
-func Resolve(p *player.Player) Class {
+func Resolve(p *player.Player) ports.Class {
 	a := p.Armour()
 	helmet, ok := a.Helmet().Item().(item.Helmet)
 	if !ok {
@@ -45,14 +46,14 @@ func Resolve(p *player.Player) Class {
 	return ResolveFromArmour([4]item.ArmourTier{helmet.Tier, chestplate.Tier, leggings.Tier, boots.Tier})
 }
 
-func Compare(a Class, b Class) bool {
+func Compare(a ports.Class, b ports.Class) bool {
 	if a == b {
 		return true
 	}
 	return false
 }
 
-func CompareAny(a Class, b ...Class) bool {
+func CompareAny(a ports.Class, b ...ports.Class) bool {
 	for _, c := range b {
 		if Compare(a, c) {
 			return true
@@ -61,7 +62,7 @@ func CompareAny(a Class, b ...Class) bool {
 	return false
 }
 
-func Register(c Class) {
+func Register(c ports.Class) {
 	classes = append(classes, c)
 }
 

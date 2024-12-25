@@ -5,8 +5,8 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
-	"github.com/moyai-network/teams/internal/core/user/class"
 	"github.com/moyai-network/teams/internal/model"
+	"github.com/moyai-network/teams/internal/ports"
 	"slices"
 	"strconv"
 	"strings"
@@ -67,7 +67,7 @@ type Handler struct {
 	wallBlocksMu sync.Mutex
 
 	lastArmour       atomic.Value[[4]item.Stack]
-	lastClass        atomic.Value[class.Class]
+	lastClass        atomic.Value[ports.Class]
 	lastScoreBoard   atomic.Value[*scoreboard.Scoreboard]
 	lastArea         atomic.Value[model.Area]
 	lastAttackerName atomic.Value[string]

@@ -2,6 +2,8 @@ package ports
 
 import (
 	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/entity/effect"
+	"github.com/df-mc/dragonfly/server/item"
 	"github.com/go-gl/mathgl/mgl64"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"iter"
@@ -31,4 +33,9 @@ type Crate interface {
 	Facing() cube.Face
 	// Rewards returns the rewards associated with the crate.
 	Rewards() []model2.Reward
+}
+
+type Class interface {
+	Armour() [4]item.ArmourTier
+	Effects() []effect.Effect
 }
