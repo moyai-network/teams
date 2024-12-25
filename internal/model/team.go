@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"math"
 	"strings"
@@ -31,7 +30,7 @@ type Team struct {
 	// Balance is the amount of money the team has.
 	Balance float64
 	// Claim is the claim area of the team.
-	Claim area.Area
+	Claim Area
 	// Focus is the focus information for a team
 	Focus Focus
 	// Renamed is whether the team has been renamed.
@@ -111,7 +110,7 @@ func (t Team) Demote(name string) Team {
 }
 
 // WithClaim returns the team with the given claim area.
-func (t Team) WithClaim(claim area.Area) Team {
+func (t Team) WithClaim(claim Area) Team {
 	t.Claim = claim
 	return t
 }

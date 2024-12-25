@@ -3,7 +3,6 @@ package user
 import (
 	"errors"
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user/class"
@@ -70,7 +69,7 @@ type Handler struct {
 	lastArmour       atomic.Value[[4]item.Stack]
 	lastClass        atomic.Value[class.Class]
 	lastScoreBoard   atomic.Value[*scoreboard.Scoreboard]
-	lastArea         atomic.Value[area.NamedArea]
+	lastArea         atomic.Value[model.Area]
 	lastAttackerName atomic.Value[string]
 	lastAttackTime   atomic.Value[time.Time]
 	lastPearlPos     mgl64.Vec3

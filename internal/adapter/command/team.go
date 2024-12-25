@@ -301,24 +301,24 @@ func (t TeamMap) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	p, _ := src.(*player.Player)
 	h, _ := p.Handler().(*user2.Handler)
 
-	areas := make([]area.NamedArea, 0)
+	areas := make([]model.Area, 0)
 	teams := core.TeamRepository.FindAll()
 	for tm := range teams {
-		areas = append(areas, area.NewNamedArea(tm.Claim.Max(), tm.Claim.Min(), tm.Name))
+		areas = append(areas, model.NewArea(tm.Claim.Max, tm.Claim.Min).WithName(tm.Name))
 	}
 
 	// check all areas, if the player is within 50 blocks of one, send pillars
 	for _, a := range areas {
 		pos0 := cube.Pos{
-			int(a.Max()[0]),
+			int(a.Max[0]),
 			int(p.Position().Y()),
-			int(a.Max()[1]),
+			int(a.Max[1]),
 		}
 
 		pos1 := cube.Pos{
-			int(a.Min()[0]),
+			int(a.Min[0]),
 			int(p.Position().Y()),
-			int(a.Min()[1]),
+			int(a.Min[1]),
 		}
 		pos2 := cube.Pos{pos0.X(), pos0.Y(), pos1.Z()}
 		pos3 := cube.Pos{pos1.X(), pos0.Y(), pos0.Z()}
@@ -343,7 +343,7 @@ func (t TeamMap) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 			if a.Vec2WithinOrEqualFloor(mgl64.Vec2{float64(playerPos.X()), float64(playerPos.Z())}) {
 				least = 0
 			}
-			internal.Messagef(p, "command.team.map.display", a.Name(), int(least))
+			internal.Messagef(p, "command.team.map.display", a.Name, int(least))
 		}
 	}
 }
@@ -352,24 +352,24 @@ func (t TeamClearMap) Run(src cmd.Source, _ *cmd.Output, _ *world.Tx) {
 	p, _ := src.(*player.Player)
 	h, _ := p.Handler().(*user2.Handler)
 
-	areas := make([]area.NamedArea, 0)
+	areas := make([]model.Area, 0)
 	teams := core.TeamRepository.FindAll()
 	for tm := range teams {
-		areas = append(areas, area.NewNamedArea(tm.Claim.Max(), tm.Claim.Min(), tm.Name))
+		areas = append(areas, model.NewArea(tm.Claim.Max, tm.Claim.Min).WithName(tm.Name))
 	}
 
 	// check all areas, if the player is within 50 blocks of one, send pillars
 	for _, a := range areas {
 		pos0 := cube.Pos{
-			int(a.Max()[0]),
+			int(a.Max[0]),
 			int(p.Position().Y()),
-			int(a.Max()[1]),
+			int(a.Max[1]),
 		}
 
 		pos1 := cube.Pos{
-			int(a.Min()[0]),
+			int(a.Min[0]),
 			int(p.Position().Y()),
-			int(a.Min()[1]),
+			int(a.Min[1]),
 		}
 		pos2 := cube.Pos{pos0.X(), pos0.Y(), pos1.Z()}
 		pos3 := cube.Pos{pos1.X(), pos0.Y(), pos0.Z()}
@@ -965,7 +965,7 @@ func (t TeamClaim) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	if tm.Claim != (area.Area{}) {
+	if tm.Claim != (model.Area{}) {
 		internal.Messagef(p, "team.has-claim")
 		return
 	}
@@ -995,7 +995,7 @@ func (t TeamUnClaim) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	tm = tm.WithClaim(area.Area{}).WithHome(mgl64.Vec3{})
+	tm = tm.WithClaim(model.Area{}).WithHome(mgl64.Vec3{})
 	core.TeamRepository.Save(tm)
 	internal.Messagef(p, "command.unclaim.success")
 }
@@ -1014,7 +1014,7 @@ func (t TeamSetHome) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	cl := tm.Claim
-	if cl == (area.Area{}) {
+	if cl == (model.Area{}) {
 		internal.Messagef(p, "team.claim.none")
 		return
 	}
@@ -1542,7 +1542,7 @@ func safePosition(p *player.Player, pos cube.Pos, radius int) cube.Pos {
 		for z := minZ; z < maxZ; z++ {
 			at := pos.Add(cube.Pos{x, 0, z})
 			for tm := range teams {
-				if tm.Claim != (area.Area{}) {
+				if tm.Claim != (model.Area{}) {
 					if tm.Claim.Vec3WithinOrEqualXZ(at.Vec3Centre()) {
 						if t, ok := core.TeamRepository.FindByMemberName(p.Name()); ok && t.Name == tm.Name {
 							y := w.Range().Max()

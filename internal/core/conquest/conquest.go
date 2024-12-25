@@ -2,7 +2,6 @@ package conquest
 
 import (
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
@@ -25,28 +24,28 @@ var (
 	Red = &Conquest{
 		name:        text.Colourf("<red>Red Zone</red>"),
 		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{-94, 563}, mgl64.Vec2{-88, 569}),
+		area:        model.NewArea(mgl64.Vec2{-94, 563}, mgl64.Vec2{-88, 569}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Blue = &Conquest{
 		name:        text.Colourf("<blue>Blue Zone</blue>"),
 		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{-89, 436}, mgl64.Vec2{-95, 430}),
+		area:        model.NewArea(mgl64.Vec2{-89, 436}, mgl64.Vec2{-95, 430}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Green = &Conquest{
 		name:        text.Colourf("<green>Green Zone</green>"),
 		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{-222, 431}, mgl64.Vec2{-228, 437}),
+		area:        model.NewArea(mgl64.Vec2{-222, 431}, mgl64.Vec2{-228, 437}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
 	Yellow = &Conquest{
 		name:        text.Colourf("<yellow>Yellow Zone</yellow>"),
 		cancel:      make(chan struct{}),
-		area:        area.NewArea(mgl64.Vec2{-221, 564}, mgl64.Vec2{-227, 570}),
+		area:        model.NewArea(mgl64.Vec2{-221, 564}, mgl64.Vec2{-227, 570}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Second * 30,
 	}
@@ -94,7 +93,7 @@ type Conquest struct {
 	capturing   *player.Player
 	time        time.Time
 	cancel      chan struct{}
-	area        area.Area
+	area        model.Area
 	coordinates mgl64.Vec2
 	duration    time.Duration
 }
@@ -201,7 +200,7 @@ func (c *Conquest) Time() time.Time {
 }
 
 // Area returns the area of the KOTH.
-func (c *Conquest) Area() area.Area {
+func (c *Conquest) Area() model.Area {
 	return c.area
 }
 

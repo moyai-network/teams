@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/model"
 )
 
@@ -22,7 +21,7 @@ func (w *worldHandler) HandleLiquidFlow(ctx *world.Context, from, into cube.Pos,
 		if len(initialTeam.Name) != 0 && len(nextTeam.Name) != 0 {
 			break
 		}
-		if t.Claim == (area.Area{}) {
+		if t.Claim == (model.Area{}) {
 			continue
 		}
 		if t.Claim.Vec3WithinOrEqualXZ(from.Vec3()) {

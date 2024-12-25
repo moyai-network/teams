@@ -29,7 +29,7 @@ func (h *Handler) HandleMove(ctx *player.Context, newPos mgl64.Vec3, newRot cube
 	w := p.Tx().World()
 
 	u, ok := core.UserRepository.FindByName(p.Name())
-	if ar := area.Spawn(w); ar.Area != (area.Area{}) && ar.Vec3WithinOrEqualFloorXZ(newPos) && w != internal.Deathban() &&
+	if ar := area.Spawn(w); ar != (model.Area{}) && ar.Vec3WithinOrEqualFloorXZ(newPos) && w != internal.Deathban() &&
 		h.tagCombat.Active() ||
 		!ok || u.Frozen {
 		ctx.Cancel()
@@ -115,9 +115,9 @@ func (h *Handler) updateWalls(ctx *player.Context, newPos mgl64.Vec3, u model.Us
 
 	if h.tagCombat.Active() {
 		a := area.Spawn(w)
-		mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+		mul := model.NewArea(mgl64.Vec2{a.Min.X() - 10, a.Min.Y() - 10}, mgl64.Vec2{a.Max.X() + 10, a.Max.Y() + 10})
 		if mul.Vec3WithinOrEqualFloorXZ(p.Position()) {
-			h.sendWall(p, cubePos, a.Area, item.ColourRed())
+			h.sendWall(p, cubePos, a, item.ColourRed())
 		}
 	}
 
@@ -125,12 +125,12 @@ func (h *Handler) updateWalls(ctx *player.Context, newPos mgl64.Vec3, u model.Us
 		teams := core.TeamRepository.FindAll()
 		for a := range teams {
 			a := a.Claim
-			if a != (area.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
+			if a != (model.Area{}) && a.Vec3WithinOrEqualXZ(newPos) {
 				ctx.Cancel()
 				return
 			}
 
-			mul := area.NewArea(mgl64.Vec2{a.Min().X() - 10, a.Min().Y() - 10}, mgl64.Vec2{a.Max().X() + 10, a.Max().Y() + 10})
+			mul := model.NewArea(mgl64.Vec2{a.Min.X() - 10, a.Min.Y() - 10}, mgl64.Vec2{a.Max.X() + 10, a.Max.Y() + 10})
 			if mul.Vec2WithinOrEqualFloor(mgl64.Vec2{p.Position().X(), p.Position().Z()}) && !area.Spawn(w).Vec3WithinOrEqualFloorXZ(newPos) {
 				h.sendWall(p, cubePos, a, item.ColourBlue())
 			}
@@ -208,7 +208,7 @@ func (h *Handler) updateKOTHState(p *player.Player, newPos mgl64.Vec3, u model.U
 
 func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model.User) {
 	w := p.Tx().World()
-	var areas []area.NamedArea
+	var areas []model.Area
 
 	teams := core.TeamRepository.FindAll()
 	t, teamFound := core.TeamRepository.FindByMemberName(p.Name())
@@ -220,21 +220,21 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 		if teamFound && t.Name == tm.Name {
 			name = text.Colourf("<green>%s</green>", tm.DisplayName)
 		}
-		areas = append(areas, area.NewNamedArea(mgl64.Vec2{a.Min().X(), a.Min().Y()}, mgl64.Vec2{a.Max().X(), a.Max().Y()}, name))
+		areas = append(areas, model.NewArea(mgl64.Vec2{a.Min.X(), a.Min.Y()}, mgl64.Vec2{a.Max.X(), a.Max.Y()}).WithName(name))
 	}
 
 	ar := h.lastArea.Load()
 	if p.Tx().World() == internal.Deathban() {
-		if area.Deathban.Spawn().Area.Vec3WithinOrEqualFloorXZ(newPos) {
-			h.lastArea.Store(area.Deathban.Spawn())
-			if ar != area.Deathban.Spawn() {
-				internal.Messagef(p, "area.enter", area.Deathban.Spawn().Name())
+		if area.Deathban.Spawn.Vec3WithinOrEqualFloorXZ(newPos) {
+			h.lastArea.Store(area.Deathban.Spawn)
+			if ar != area.Deathban.Spawn {
+				internal.Messagef(p, "area.enter", area.Deathban.Spawn.Name)
 			}
 			return
 		} else {
-			h.lastArea.Store(area.Deathban.WarZone())
-			if ar != area.Deathban.WarZone() {
-				internal.Messagef(p, "area.enter", area.Deathban.WarZone().Name())
+			h.lastArea.Store(area.Deathban.WarZone)
+			if ar != area.Deathban.WarZone {
+				internal.Messagef(p, "area.enter", area.Deathban.WarZone.Name)
 			}
 			return
 		}
@@ -249,7 +249,7 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 					}
 				}
 
-				if ar != (area.NamedArea{}) {
+				if ar != (model.Area{}) {
 					// internal.Messagef(h.p, "area.leave", ar.Name())
 				}
 
@@ -273,10 +273,10 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 				// 	})
 				// }
 				// internal.Messagef(h.p, "area.enter", a.Name())
-				if ar.Name() == "" {
-					p.SendTip(lang.Translatef(*u.Language, "area.tip.enter", a.Name(), enterDB))
+				if ar.Name == "" {
+					p.SendTip(lang.Translatef(*u.Language, "area.tip.enter", a.Name, enterDB))
 				} else {
-					p.SendTip(lang.Translatef(*u.Language, "area.tip", ar.Name(), leaveDB, a.Name(), enterDB))
+					p.SendTip(lang.Translatef(*u.Language, "area.tip", ar.Name, leaveDB, a.Name, enterDB))
 				}
 				return
 			} else {
@@ -286,7 +286,7 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 	}
 
 	if ar != area.Wilderness(w) {
-		if ar != (area.NamedArea{}) {
+		if ar != (model.Area{}) {
 			// if ar.Name() == koth.Citadel.Name() {
 			// 	unsafe.WritePacket(h.p, &packet.PlayerFog{
 			// 		Stack: []string{"minecraft:fog_ocean"},
@@ -305,10 +305,10 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 
 		h.lastArea.Store(area.Wilderness(w))
 		// internal.Messagef(h.p, "area.enter", area.Wilderness(w).Name())
-		if ar.Name() == "" {
-			p.SendTip(lang.Translatef(*u.Language, "area.tip.enter", area.Wilderness(w).Name(), "<red>DB</red>"))
+		if ar.Name == "" {
+			p.SendTip(lang.Translatef(*u.Language, "area.tip.enter", area.Wilderness(w).Name, "<red>DB</red>"))
 		} else {
-			p.SendTip(lang.Translatef(*u.Language, "area.tip", ar.Name(), leaveDB, area.Wilderness(w).Name(), "<red>DB</red>"))
+			p.SendTip(lang.Translatef(*u.Language, "area.tip", ar.Name, leaveDB, area.Wilderness(w).Name, "<red>DB</red>"))
 		}
 	}
 }

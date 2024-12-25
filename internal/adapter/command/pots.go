@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
+	"github.com/moyai-network/teams/internal/model"
 	"strings"
 	"time"
 	_ "unsafe"
@@ -43,7 +43,7 @@ func (Pots) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		internal.Messagef(p, "user.team-less")
 		return
 	}
-	if tm.Claim == (area.Area{}) {
+	if tm.Claim == (model.Area{}) {
 		internal.Messagef(p, "team.claim.none")
 		return
 	}

@@ -45,7 +45,7 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 	if sotwRunning ||
 		(!ok || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active())) ||
 		(area.Spawn(w).Vec3WithinOrEqualFloorXZ(p.Position()) && w != internal.Deathban()) ||
-		(u.Teams.DeathBan.Active() && area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(p.Position())) ||
+		(u.Teams.DeathBan.Active() && area.Deathban.Spawn.Vec3WithinOrEqualFloorXZ(p.Position())) ||
 		u.Frozen {
 		ctx.Cancel()
 		return
@@ -185,7 +185,7 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 				tm = tm.WithPoints(tm.Points + 1)
 				if conquest2.Running() {
 					for _, k := range area.KOTHs(p.Tx().World()) {
-						if k.Name() == "Conquest" && k.Vec3WithinOrEqualXZ(p.Position()) {
+						if k.Name == "Conquest" && k.Vec3WithinOrEqualXZ(p.Position()) {
 							conquest2.IncreaseTeamPoints(tm, 15)
 							if otherTm, ok := core.TeamRepository.FindByMemberName(killer.Name()); ok {
 								conquest2.IncreaseTeamPoints(otherTm, -15)

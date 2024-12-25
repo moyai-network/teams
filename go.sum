@@ -1,3 +1,5 @@
+git.restartfu.com/restart/gophig.git v1.0.0 h1:7Hq/EyY3iLI9Lx75EkYRNAwNDYX/WkbKKoN59khtu8k=
+git.restartfu.com/restart/gophig.git v1.0.0/go.mod h1:ZWOlBqeAz4XzHtViQsV+shRJ0h+YJkFNmXem5U2dZJQ=
 github.com/RestartFU/npc v0.0.0-20241223223002-c5a56d3c88ea h1:Ztf54xMsLrk+Gz9AcFE5dhYblqRxALu70jeFSTqBplw=
 github.com/RestartFU/npc v0.0.0-20241223223002-c5a56d3c88ea/go.mod h1:XftJR4l9m5i60kHlfNQXBH8LTRjQkW0njspIY1O4s5I=
 github.com/bedrock-gophers/console v0.1.0 h1:JZMX7So3nnUA/ALVZ1S8r8jLeaeXkC+rgaP7EeIJlpA=

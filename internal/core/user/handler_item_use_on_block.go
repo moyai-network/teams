@@ -106,7 +106,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 			break
 		}
 
-		if tm.Claim != (area.Area{}) {
+		if tm.Claim != (model2.Area{}) {
 			internal.Messagef(p, "team.has-claim")
 			break
 		}
@@ -115,7 +115,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 			var threshold float64 = 1
 			message := "team.area.too-close"
 			for _, k := range area.KOTHs(w) {
-				if a.Area == k.Area {
+				if a == k {
 					threshold = 100
 					message = "team.area.too-close.koth"
 				}
@@ -125,7 +125,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 				internal.Messagef(p, "team.area.already-claimed")
 				return
 			}
-			if areaTooClose(a.Area, vec3ToVec2(pos.Vec3()), threshold) {
+			if a.OverlapsPosThreshold(pos, threshold) {
 				internal.Messagef(p, message)
 				return
 			}
@@ -133,14 +133,14 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 
 		for t := range teams {
 			c := t.Claim
-			if c != (area.Area{}) {
+			if c != (model2.Area{}) {
 				continue
 			}
 			if c.Vec3WithinOrEqualXZ(pos.Vec3()) {
 				internal.Messagef(p, "team.area.already-claimed")
 				return
 			}
-			if areaTooClose(c, vec3ToVec2(pos.Vec3()), 1) {
+			if c.OverlapsPosThreshold(pos, 1) {
 				internal.Messagef(p, "team.area.too-close")
 				return
 			}
@@ -149,9 +149,9 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 		pn := 1
 		if p.Sneaking() {
 			pn = 2
-			ar := area.NewArea(mgl64.Vec2{h.claimSelectionPos[0].X(), h.claimSelectionPos[0].Z()}, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
-			x := ar.Max().X() - ar.Min().X()
-			y := ar.Max().Y() - ar.Min().Y()
+			ar := model2.NewArea(mgl64.Vec2{h.claimSelectionPos[0].X(), h.claimSelectionPos[0].Z()}, mgl64.Vec2{float64(pos.X()), float64(pos.Z())})
+			x := ar.Max.X() - ar.Min.X()
+			y := ar.Max.Y() - ar.Min.Y()
 			a := x * y
 			if a > 75*75 {
 				internal.Messagef(p, "team.claim.too-big")
@@ -492,22 +492,6 @@ func (h *Handler) handlePearlUseOnBlock(ctx *player.Context, pearl item.EnderPea
 		handleUseContext(p, useCtx)
 		ctx.Cancel()
 	}
-}
-
-func areaTooClose(area area.Area, pos mgl64.Vec2, threshold float64) bool {
-	var vectors []mgl64.Vec2
-	for x := -threshold; x <= threshold; x++ {
-		for y := -threshold; y <= threshold; y++ {
-			vectors = append(vectors, mgl64.Vec2{pos.X() + x, pos.Y() + y})
-		}
-	}
-
-	for _, v := range vectors {
-		if area.Vec2WithinOrEqual(v) {
-			return true
-		}
-	}
-	return false
 }
 
 // noinspection ALL

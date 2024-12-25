@@ -68,7 +68,7 @@ func (h *Handler) HandleItemUse(ctx *player.Context) {
 	if v, ok := item2.SpecialItem(held); ok {
 		h.handleSpecialItemUse(ctx, v, held, left)
 	} else if v, ok = item2.PartnerItem(held); ok {
-		if h.lastArea.Load().Name() == koth.Citadel.Name() {
+		if h.lastArea.Load().Name == koth.Citadel.Name() {
 			internal.Messagef(p, "item.use.citadel.disabled")
 			ctx.Cancel()
 			return
@@ -310,7 +310,7 @@ func (h *Handler) handlePearlUse(ctx *player.Context) {
 		return
 	}
 
-	if h.lastArea.Load().Name() == koth.Citadel.Name() {
+	if h.lastArea.Load().Name == koth.Citadel.Name() {
 		internal.Messagef(p, "item.use.citadel.disabled")
 		ctx.Cancel()
 		return

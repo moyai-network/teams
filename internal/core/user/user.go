@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/conquest"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
@@ -453,9 +452,9 @@ func (h *Handler) revertMovement(p *player.Player) {
 }
 
 // sendWall sends a wall to the user.
-func (h *Handler) sendWall(p *player.Player, newPos cube.Pos, z area.Area, color item.Colour) {
-	areaMin := cube.Pos{int(z.Min().X()), 0, int(z.Min().Y())}
-	areaMax := cube.Pos{int(z.Max().X()), 255, int(z.Max().Y())}
+func (h *Handler) sendWall(p *player.Player, newPos cube.Pos, z model3.Area, color item.Colour) {
+	areaMin := cube.Pos{int(z.Min.X()), 0, int(z.Min.Y())}
+	areaMax := cube.Pos{int(z.Max.X()), 255, int(z.Max.Y())}
 	wallBlock := block.StainedGlass{Colour: color}
 	const wallLength, wallHeight = 15, 10
 

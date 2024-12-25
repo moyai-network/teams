@@ -21,6 +21,11 @@ func NewArea(b1, b2 mgl64.Vec2) Area {
 	}
 }
 
+func (a Area) WithName(name string) Area {
+	a.Name = name
+	return a
+}
+
 // Vec2Within returns true if the given mgl64.Vec2 is within the area.
 func (a Area) Vec2Within(vec mgl64.Vec2) bool {
 	return vec.X() > a.Min.X() && vec.X() < a.Max.X() && vec.Y() > a.Min.Y() && vec.Y() < a.Max.Y()
@@ -82,4 +87,55 @@ func (a Area) Vec2WithinXZThreshold(vec mgl64.Vec2, threshold float64) bool {
 	maxZ := a.Max.Y() + threshold
 
 	return vec.X() > minX && vec.X() < maxX && vec.Y() > minZ && vec.Y() < maxZ
+}
+
+func (a Area) OverlapsThreshold(other Area, threshold float64) bool {
+	if other == (Area{}) || a == (Area{}) {
+		return false
+	}
+
+	for _, b := range a.Blocks() {
+		if other.Vec3WithinOrEqualXZ(b.Vec3()) {
+			return true
+		}
+	}
+
+	if other.Vec2WithinOrEqual(a.Min) || other.Vec2WithinOrEqual(a.Max) ||
+		other.Vec2WithinXZThreshold(a.Min, threshold) || other.Vec2WithinXZThreshold(a.Max, threshold) {
+		return true
+	}
+
+	return false
+}
+
+func (a Area) OverlapsPosThreshold(pos cube.Pos, threshold float64) bool {
+	var vectors []mgl64.Vec2
+	for x := -threshold; x <= threshold; x++ {
+		for y := -threshold; y <= threshold; y++ {
+			vectors = append(vectors, mgl64.Vec2{float64(pos.X()) + x, float64(pos.Y()) + y})
+		}
+	}
+
+	for _, v := range vectors {
+		if a.Vec2WithinOrEqual(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func (a Area) OverlapsVec2Threshold(pos mgl64.Vec2, threshold float64) bool {
+	var vectors []mgl64.Vec2
+	for x := -threshold; x <= threshold; x++ {
+		for y := -threshold; y <= threshold; y++ {
+			vectors = append(vectors, mgl64.Vec2{pos.X() + x, pos.Y() + y})
+		}
+	}
+
+	for _, v := range vectors {
+		if a.Vec2WithinOrEqual(v) {
+			return true
+		}
+	}
+	return false
 }

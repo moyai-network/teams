@@ -61,7 +61,7 @@ func (h *Handler) HandlePunchAir(ctx *player.Context) {
 		internal.Messagef(p, "team.not-leader")
 		return
 	}
-	if t.Claim != (area.Area{}) {
+	if t.Claim != (model.Area{}) {
 		internal.Messagef(p, "team.has-claim")
 		return
 	}
@@ -78,7 +78,7 @@ func handleClaimSelection(p *player.Player, h *Handler, tm model.Team) {
 	}
 
 	// Create a new area claim.
-	claim := area.NewArea(mgl64.Vec2{pos[0].X(), pos[0].Z()}, mgl64.Vec2{pos[1].X(), pos[1].Z()})
+	claim := model.NewArea(mgl64.Vec2{pos[0].X(), pos[0].Z()}, mgl64.Vec2{pos[1].X(), pos[1].Z()})
 	if checkExistingClaims(p, h, claim) {
 		return
 	}
@@ -114,12 +114,12 @@ func handleClaimSelection(p *player.Player, h *Handler, tm model.Team) {
 }
 
 // checkExistingClaims checks if the new claim overlaps with existing claims.
-func checkExistingClaims(p *player.Player, h *Handler, claim area.Area) bool {
+func checkExistingClaims(p *player.Player, h *Handler, claim model.Area) bool {
 	blocksPos := generateBlocksPos(claim)
 	w := p.Tx().World()
 	for _, a := range area.Protected(w) {
 		var threshold float64 = 1
-		if checkAreaOverlap(p, h, a.Area, blocksPos, threshold) {
+		if checkAreaOverlap(p, h, a, blocksPos, threshold) {
 			return true
 		}
 	}
@@ -127,7 +127,7 @@ func checkExistingClaims(p *player.Player, h *Handler, claim area.Area) bool {
 	teams := core.TeamRepository.FindAll()
 	for tm := range teams {
 		c := tm.Claim
-		if c == (area.Area{}) {
+		if c == (model.Area{}) {
 			continue
 		}
 
@@ -140,7 +140,7 @@ func checkExistingClaims(p *player.Player, h *Handler, claim area.Area) bool {
 }
 
 // checkAreaOverlap checks if the new claim overlaps with an existing claim.
-func checkAreaOverlap(p *player.Player, h *Handler, existingClaim area.Area, blocksPos []cube.Pos, threshold float64) bool {
+func checkAreaOverlap(p *player.Player, h *Handler, existingClaim model.Area, blocksPos []cube.Pos, threshold float64) bool {
 	pos := h.claimSelectionPos
 	p0 := mgl64.Vec2{pos[0].X(), pos[0].Z()}
 	p1 := mgl64.Vec2{pos[1].X(), pos[1].Z()}
@@ -155,7 +155,7 @@ func checkAreaOverlap(p *player.Player, h *Handler, existingClaim area.Area, blo
 
 	// Check if corners of new claim are within existing claim.
 	if existingClaim.Vec2WithinOrEqual(p0) || existingClaim.Vec2WithinOrEqual(p1) ||
-		areaTooClose(existingClaim, p0, threshold) || areaTooClose(existingClaim, p1, threshold) {
+		existingClaim.OverlapsVec2Threshold(p0, threshold) || existingClaim.OverlapsVec2Threshold(p1, threshold) {
 		internal.Messagef(p, "team.area.already-claimed")
 		return true
 	}
@@ -164,10 +164,10 @@ func checkAreaOverlap(p *player.Player, h *Handler, existingClaim area.Area, blo
 }
 
 // generateBlocksPos generates the positions of blocks within the claim area.
-func generateBlocksPos(claim area.Area) []cube.Pos {
+func generateBlocksPos(claim model.Area) []cube.Pos {
 	var blocksPos []cube.Pos
-	mn := claim.Min()
-	mx := claim.Max()
+	mn := claim.Min
+	mx := claim.Max
 	for x := mn[0]; x <= mx[0]; x++ {
 		for y := mn[1]; y <= mx[1]; y++ {
 			blocksPos = append(blocksPos, cube.PosFromVec3(mgl64.Vec3{x, 0, y}))
@@ -178,14 +178,14 @@ func generateBlocksPos(claim area.Area) []cube.Pos {
 }
 
 // calculateArea calculates the area of the claim.
-func calculateArea(claim area.Area) float64 {
-	x := claim.Max().X() - claim.Min().X()
-	y := claim.Max().Y() - claim.Min().Y()
+func calculateArea(claim model.Area) float64 {
+	x := claim.Max.X() - claim.Min.X()
+	y := claim.Max.Y() - claim.Min.Y()
 	return x * y
 }
 
 // calculateCost calculates the cost of claiming the area.
-func calculateCost(claim area.Area) int {
+func calculateCost(claim model.Area) int {
 	ar := calculateArea(claim)
 	return int(ar * 5)
 }

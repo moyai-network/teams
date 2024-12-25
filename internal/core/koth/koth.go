@@ -2,7 +2,6 @@ package koth
 
 import (
 	"github.com/moyai-network/teams/internal/core"
-	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
@@ -42,7 +41,7 @@ var (
 	Garden = &KOTH{
 		name:        text.Colourf("<dark-green>Garden</dark-green>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{-497, -503}, mgl64.Vec2{-503, -497}),
+		area:        model.NewArea(mgl64.Vec2{-497, -503}, mgl64.Vec2{-503, -497}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, -500},
 		duration:    time.Minute * 5,
@@ -50,7 +49,7 @@ var (
 	Oasis = &KOTH{
 		name:        text.Colourf("<red>Oasis</red>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{503, 497}, mgl64.Vec2{497, 503}),
+		area:        model.NewArea(mgl64.Vec2{503, 497}, mgl64.Vec2{497, 503}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, 500},
 		duration:    time.Minute * 5,
@@ -58,7 +57,7 @@ var (
 	Shrine = &KOTH{
 		name:        text.Colourf("<gold>Mesa</gold>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{503, -503}, mgl64.Vec2{497, -497}),
+		area:        model.NewArea(mgl64.Vec2{503, -503}, mgl64.Vec2{497, -497}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -500},
 		duration:    time.Minute * 5,
@@ -66,7 +65,7 @@ var (
 	Kingdom = &KOTH{
 		name:        text.Colourf("<aqua>Kingdom</aqua>"),
 		dimension:   world.Overworld,
-		area:        area.NewArea(mgl64.Vec2{-503, 497}, mgl64.Vec2{-497, 503}),
+		area:        model.NewArea(mgl64.Vec2{-503, 497}, mgl64.Vec2{-497, 503}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-500, 500},
 		duration:    time.Minute * 5,
@@ -74,7 +73,7 @@ var (
 	Nether = &KOTH{
 		name:        text.Colourf("<red>Nether</red>"),
 		dimension:   world.Nether,
-		area:        area.NewArea(mgl64.Vec2{492, -104}, mgl64.Vec2{498, -110}),
+		area:        model.NewArea(mgl64.Vec2{492, -104}, mgl64.Vec2{498, -110}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{500, -100},
 		duration:    time.Minute * 5,
@@ -82,7 +81,7 @@ var (
 	Citadel = &KOTH{
 		name:        text.Colourf("<dark-red>Citadel</dark-red>"),
 		dimension:   world.Nether,
-		area:        area.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, -496}),
+		area:        model.NewArea(mgl64.Vec2{180, -504}, mgl64.Vec2{188, -496}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{200, -500},
 		duration:    time.Minute * 10,
@@ -90,7 +89,7 @@ var (
 	End = &KOTH{
 		name:        text.Colourf("<purple>End</purple>"),
 		dimension:   world.End,
-		area:        area.NewArea(mgl64.Vec2{-11, 87}, mgl64.Vec2{-17, 93}),
+		area:        model.NewArea(mgl64.Vec2{-11, 87}, mgl64.Vec2{-17, 93}),
 		cancel:      make(chan struct{}),
 		coordinates: mgl64.Vec2{-14, 90},
 		duration:    time.Minute * 5,
@@ -130,7 +129,7 @@ type KOTH struct {
 	running     bool
 	time        time.Time
 	cancel      chan struct{}
-	area        area.Area
+	area        model.Area
 	coordinates mgl64.Vec2
 	duration    time.Duration
 }
@@ -232,7 +231,7 @@ func (k *KOTH) Time() time.Time {
 }
 
 // Area returns the area of the KOTH.
-func (k *KOTH) Area() area.Area {
+func (k *KOTH) Area() model.Area {
 	return k.area
 }
 
