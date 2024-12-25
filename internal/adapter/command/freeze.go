@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/user"
 )
 
@@ -35,8 +35,8 @@ func (f Freeze) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		internal.Messagef(src, "command.target.unknown")
 		return
 	}
-	u, err := data.LoadUserFromName(t.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(t.Name())
+	if !ok {
 		return
 	}
 	if u.Frozen {
@@ -51,5 +51,5 @@ func (f Freeze) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		t.SetImmobile()
 	}
 	u.Frozen = !u.Frozen
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/pkg/lang"
 	"strings"
 
@@ -18,8 +18,8 @@ type Online struct{}
 func (Online) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	var users []string
 	for u := range internal.Players(tx) {
-		d, err := data.LoadUserFromName(u.Name())
-		if err != nil {
+		d, ok := core.UserRepository.FindByName(u.Name())
+		if !ok {
 			o.Print(lang.Translatef(locale(s), "target.data.load.error", u.Name()))
 			return
 		}

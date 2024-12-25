@@ -7,7 +7,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -19,8 +19,8 @@ type PlayerListTeleport struct {
 }
 
 func SendPlayerListTeleportMenu(p *player.Player) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -65,8 +65,8 @@ func (pl *PlayerListTeleport) sendPlayerListTeleportMenu(tx *world.Tx, u model.U
 }
 
 func (pl *PlayerListTeleport) Submit(p *player.Player, stack item.Stack) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

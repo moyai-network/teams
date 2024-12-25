@@ -2,15 +2,12 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
-	"strings"
-
 	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/internal/core"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/pkg/lang"
-	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
 // AliasOnline is a command used to check the alt accounts of an online player.
@@ -43,13 +40,13 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(target.Name())
-	if err != nil {
+	_, ok = core.UserRepository.FindByName(target.Name())
+	if !ok {
 		internal.Messagef(p, "command.target.unknown")
 		return
 	}
 
-	usersIPs, _ := data.LoadUsersFromAddress(u.Address)
+	/*usersIPs, _ := data.LoadUsersFromAddress(u.Address)
 	ipNames := names(usersIPs, true)
 
 	usersDID, _ := data.LoadUsersFromDeviceID(u.DeviceID)
@@ -59,23 +56,22 @@ func (a AliasOnline) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	ssidNames := names(usersSSID, true)
 
 	g := text.Colourf("<grey> - </grey>")
-	internal.Messagef(p, "command.alias.accounts",
-		target.Name(), strings.Join(ipNames, g),
-		target.Name(), strings.Join(deviceNames, g),
-		target.Name(), strings.Join(ssidNames, g),
-	)
+	internal.Messagef(p, "command.alias.accounts") /*target.Name(), strings.Join(ipNames, g),
+	target.Name(), strings.Join(deviceNames, g),
+	target.Name(), strings.Join(ssidNames, g),*/
+
 }
 
 // Run ...
 func (a AliasOffline) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	l := locale(s)
-	u, err := data.LoadUserFromName(a.Target)
-	if err != nil {
+	_, ok := core.UserRepository.FindByName(a.Target)
+	if !ok {
 		o.Error(lang.Translate(l, "command.target.unknown"))
 		return
 	}
 
-	usersIPs, _ := data.LoadUsersFromAddress(u.Address)
+	/*usersIPs, _ := data.LoadUsersFromAddress(u.Address)
 	ipNames := names(usersIPs, true)
 
 	usersDID, _ := data.LoadUsersFromDeviceID(u.DeviceID)
@@ -89,5 +85,5 @@ func (a AliasOffline) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		u.DisplayName, strings.Join(ipNames, g),
 		u.DisplayName, strings.Join(deviceNames, g),
 		u.DisplayName, strings.Join(ssidNames, g)),
-	)
+	)*/
 }

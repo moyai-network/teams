@@ -4,4 +4,5 @@ import "github.com/moyai-network/teams/internal/ports"
 
 var (
 	TeamRepository ports.TeamRepository
+	UserRepository ports.UserRepository
 )

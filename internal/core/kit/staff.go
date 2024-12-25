@@ -3,7 +3,7 @@ package kit
 import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 )
 
@@ -24,8 +24,8 @@ func (Staff) Texture() string {
 func (Staff) Items(p *player.Player) [36]item.Stack {
 	items := [36]item.Stack{}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return items
 	}
 

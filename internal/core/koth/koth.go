@@ -4,7 +4,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"math/rand"
@@ -189,8 +188,8 @@ func (k *KOTH) StartCapturing(p *player.Player) bool {
 			k.capturing = nil
 			k.running = false
 
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				k.StopCapturing(p)
 				return
 			}

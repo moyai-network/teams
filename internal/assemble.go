@@ -16,6 +16,12 @@ func Assemble() {
 	}
 
 	db := client.Database("odju")
-
 	core.TeamRepository, err = repository.NewTeamRepository(db.Collection("teams"))
+	if err != nil {
+		panic(err)
+	}
+	core.UserRepository, err = repository.NewUserRepository(db.Collection("users"))
+	if err != nil {
+		panic(err)
+	}
 }

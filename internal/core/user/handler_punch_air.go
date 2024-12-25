@@ -9,7 +9,6 @@ import (
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
@@ -18,8 +17,8 @@ import (
 // HandlePunchAir ...
 func (h *Handler) HandlePunchAir(ctx *player.Context) {
 	p := ctx.Val()
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

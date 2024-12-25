@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"strings"
 
 	"github.com/bedrock-gophers/inv/inv"
@@ -17,8 +17,8 @@ func NewPotionSplashColors(p *player.Player) inv.Menu {
 	m := inv.NewMenu(PotionSplashColor{}, "Potion Color", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -53,8 +53,8 @@ func (PotionSplashColor) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -83,7 +83,7 @@ func (PotionSplashColor) Submit(p *player.Player, it item.Stack) {
 		u.Teams.Settings.Advanced.PotionSplashColor = "black"
 	}
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	p.PlaySound(sound.Experience{})
 	inv.UpdateMenu(p, NewPotionSplashColors(p))
 }

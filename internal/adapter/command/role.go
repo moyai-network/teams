@@ -4,11 +4,10 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/moyai-network/teams/pkg/timeutil"
-	"strings"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -100,16 +99,16 @@ func (r RoleRemove) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 
 // Run ...
 func (a RoleAddOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
-	t, err := data.LoadUserOrCreate(a.Target, "")
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(a.Target)
+	if !ok {
 		internal.Messagef(src, "command.target.unknown")
 		return
 	}
 
 	r, _ := role.ByName(string(a.Role))
 	if p, ok := src.(*player.Player); ok {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
@@ -139,7 +138,7 @@ func (a RoleAddOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		d = durafmt.ParseShort(duration).String()
 		t.Roles.Expire(r, time.Now().Add(duration))
 	}
-	data.SaveUser(t)
+	core.UserRepository.Save(t)
 
 	internal.Alertf(tx, src, "staff.alert.role.add", r.Name(), t.DisplayName, d)
 	internal.Messagef(src, "command.role.add", r.Name(), t.DisplayName, d)
@@ -147,16 +146,16 @@ func (a RoleAddOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 // Run ...
 func (d RoleRemoveOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
-	t, err := data.LoadUserFromName(d.Target)
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(d.Target)
+	if !ok {
 		internal.Messagef(src, "command.target.unknown")
 		return
 	}
 
 	r, _ := role.ByName(string(d.Role))
 	if p, ok := src.(*player.Player); ok {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			// The user somehow left in the middle of this, so just stop in our tracks.
 			return
 		}
@@ -175,7 +174,7 @@ func (d RoleRemoveOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 	t.Roles.Remove(r)
-	data.SaveUser(t)
+	core.UserRepository.Save(t)
 
 	internal.Alertf(tx, src, "staff.alert.role.remove", r.Name(), t.DisplayName)
 	internal.Messagef(src, "command.role.remove", r.Name(), t.DisplayName)
@@ -183,7 +182,7 @@ func (d RoleRemoveOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 // Run ...
 func (r RoleList) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
-	rl, ok := role.ByName(string(r.Role))
+	/*rl, ok := role.ByName(string(r.Role))
 	if !ok {
 		return
 	}
@@ -201,7 +200,7 @@ func (r RoleList) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	for _, u := range users {
 		usernames = append(usernames, u.DisplayName)
 	}
-	internal.Messagef(src, "command.role.list", r.Role, len(users), strings.Join(usernames, ", "))
+	internal.Messagef(src, "command.role.list", r.Role, len(users), strings.Join(usernames, ", "))*/
 }
 
 type (
@@ -217,8 +216,8 @@ func (roles) Type() string {
 func (roles) Options(src cmd.Source) (roles []string) {
 	p, disallow := src.(*player.Player)
 	if disallow {
-		u, err := data.LoadUserFromName(p.Name())
-		if err == nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if ok {
 			disallow = !u.Roles.Contains(rls.Operator())
 		}
 	}

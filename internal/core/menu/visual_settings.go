@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -15,8 +15,8 @@ func NewVisualSettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(VisualSettings{}, "Visual Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -41,24 +41,24 @@ func (b VisualSettings) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	switch d.Colour {
 	case item.ColourBlue():
 		u.Teams.Settings.Visual.Lightning = !u.Teams.Settings.Visual.Lightning
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewVisualSettings(p))
 	case item.ColourBlack():
 		u.Teams.Settings.Visual.Splashes = !u.Teams.Settings.Visual.Splashes
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewVisualSettings(p))
 	case item.ColourGreen():
 		u.Teams.Settings.Visual.PearlAnimation = !u.Teams.Settings.Visual.PearlAnimation
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewVisualSettings(p))
 	}

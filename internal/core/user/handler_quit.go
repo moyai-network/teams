@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/player"
@@ -13,8 +13,8 @@ func (h *Handler) HandleQuit(p *player.Player) {
 	}
 	h.close <- struct{}{}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	u.PlayTime += time.Since(h.logTime)
@@ -25,8 +25,7 @@ func (h *Handler) HandleQuit(p *player.Player) {
 		restorePlayerData(p)
 	}
 
-	data.SaveUser(u)
-	data.FlushUser(u)
+	core.UserRepository.Save(u)
 
 	//w := p.Tx().World()
 	//_, sotwRunning := sotw.Running()
@@ -58,11 +57,11 @@ func (h *Handler) HandleQuit(p *player.Player) {
 		go func() {
 			select {
 			case <-time.After(time.Second * 30):
-				u, err = data.LoadUserFromName(p.Name())
+				u, err = core.UserRepository.FindByName(p.Name())
 				if err != nil {
 					return
 				}
-				data.SaveUser(u)
+				core.UserRepository.Save(u)
 				data.FlushUser(u)
 				break
 			case <-h.close:
@@ -86,7 +85,7 @@ func (h *Handler) HandleQuit(p *player.Player) {
 			}
 			u.Frozen = false
 		}
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 
 		setLogger(p, h)
 		return

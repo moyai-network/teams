@@ -9,7 +9,7 @@ func (h *Handler) HandleItemDrop(ctx *player.Context, s item.Stack) {
 	/*p := ctx.Val()
 	w := p.Tx().World()
 
-	u, err := data.LoadUserFromName(p.Name())
+	u, err := core.UserRepository.FindByName(p.Name())
 	if err != nil || u.StaffMode {
 		ctx.Cancel()
 		return

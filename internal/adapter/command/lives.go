@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 )
 
 type Lives struct{}
@@ -16,8 +16,8 @@ func (Lives) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -41,12 +41,12 @@ func (l LivesGiveOnline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
-	target, err := data.LoadUserFromName(tg.Name())
-	if err != nil {
+	target, ok := core.UserRepository.FindByName(tg.Name())
+	if !ok {
 		internal.Messagef(p, "command.target.unknown", tg.Name())
 		return
 	}
@@ -62,8 +62,8 @@ func (l LivesGiveOnline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	u.Teams.Lives -= l.Count
 	target.Teams.Lives += l.Count
-	data.SaveUser(u)
-	data.SaveUser(target)
+	core.UserRepository.Save(u)
+	core.UserRepository.Save(target)
 
 	internal.Messagef(p, "command.lives.give.sender", l.Count, tg.Name())
 	internal.Messagef(tg, "command.lives.give.receiver", p.Name(), l.Count)
@@ -81,12 +81,12 @@ func (l LivesGiveOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
-	target, err := data.LoadUserFromName(l.Target)
-	if err != nil {
+	target, ok := core.UserRepository.FindByName(l.Target)
+	if !ok {
 		internal.Messagef(p, "command.target.unknown", l.Target)
 		return
 	}
@@ -102,8 +102,8 @@ func (l LivesGiveOffline) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	u.Teams.Lives -= l.Count
 	target.Teams.Lives += l.Count
-	data.SaveUser(u)
-	data.SaveUser(target)
+	core.UserRepository.Save(u)
+	core.UserRepository.Save(target)
 
 	internal.Messagef(p, "command.lives.give.sender", l.Count, l.Target)
 }

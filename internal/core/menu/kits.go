@@ -1,8 +1,8 @@
 package menu
 
 import (
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/colour"
-	"github.com/moyai-network/teams/internal/core/data"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
 	"github.com/moyai-network/teams/internal/core/roles"
@@ -33,8 +33,8 @@ func (fishingRod) EncodeItem() (name string, meta int16) {
 type Kits struct{}
 
 func NewKitsMenu(p *player.Player) (inv.Menu, bool) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return inv.Menu{}, false
 	}
 
@@ -85,8 +85,8 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -102,7 +102,7 @@ func (Kits) Submit(p *player.Player, it item.Stack) {
 	} else {
 		u.Teams.Kits.Set(name, time.Hour*4)
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	if menu, ok := NewKitsMenu(p); ok {
 		inv.SendMenu(p, menu)

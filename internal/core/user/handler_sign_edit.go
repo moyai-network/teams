@@ -6,7 +6,6 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"strconv"
@@ -20,8 +19,8 @@ func (h *Handler) HandleSignEdit(ctx *player.Context, pos cube.Pos, frontSide bo
 		return
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
@@ -22,7 +22,7 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	l, single := locale(s), true
 	if len(k.Targets) > 1 {
 		if p, ok := s.(*player.Player); ok {
-			if u, err := data2.LoadUserFromName(p.Name()); err == nil && !u.Roles.Contains(rls.Operator()) {
+			if u, ok := core.UserRepository.FindByName(p.Name()); ok && !u.Roles.Contains(rls.Operator()) {
 				o.Error(lang.Translatef(l, "command.targets.exceed"))
 				return
 			}
@@ -33,8 +33,8 @@ func (k Kick) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	var kicked int
 	for _, p := range k.Targets {
 		if p, ok := p.(*player.Player); ok {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil || u.Roles.Contains(rls.Operator()) {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok || u.Roles.Contains(rls.Operator()) {
 				o.Print(lang.Translatef(l, "command.kick.fail"))
 				continue
 			}

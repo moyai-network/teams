@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -72,8 +72,8 @@ func (tp TeleportTargetsToTarget) Run(s cmd.Source, o *cmd.Output, tx *world.Tx)
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		// Somehow left midway through the process, so just return.
 		return
 	}
@@ -103,8 +103,8 @@ func (t TeleportTargetsToPos) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		// Somehow left midway through the process, so just return.
 		return
 	}

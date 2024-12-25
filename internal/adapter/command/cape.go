@@ -5,8 +5,8 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/cape"
-	"github.com/moyai-network/teams/internal/core/data"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/samber/lo"
 )
@@ -21,8 +21,8 @@ func (a Cape) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(pl.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(pl.Name())
+	if !ok {
 		return
 	}
 	c, ok := cape.ByName(string(a.Cape))
@@ -33,7 +33,7 @@ func (a Cape) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	sk.Cape = c.Cape()
 	pl.SetSkin(sk)
 	u.Teams.Settings.Advanced.Cape = c.Name()
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	internal.Messagef(pl, "cape.selected", c.Name())
 }
 
@@ -52,8 +52,8 @@ func (capes) Options(s cmd.Source) (capes []string) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

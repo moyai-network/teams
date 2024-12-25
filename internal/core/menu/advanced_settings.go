@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"strings"
 	"unicode"
 
@@ -18,8 +18,8 @@ func NewAdvancedSettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(AdvancedSettings{}, "Advanced Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -71,8 +71,8 @@ func (b AdvancedSettings) Submit(p *player.Player, it item.Stack) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -96,5 +96,5 @@ func (b AdvancedSettings) Submit(p *player.Player, it item.Stack) {
 		inv.UpdateMenu(p, NewAdvancedSettings(p))
 	}
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	menu2 "github.com/moyai-network/teams/internal/core/menu"
@@ -156,10 +155,10 @@ func canAttack(pl, target *player.Player) bool {
 		return false
 	}
 
-	u, err := data2.LoadUserFromName(pl.Name())
-	t, err2 := data2.LoadUserFromName(target.Name())
+	u, userFound := core.UserRepository.FindByName(pl.Name())
+	t, targetFound := core.UserRepository.FindByName(target.Name())
 
-	if err != nil || err2 != nil {
+	if !userFound || !targetFound {
 		return true
 	}
 

@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/user"
 )
 
@@ -28,12 +28,12 @@ func (n Nick) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	u.DisplayName = n.Name
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	user.UpdateState(p)
 	internal.Messagef(p, "nick.changed", n.Name)
 }
@@ -45,11 +45,11 @@ func (n NickReset) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	u.DisplayName = p.Name()
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	internal.Messagef(p, "nick.reset")
 }

@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"strings"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -17,8 +17,8 @@ func (Balance) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -36,8 +36,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -51,8 +51,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	target, err := data.LoadUserFromName(t.Name())
-	if err != nil {
+	target, ok := core.UserRepository.FindByName(t.Name())
+	if !ok {
 		return
 	}
 
@@ -68,8 +68,8 @@ func (b BalancePayOnline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance -= b.Amount
 	target.Teams.Balance += b.Amount
 
-	data.SaveUser(u)
-	data.SaveUser(target)
+	core.UserRepository.Save(u)
+	core.UserRepository.Save(target)
 
 	internal.Messagef(t, "command.add.receiver", u.Roles.Highest().Coloured(p.Name()), 0)
 	internal.Messagef(p, "command.add.sender", target.Roles.Highest().Coloured(t.Name()), 0)
@@ -86,8 +86,8 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -106,8 +106,8 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	t, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		out.Error("Unexpected error occurred. Please contact an administrator.")
 		return
 	}
@@ -115,8 +115,8 @@ func (b BalancePayOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance -= b.Amount
 	t.Teams.Balance += b.Amount
 
-	data.SaveUser(u)
-	data.SaveUser(t)
+	core.UserRepository.Save(u)
+	core.UserRepository.Save(t)
 
 	internal.Messagef(p, "command.add.sender", t.Roles.Highest().Coloured(t.DisplayName), b.Amount)
 }
@@ -133,8 +133,8 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -148,14 +148,14 @@ func (b BalanceAdd) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	target, err := data.LoadUserFromName(t.Name())
-	if err != nil {
+	target, ok := core.UserRepository.FindByName(t.Name())
+	if !ok {
 		return
 	}
 
 	target.Teams.Balance += b.Amount
 
-	data.SaveUser(target)
+	core.UserRepository.Save(target)
 
 	internal.Messagef(t, "command.add.receiver", u.Roles.Highest().Coloured(p.Name()), b.Amount)
 	internal.Messagef(p, "command.add.sender", target.Roles.Highest().Coloured(t.Name()), b.Amount)
@@ -179,15 +179,15 @@ func (b BalanceAddOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	t, err := data.LoadUserFromName(b.Target)
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(b.Target)
+	if !ok {
 		out.Error("Unexpected error occurred. Please contact an administrator.")
 		return
 	}
 
 	t.Teams.Balance += b.Amount
 
-	data.SaveUser(t)
+	core.UserRepository.Save(t)
 
 	internal.Messagef(p, "command.add.sender", t.Roles.Highest().Coloured(t.DisplayName), b.Amount)
 }

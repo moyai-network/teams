@@ -6,9 +6,9 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/cape"
 	"github.com/moyai-network/teams/internal/core/colour"
-	"github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -19,8 +19,8 @@ func NewCape(p *player.Player) inv.Menu {
 	m := inv.NewMenu(Cape{}, "Cape", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -56,8 +56,8 @@ func (Cape) Submit(p *player.Player, it item.Stack) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil || b.Colour == item.ColourBlue() {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok || b.Colour == item.ColourBlue() {
 		return
 	}
 
@@ -71,7 +71,7 @@ func (Cape) Submit(p *player.Player, it item.Stack) {
 	sk.Cape = c.Cape()
 	p.SetSkin(sk)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	p.PlaySound(sound.Experience{})
 
 	inv.UpdateMenu(p, NewCape(p))

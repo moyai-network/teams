@@ -7,7 +7,6 @@ import (
 	"github.com/moyai-network/teams/internal/core/area"
 	blck "github.com/moyai-network/teams/internal/core/block"
 	"github.com/moyai-network/teams/internal/core/colour"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	item2 "github.com/moyai-network/teams/internal/core/item"
@@ -216,8 +215,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 			return
 		case "kit":
 			key := colour.StripMinecraftColour(lines[1])
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				return
 			}
 
@@ -229,8 +228,8 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 			return
 		}
 		if body == "have lives?" {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				return
 			}
 			if u.Teams.Lives <= 0 {
@@ -246,7 +245,7 @@ func (h *Handler) HandleItemUseOnBlock(ctx *player.Context, pos cube.Pos, face c
 				if !u.Teams.PVP.Paused() {
 					u.Teams.PVP.TogglePause()
 				}
-				data2.SaveUser(u)
+				core.UserRepository.Save(u)
 				internal.Overworld().Exec(func(tx *world.Tx) {
 					tx.AddEntity(p.H())
 				})
@@ -334,8 +333,8 @@ func handleShopSignInteraction(p *player.Player, choice string, lines []string) 
 		return
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -356,7 +355,7 @@ func handleBuy(p *player.Player, u model2.User, stack item.Stack, price float64,
 		return
 	}
 	u.Teams.Balance = u.Teams.Balance - price
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 	item2.AddOrDrop(p, stack)
 	internal.Messagef(p, "shop.buy.success", stack.Count(), itemName)
 }
@@ -381,7 +380,7 @@ func handleSell(p *player.Player, u model2.User, itm world.Item, q int, price fl
 	}
 	if count >= q {
 		u.Teams.Balance = u.Teams.Balance + float64(count/q)*price
-		data2.SaveUser(u)
+		core.UserRepository.Save(u)
 		internal.Messagef(p, "shop.sell.success", count, itemName)
 	} else {
 		internal.Messagef(p, "shop.sell.fail")

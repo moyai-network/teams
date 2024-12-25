@@ -2,6 +2,7 @@ package minecraft
 
 import (
 	"fmt"
+	"github.com/moyai-network/teams/internal/core"
 	data2 "github.com/moyai-network/teams/internal/core/data"
 	ent "github.com/moyai-network/teams/internal/core/entity"
 	it "github.com/moyai-network/teams/internal/core/item"
@@ -111,7 +112,7 @@ func tickVotes() {
 			u.Roles.Add(roles.Voter())
 			u.Roles.Expire(roles.Voter(), time.Now().Add(time.Hour*24))
 			internal.Broadcastf(nil, "vote.broadcast", u.DisplayName)
-			data2.SaveUser(u)
+			core.UserRepository.Save(u)
 		}
 	}
 }
@@ -135,8 +136,8 @@ func startBroadcats() {
 	for range t.C {
 		message := broadcasts[cursor]
 		for p := range internal.Players(nil) {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				continue
 			}
 			p.Message(lang.Translatef(*u.Language, "internal.broadcast.notice", lang.Translate(*u.Language, message)))
@@ -154,8 +155,8 @@ func startPlayerBroadcasts() {
 		players := internal.Players(nil)
 		var plus []string
 		for p := range players {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				continue
 			}
 			if roles.Premium(u.Roles.Highest()) {
@@ -164,8 +165,8 @@ func startPlayerBroadcasts() {
 		}
 
 		for p := range players {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				continue
 			}
 			p.Message(lang.Translatef(*u.Language, "internal.broadcast.plus", len(plus), strings.Join(plus, ", ")))
@@ -221,8 +222,8 @@ func startChatGame() {
 		scrambled := scramble(word)
 		internal.SetChatGameWord(word)
 		for p := range internal.Players(nil) {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				continue
 			}
 			p.Message(lang.Translatef(*u.Language, "internal.broadcast.chatgame", scrambled))

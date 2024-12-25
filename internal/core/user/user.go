@@ -5,7 +5,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/conquest"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/core/user/class"
@@ -66,8 +65,8 @@ func UpdateState(p *player.Player) {
 
 func hideVanished(p *player.Player) {
 	for t := range internal.Players(p.Tx()) {
-		u, err := data2.LoadUserFromName(t.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(t.Name())
+		if !ok {
 			continue
 		}
 		if u.Vanished {
@@ -78,8 +77,8 @@ func hideVanished(p *player.Player) {
 
 func showVanished(p *player.Player) {
 	for t := range internal.Players(p.Tx()) {
-		u, err := data2.LoadUserFromName(t.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(t.Name())
+		if !ok {
 			continue
 		}
 		if u.Vanished {
@@ -97,8 +96,8 @@ func UpdateVanishState(p *player.Player, u model3.User) {
 	}
 
 	for t := range internal.Players(p.Tx()) {
-		target, err := data2.LoadUserFromName(p.Name())
-		if err != nil {
+		target, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			continue
 		}
 		if !target.Vanished && u.Vanished {
@@ -165,8 +164,8 @@ func (h *Handler) spawnDeathNPC(p *player.Player, src world.DamageSource) {
 
 // kill handles the death of the user.
 func (h *Handler) kill(p *player.Player, src world.DamageSource) {
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -272,8 +271,8 @@ func (h *Handler) cancelStormBreak(p *player.Player) {
 
 // incrementDeath increments the death count of the user.
 func (h *Handler) incrementDeath(p *player.Player) {
-	victim, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	victim, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	victim.Teams.Stats.Deaths += 1
@@ -284,7 +283,7 @@ func (h *Handler) incrementDeath(p *player.Player) {
 
 	held, off := p.HeldItems()
 	*victim.Teams.DeathInventory = inventoryData(held, off, p.Armour(), p.Inventory())
-	data2.SaveUser(victim)
+	core.UserRepository.Save(victim)
 }
 
 func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inventory) model3.Inventory {
@@ -301,15 +300,15 @@ func inventoryData(held, off item.Stack, a *inventory.Armour, i *inventory.Inven
 
 // issueDeathban issues a deathban for the user.
 func (h *Handler) issueDeathban(p *player.Player) {
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil || u.Teams.DeathBan.Active() {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok || u.Teams.DeathBan.Active() {
 		return
 	}
 
 	u.Teams.DeathBan.Set(time.Minute * 20)
 	u.Teams.DeathBanned = true
 
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 }
 
 // handleTeamMemberDeath handles the death of a team member.
@@ -323,7 +322,7 @@ func (h *Handler) handleTeamMemberDeath(p *player.Player) {
 
 		for _, member := range tm.Members {
 			if m, ok := Lookup(p.Tx(), member.Name); ok {
-				u, _ := data2.LoadUserFromName(m.Name())
+				u, _ := core.UserRepository.FindByName(m.Name())
 				m.Message(lang.Translatef(*u.Language, "team.member.death", p.Name(), tm.DTR))
 			}
 		}
@@ -585,8 +584,8 @@ func logger(p *player.Player) (*Handler, bool) {
 
 // PlayTime returns the play time of the user.
 func PlayTime(p *player.Player) time.Duration {
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return 0
 	}
 	h, ok := p.Handler().(*Handler)
@@ -677,7 +676,7 @@ func nearbyHurtable(p *player.Player, dist float64) []*player.Player {
 	var pl []*player.Player
 
 	for _, target := range nearbyPlayers(p, dist) {
-		t, _ := data2.LoadUserFromName(target.Name())
+		t, _ := core.UserRepository.FindByName(target.Name())
 		if !t.Teams.PVP.Active() {
 			pl = append(pl, target)
 		}

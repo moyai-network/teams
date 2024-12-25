@@ -6,8 +6,8 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/colour"
-	"github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -58,7 +58,7 @@ func (Blocks) Submit(p *player.Player, i item.Stack) {
 }
 
 func buyBlock(p *player.Player, i item.Stack, cost float64) {
-	u, _ := data.LoadUserFromName(p.Name())
+	u, _ := core.UserRepository.FindByName(p.Name())
 	if u.Teams.Balance < cost {
 		p.Message(lang.Translatef(*u.Language, "shop.balance.insufficient"))
 		p.PlaySound(sound.Note{
@@ -70,7 +70,7 @@ func buyBlock(p *player.Player, i item.Stack, cost float64) {
 
 	p.PlaySound(sound.Experience{})
 	u.Teams.Balance -= cost
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	it.AddOrDrop(p, item.NewStack(i.Item(), i.Count()))
 	updateInventory(p)

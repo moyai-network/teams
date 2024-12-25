@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
@@ -24,7 +24,7 @@ func Alertf(tx *world.Tx, s cmd.Source, key string, args ...any) {
 		return
 	}
 	for t := range Players(tx) {
-		if u, _ := data2.LoadUserFromName(t.Name()); roles.Staff(u.Roles.Highest()) {
+		if u, _ := core.UserRepository.FindByName(t.Name()); roles.Staff(u.Roles.Highest()) {
 			t.Message(lang.Translatef(*u.Language, "staff.alert", p.Name(), fmt.Sprintf(lang.Translate(*u.Language, key), args...)))
 		}
 	}
@@ -37,8 +37,8 @@ func Messagef(src cmd.Source, key string, a ...interface{}) {
 
 	p, ok := src.(*player.Player)
 	if ok {
-		u, err := data2.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			out.Error("An error occurred while loading your user data.")
 			return
 		}

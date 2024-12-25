@@ -1,8 +1,9 @@
 package user
 
 import (
+	"errors"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
-	"github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user/class"
@@ -157,9 +158,9 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 	UpdateState(p)
 
 	s := unsafe.Session(p)
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
-		return nil, err
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
+		return nil, errors.New("user not found")
 	}
 
 	u.StaffMode = false
@@ -196,7 +197,7 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 	p.Message(lang.Translatef(*u.Language, "discord.message"))
 	h.handleBoosterRole(p, u)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	if u.Frozen {
 		p.SetImmobile()
 	}

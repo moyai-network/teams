@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/model"
 	"strings"
@@ -99,8 +99,8 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -121,8 +121,8 @@ func (m MuteInfo) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 // Run ...
 func (m MuteInfoOffline) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	l := locale(s)
-	u, err := data.LoadUserFromName(m.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(m.Target)
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -147,8 +147,8 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -157,7 +157,7 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 	u.Teams.Mute = model.Punishment{}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.unmute", p.Name())
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unmute")
@@ -167,8 +167,8 @@ func (m MuteLift) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 // Run ...
 func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	l := locale(src)
-	u, err := data.LoadUserFromName(m.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(m.Target)
+	if !ok {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -177,7 +177,7 @@ func (m MuteLiftOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 	u.Teams.Mute = model.Punishment{}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.unmute", u.DisplayName)
 	//webhook.SendPunishment(src.Name(), u.DisplayName(), "", "Unmute")
@@ -206,8 +206,8 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		out.Error(lang.Translatef(l, "command.mute.self"))
 		return
 	}
-	u, err := data.LoadUserFromName(t.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(t.Name())
+	if !ok {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -227,7 +227,7 @@ func (m Mute) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Expiration: time.Now().Add(length),
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.mute", t.Name(), reason)
 	//webhook.SendPunishment(src.Name(), t.Name(), reason, "Mute")
@@ -239,8 +239,8 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	l := locale(src)
 	sn := src.(cmd.NamedTarget)
 
-	u, err := data.LoadUserFromName(m.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(m.Target)
+	if !ok {
 		out.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -266,7 +266,7 @@ func (m MuteOffline) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Expiration: time.Now().Add(length),
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.mute", u.DisplayName, reason)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), reason, "Mute")

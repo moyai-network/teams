@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -15,8 +15,10 @@ func NewPrivacySettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(PrivacySettings{}, "Privacy Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, _ := data.LoadUserFromName(p.Name())
-
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
+		return m
+	}
 	stacks[12] = item.NewStack(item.Dye{Colour: item.ColourBlue()}, 1).
 		WithCustomName(text.Colourf("<dark-aqua>Private Messages</dark-aqua>")).
 		WithLore(text.Colourf("<grey><aqua>Enabled: </aqua>%s</grey>", formatBool(u.Teams.Settings.Privacy.PrivateMessages))).
@@ -38,24 +40,24 @@ func (b PrivacySettings) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	switch d.Colour {
 	case item.ColourBlue():
 		u.Teams.Settings.Privacy.PrivateMessages = !u.Teams.Settings.Privacy.PrivateMessages
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewPrivacySettings(p))
 	case item.ColourBlack():
 		u.Teams.Settings.Privacy.PublicStatistics = !u.Teams.Settings.Privacy.PublicStatistics
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewPrivacySettings(p))
 		// case item.ColourGreen():
 		// 	u.Teams.Settings.Privacy.DuelRequests = !u.Teams.Settings.Privacy.DuelRequests
-		// 	data.SaveUser(u)
+		// 	core.UserRepository.Save(u)
 		// 	p.PlaySound(sound.Experience{})
 		// 	inv.UpdateMenu(p, NewPrivacySettings(p))
 	}

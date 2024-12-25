@@ -7,15 +7,14 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/item"
 )
 
 func (h *Handler) HandleBlockPlace(ctx *player.Context, pos cube.Pos, b world.Block) {
 	p := ctx.Val()
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil || u.StaffMode || u.Frozen {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok || u.StaffMode || u.Frozen {
 		ctx.Cancel()
 		return
 	}

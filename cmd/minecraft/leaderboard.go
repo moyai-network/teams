@@ -3,7 +3,6 @@ package minecraft
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"math"
 	"slices"
@@ -47,8 +46,8 @@ func startLeaderboard() {
 	topKillsLeaderboard := entity.NewText(formattedTeamLeaderBoard("KILLS", func(t model2.Team) int {
 		kills := 0
 		for _, m := range t.Members {
-			u, err := data2.LoadUserFromName(m.Name)
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(m.Name)
+			if !ok {
 				continue
 			}
 			kills += u.Teams.Stats.Kills
@@ -96,7 +95,7 @@ func startLeaderboard() {
 		topKillsLeaderboard.SetNameTag(formattedTeamLeaderBoard("KILLS", func(t model.Team) int {
 			kills := 0
 			for _, m := range t.Members {
-				u, err := data.LoadUserFromName(m.Name)
+				u, err := core.UserRepository.FindByName(m.Name)
 				if err != nil {
 					continue
 				}
@@ -148,10 +147,7 @@ func formattedTeamLeaderBoard[T int | float64](name string, value func(u model2.
 func formattedUserLeaderBoard[T int | float64](name string, value func(u model2.User) T) string {
 	sb := &strings.Builder{}
 	sb.WriteString(text.Colourf("<bold><red>TOP %v</red></bold>\n", strings.ToUpper(name)))
-	users, err := data2.LoadAllUsers()
-	if err != nil {
-		return sb.String()
-	}
+	users := slices.Collect(core.UserRepository.FindAll())
 
 	sorter := abcsort.New("abcdefghijklmnopqrstuvwxyz123456789 ")
 	sorter.Slice(users, func(i int) string {

@@ -98,7 +98,7 @@ func (b BlacklistLiftOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 	u.Ban = moose.Punishment{}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	user.Alert(src, "staff.alert.unblacklist", u.DisplayName)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unblacklist")
@@ -148,7 +148,7 @@ func (b Blacklist) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Permanent:  true,
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	t.Disconnect(strings.Join([]string{
 		lang.Translate(l, "user.blacklist.header"),
@@ -192,7 +192,7 @@ func (b BlacklistOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Permanent:  true,
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	user.Alert(src, "staff.alert.blacklist", u.DisplayName)
 	user.Broadcast("command.blacklist.broadcast", s.Name(), u.DisplayName)

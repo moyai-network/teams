@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/core/user"
@@ -39,8 +39,8 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -122,7 +122,7 @@ func (Reclaim) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		nm := []rune(r.Name())
 		internal.Broadcastf(tx, "user.reclaim", highest.Coloured(p.Name()), r.Coloured(string(append([]rune{unicode.ToUpper(nm[0])}, nm[1:]...))), strings.Join(itemNames, ", "), lives)
 	}
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 }
 
 // Run ...
@@ -139,26 +139,26 @@ func (r ReclaimReset) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 			return
 		}
 
-		u, err := data2.LoadUserFromName(target.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(target.Name())
+		if !ok {
 			o.Error(lang.Translatef(model.Language{}, "command.target.unknown"))
 			return
 		}
 
 		u.Teams.Reclaimed = false
-		data2.SaveUser(u)
+		core.UserRepository.Save(u)
 		return
 	}
 
 	if p, ok := s.(*player.Player); ok {
-		u, err := data2.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			o.Error(lang.Translatef(model.Language{}, "command.target.unknown"))
 			return
 		}
 
 		u.Teams.Reclaimed = false
-		data2.SaveUser(u)
+		core.UserRepository.Save(u)
 		return
 	}
 }

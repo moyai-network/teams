@@ -12,7 +12,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	conquest2 "github.com/moyai-network/teams/internal/core/conquest"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/internal/core/user/class"
@@ -41,28 +40,13 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 		applyDamageBoost(dmg, 0.25)
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if area.Spawn(w).Vec3WithinOrEqualFloorXZ(p.Position()) && w != internal.Deathban() {
-		ctx.Cancel()
-		return
-	}
-
-	if u.Teams.DeathBan.Active() && area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(p.Position()) {
-		ctx.Cancel()
-		return
-	}
-
-	if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active()) {
-		ctx.Cancel()
-		return
-	}
-
-	if u.Frozen {
-		ctx.Cancel()
-		return
-	}
-
-	if _, ok := sotw.Running(); ok {
+	_, sotwRunning := sotw.Running()
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if sotwRunning ||
+		(!ok || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active())) ||
+		(area.Spawn(w).Vec3WithinOrEqualFloorXZ(p.Position()) && w != internal.Deathban()) ||
+		(u.Teams.DeathBan.Active() && area.Deathban.Spawn().Vec3WithinOrEqualFloorXZ(p.Position())) ||
+		u.Frozen {
 		ctx.Cancel()
 		return
 	}
@@ -70,8 +54,8 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 	var attacker *player.Player
 	switch s := src.(type) {
 	case entity.FallDamageSource:
-		u, err := data2.LoadUserFromName(p.Name())
-		if err != nil || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active()) {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok || (u.Teams.PVP.Active() && !u.Teams.DeathBan.Active()) {
 			ctx.Cancel()
 			return
 		}
@@ -181,8 +165,8 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 
 		killer, ok := h.lastAttacker(p.Tx())
 		if ok {
-			k, err := data2.LoadUserFromName(killer.Name())
-			if err != nil {
+			k, ok := core.UserRepository.FindByName(killer.Name())
+			if !ok {
 				return
 			}
 			if k.Teams.DeathBan.Active() {
@@ -212,7 +196,7 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 
 				core.TeamRepository.Save(tm)
 			}
-			data2.SaveUser(k)
+			core.UserRepository.Save(k)
 
 			held, _ := killer.HeldItems()
 			heldName := held.CustomName()

@@ -6,15 +6,14 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/adapter/crate"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/pkg/lang"
 )
 
 func (h *Handler) HandleStartBreak(ctx *player.Context, pos cube.Pos) {
 	p := ctx.Val()
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

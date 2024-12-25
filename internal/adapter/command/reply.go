@@ -6,7 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/df-mc/dragonfly/server/world/sound"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/user"
 	"github.com/moyai-network/teams/pkg/lang"
 	"strings"
@@ -24,8 +24,8 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	/*if !u.Settings().Privacy.PrivateMessages {
@@ -43,8 +43,8 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		o.Error(lang.Translatef(l, "command.reply.none"))
 		return
 	}
-	t, err := data.LoadUserFromName(u.LastMessageFrom)
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(u.LastMessageFrom)
+	if !ok {
 		return
 	}
 	/*if !t.Settings().Privacy.PrivateMessages {
@@ -58,7 +58,7 @@ func (r Reply) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	tColour := t.Roles.Highest().Coloured(t.DisplayName)
 
 	t.LastMessageFrom = u.Name
-	data.SaveUser(t)
+	core.UserRepository.Save(t)
 
 	target.PlaySound(sound.Experience{})
 	internal.Messagef(p, "command.whisper.to", tColour, tMsg)

@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -15,8 +15,8 @@ func NewGameplaySettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(GameplaySettings{}, "Gameplay Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -41,19 +41,19 @@ func (b GameplaySettings) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	switch d.Colour {
 	case item.ColourBlue():
 		u.Teams.Settings.Gameplay.ToggleSprint = !u.Teams.Settings.Gameplay.ToggleSprint
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewGameplaySettings(p))
 	case item.ColourPurple():
 		u.Teams.Settings.Gameplay.InstantRespawn = !u.Teams.Settings.Gameplay.InstantRespawn
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewGameplaySettings(p))
 	}

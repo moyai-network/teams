@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -36,13 +36,10 @@ func (c SOTWStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 	sotw.Start()
 
-	users, err := data.LoadAllUsers()
-	if err != nil {
-		panic(err)
-	}
-	for _, u := range users {
+	users := core.UserRepository.FindAll()
+	for u := range users {
 		u.Teams.SOTW = true
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 	}
 	internal.Broadcastf(tx, "sotw.commenced")
 }
@@ -55,13 +52,10 @@ func (c SOTWEnd) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 	sotw.End()
 
-	users, err := data.LoadAllUsers()
-	if err != nil {
-		panic(err)
-	}
-	for _, u := range users {
+	users := core.UserRepository.FindAll()
+	for u := range users {
 		u.Teams.SOTW = false
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 	}
 	internal.Broadcastf(tx, "sotw.ended")
 }
@@ -73,8 +67,8 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	if !u.Teams.SOTW {
@@ -84,7 +78,7 @@ func (c SOTWDisable) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	internal.Messagef(p, "sotw.disabled")
 
 	u.Teams.SOTW = false
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 }
 
 // Allow ...

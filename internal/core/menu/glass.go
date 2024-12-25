@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/inv/inv"
@@ -14,8 +14,8 @@ import (
 type Glass struct{}
 
 func NewGlassMenu(p *player.Player) inv.Menu {
-	_, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	_, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return inv.NewMenu(Glass{}, "Glass Shop", inv.ContainerChest{DoubleChest: true})
 	}
 

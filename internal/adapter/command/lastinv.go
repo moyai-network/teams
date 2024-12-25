@@ -9,7 +9,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -29,8 +29,8 @@ func (i LastInv) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	t, err := data.LoadUserFromName(tg.Name())
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(tg.Name())
+	if ok {
 		internal.Messagef(p, "command.target.unknown", tg.Name())
 		return
 	}

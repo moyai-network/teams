@@ -3,8 +3,8 @@ package user
 import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/colour"
-	"github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
 	"github.com/moyai-network/teams/internal/core/koth"
@@ -34,8 +34,8 @@ func (h *Handler) HandleItemUse(ctx *player.Context) {
 	p := ctx.Val()
 
 	held, left := p.HeldItems()
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -49,7 +49,7 @@ func (h *Handler) HandleItemUse(ctx *player.Context) {
 		u.Teams.Balance += v.(float64)
 		p.SetHeldItems(subtractItem(p, held, 1), left)
 		p.Message(text.Colourf("<green>You have deposited $%.0f into your bank account</green>", v.(float64)))
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		return
 	}
 

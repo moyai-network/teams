@@ -4,9 +4,8 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"math/rand"
 	"strings"
 )
@@ -18,16 +17,16 @@ func (Unlink) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	_, ok = core.UserRepository.FindByName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.data.load.error")
 		return
 	}
 
-	err = data.UnlinkUser(u, internal.DiscordState(), discord.GuildID(1111055709300342826))
+	/*err = data.UnlinkUser(u, internal.DiscordState(), discord.GuildID(1111055709300342826))
 	if err != nil {
 		return
-	}
+	}*/
 	internal.Messagef(p, "command.unlink.done")
 }
 
@@ -38,8 +37,8 @@ func (Link) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		internal.Messagef(p, "user.data.load.error")
 		return
 	}
@@ -52,7 +51,7 @@ func (Link) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if code == "" {
 		code = generateCode()
 		u.LinkCode = code
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 	}
 
 	internal.Messagef(p, "command.link.code", code)
@@ -65,14 +64,14 @@ func generateCode() string {
 	for i := 0; i < 6; i++ {
 		s.WriteByte(codeChars[rand.Intn(len(codeChars))])
 	}
-	_, err := data.LoadUserFromCode(s.String())
+	/*_, err := data.LoadUserFromCode(s.String())
 	for err == nil {
 		s.Reset()
 		for i := 0; i < 6; i++ {
 			s.WriteByte(codeChars[rand.Intn(len(codeChars))])
 		}
 		_, err = data.LoadUserFromCode(s.String())
-	}
+	}*/
 
 	return s.String()
 }

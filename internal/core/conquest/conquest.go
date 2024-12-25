@@ -4,7 +4,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"strings"
@@ -144,8 +143,8 @@ func (c *Conquest) StartCapturing(p *player.Player) bool {
 		select {
 		case <-time.After(t):
 			c.capturing = nil
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				c.StopCapturing(p)
 				return
 			}

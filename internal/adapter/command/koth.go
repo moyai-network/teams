@@ -3,8 +3,8 @@ package command
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/colour"
-	"github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
 	rls "github.com/moyai-network/teams/internal/core/roles"
@@ -57,8 +57,8 @@ func (k KothStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -139,7 +139,7 @@ func (KothStop) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	p, ok := s.(*player.Player)
 	if ok {
-		if u, err := data.LoadUserFromName(p.Name()); err == nil {
+		if u, ok := core.UserRepository.FindByName(p.Name()); ok {
 			r := u.Roles.Highest()
 			name = r.Coloured(p.Name())
 		}
@@ -165,8 +165,8 @@ func (kothList) Type() string {
 // Options ...
 func (kothList) Options(src cmd.Source) []string {
 	p, playerSrc := src.(*player.Player)
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return []string{}
 	}
 

@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/model"
 	"golang.org/x/text/language"
 )
@@ -19,9 +19,8 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -30,7 +29,7 @@ func (la Lang) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 			*u.Language = model.Language{
 				Tag: l,
 			}
-			data2.SaveUser(u)
+			core.UserRepository.Save(u)
 			return
 		}
 	}

@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"time"
@@ -66,8 +66,8 @@ type Prizes struct {
 }
 
 func SendPrizesMenu(p *player.Player) {
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -136,8 +136,8 @@ func (pr *Prizes) Submit(p *player.Player, stack item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	in, ok := i.(int)
@@ -153,7 +153,7 @@ func (pr *Prizes) Submit(p *player.Player, stack item.Stack) {
 		item2.AddOrDrop(p, r)
 	}
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	pr.sendPrizesMenu(u, p)
 }
 

@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -53,8 +53,8 @@ func (t TagAddOnline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(target.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(target.Name())
+	if !ok {
 		return
 	}
 
@@ -65,15 +65,14 @@ func (t TagAddOnline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	u.Tags.Add(tg)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	out.Print(text.Colourf("<green>The tag has been added to the player.</green>"))
 }
 
 // Run ...
 func (t TagAddOffline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
-	u, err := data.LoadUserFromName(t.Target)
-	if err != nil {
-		out.Errorf("An error occurred while loading the user: %v", err)
+	u, ok := core.UserRepository.FindByName(t.Target)
+	if !ok {
 		return
 	}
 
@@ -84,7 +83,7 @@ func (t TagAddOffline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	u.Tags.Add(tg)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	out.Print(text.Colourf("<green>The tag has been added to the player.</green>"))
 }
 
@@ -94,8 +93,8 @@ func (t TagRemoveOnline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(target.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(target.Name())
+	if !ok {
 		return
 	}
 
@@ -106,14 +105,14 @@ func (t TagRemoveOnline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	u.Tags.Remove(tg)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	out.Print(text.Colourf("<green>The tag has been removed from the player.</green>"))
 }
 
 // Run ...
 func (t TagRemoveOffline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
-	u, err := data.LoadUserFromName(t.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(t.Target)
+	if !ok {
 		out.Errorf("The player does not exist.")
 		return
 	}
@@ -125,7 +124,7 @@ func (t TagRemoveOffline) Run(_ cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	u.Tags.Remove(tg)
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	out.Print(text.Colourf("<green>The tag has been removed from the player.</green>"))
 }
 
@@ -135,14 +134,14 @@ func (t TagSet) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	if string(t.Tag) == "none" {
 		out.Print(text.Colourf("<green>Your active tag has been removed.</green>"))
 		u.Teams.Settings.Display.ActiveTag = ""
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		return
 	}
 
@@ -163,7 +162,7 @@ func (t TagSet) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	u.Teams.Settings.Display.ActiveTag = tg.Name()
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	out.Print(text.Colourf("<green>Your active tag has been set to </green>%s<green>.</green>", tg.Format()))
 }
 
@@ -182,8 +181,8 @@ func (ownedTagList) Options(src cmd.Source) (list []string) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 

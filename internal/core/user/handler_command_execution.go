@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"slices"
 	"strings"
@@ -31,8 +31,8 @@ var (
 func (h *Handler) HandleCommandExecution(ctx *player.Context, command cmd.Command, args []string) {
 	p := ctx.Val()
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	names := append(command.Aliases(), command.Name())

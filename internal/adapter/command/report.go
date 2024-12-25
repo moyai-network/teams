@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"time"
 
 	"github.com/moyai-network/teams/pkg/lang"
@@ -22,8 +22,8 @@ type Report struct {
 func (r Report) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	l := locale(s)
 	p := s.(*player.Player)
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	if len(r.Targets) < 1 {
@@ -44,7 +44,7 @@ func (r Report) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 	u.Teams.Report.Set(time.Minute)
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(p, "command.report.success")
 	internal.Alertf(tx, s, "staff.alert.report", t.Name(), r.Reason)

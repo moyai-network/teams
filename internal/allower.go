@@ -1,8 +1,7 @@
 package internal
 
 import (
-	"fmt"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"net"
@@ -25,10 +24,10 @@ func NewAllower(whitelisted bool) *Allower {
 }
 
 func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (string, bool) {
-	u, err := data2.LoadUserOrCreate(d.DisplayName, d.XUID)
-	if err != nil {
-		fmt.Printf("Failed to load user: %v\n", err)
-		return lang.Translatef(model2.Language{}, "user.data.load.error"), false
+	u, ok := core.UserRepository.FindByName(d.DisplayName)
+	if !ok {
+		u = model2.NewUser(d.DisplayName, d.XUID)
+		core.UserRepository.Save(u)
 	}
 
 	if a.whitelisted && !u.Whitelisted {
@@ -43,7 +42,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 			return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header") + "\n" + description), false
 		}
 	}
-	var users []model2.User
+	/*var users []model2.User
 	ssid, err := data2.LoadUsersFromSelfSignedID(u.SelfSignedID)
 	if err == nil {
 		users = append(users, ssid...)
@@ -52,6 +51,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 	if err == nil {
 		users = append(users, did...)
 	}
+
 	for _, u := range users {
 		if !u.Teams.Ban.Expired() {
 			if u.Teams.Ban.Permanent {
@@ -67,7 +67,7 @@ func (a *Allower) Allow(_ net.Addr, d login.IdentityData, _ login.ClientData) (s
 			}
 			return strutils.CenterLine(lang.Translatef(*u.Language, "user.ban.header.alt") + "\n" + description), false
 		}
-	}
+	}*/
 
 	return "", true
 }

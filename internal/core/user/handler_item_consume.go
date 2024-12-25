@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"time"
 
@@ -23,8 +23,8 @@ func (h *Handler) HandleItemConsume(ctx *player.Context, i item.Stack) {
 		}
 		cd.Set(time.Second * 30)
 	case item.EnchantedApple:
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			ctx.Cancel()
 			return
 		}
@@ -35,7 +35,7 @@ func (h *Handler) HandleItemConsume(ctx *player.Context, i item.Stack) {
 		}
 		internal.Messagef(p, "godapple.active")
 		u.Teams.GodApple.Set(time.Hour * 4)
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 	}
 
 	if _, ok := it.SpecialItem(i); ok {

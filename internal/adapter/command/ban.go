@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/internal/model"
 	"strings"
@@ -87,8 +87,8 @@ func (BanList) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 // Run ...
 func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	l := locale(src)
-	u, err := data.LoadUserFromName(b.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(b.Target)
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -97,7 +97,7 @@ func (b BanLiftOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 	u.Teams.Ban = model.Punishment{}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.unban", u.DisplayName)
 	//webhook.SendPunishment(s.Name(), u.DisplayName(), "", "Unban")
@@ -127,8 +127,8 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		o.Error(lang.Translatef(l, "command.ban.self"))
 		return
 	}
-	u, err := data.LoadUserFromName(t.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(t.Name())
+	if !ok {
 		return
 	}
 	if u.Roles.Contains(rls.Operator()) {
@@ -142,7 +142,7 @@ func (b Ban) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Expiration: time.Now().Add(length),
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	t.Disconnect(strings.Join([]string{
 		lang.Translatef(l, "user.ban.header"),
@@ -163,8 +163,8 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		o.Error(lang.Translatef(l, "command.ban.self"))
 		return
 	}
-	u, err := data.LoadUserFromName(b.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(b.Target)
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -184,7 +184,7 @@ func (b BanOffline) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		Occurrence: time.Now(),
 		Expiration: time.Now().Add(length),
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Alertf(tx, src, "staff.alert.ban", u.DisplayName, reason)
 	internal.Broadcastf(tx, "command.ban.broadcast", s.Name(), u.DisplayName, reason)

@@ -4,7 +4,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/pkg/lang"
 )
 
@@ -19,8 +19,8 @@ func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		internal.Messagef(src, "invalid.username")
 		return
 	}
-	u, err := data.LoadUserFromName(w.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(w.Target)
+	if !ok {
 		internal.Messagef(src, "target.data.load.error", w.Target)
 		return
 	}
@@ -30,7 +30,7 @@ func (w WhiteListAdd) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	u.Whitelisted = true
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(src, "whitelist.add", u.DisplayName)
 }
@@ -47,8 +47,8 @@ func (w WhiteListRemove) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		out.Error(lang.Translatef(l, "invalid.username"))
 		return
 	}
-	u, err := data.LoadUserFromName(w.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(w.Target)
+	if !ok {
 		out.Error(lang.Translatef(l, "target.data.load.error", w.Target))
 		return
 	}
@@ -58,7 +58,7 @@ func (w WhiteListRemove) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 
 	u.Whitelisted = false
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	out.Print(lang.Translatef(l, "whitelist.remove", u.DisplayName))
 }

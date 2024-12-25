@@ -6,7 +6,6 @@ import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/colour"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/team"
 	user2 "github.com/moyai-network/teams/internal/core/user"
 	"github.com/moyai-network/teams/internal/model"
@@ -387,8 +386,8 @@ func (t TeamCreate) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -414,7 +413,7 @@ func (t TeamCreate) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 
 	tm := createTeam(p, t.Name)
 	u.Teams.Create.Set(time.Minute * 3)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(p, "team.create.success", tm.DisplayName)
 	internal.Broadcastf(tx, "team.create.success.broadcast", p.Name(), tm.DisplayName)
@@ -481,8 +480,8 @@ func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	targetUser, err := data2.LoadUserFromName(target.Name())
-	if err != nil {
+	targetUser, ok := core.UserRepository.FindByName(target.Name())
+	if !ok {
 		return
 	}
 
@@ -498,7 +497,7 @@ func (t TeamInvite) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	targetUser.Teams.Invitations.Set(tm.Name, time.Minute*5)
-	data2.SaveUser(targetUser)
+	core.UserRepository.Save(targetUser)
 
 	team.Broadcastf(tx, tm, "team.invite.success.broadcast", target.Name())
 	internal.Messagef(target, "team.invite.target", tm.DisplayName)
@@ -536,12 +535,12 @@ func (t TeamJoin) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	// Load user data and reset any existing invitations
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	u.Teams.Invitations.Reset(tm.Name)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	// Add player to the team and update team DTR
 	tm = tm.WithMembers(append(tm.Members, model.DefaultMember(p.XUID(), p.Name()))...)
@@ -1270,8 +1269,8 @@ func (t TeamChat) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -1283,7 +1282,7 @@ func (t TeamChat) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		u.Teams.ChatType = 1
 		p.Message(lang.Translatef(*u.Language, "command.team.chat.team"))
 	}
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 }
 
 // Run ...
@@ -1292,8 +1291,8 @@ func (t TeamWithdraw) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -1323,7 +1322,7 @@ func (t TeamWithdraw) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance = u.Teams.Balance + amt
 
 	core.TeamRepository.Save(tm)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(p, "command.team.withdraw.success", int(amt), tm.DisplayName)
 }
@@ -1341,8 +1340,8 @@ func (t TeamDeposit) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -1367,7 +1366,7 @@ func (t TeamDeposit) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance = u.Teams.Balance - amt
 
 	core.TeamRepository.Save(tm)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(p, "command.team.deposit.success", int(amt), tm.DisplayName)
 }
@@ -1384,8 +1383,8 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -1410,7 +1409,7 @@ func (t TeamWithdrawAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance = u.Teams.Balance + amt
 
 	core.TeamRepository.Save(tm)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	internal.Messagef(p, "command.team.withdraw.success", int(amt), tm.Name)
 }
@@ -1427,8 +1426,8 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
@@ -1448,7 +1447,7 @@ func (t TeamDepositAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	u.Teams.Balance = u.Teams.Balance - amt
 
 	core.TeamRepository.Save(tm)
-	data2.SaveUser(u)
+	core.UserRepository.Save(u)
 
 	o.Print(text.Colourf("<green>You deposited $%d into %s.</green>", int(amt), tm.Name))
 }
@@ -1696,8 +1695,8 @@ func (teamInvitation) Type() string {
 // Options ...
 func (teamInvitation) Options(src cmd.Source) (options []string) {
 	p := src.(*player.Player)
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	for t, i := range u.Teams.Invitations {
@@ -1780,7 +1779,7 @@ func formatTeamInformation(tx *world.Tx, t model.Team) string {
 	formattedDtr = t.DTRString()
 	var onlineCount int
 	for _, p := range t.Members {
-		u, _ := data2.LoadUserFromName(p.Name)
+		u, _ := core.UserRepository.FindByName(p.Name)
 		_, ok := user2.Lookup(tx, p.DisplayName)
 		if ok {
 			onlineCount++

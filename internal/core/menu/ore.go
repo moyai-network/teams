@@ -2,7 +2,7 @@ package menu
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	_ "unsafe"
 
 	"github.com/bedrock-gophers/inv/inv"
@@ -15,8 +15,8 @@ import (
 type Ore struct{}
 
 func NewOreMenu(p *player.Player) inv.Menu {
-	_, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	_, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return inv.NewMenu(Ore{}, "Ore Shop", inv.ContainerChest{DoubleChest: true})
 	}
 

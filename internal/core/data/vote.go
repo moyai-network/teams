@@ -2,12 +2,10 @@ package data
 
 import (
 	"github.com/moyai-network/teams/internal/model"
+	"gopkg.in/square/go-jose.v2/json"
 	"io"
 	"net/http"
 	"strconv"
-	"time"
-
-	"gopkg.in/square/go-jose.v2/json"
 )
 
 var url = "https://minecraftpocket-servers.com/api/?object=servers&month=current&element=voters&key=0LnGcO8ioywfbZvrIoLM0abshjV4cdOmZuC&format=json"
@@ -52,7 +50,7 @@ func requestVoteData() (voteData, error) {
 }
 
 func NewVoters() []model.User {
-	dat, err := requestVoteData()
+	/*dat, err := requestVoteData()
 	if err != nil {
 		return nil
 	}
@@ -65,6 +63,6 @@ func NewVoters() []model.User {
 		}
 		u.LastVote = time.Now()
 		users = append(users, u)
-	}
-	return users
+	}*/
+	return []model.User{}
 }

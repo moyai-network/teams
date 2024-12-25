@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/sotw"
 	"iter"
 	"time"
@@ -212,8 +212,8 @@ func ConfigureDeathban(reg world.EntityRegistry, folder string) *world.World {
 func Close() {
 	//destroyAirDrop(srv.World(), lastDropPos)
 	for p := range Players(nil) {
-		u, err := data2.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			continue
 		}
 		h, ok := p.Handler().(userHandler)
@@ -221,7 +221,7 @@ func Close() {
 			continue
 		}
 		u.PlayTime += h.LogTime()
-		data2.SaveUser(u)
+		core.UserRepository.Save(u)
 
 		p.Disconnect("Server is shutting down.")
 	}
@@ -242,16 +242,12 @@ func tickAutomaticSave(w *world.World, dur time.Duration) {
 		<-time.After(dur)
 		w.Save()
 		for p := range Players(nil) {
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
-				fmt.Println("load user: ", err)
-				continue
-			}
-			if u.StaffMode {
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok || u.StaffMode {
 				continue
 			}
 
-			err = playerProvider.SavePlayer(p)
+			err := playerProvider.SavePlayer(p)
 			if err != nil {
 				fmt.Printf("save player: %v\n", err)
 			}

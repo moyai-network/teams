@@ -4,7 +4,7 @@ import (
 	"github.com/bedrock-gophers/role/role"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	rls "github.com/moyai-network/teams/internal/core/roles"
 	model2 "github.com/moyai-network/teams/internal/model"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -18,8 +18,8 @@ func locale(s cmd.Source) model2.Language {
 	}
 
 	if p, ok := s.(*player.Player); ok {
-		u, err := data2.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			return l
 		}
 		return *u.Language
@@ -36,8 +36,8 @@ func Allow(src cmd.Source, console bool, roles ...role.Role) bool {
 	if roles == nil {
 		return true
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return false
 	}
 	return u.Roles.Contains(append(roles, rls.Operator())...)

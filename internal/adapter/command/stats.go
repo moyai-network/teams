@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/model"
 	"math"
 
@@ -44,8 +44,8 @@ func (t StatsOnlineCommand) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		name = s.Name()
 	}
 
-	u, err := data.LoadUserFromName(name)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(name)
+	if !ok {
 		return
 	}
 
@@ -53,8 +53,8 @@ func (t StatsOnlineCommand) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 }
 
 func (s StatsOfflineCommand) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
-	u, err := data.LoadUserFromName(s.Target)
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(s.Target)
+	if !ok {
 		internal.Messagef(src, "command.target.unknown", s.Target)
 		return
 	}

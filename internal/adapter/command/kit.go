@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/menu"
 )
 
@@ -39,14 +39,14 @@ func (k KitReset) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 	}
 	t, ok := k.Target.Load()
 	if !ok {
-		u, err := data.LoadUserFromName(p.Name())
-		if err != nil {
+		u, ok := core.UserRepository.FindByName(p.Name())
+		if !ok {
 			return
 		}
 		for _, kt := range u.Teams.Kits {
 			kt.Reset()
 		}
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		return
 	}
 	tg, ok := t[0].(*player.Player)
@@ -54,12 +54,12 @@ func (k KitReset) Run(src cmd.Source, out *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(tg.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(tg.Name())
+	if !ok {
 		return
 	}
 	for _, kt := range u.Teams.Kits {
 		kt.Reset()
 	}
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/core"
 	conquest2 "github.com/moyai-network/teams/internal/core/conquest"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
@@ -156,7 +155,7 @@ func tickDeathban(p *player.Player, u model2.User) {
 			u.Teams.PVP.TogglePause()
 		}
 
-		data2.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.Armour().Clear()
 		p.Inventory().Clear()
 		internal.Overworld().Exec(func(tx *world.Tx) {
@@ -215,9 +214,8 @@ func startTicker(p *player.Player, h *Handler) {
 			_, _ = sb.WriteString("§r\uE000")
 			sb.RemovePadding()
 
-			u, err := data2.LoadUserFromName(p.Name())
-			if err != nil {
-				fmt.Println("ticker.LoadUserFromName: error: ", err)
+			u, ok := core.UserRepository.FindByName(p.Name())
+			if !ok {
 				continue
 			}
 			if u.Teams.Settings.Display.ScoreboardDisabled {

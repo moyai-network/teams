@@ -2,9 +2,10 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/model"
 	"math"
+	"slices"
 	"sort"
 
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -13,7 +14,7 @@ import (
 )
 
 func orderedUsersByKills() []model.User {
-	usrs, _ := data.LoadAllUsers()
+	usrs := slices.Collect(core.UserRepository.FindAll())
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.Kills != usrs[j].Teams.Stats.Kills {
 			return usrs[i].Teams.Stats.Kills > usrs[j].Teams.Stats.Kills
@@ -24,7 +25,7 @@ func orderedUsersByKills() []model.User {
 }
 
 func orderedUsersByDeaths() []model.User {
-	usrs, _ := data.LoadAllUsers()
+	usrs := slices.Collect(core.UserRepository.FindAll())
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.Deaths != usrs[j].Teams.Stats.Deaths {
 			return usrs[i].Teams.Stats.Deaths > usrs[j].Teams.Stats.Deaths
@@ -35,7 +36,7 @@ func orderedUsersByDeaths() []model.User {
 }
 
 func orderedUsersByKDR() []model.User {
-	usrs, _ := data.LoadAllUsers()
+	usrs := slices.Collect(core.UserRepository.FindAll())
 	sort.SliceStable(usrs, func(i, j int) bool {
 		iDeath := usrs[i].Teams.Stats.Deaths
 		if iDeath == 0 {
@@ -56,7 +57,7 @@ func orderedUsersByKDR() []model.User {
 }
 
 func orderedUsersByKillStreaks() []model.User {
-	usrs, _ := data.LoadAllUsers()
+	usrs := slices.Collect(core.UserRepository.FindAll())
 	sort.SliceStable(usrs, func(i, j int) bool {
 		if usrs[i].Teams.Stats.KillStreak != usrs[j].Teams.Stats.KillStreak {
 			return usrs[i].Teams.Stats.KillStreak > usrs[j].Teams.Stats.KillStreak

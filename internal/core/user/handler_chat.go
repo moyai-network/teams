@@ -3,7 +3,6 @@ package user
 import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/core"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
 	model2 "github.com/moyai-network/teams/internal/model"
@@ -34,11 +33,11 @@ func (h *Handler) HandleChat(ctx *player.Context, message *string) {
 	p := ctx.Val()
 
 	ctx.Cancel()
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
-	defer data2.SaveUser(u)
+	defer core.UserRepository.Save(u)
 
 	if internal.ChatGameWord() != "" && *message == internal.ChatGameWord() {
 		internal.Broadcastf(p.Tx(), "internal.broadcast.chatgame.guessed", p.Name(), internal.ChatGameWord())
@@ -103,7 +102,7 @@ func (h *Handler) HandleChat(ctx *player.Context, message *string) {
 
 func (h *Handler) staffMessage(p *player.Player, msg string, r role.Role) {
 	for s := range internal.Players(p.Tx()) {
-		if us, err := data2.LoadUserOrCreate(s.Name(), s.XUID()); err == nil && roles.Staff(us.Roles.Highest()) {
+		if us, ok := core.UserRepository.FindByName(s.Name()); ok && roles.Staff(us.Roles.Highest()) {
 			internal.Messagef(s, "staff.chat", r.Name(), p.Name(), strings.TrimPrefix(msg, "!"))
 		}
 	}

@@ -6,7 +6,6 @@ import (
 	"github.com/moyai-network/teams/internal/core/area"
 	"github.com/moyai-network/teams/internal/core/block"
 	"github.com/moyai-network/teams/internal/core/conquest"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/model"
 	"math"
@@ -29,8 +28,10 @@ func (h *Handler) HandleMove(ctx *player.Context, newPos mgl64.Vec3, newRot cube
 	p := ctx.Val()
 	w := p.Tx().World()
 
-	u, err := data2.LoadUserFromName(p.Name())
-	if ar := area.Spawn(w); ar.Area != (area.Area{}) && ar.Vec3WithinOrEqualFloorXZ(newPos) && w != internal.Deathban() && h.tagCombat.Active() || err != nil || u.Frozen {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if ar := area.Spawn(w); ar.Area != (area.Area{}) && ar.Vec3WithinOrEqualFloorXZ(newPos) && w != internal.Deathban() &&
+		h.tagCombat.Active() ||
+		!ok || u.Frozen {
 		ctx.Cancel()
 		return
 	}
@@ -244,7 +245,7 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 				if u.Teams.PVP.Active() {
 					if (!u.Teams.PVP.Paused() && a == area.Spawn(w)) || (u.Teams.PVP.Paused() && a != area.Spawn(w)) {
 						u.Teams.PVP.TogglePause()
-						data2.SaveUser(u)
+						core.UserRepository.Save(u)
 					}
 				}
 

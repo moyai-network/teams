@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/pkg/lang"
 	"strings"
 
@@ -25,8 +25,8 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	/*if !u.Settings().Privacy.PrivateMessages {
@@ -48,8 +48,8 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		internal.Messagef(p, "command.target.unknown")
 		return
 	}
-	t, err := data.LoadUserFromName(tP.Name())
-	if err != nil {
+	t, ok := core.UserRepository.FindByName(tP.Name())
+	if !ok {
 		o.Error(lang.Translatef(l, "command.target.unknown"))
 		return
 	}
@@ -64,7 +64,7 @@ func (w Whisper) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	tTag := t.Roles.Highest().Coloured(t.DisplayName)
 
 	t.LastMessageFrom = u.Name
-	data.SaveUser(t)
+	core.UserRepository.Save(t)
 
 	tP.PlaySound(sound.Experience{})
 	internal.Messagef(p, "command.whisper.to", tTag, tMsg)

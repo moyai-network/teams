@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/df-mc/dragonfly/server/world"
-	data2 "github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
 	"time"
@@ -24,8 +24,8 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	tg, err := data2.LoadUserFromName(target.Name())
-	if err != nil {
+	tg, ok := core.UserRepository.FindByName(target.Name())
+	if !ok {
 		return
 	}
 	tg.Teams.Stats.Deaths--
@@ -50,7 +50,7 @@ func (r Revive) Run(src cmd.Source, _ *cmd.Output, tx *world.Tx) {
 	}
 
 	addDataInventory(target, *inv)
-	data2.SaveUser(tg)
+	core.UserRepository.Save(tg)
 }
 
 func addDataInventory(p *player.Player, inv model.Inventory) {

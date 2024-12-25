@@ -5,7 +5,7 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/user"
 )
 
@@ -34,8 +34,8 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	mode := p.GameMode()
@@ -54,6 +54,6 @@ func (Vanish) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 
 	u.Vanished = !u.Vanished
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	user.UpdateVanishState(p, u)
 }

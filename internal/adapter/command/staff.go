@@ -16,7 +16,7 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		return
 	}
 
-	u, err := data.LoadUserFromName(p.Name())
+	u, err := core.UserRepository.FindByName(p.Name())
 	if err != nil {
 		return
 	}
@@ -68,7 +68,7 @@ func (StaffMode) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		}
 	}
 
-	data.SaveUser(u)
+	core.UserRepository.Save(u)
 	user.UpdateVanishState(p, u)*/
 	panic("todo")
 }

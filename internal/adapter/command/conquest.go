@@ -3,8 +3,8 @@ package command
 import (
 	"fmt"
 	"github.com/df-mc/dragonfly/server/world"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/conquest"
-	"github.com/moyai-network/teams/internal/core/data"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/df-mc/dragonfly/server/player"
@@ -29,7 +29,7 @@ func (k ConquestStart) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	p, ok := s.(*player.Player)
 	if ok {
-		if u, err := data.LoadUserFromName(p.Name()); err == nil {
+		if u, ok := core.UserRepository.FindByName(p.Name()); ok {
 			r := u.Roles.Highest()
 			name = r.Coloured(p.Name())
 		}
@@ -71,7 +71,7 @@ func (ConquestStop) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	name := text.Colourf("<grey>%s</grey>", s.(cmd.NamedTarget).Name())
 	p, ok := s.(*player.Player)
 	if ok {
-		if u, err := data.LoadUserFromName(p.Name()); err == nil {
+		if u, ok := core.UserRepository.FindByName(p.Name()); ok {
 			r := u.Roles.Highest()
 			name = r.Coloured(p.Name())
 		}

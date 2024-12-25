@@ -54,7 +54,7 @@ func teleport(e *entity.Ent, target trace.Result) {
         return
     }
 
-    u, _ := data.LoadUserFromName(p.Name())
+    u, _ := core.UserRepository.FindByName(p.Name())
     if u.Teams.PVP.Active() {
         teams, _ := data.LoadAllTeams()
         for _, t := range teams {

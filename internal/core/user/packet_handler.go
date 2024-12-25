@@ -85,7 +85,7 @@ func (h packetHandler) HandleServerPacket(ctx *intercept.Context, pk packet.Pack
 			ctx.Cancel()
 		}
 	case *packet.SetActorData:
-		u, err := data.LoadUserFromName(p.Name())
+		u, err := core.UserRepository.FindByName(p.Name())
 		t, ok := lookupRuntimeID(p, pkt.EntityRuntimeID)
 		if !ok || err != nil {
 			break
@@ -95,7 +95,7 @@ func (h packetHandler) HandleServerPacket(ctx *intercept.Context, pk packet.Pack
 			return
 		}
 
-		tData, err := data.LoadUserFromName(t.Name())
+		tData, err := core.UserRepository.FindByName(t.Name())
 		if err != nil {
 			return
 		}
@@ -128,7 +128,7 @@ func (h packetHandler) HandleServerPacket(ctx *intercept.Context, pk packet.Pack
 			meta[protocol.EntityDataKeyName] = formatNameTag(tData.DisplayName, targetTeam, "purple", colour, ta)
 		}
 
-		tg, _ := data.LoadUserFromName(t.Name())
+		tg, _ := core.UserRepository.FindByName(t.Name())
 		if _, ok := sotw.Running(); ok && u.Teams.SOTW || tg.Teams.PVP.Active() {
 			meta[protocol.EntityDataKeyName] = formatNameTag(tg.DisplayName, targetTeam, "grey", colour, ta)
 		}

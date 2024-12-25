@@ -6,7 +6,7 @@ import (
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world/sound"
-	"github.com/moyai-network/teams/internal/core/data"
+	"github.com/moyai-network/teams/internal/core"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
 
@@ -16,8 +16,8 @@ func NewDisplaySettings(p *player.Player) inv.Menu {
 	m := inv.NewMenu(DisplaySettings{}, "Display Settings", inv.ContainerChest{})
 	stacks := glassFilledStack(54)
 
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return m
 	}
 
@@ -48,19 +48,19 @@ func (b DisplaySettings) Submit(p *player.Player, it item.Stack) {
 	if !ok {
 		return
 	}
-	u, err := data.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 	switch d.Colour {
 	case item.ColourBlue():
 		u.Teams.Settings.Display.ScoreboardDisabled = !u.Teams.Settings.Display.ScoreboardDisabled
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewDisplaySettings(p))
 	case item.ColourBlack():
 		u.Teams.Settings.Display.Bossbar = !u.Teams.Settings.Display.Bossbar
-		data.SaveUser(u)
+		core.UserRepository.Save(u)
 		p.PlaySound(sound.Experience{})
 		inv.UpdateMenu(p, NewDisplaySettings(p))
 	}

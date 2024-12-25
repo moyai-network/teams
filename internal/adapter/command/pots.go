@@ -3,7 +3,6 @@ package command
 import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
-	data2 "github.com/moyai-network/teams/internal/core/data"
 	"strings"
 	"time"
 	_ "unsafe"
@@ -29,8 +28,8 @@ func (Pots) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
-	u, err := data2.LoadUserFromName(p.Name())
-	if err != nil {
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
 		return
 	}
 
