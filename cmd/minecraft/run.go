@@ -1,7 +1,6 @@
 package minecraft
 
 import (
-	"fmt"
 	"github.com/moyai-network/teams/internal/core"
 	ent "github.com/moyai-network/teams/internal/core/entity"
 	it "github.com/moyai-network/teams/internal/core/item"
@@ -66,19 +65,14 @@ func Run() error {
 	registerCommands()
 	store := loadStore(conf.Moyai.Tebex, slog.Default())
 	srv.Listen()
-	//go executeTebexCommands(store, srv)
 
 	internal.ConfigureDimensions(config.Entities, conf.Nether.Folder, conf.End.Folder)
 	internal.ConfigureDeathban(config.Entities, conf.DeathBan.Folder)
 	configureWorlds()
 
-	//placeSpawners()
-	//placeText(conf)
-	//placeSlapper()
 	placeCrates()
 	placeShopSigns()
 
-	//go tickBlackMarket(srv)
 	go tickClearLag()
 
 	go startBroadcats()
@@ -224,53 +218,9 @@ func configure(conf internal.Config, log *slog.Logger) server.Config {
 	c.Entities = ent.Registry
 
 	c.Name = text.Colourf("<bold><redstone>MOYAI</redstone></bold>") + "§8"
-	//c.ShutdownMessage = text.Colourf("<red>MoyaiHCF has restarted; please join back shortly or join discord.internal.club for more info!</red>") + "§8"
-	//c.JoinMessage = "<green>[+] %s</green>"
-	//c.QuitMessage = "<red>[-] %s</red>"
 	c.Allower = internal.NewAllower(conf.Moyai.Whitelisted)
-
-	//configurePacketListener(&c, conf.Oomph.Enabled)
 	return c
 }
-
-// configurePacketListener configures the packet listener for the server.
-func configurePacketListener(conf *server.Config, oomphEnabled bool) {
-	/*if oomphEnabled {
-		ac := oomph.New(oomph.OomphSettings{
-			LocalAddress:  ":19132",
-			RemoteAddress: ":19133",
-			RequirePacks:  true,
-		})
-
-		ac.Listen(conf, text.Colourf(conf.Name), []minecraft.Protocol{}, true, false)
-		go func() {
-			for {
-				p, err := ac.Accept()
-				if err != nil {
-					return
-				}
-
-				p.Player.SetLog(logrus.New())
-				p.Player.MovementMode = 0
-				p.Player.Handler(handler.HandlerIDMovement).(*handler.MovementHandler).CorrectionThreshold = 100000000
-
-				// TODO: Handle events
-			}
-		}()
-		return
-	}
-	*/
-}
-
-/*func executeTebexCommands(store *tebex.Client, srv *server.Server) {
-	for {
-		for p := range srv.Players() {
-			store.ExecuteCommands(p)
-			<-time.After(time.Second / 4)
-		}
-		<-time.After(time.Second * 20)
-	}
-}*/
 
 // loadStore initializes the Tebex store connection.
 func loadStore(key string, log *slog.Logger) *tebex.Client {
@@ -314,7 +264,6 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
 
 		h, err := user2.NewHandler(p, p.XUID())
 		if err != nil {
-			fmt.Printf("new handler: %v\n", err)
 			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.internal.club</red>"))
 			return
 		}
@@ -335,28 +284,5 @@ func acceptFunc(store *tebex.Client) func(*player.Player) {
 				}
 			}
 		}
-
-		//p.SetImmobile()
-		/*p.SetAttackImmunity(time.Millisecond * 500)
-		time.AfterFunc(time.Millisecond*500, func() {
-			if p != nil {
-				p.SetMobile()
-			}
-		})
-
-		w := p.World()
-		for _, e := range w.Entities() {
-			if !area.Spawn(w).Vec3WithinOrEqualFloorXZ(e.Position()) {
-				continue
-			}
-			if _, ok := e.(*player.Player); ok {
-				continue
-			}
-			if e.Type() == (entity.TextType{}) {
-				continue
-			}
-
-			p.HideEntity(e)
-		}*/
 	}
 }

@@ -2,16 +2,6 @@ package minecraft
 
 import (
 	"fmt"
-	crate2 "github.com/moyai-network/teams/internal/adapter/crate"
-	"github.com/moyai-network/teams/internal/core/enchantment"
-	menu2 "github.com/moyai-network/teams/internal/core/menu"
-	"math"
-	"reflect"
-	"strings"
-	"time"
-	"unicode"
-	"unsafe"
-
 	"github.com/bedrock-gophers/inv/inv"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -24,7 +14,13 @@ import (
 	"github.com/df-mc/npc"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/moyai-network/teams/internal"
+	crate2 "github.com/moyai-network/teams/internal/adapter/crate"
+	"github.com/moyai-network/teams/internal/core/enchantment"
+	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"math"
+	"strings"
+	"unicode"
 )
 
 var (
@@ -124,37 +120,6 @@ func configureWorlds() {
 			l.Load(tx, math.MaxInt)
 		})
 	}
-}
-
-func tickClearLag() {
-	t := time.NewTicker(time.Minute / 2)
-	defer t.Stop()
-
-	for range t.C {
-		for _, w := range internal.Worlds() {
-			clearAgedEntities(w)
-		}
-	}
-}
-
-func clearAgedEntities(w *world.World) {
-	/*for _, e := range w.Entities() {
-		if et, ok := e.(*entity.Ent); ok && et.Type() == (entity.ItemType{}) {
-			age := fetchPrivateField[time.Duration](et, "age")
-			if age > (time.Minute*5)/2 {
-				w.RemoveEntity(e)
-			}
-		}
-	}*/
-}
-
-// fetchPrivateField fetches a private field of a session.
-func fetchPrivateField[T any](v any, name string) T {
-	reflectedValue := reflect.ValueOf(v).Elem()
-	privateFieldValue := reflectedValue.FieldByName(name)
-	privateFieldValue = reflect.NewAt(privateFieldValue.Type(), unsafe.Pointer(privateFieldValue.UnsafeAddr())).Elem()
-
-	return privateFieldValue.Interface().(T)
 }
 
 func placeSlapper() {
