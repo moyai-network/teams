@@ -4,5 +4,7 @@ lint:
 	./tests/scripts/lint.sh
 mocks:
 	./tests/scripts/mocks.sh
-tests: lint mocks
+cloc:
+	./tests/scripts/cloc.sh
+tests: mocks lint
 	./tests/scripts/tests.sh
