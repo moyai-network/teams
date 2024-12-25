@@ -27,7 +27,7 @@ func ByName(s string) (ports.Crate, bool) {
 }
 
 func SelectReward(c ports.Crate) item.Stack {
-	r, _ := cratesRewards[c]
+	r := cratesRewards[c]
 	return r[rand.Intn(len(r))]
 }
 

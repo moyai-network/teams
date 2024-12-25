@@ -8,8 +8,11 @@ import (
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/user"
 	"github.com/moyai-network/teams/pkg/lang"
-	"strings"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
+
+var caser = cases.Title(language.English)
 
 // Key is a command that allows admins to give players keys.
 type Key struct {
@@ -61,7 +64,7 @@ func (k KeyAll) Run(s cmd.Source, o *cmd.Output, tx *world.Tx) {
 		i++
 	}
 
-	internal.Broadcastf(tx, "command.key.all.success", k.Count, strings.Title(string(k.Key)), i)
+	internal.Broadcastf(tx, "command.key.all.success", k.Count, caser.String(string(k.Key)), i)
 }
 
 type key string

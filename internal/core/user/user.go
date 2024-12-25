@@ -455,7 +455,7 @@ func (h *Handler) sendWall(p *player.Player, newPos cube.Pos, z model3.Area, col
 					if blockReplaceable(p.Tx().Block(blockPos)) {
 						h.viewBlockUpdate(p, blockPos, wallBlock, 0)
 						h.wallBlocksMu.Lock()
-						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
+						h.wallBlocks[blockPos] = rand.Float64()
 						h.wallBlocksMu.Unlock()
 					}
 				}
@@ -474,7 +474,7 @@ func (h *Handler) sendWall(p *player.Player, newPos cube.Pos, z model3.Area, col
 					if blockReplaceable(p.Tx().Block(blockPos)) {
 						h.viewBlockUpdate(p, blockPos, wallBlock, 0)
 						h.wallBlocksMu.Lock()
-						h.wallBlocks[blockPos] = rand.Float64() * float64(rand.Intn(1)+1)
+						h.wallBlocks[blockPos] = rand.Float64()
 						h.wallBlocksMu.Unlock()
 					}
 				}
