@@ -12,7 +12,6 @@ import (
 func registerCommands() {
 	for _, c := range []cmd.Command{
 		//cmd.New("knockback", text.Colourf("Manage server KB"), []string{"kb"}, knockback.Menu{Allower: operatorAllower{}}),
-		cmd.New("alias", text.Colourf("Find aliases of a player."), nil, command2.AliasOffline{}, command2.AliasOnline{}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command2.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command2.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command2.Revive{}),
@@ -93,7 +92,6 @@ func registerCommands() {
 		cmd.New("pp", text.Colourf("Manage partner packages."), nil, command2.PartnerPackageAll{}, command2.PartnerPackage{}, command2.PartnerItemsRefresh{}),
 		cmd.New("ping", text.Colourf("Check your ping."), nil, command2.Ping{}),
 		cmd.New("data", text.Colourf("Clear data."), nil, command2.DataReset{}),
-		//cmd.New("nick", text.Colourf("Change your nickname."), nil, command.NickReset{}, command.Nick{}),
 		cmd.New("vanish", text.Colourf("Vanish as staff."), []string{"v"}, command2.Vanish{}),
 		cmd.New("lang", text.Colourf("Change your language."), nil, lang.Lang{}),
 		cmd.New("blockshop", text.Colourf("Access the blockshop to buy items."), nil, command2.BlockShop{}),
