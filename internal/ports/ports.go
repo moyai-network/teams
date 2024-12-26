@@ -23,15 +23,10 @@ type TeamRepository interface {
 	Delete(model2.Team)
 }
 
-// Crate represents a crate utilized to Reward users.
 type Crate interface {
-	// Name returns the name of the crate.
 	Name() string
-	// Position returns the position of the crate.
 	Position() mgl64.Vec3
-	// Facing returns the facing of the crate.
 	Facing() cube.Face
-	// Rewards returns the rewards associated with the crate.
 	Rewards() []model2.Reward
 }
 

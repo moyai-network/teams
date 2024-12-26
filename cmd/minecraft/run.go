@@ -8,7 +8,7 @@ import (
 	ent "github.com/moyai-network/teams/internal/core/entity"
 	it "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/roles"
-	user2 "github.com/moyai-network/teams/internal/core/user"
+	"github.com/moyai-network/teams/internal/core/user"
 	"github.com/sirupsen/logrus"
 	"log/slog"
 	"math/rand"
@@ -81,13 +81,13 @@ func Run() error {
 		intercept.Intercept(p)
 		go store.ExecuteCommands(p)
 
-		h, err := user2.NewHandler(p, p.XUID())
+		h, err := user.NewHandler(p, p.XUID())
 		if err != nil {
 			p.Disconnect(text.Colourf("<red>Unknown Error. Please contact developers at discord.internal.club</red>"))
 			continue
 		}
 		p.Handle(h)
-		p.Armour().Handle(user2.NewArmourHandler(p))
+		p.Armour().Handle(user.NewArmourHandler(p))
 		p.RemoveScoreboard()
 		for _, ef := range p.Effects() {
 			p.RemoveEffect(ef.Type())
@@ -172,7 +172,6 @@ func startPlayerBroadcasts() {
 }
 
 var chatGameWords = []string{
-	"internal",
 	"beacon",
 	"diamond",
 	"nether",

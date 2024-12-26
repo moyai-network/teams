@@ -124,7 +124,7 @@ func placeCrates() {
 			var items [27]item.Stack
 			for i, r := range c.Rewards() {
 				if r.Stack().Empty() {
-					continue // Ignore this, ill fix it later
+					continue
 				}
 				st := enchantment.AddEnchantmentLore(r.Stack())
 				st = st.WithLore(append(st.Lore(), text.Colourf("<yellow>Chance: %d%%</yellow>", r.Chance()))...)
