@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -29,24 +30,15 @@ func NewUserRepository(collection *mongo.Collection) (*UserRepository, error) {
 		return nil, err
 	}
 
-	count, err := collection.CountDocuments(context.Background(), bson.D{})
-	if err != nil {
-		return nil, err
-	}
-
-	users := make([]model.User, count)
-	for i := range users {
-		users[i] = model.NewUser("", "")
-	}
-
+	var users []model.User
 	if err = cursor.All(context.Background(), &users); err != nil {
 		return nil, err
 	}
 
-	for _, user := range users {
-		repo.users[user.Name] = user
+	for _, u := range users {
+		repo.users[u.Name] = u
+		fmt.Println(u.DisplayName, u.Roles.All())
 	}
-
 	return repo, nil
 }
 

@@ -18,12 +18,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bedrock-gophers/knockback/knockback"
-
-	"github.com/bedrock-gophers/tag/tag"
-
 	"github.com/bedrock-gophers/console/console"
-	"github.com/bedrock-gophers/role/role"
 	"github.com/bedrock-gophers/tebex/tebex"
 	"github.com/df-mc/dragonfly/server"
 	"github.com/moyai-network/teams/internal"
@@ -36,19 +31,6 @@ import (
 // Run runs the Minecraft server.
 func Run() error {
 	internal.Assemble()
-
-	err := knockback.Load("assets/knockback.json")
-	if err != nil {
-		return err
-	}
-	err = role.Load("assets/roles")
-	if err != nil {
-		return err
-	}
-	err = tag.Load("assets/tags")
-	if err != nil {
-		return err
-	}
 	registerLanguages()
 
 	chat.Global.Subscribe(chat.StdoutSubscriber{})

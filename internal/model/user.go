@@ -158,9 +158,6 @@ type User struct {
 		Ban Punishment
 		// Mute is the mute of the user.
 		Mute Punishment
-		// Dead is the live status of the logger.
-		// If true, the user should be cleared.
-		//Dead bool
 		// Stats contains the stats of the user.
 		Stats Stats `bson:"stats"`
 

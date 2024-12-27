@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	git.restartfu.com/restart/gophig.git v1.0.0
-	github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3
+	github.com/bedrock-gophers/cooldown v0.1.1
 	github.com/bedrock-gophers/knockback v0.1.0
 	github.com/bedrock-gophers/provider v0.1.1
 	github.com/bedrock-gophers/role v0.0.0-20240702002851-bde38d6825cc

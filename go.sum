@@ -4,6 +4,8 @@ github.com/bedrock-gophers/console v0.1.1 h1:85Vyre6LUq6gYOQZTsrgs/Qk3gL3mtVxMF0
 github.com/bedrock-gophers/console v0.1.1/go.mod h1:RjhKslimAVYoVYbaHLM7bcDXRqzEHEYb4CHmbhP9V6w=
 github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3 h1:aMXHfUwWDn8PBbuN1MMxLTPitACcgyVLCIxQov1kVMI=
 github.com/bedrock-gophers/cooldown v0.0.0-20240717032834-9280016814f3/go.mod h1:43VXrjUhIrz17lWUi4VPI9q5lWkQOJCMOuoiEtZwIa8=
+github.com/bedrock-gophers/cooldown v0.1.1 h1:HWgOcg86Y2E2RrSZgXFsnb9v8p8B12UJFgth+ZDrPK0=
+github.com/bedrock-gophers/cooldown v0.1.1/go.mod h1:QJzyTqB01jc12Lbb4mxTd+zpl4yVK/45KcOGnT2c8Cw=
 github.com/bedrock-gophers/intercept v0.2.4 h1:uLuUdT/1XEQoozExbvgUt8DwYkYkljdFh+XIFC1Fzb4=
 github.com/bedrock-gophers/intercept v0.2.4/go.mod h1:UlhMbzIqx/jQyeSBF9QQwROUCcp5Vhvs0QhK959a87I=
 github.com/bedrock-gophers/inv v0.3.0 h1:pJvIWFnDiCkrRTQbz6lNlWyTDUobfOUtoZ5PEDoLqak=
