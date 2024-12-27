@@ -22,12 +22,10 @@ import (
 )
 
 func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, attackImmunity *time.Duration, src world.DamageSource) {
-	knockback.ApplyHitDelay(attackImmunity)
-
 	if immune {
-		ctx.Cancel()
 		return
 	}
+	knockback.ApplyHitDelay(attackImmunity)
 
 	p := ctx.Val()
 	w := p.Tx().World()

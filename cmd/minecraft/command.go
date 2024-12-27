@@ -14,7 +14,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
-		cmd.New("knockback", "", []string{"kg"}, knockback.Menu{Allower: operatorAllower{}}),
+		cmd.New("knockback", "", []string{"kb"}, knockback.Menu{Allower: operatorAllower{}}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command.Revive{}),
