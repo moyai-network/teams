@@ -27,7 +27,7 @@ func init() {
 			<-time.After(time.Millisecond)
 			continue
 		}
-		//go tickAirDrop(Overworld())
+		go tickAirDrop(Overworld())
 		go tickAutomaticSave(Overworld(), time.Minute)
 	}()
 

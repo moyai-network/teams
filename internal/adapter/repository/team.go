@@ -16,12 +16,15 @@ type TeamRepository struct {
 	collection *mongo.Collection
 	teams      map[string]model.Team
 	sync.Mutex
+
+	saveChan chan savable
 }
 
 func NewTeamRepository(collection *mongo.Collection) (*TeamRepository, error) {
 	repo := &TeamRepository{
 		collection: collection,
 		teams:      make(map[string]model.Team),
+		saveChan:   make(chan savable),
 	}
 
 	cursor, err := collection.Find(context.Background(), bson.D{})
@@ -38,6 +41,7 @@ func NewTeamRepository(collection *mongo.Collection) (*TeamRepository, error) {
 		repo.teams[team.Name] = team
 	}
 
+	go startSaveWorker(repo.collection, repo.saveChan)
 	return repo, nil
 }
 
@@ -72,15 +76,9 @@ func (u *TeamRepository) FindAll() iter.Seq[model.Team] {
 
 func (u *TeamRepository) Save(team model.Team) {
 	u.Lock()
-	defer u.Unlock()
 	u.teams[team.Name] = team
-
-	go func() {
-		err := saveObject(u.collection, team.Name, team)
-		if err != nil {
-			logrus.Errorf("Mongo insert: %s", err)
-		}
-	}()
+	u.Unlock()
+	u.saveChan <- newSavable(team.Name, team)
 }
 
 func (u *TeamRepository) Delete(team model.Team) {

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/moyai-network/teams/internal/model"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"math"
@@ -57,4 +58,27 @@ func updatedTeamRegeneration(t model.Team) model.Team {
 		t.DTR = t.MaxDTR()
 	}
 	return t
+}
+
+type savable struct {
+	name string
+	obj  any
+}
+
+func newSavable(name string, obj any) savable {
+	return savable{
+		name: name,
+		obj:  obj,
+	}
+}
+
+func startSaveWorker(col *mongo.Collection, c chan savable) {
+	go func() {
+		for v := range c {
+			err := saveObject(col, v.name, v.obj)
+			if err != nil {
+				logrus.Errorf("Mongo insert: %s", err)
+			}
+		}
+	}()
 }

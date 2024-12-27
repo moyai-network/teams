@@ -2,9 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"github.com/moyai-network/teams/internal/model"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"iter"
@@ -17,12 +15,15 @@ type UserRepository struct {
 	collection *mongo.Collection
 	users      map[string]model.User
 	sync.Mutex
+
+	saveChan chan savable
 }
 
 func NewUserRepository(collection *mongo.Collection) (*UserRepository, error) {
 	repo := &UserRepository{
 		collection: collection,
 		users:      make(map[string]model.User),
+		saveChan:   make(chan savable),
 	}
 
 	cursor, err := collection.Find(context.Background(), bson.D{})
@@ -37,16 +38,17 @@ func NewUserRepository(collection *mongo.Collection) (*UserRepository, error) {
 
 	for _, u := range users {
 		repo.users[u.Name] = u
-		fmt.Println(u.DisplayName, u.Roles.All())
 	}
+
+	go startSaveWorker(repo.collection, repo.saveChan)
 	return repo, nil
 }
 
 func (u *UserRepository) FindByName(name string) (model.User, bool) {
 	u.Lock()
-	defer u.Unlock()
-	user, ok := u.users[strings.ToLower(name)]
-	return user, ok
+	usr, ok := u.users[strings.ToLower(name)]
+	u.Unlock()
+	return usr, ok
 }
 
 func (u *UserRepository) FindAll() iter.Seq[model.User] {
@@ -57,13 +59,7 @@ func (u *UserRepository) FindAll() iter.Seq[model.User] {
 
 func (u *UserRepository) Save(user model.User) {
 	u.Lock()
-	defer u.Unlock()
 	u.users[user.Name] = user
-
-	go func() {
-		err := saveObject(u.collection, user.Name, user)
-		if err != nil {
-			logrus.Errorf("Mongo insert: %s", err)
-		}
-	}()
+	u.Unlock()
+	u.saveChan <- newSavable(user.Name, user)
 }
