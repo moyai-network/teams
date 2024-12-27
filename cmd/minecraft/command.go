@@ -1,8 +1,12 @@
 package minecraft
 
 import (
+	"github.com/bedrock-gophers/knockback/knockback"
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/player"
 	"github.com/moyai-network/teams/internal/adapter/command"
+	"github.com/moyai-network/teams/internal/core"
+	"github.com/moyai-network/teams/internal/core/roles"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 )
@@ -10,6 +14,7 @@ import (
 // registerCommands registers all commands that are available in the server.
 func registerCommands() {
 	for _, c := range []cmd.Command{
+		cmd.New("knockback", "", []string{"kg"}, knockback.Menu{Allower: operatorAllower{}}),
 		cmd.New("unlink", text.Colourf("Unlink your discord account."), nil, command.Unlink{}),
 		cmd.New("link", text.Colourf("Link your discord account."), nil, command.Link{}),
 		cmd.New("revive", text.Colourf("Revive a player."), nil, command.Revive{}),
@@ -109,4 +114,19 @@ func registerCommands() {
 	} {
 		cmd.Register(c)
 	}
+}
+
+type operatorAllower struct{}
+
+func (operatorAllower) Allow(src cmd.Source) bool {
+	p, ok := src.(*player.Player)
+	if !ok {
+		return false
+	}
+	u, ok := core.UserRepository.FindByName(p.Name())
+	if !ok {
+		return false
+	}
+
+	return u.Roles.Contains(roles.Operator())
 }
