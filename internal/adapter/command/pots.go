@@ -70,21 +70,21 @@ func placePotionChests(tx *world.Tx, p *player.Player) {
 	placePairedChests(tx,
 		pos.Add(cube.Pos{1, 0, 0}),
 		pos,
-		p, item.SplashPotion{Type: potion.StrongHealing()},
+		item.SplashPotion{Type: potion.StrongHealing()},
 	)
 	placePairedChests(tx,
 		pos.Add(cube.Pos{1, 1, 0}),
 		pos.Add(cube.Pos{0, 1, 0}),
-		p, item.Potion{Type: potion.LongSwiftness()},
+		item.Potion{Type: potion.LongSwiftness()},
 	)
 	placePairedChests(tx,
 		pos.Add(cube.Pos{1, 2, 0}),
 		pos.Add(cube.Pos{0, 2, 0}),
-		p, item.Potion{Type: potion.LongFireResistance()},
+		item.Potion{Type: potion.LongFireResistance()},
 	)
 }
 
-func placePairedChests(tx *world.Tx, a, b cube.Pos, p *player.Player, it world.Item) {
+func placePairedChests(tx *world.Tx, a, b cube.Pos, it world.Item) {
 	che := block.NewChest()
 	pair := block.NewChest()
 	fillInventory(che.Inventory(tx, a), item.NewStack(it, 1))

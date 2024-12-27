@@ -3,10 +3,10 @@ package user
 import (
 	"fmt"
 	"github.com/moyai-network/teams/internal/core"
+	"github.com/moyai-network/teams/internal/core/class"
 	"github.com/moyai-network/teams/internal/core/conquest"
 	"github.com/moyai-network/teams/internal/core/eotw"
 	"github.com/moyai-network/teams/internal/core/koth"
-	"github.com/moyai-network/teams/internal/core/user/class"
 	model3 "github.com/moyai-network/teams/internal/model"
 	"math"
 	"math/rand"

@@ -3,12 +3,12 @@ package user
 import (
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
+	class2 "github.com/moyai-network/teams/internal/core/class"
 	"github.com/moyai-network/teams/internal/core/colour"
 	ench "github.com/moyai-network/teams/internal/core/enchantment"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	menu2 "github.com/moyai-network/teams/internal/core/menu"
 	"github.com/moyai-network/teams/internal/core/sotw"
-	"github.com/moyai-network/teams/internal/core/user/class"
 	"github.com/moyai-network/teams/internal/model"
 	"time"
 
@@ -57,7 +57,7 @@ func (h *Handler) handleRogueBackstab(ctx *player.Context, t *player.Player, for
 	p := ctx.Val()
 
 	held, left := p.HeldItems()
-	if s, ok := held.Item().(item.Sword); ok && s.Tier == item.ToolTierGold && class.Compare(h.lastClass.Load(), class.Rogue{}) && t.Rotation().Direction() == p.Rotation().Direction() {
+	if s, ok := held.Item().(item.Sword); ok && s.Tier == item.ToolTierGold && class2.Compare(h.lastClass.Load(), class2.Rogue{}) && t.Rotation().Direction() == p.Rotation().Direction() {
 		cd := h.coolDownBackStab
 		if cd.Active() {
 			p.Message(lang.Translatef(model.Language{}, "user.cool-down", "Rogue", cd.Remaining().Seconds()))

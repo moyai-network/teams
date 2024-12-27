@@ -4,13 +4,13 @@ import (
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core"
+	class2 "github.com/moyai-network/teams/internal/core/class"
 	"github.com/moyai-network/teams/internal/core/colour"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	kit2 "github.com/moyai-network/teams/internal/core/kit"
 	"github.com/moyai-network/teams/internal/core/koth"
 	"github.com/moyai-network/teams/internal/core/menu"
 	"github.com/moyai-network/teams/internal/core/sotw"
-	"github.com/moyai-network/teams/internal/core/user/class"
 	"github.com/moyai-network/teams/internal/model"
 	"math/rand"
 	"slices"
@@ -56,11 +56,11 @@ func (h *Handler) HandleItemUse(ctx *player.Context) {
 	_, sotwRunning := sotw.Running()
 	// Handle specific item types based on player's class.
 	switch h.lastClass.Load().(type) {
-	case class.Archer, class.Rogue:
+	case class2.Archer, class2.Rogue:
 		h.handleArcherRogueItemUse(ctx, held, left)
-	case class.Bard:
+	case class2.Bard:
 		h.handleBardItemUse(ctx, held, sotwRunning, u)
-	case class.Mage:
+	case class2.Mage:
 		h.handleMageItemUse(p, held, sotwRunning, u)
 	}
 

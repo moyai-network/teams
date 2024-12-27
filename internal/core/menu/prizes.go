@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"github.com/df-mc/dragonfly/server/world"
 	"github.com/moyai-network/teams/internal/core"
 	item2 "github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/model"
@@ -74,12 +75,15 @@ func SendPrizesMenu(p *player.Player) {
 	pr := &Prizes{
 		close: make(chan struct{}),
 	}
+	pr.sendPrizesMenu(u, p)
+	ha := p.H()
 	go func() {
-		pr.sendPrizesMenu(u, p)
 		for {
 			select {
 			case <-time.After(time.Second):
-				pr.sendPrizesMenu(u, p)
+				ha.ExecWorld(func(tx *world.Tx, e world.Entity) {
+					pr.sendPrizesMenu(u, e.(*player.Player))
+				})
 			case <-pr.close:
 				return
 			}

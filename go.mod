@@ -18,8 +18,6 @@ require (
 	github.com/go-gl/mathgl v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/icza/abcsort v0.0.0-20230330133725-d6ace6446f81
-	github.com/joho/godotenv v1.5.1
 	github.com/restartfu/gophig v0.0.0-20240717021649-39848407f9f9
 	github.com/restartfu/roman v0.0.0-20230625112848-37485fd60bf6
 	github.com/restartfu/sets v0.0.0-20240717034138-554d4ce84652
@@ -30,14 +28,13 @@ require (
 	go.uber.org/mock v0.5.0
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
 	golang.org/x/text v0.19.0
-	google.golang.org/appengine v1.6.8
 	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
 	github.com/bedrock-gophers/console v0.1.1
-	github.com/bedrock-gophers/intercept v0.2.3
-	github.com/bedrock-gophers/inv v0.2.9
+	github.com/bedrock-gophers/intercept v0.2.4
+	github.com/bedrock-gophers/inv v0.3.0
 	github.com/bedrock-gophers/living v0.1.3
 	github.com/bedrock-gophers/nbtconv v0.0.0-20240215023331-5bc285763fcc
 	github.com/bedrock-gophers/spawner v0.1.2
@@ -53,7 +50,6 @@ require (
 	github.com/df-mc/worldupgrader v1.0.18 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gorilla/schema v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
@@ -77,7 +73,6 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

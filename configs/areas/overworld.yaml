@@ -1,0 +1,60 @@
+spawn:
+  name: "spawn"
+  min:
+    - -100.0
+    - 64.0
+  max:
+    - 100.0
+    - 100.0
+
+warzone:
+  name: "warzone"
+  min:
+    - -500.0
+    - 50.0
+  max:
+    - -200.0
+    - 70.0
+
+wilderness:
+  name: "wilderness"
+  min:
+    - -1000.0
+    - 50.0
+  max:
+    - 1000.0
+    - 256.0
+
+roads:
+  - name: "road1"
+    min:
+      - -200.0
+      - 60.0
+    max:
+      - -150.0
+      - 65.0
+
+  - name: "road2"
+    min:
+      - 200.0
+      - 60.0
+    max:
+      - 250.0
+      - 65.0
+
+koths:
+  - name: "koth1"
+    min:
+      - -300.0
+      - 50.0
+    max:
+      - -250.0
+      - 60.0
+
+  - name: "koth2"
+    min:
+      - 300.0
+      - 50.0
+    max:
+      - 350.0
+      - 60.0

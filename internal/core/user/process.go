@@ -30,22 +30,25 @@ func NewProcess(f Func) *Process {
 }
 
 // Teleport teleports the player to the position after the duration has passed.
-func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3, world *world.World) {
+func (pr *Process) Teleport(p *player.Player, dur time.Duration, pos mgl64.Vec3, w *world.World) {
 	pr.expiration = time.Now().Add(dur)
 	pr.c = make(chan struct{})
 	pr.pos = pos
 	pr.ongoing = true
 
+	ha := p.H()
 	go func() {
 		select {
 		case <-time.After(dur):
 			if pr.f != nil {
 				pr.f(pr)
 			}
-			if p.Tx().World() != world {
-				p.Tx().AddEntity(p.H())
-			}
-			p.Teleport(pos)
+			ha.ExecWorld(func(tx *world.Tx, e world.Entity) {
+				if tx.World() != w {
+					tx.AddEntity(ha)
+				}
+				e.(*player.Player).Teleport(pos)
+			})
 			pr.ongoing = false
 		case <-pr.c:
 			pr.ongoing = false

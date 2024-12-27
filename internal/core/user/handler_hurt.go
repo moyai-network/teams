@@ -11,10 +11,10 @@ import (
 	"github.com/moyai-network/teams/internal"
 	"github.com/moyai-network/teams/internal/core"
 	"github.com/moyai-network/teams/internal/core/area"
+	class2 "github.com/moyai-network/teams/internal/core/class"
 	conquest2 "github.com/moyai-network/teams/internal/core/conquest"
 	"github.com/moyai-network/teams/internal/core/item"
 	"github.com/moyai-network/teams/internal/core/sotw"
-	"github.com/moyai-network/teams/internal/core/user/class"
 	"github.com/moyai-network/teams/internal/model"
 	"github.com/moyai-network/teams/pkg/lang"
 	"github.com/sandertv/gophertunnel/minecraft/text"
@@ -33,10 +33,10 @@ func (h *Handler) HandleHurt(ctx *player.Context, dmg *float64, immune bool, att
 	w := p.Tx().World()
 	*dmg = *dmg / 1.25
 	if h.tagArcher.Active() || (h.coolDownFocusMode.Active() &&
-		!class.Compare(h.lastClass.Load(), class.Archer{}) &&
-		!class.Compare(h.lastClass.Load(), class.Mage{}) &&
-		!class.Compare(h.lastClass.Load(), class.Bard{}) &&
-		!class.Compare(h.lastClass.Load(), class.Rogue{})) {
+		!class2.Compare(h.lastClass.Load(), class2.Archer{}) &&
+		!class2.Compare(h.lastClass.Load(), class2.Mage{}) &&
+		!class2.Compare(h.lastClass.Load(), class2.Bard{}) &&
+		!class2.Compare(h.lastClass.Load(), class2.Rogue{})) {
 		applyDamageBoost(dmg, 0.25)
 	}
 

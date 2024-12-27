@@ -242,10 +242,6 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 					}
 				}
 
-				if ar != (model.Area{}) {
-					internal.Messagef(p, "area.leave", ar.Name)
-				}
-
 				var leaveDB, enterDB string
 				if ar == (area.Spawn(w)) {
 					leaveDB = "<green>S</green>"
@@ -285,8 +281,6 @@ func (h *Handler) updateCurrentArea(p *player.Player, newPos mgl64.Vec3, u model
 					Stack: []string{"minecraft:fog_ocean"},
 				})
 			}
-			internal.Messagef(p, "area.leave", ar.Name)
-
 		}
 
 		var leaveDB string

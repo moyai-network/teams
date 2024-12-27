@@ -190,7 +190,7 @@ func NewHandler(p *player.Player, xuid string) (*Handler, error) {
 
 	h.logTime = time.Now()
 	UpdateState(p)
-	go startTicker(p, h)
+	go startTicker(p.H(), h)
 	return h, nil
 }
 
